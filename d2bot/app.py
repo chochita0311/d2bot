@@ -20,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--config",
-        default="config.example.json",
+        default="config.json",
         help="Path to bot config JSON file",
     )
     parser.add_argument(

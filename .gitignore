@@ -1,11 +1,20 @@
-.idea
-venv
-__pycache__/
-*.pyc
-recordings/
-config.local.json
-config.*.local.json
-assets/private/
+# IDE and editor settings
+.idea/
+
+# Python environments
 .venv/
+venv/
 .tools/virtualenv/
 .tools/virtualenv-appdata/
+
+# Python caches and compiled files
+__pycache__/
+*.pyc
+
+# Local recordings and private captures
+recordings/
+assets/private/
+
+# Local configuration overrides
+config.local.json
+config.*.local.json

@@ -19,6 +19,10 @@ PW_RENDERFULLCONTENT = 0x00000002
 BI_RGB = 0
 USER32 = ctypes.windll.user32
 GDI32 = ctypes.windll.gdi32
+KERNEL32 = ctypes.windll.kernel32
+SW_RESTORE = 9
+VK_MENU = 0x12
+KEYEVENTF_KEYUP = 0x0002
 
 
 class BITMAPINFOHEADER(ctypes.Structure):
@@ -210,6 +214,53 @@ def _release_capture_objects(hwnd: int, hwnd_dc: int, mem_dc: int, bitmap: int, 
     if hwnd_dc:
         USER32.ReleaseDC(hwnd, hwnd_dc)
 
+
+
+def focus_window(window: WindowInfo) -> bool:
+    hwnd = window.handle
+    USER32.ShowWindow(hwnd, SW_RESTORE)
+
+    foreground = USER32.GetForegroundWindow()
+    if foreground == hwnd:
+        return True
+
+    foreground_thread = USER32.GetWindowThreadProcessId(foreground, None) if foreground else 0
+    target_thread = USER32.GetWindowThreadProcessId(hwnd, None)
+    current_thread = KERNEL32.GetCurrentThreadId()
+
+    attached_foreground = False
+    attached_target = False
+    try:
+        if foreground_thread and foreground_thread != current_thread:
+            attached_foreground = bool(USER32.AttachThreadInput(current_thread, foreground_thread, True))
+        if target_thread and target_thread != current_thread:
+            attached_target = bool(USER32.AttachThreadInput(current_thread, target_thread, True))
+
+        USER32.BringWindowToTop(hwnd)
+        USER32.SetActiveWindow(hwnd)
+        USER32.SetFocus(hwnd)
+        USER32.SetForegroundWindow(hwnd)
+
+        if USER32.GetForegroundWindow() != hwnd:
+            USER32.keybd_event(VK_MENU, 0, 0, 0)
+            USER32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+            USER32.BringWindowToTop(hwnd)
+            USER32.SetActiveWindow(hwnd)
+            USER32.SetFocus(hwnd)
+            USER32.SetForegroundWindow(hwnd)
+    finally:
+        if attached_target and target_thread:
+            USER32.AttachThreadInput(current_thread, target_thread, False)
+        if attached_foreground and foreground_thread:
+            USER32.AttachThreadInput(current_thread, foreground_thread, False)
+
+    return USER32.GetForegroundWindow() == hwnd
+
+
+def resolve_window_from_config(config: CaptureConfig) -> WindowInfo | None:
+    if not config.window_title:
+        return None
+    return find_window(config.window_title, config.window_title_mode)
 
 def list_windows() -> list[WindowInfo]:
     windows: list[WindowInfo] = []

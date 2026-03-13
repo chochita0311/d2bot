@@ -123,12 +123,12 @@ Character-specific behavior examples:
 Character rows should eventually be classified by:
 
 - progression mode: ladder or standard
-- ruleset family: ROTC or Resurrection
+- ruleset family: ROTW or Resurrection
 
 Current visual clues from the captured character-select screen:
 
 - ladder and standard can be checked from the green background marker on the right-upper edge of a row
-- ROTC and Resurrection can be checked from the gold-background `X` marker on the right-upper edge of a row
+- ROTW and Resurrection can be checked from the gold-background `X` marker on the right-upper edge of a row
 
 ### 6. Farm profiles
 

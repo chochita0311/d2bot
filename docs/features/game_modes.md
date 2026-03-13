@@ -58,7 +58,7 @@ Planned visual signal:
 
 ### B. Ruleset / game family
 
-- ROTC
+- ROTW
 - Resurrection
 
 Planned visual signal:
@@ -74,7 +74,7 @@ The app should classify the right-side character list in this order:
 3. detect each visible character row
 4. read the character name text
 5. inspect the right-upper edge of the row for mode markers
-6. assign row metadata such as ladder, standard, ROTC, or Resurrection
+6. assign row metadata such as ladder, standard, ROTW, or Resurrection
 
 ## Suggested row data model
 
@@ -84,7 +84,7 @@ Each detected row should eventually produce a structure like this:
 - row index
 - screen bounds
 - progression mode: ladder or standard
-- ruleset: ROTC or Resurrection
+- ruleset: ROTW or Resurrection
 - level if readable
 - class if readable
 - selected state
@@ -134,4 +134,4 @@ That means the next stage should be:
 - detect row rectangles
 - crop the right-upper marker area from each row
 - classify the marker color/icon style
-- map the row to ladder vs standard and ROTC vs Resurrection
+- map the row to ladder vs standard and ROTW vs Resurrection

@@ -27,12 +27,12 @@
       "standard"
     ],
     "ruleset_families": [
-      "rotc",
+      "rotw",
       "resurrection"
     ],
     "detection_notes": {
       "ladder_standard_marker": "green marker at the right-upper edge of a character row",
-      "rotc_resurrection_marker": "gold-background x marker at the right-upper edge of a character row"
+      "rotw_resurrection_marker": "gold-background x marker at the right-upper edge of a character row"
     }
   },
   "run_profiles": {
@@ -59,7 +59,7 @@
     "storage": {
       "display_name": "STORAGE",
       "progression_mode": "standard",
-      "ruleset_family": "rotc",
+      "ruleset_family": "rotw",
       "preferred_run_profile": "terror_zone"
     }
   },

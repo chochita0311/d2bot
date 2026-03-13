@@ -2,10 +2,10 @@
 
 Windows-first starter scaffold for watching a Diablo 2 game window, matching templates, recording sessions, and growing toward simple farming automation.
 
-Project constraints and safety boundaries are documented in `PROJECT_POLICY.md`.
-Working notes and roadmap are documented in `PROJECT_NOTES.md`.
-Game mode notes are documented in `docs/game_modes.md`.
-Environment setup is documented in `ENVIRONMENT.md`.
+Project constraints and safety boundaries are documented in `docs/project/policy.md`.
+Working notes and roadmap are documented in `docs/project/notes.md`.
+Game mode notes are documented in `docs/features/game_modes.md`.
+Environment setup is documented in `docs/setup/environment.md`.
 
 ## What it does now
 
@@ -56,12 +56,12 @@ python main.py --list-windows
 Run the older CLI preview loop:
 
 ```powershell
-python main.py --cli --config config.example.json
+python main.py --cli --config config.json
 ```
 
 ## How to steer behavior
 
-Edit `config.example.json`:
+Edit `config.json`:
 
 - `capture.window_title`: target a window such as `Diablo II` or `Diablo II: Resurrected`
 - `capture.window_title_mode`: `contains` or `exact`
@@ -75,7 +75,7 @@ Edit `config.example.json`:
 ## Suggested next upgrades
 
 1. Add character-row detection on the select screen.
-2. Classify rows by the right-side marker icons for ladder/standard and ROTC/Resurrection.
+2. Classify rows by the right-side marker icons for ladder/standard and ROTW/Resurrection.
 3. Add life and mana monitoring for survival logic.
 4. Add OCR with PaddleOCR or Tesseract for loot labels.
 5. Add more GUI controls for profile selection and safe automation toggles.

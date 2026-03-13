@@ -27,6 +27,7 @@ import cv2 as cv
 
 from d2bot.capture import ScreenCapture, list_windows
 from d2bot.config import BotConfig, load_config
+from d2bot.gem_summing import GemActionEvent, GemSummingSession
 from d2bot.recording import RecorderEvent, RecordingSession
 
 
@@ -36,8 +37,8 @@ class D2BotControlPanel:
         self.config: BotConfig = load_config(self.config_path)
         self.root = tk.Tk()
         self.root.title("d2bot Control Panel")
-        self.root.geometry("760x520")
-        self.root.minsize(700, 480)
+        self.root.geometry("980x580")
+        self.root.minsize(860, 540)
 
         self.window_title_var = tk.StringVar(value=self.config.capture.window_title or "Diablo")
         self.backend_var = tk.StringVar(value=self.config.capture.capture_backend)
@@ -46,11 +47,12 @@ class D2BotControlPanel:
         self.window_list_var = tk.StringVar()
 
         self.recording_session = RecordingSession(self.config.capture)
+        self.gem_session = GemSummingSession(self.config.capture)
 
         self._build_ui()
         self._refresh_windows(select_current=True)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
-        self.root.after(250, self._poll_recorder_events)
+        self.root.after(250, self._poll_events)
 
     def _build_ui(self) -> None:
         self.root.columnconfigure(0, weight=1)
@@ -89,12 +91,28 @@ class D2BotControlPanel:
         ttk.Button(actions, text="Capture Snapshot", command=self.capture_snapshot).grid(
             row=0, column=2, sticky="ew", padx=8
         )
+
         ttk.Button(actions, text="Refresh Windows", command=self._refresh_windows).grid(
             row=0, column=3, sticky="ew", padx=(8, 0)
         )
 
+        self.gem_button = ttk.Button(actions, text="Start Gem Summing", command=self.start_gem_summing)
+        self.gem_button.grid(row=1, column=0, sticky="ew", padx=(0, 8), pady=(10, 0))
+
+        self.stop_action_button = ttk.Button(actions, text="Stop Action (F10)", command=self.stop_current_action)
+        self.stop_action_button.grid(row=1, column=1, sticky="ew", padx=8, pady=(10, 0))
+        self.stop_action_button.state(["disabled"])
+
+        tools = ttk.Frame(self.root, padding=(16, 0, 16, 12))
+        tools.grid(row=2, column=0, sticky="ew")
+        ttk.Label(
+            tools,
+            text="Recording controls stay on the first row. Gem summing controls are grouped on the second row.",
+        ).grid(row=0, column=0, sticky="w")
+
         content = ttk.Panedwindow(self.root, orient=tk.HORIZONTAL)
-        content.grid(row=2, column=0, sticky="nsew", padx=16, pady=(0, 16))
+        content.grid(row=3, column=0, sticky="nsew", padx=16, pady=(0, 16))
+        self.root.rowconfigure(3, weight=1)
 
         left = ttk.Labelframe(content, text="Visible Windows", padding=12)
         right = ttk.Labelframe(content, text="Recorder Log", padding=12)
@@ -113,7 +131,7 @@ class D2BotControlPanel:
         self.log_text.grid(row=0, column=0, sticky="nsew")
 
         footer = ttk.Frame(self.root, padding=(16, 0, 16, 16))
-        footer.grid(row=3, column=0, sticky="ew")
+        footer.grid(row=4, column=0, sticky="ew")
         footer.columnconfigure(1, weight=1)
 
         ttk.Label(footer, text="Status").grid(row=0, column=0, sticky="w")
@@ -149,6 +167,7 @@ class D2BotControlPanel:
         self.config.capture.window_title = self.window_title_var.get().strip() or None
         self.config.capture.capture_backend = self.backend_var.get().strip() or "auto"
         self.recording_session.capture_config = self.config.capture
+        self.gem_session.capture_config = self.config.capture
 
     def start_recording(self) -> None:
         self._apply_runtime_config()
@@ -168,6 +187,25 @@ class D2BotControlPanel:
         self.status_var.set("Idle")
         self.record_button.state(["!disabled"])
         self.stop_button.state(["disabled"])
+
+    def start_gem_summing(self) -> None:
+        self._apply_runtime_config()
+        try:
+            self.gem_session.start()
+        except Exception as exc:
+            messagebox.showerror("Gem Summing Error", str(exc))
+            self._append_log("error", str(exc))
+            return
+        self.status_var.set("Gem Summing")
+        self.gem_button.state(["disabled"])
+        self.stop_action_button.state(["!disabled"])
+
+    def stop_current_action(self) -> None:
+        if self.gem_session.is_running:
+            self.gem_session.stop()
+        self.status_var.set("Idle")
+        self.gem_button.state(["!disabled"])
+        self.stop_action_button.state(["disabled"])
 
     def capture_snapshot(self) -> None:
         self._apply_runtime_config()
@@ -196,7 +234,7 @@ class D2BotControlPanel:
         self.log_text.see("end")
         self.log_text.configure(state="disabled")
 
-    def _poll_recorder_events(self) -> None:
+    def _poll_events(self) -> None:
         while not self.recording_session.events.empty():
             event: RecorderEvent = self.recording_session.events.get_nowait()
             self._append_log(event.level, event.message)
@@ -204,11 +242,20 @@ class D2BotControlPanel:
                 self.status_var.set("Error")
                 self.record_button.state(["!disabled"])
                 self.stop_button.state(["disabled"])
-        self.root.after(250, self._poll_recorder_events)
+        while not self.gem_session.events.empty():
+            event: GemActionEvent = self.gem_session.events.get_nowait()
+            self._append_log(event.level, event.message)
+        if not self.gem_session.is_running:
+            self.status_var.set("Idle")
+            self.gem_button.state(["!disabled"])
+            self.stop_action_button.state(["disabled"])
+        self.root.after(250, self._poll_events)
 
     def _on_close(self) -> None:
         if self.recording_session.is_running:
             self.recording_session.stop()
+        if self.gem_session.is_running:
+            self.gem_session.stop()
         self.root.destroy()
 
     def run(self) -> int:
@@ -216,6 +263,6 @@ class D2BotControlPanel:
         return 0
 
 
-def run_gui(config_path: str | Path = "config.example.json") -> int:
+def run_gui(config_path: str | Path = "config.json") -> int:
     panel = D2BotControlPanel(config_path)
     return panel.run()

@@ -1,0 +1,37 @@
+{
+  "dry_run": true,
+  "overlay": true,
+  "log_level": "INFO",
+  "capture": {
+    "fps": 8,
+    "monitor_index": 1,
+    "preview_scale": 0.7,
+    "region": null
+  },
+  "recording": {
+    "enabled": false,
+    "output_path": "recordings/session.avi",
+    "codec": "XVID"
+  },
+  "hotkeys": {
+    "pause": "f8",
+    "stop": "f9"
+  },
+  "farm": {
+    "name": "countess",
+    "goal": "watch for rune-related UI or loot labels before adding OCR and route logic",
+    "loot_whitelist": [
+      "jah rune",
+      "ber rune",
+      "key of terror"
+    ],
+    "templates": [
+      {
+        "name": "jah_rune",
+        "path": "jahrune.png",
+        "threshold": 0.8,
+        "action": "log"
+      }
+    ]
+  }
+}

@@ -1,2 +1,8 @@
 .idea
 venv
+__pycache__/
+*.pyc
+recordings/
+config.local.json
+config.*.local.json
+assets/private/

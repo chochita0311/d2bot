@@ -6,3 +6,6 @@ recordings/
 config.local.json
 config.*.local.json
 assets/private/
+.venv/
+.tools/virtualenv/
+.tools/virtualenv-appdata/

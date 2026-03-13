@@ -98,7 +98,39 @@ Behavior inputs:
 - potion thresholds
 - targeting rules
 
-### 5. Farm profiles
+### 5. Game mode and character grouping
+
+The app should separate shared repeatable behavior from character-specific behavior.
+
+Shared repeatable behavior examples:
+
+- character-select screen detection
+- switching online or offline tabs
+- scanning character rows
+- selecting a character from the list
+- starting a run profile
+- returning to town
+- stash and sell loops
+
+Character-specific behavior examples:
+
+- skill bindings
+- build-specific combat logic
+- potion thresholds
+- preferred route
+- loot overrides
+
+Character rows should eventually be classified by:
+
+- progression mode: ladder or standard
+- ruleset family: ROTC or Resurrection
+
+Current visual clues from the captured character-select screen:
+
+- ladder and standard can be checked from the green background marker on the right-upper edge of a row
+- ROTC and Resurrection can be checked from the gold-background `X` marker on the right-upper edge of a row
+
+### 6. Farm profiles
 
 Automation should be organized by farm payload/profile instead of one giant script.
 
@@ -121,7 +153,7 @@ Each profile should eventually define:
 - exit conditions
 - recovery rules
 
-### 6. Loot intelligence
+### 7. Loot intelligence
 
 Loot handling should be data-driven, not buried inside code.
 
@@ -159,6 +191,7 @@ Suggested internal categories:
 - keep dry-run as default
 - improve logs and recording
 - add user override detection
+- detect character-select screen and row regions
 
 ### Phase 2: Vision and OCR
 
@@ -166,6 +199,7 @@ Suggested internal categories:
 - detect life and mana
 - add OCR for item labels
 - add configurable loot whitelist and ignore list
+- classify character rows by mode markers
 
 ### Phase 3: Action engine
 
@@ -173,6 +207,7 @@ Suggested internal categories:
 - add simple click and key actions
 - add safety timing and retries
 - add stop-on-uncertainty behavior
+- support selecting a specific character row by config
 
 ### Phase 4: Character profiles
 
@@ -180,6 +215,7 @@ Suggested internal categories:
 - map skills to hotkeys
 - add combat sequences
 - tune survival thresholds
+- allow per-character overrides on top of shared run profiles
 
 ### Phase 5: Farm profiles
 

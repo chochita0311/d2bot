@@ -9,7 +9,7 @@ import numpy as np
 from d2bot.config import TemplateRule
 
 
-@dataclass(slots=True)
+@dataclass
 class TemplateMatch:
     name: str
     confidence: float

@@ -6,28 +6,32 @@ from pathlib import Path
 from typing import Any
 
 
-@dataclass(slots=True)
+@dataclass
 class CaptureConfig:
     fps: int = 8
     monitor_index: int = 1
     region: dict[str, int] | None = None
+    window_title: str | None = None
+    window_title_mode: str = "contains"
+    follow_window: bool = True
+    capture_backend: str = "auto"
     preview_scale: float = 0.75
 
 
-@dataclass(slots=True)
+@dataclass
 class RecordingConfig:
     enabled: bool = False
     output_path: str = "recordings/session.avi"
     codec: str = "XVID"
 
 
-@dataclass(slots=True)
+@dataclass
 class HotkeyConfig:
     pause: str = "f8"
     stop: str = "f9"
 
 
-@dataclass(slots=True)
+@dataclass
 class TemplateRule:
     name: str
     path: str
@@ -35,7 +39,7 @@ class TemplateRule:
     action: str = "log"
 
 
-@dataclass(slots=True)
+@dataclass
 class FarmProfile:
     name: str = "countess"
     goal: str = "watch"
@@ -45,7 +49,7 @@ class FarmProfile:
     templates: list[TemplateRule] = field(default_factory=list)
 
 
-@dataclass(slots=True)
+@dataclass
 class BotConfig:
     dry_run: bool = True
     overlay: bool = True

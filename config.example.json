@@ -6,7 +6,11 @@
     "fps": 8,
     "monitor_index": 1,
     "preview_scale": 0.7,
-    "region": null
+    "region": null,
+    "window_title": "Diablo",
+    "window_title_mode": "contains",
+    "follow_window": true,
+    "capture_backend": "auto"
   },
   "recording": {
     "enabled": false,
@@ -16,6 +20,48 @@
   "hotkeys": {
     "pause": "f8",
     "stop": "f9"
+  },
+  "game_modes": {
+    "progression_modes": [
+      "ladder",
+      "standard"
+    ],
+    "ruleset_families": [
+      "rotc",
+      "resurrection"
+    ],
+    "detection_notes": {
+      "ladder_standard_marker": "green marker at the right-upper edge of a character row",
+      "rotc_resurrection_marker": "gold-background x marker at the right-upper edge of a character row"
+    }
+  },
+  "run_profiles": {
+    "diablo_run": {
+      "kind": "general",
+      "goal": "repeatable shared run logic"
+    },
+    "baal_run": {
+      "kind": "general",
+      "goal": "repeatable shared run logic"
+    },
+    "terror_zone": {
+      "kind": "general",
+      "goal": "repeatable shared run logic"
+    }
+  },
+  "characters": {
+    "abyss_knight": {
+      "display_name": "Abyss-Knight",
+      "progression_mode": "ladder",
+      "ruleset_family": "resurrection",
+      "preferred_run_profile": "diablo_run"
+    },
+    "storage": {
+      "display_name": "STORAGE",
+      "progression_mode": "standard",
+      "ruleset_family": "rotc",
+      "preferred_run_profile": "terror_zone"
+    }
   },
   "farm": {
     "name": "countess",

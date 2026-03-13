@@ -2,61 +2,80 @@
 
 Windows-first starter scaffold for watching a Diablo 2 game window, matching templates, recording sessions, and growing toward simple farming automation.
 
-Project constraints and safety boundaries are documented in [PROJECT_POLICY.md](D:/python/d2bot/PROJECT_POLICY.md).
-Working notes and roadmap are documented in [PROJECT_NOTES.md](D:/python/d2bot/PROJECT_NOTES.md).
+Project constraints and safety boundaries are documented in `PROJECT_POLICY.md`.
+Working notes and roadmap are documented in `PROJECT_NOTES.md`.
+Game mode notes are documented in `docs/game_modes.md`.
+Environment setup is documented in `ENVIRONMENT.md`.
 
 ## What it does now
 
-- Captures the screen continuously with `mss`
-- Runs OpenCV template matching on each frame
-- Shows a preview overlay with match confidence
-- Supports optional video recording
-- Supports pause and stop hotkeys
-- Uses a JSON config so you can control farm goals and loot/watch rules without rewriting code
-
-## What it does not do yet
-
-- OCR item names
-- Route/path logic
-- Inventory/stash logic
-- Safe window targeting by title
-- Multi-step farming behaviors
+- Launches a small desktop GUI control panel by default
+- Can record a named Diablo window to video with start and stop buttons
+- Can capture a one-shot snapshot of the current Diablo window
+- Can target a visible game window by title
+- Can try named-window capture before falling back to desktop-region capture
+- Supports the older OpenCV preview loop through `--cli`
+- Uses a JSON config so you can control capture settings without rewriting code
 
 ## Quick start
 
-1. Create or activate a Windows virtual environment.
+1. Activate the local project environment:
+
+```powershell
+. .\scripts\activate-project.ps1
+```
+
 2. Install dependencies:
 
 ```powershell
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-3. Run the bot:
+3. Launch the GUI:
 
 ```powershell
-python main.py --config config.example.json
+python main.py
 ```
 
-4. Hotkeys:
+4. In the GUI:
 
-- `F8` pause/resume
-- `F9` stop
-- `Esc` also stops from the preview window
+- select the Diablo window from the list, or type its title
+- choose `auto`, `window`, or `screen` capture
+- click `Start Recording` to begin saving video
+- click `Stop Recording` to finish
+- click `Capture Snapshot` for a still image
+
+## Other commands
+
+List visible windows:
+
+```powershell
+python main.py --list-windows
+```
+
+Run the older CLI preview loop:
+
+```powershell
+python main.py --cli --config config.example.json
+```
 
 ## How to steer behavior
 
 Edit `config.example.json`:
 
+- `capture.window_title`: target a window such as `Diablo II` or `Diablo II: Resurrected`
+- `capture.window_title_mode`: `contains` or `exact`
+- `capture.follow_window`: refresh the capture box if the game window moves
+- `capture.capture_backend`: `auto`, `window`, or `screen`
 - `capture.region`: set a fixed part of the screen if you only want the game area
-- `recording.enabled`: turn on session recording
-- `farm.name`: your run profile name
-- `farm.goal`: plain-language note for what this profile is trying to do
-- `farm.loot_whitelist`: items you care about
-- `farm.templates`: images to detect and what action to trigger
+- `recording.enabled`: used by the older CLI preview loop
+- `run_profiles`: define shared repeatable actions such as Diablo, Baal, or Terror Zone runs
+- `characters`: define character-specific overrides such as mode, ruleset family, and preferred run profile
 
 ## Suggested next upgrades
 
-1. Add OCR with PaddleOCR or Tesseract for loot labels.
-2. Add a simple state machine: town, travel, fight, loot, stash.
-3. Add window targeting so clicks are relative to the Diablo window only.
-4. Add route-specific templates and recovery rules.
+1. Add character-row detection on the select screen.
+2. Classify rows by the right-side marker icons for ladder/standard and ROTC/Resurrection.
+3. Add life and mana monitoring for survival logic.
+4. Add OCR with PaddleOCR or Tesseract for loot labels.
+5. Add more GUI controls for profile selection and safe automation toggles.

@@ -1,4 +1,4 @@
-# Project Notes
+﻿# Project Notes
 
 This file organizes early ideas for the Diablo 2 Windows GUI automation project.
 
@@ -127,8 +127,8 @@ Character rows should eventually be classified by:
 
 Current visual clues from the captured character-select screen:
 
-- ladder and standard can be checked from the green background marker on the right-upper edge of a row
-- ROTW and Resurrection can be checked from the gold-background `X` marker on the right-upper edge of a row
+- if the green-background ladder marker is present on the right-upper edge of a row, classify it as ladder; if absent, classify it as standard
+- if the gold-background `X` marker is present on the right-upper edge of a row, classify it as Resurrection; if absent, classify it as ROTW
 
 ### 6. Farm profiles
 
@@ -139,7 +139,6 @@ Early profile candidates:
 - Diablo run
 - Baal run
 - Terror Zone farm
-- Countess run
 - Summoner run
 - Pindleskin run
 - Travincal run
@@ -232,3 +231,5 @@ Suggested internal categories:
 - how loot rules should be stored: JSON, YAML, or profile-specific files
 - which first character build should be supported
 - which first farm profile should be implemented
+
+

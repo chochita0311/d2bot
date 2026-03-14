@@ -1,4 +1,4 @@
-from d2bot.app import main
+from diablo2.app import main
 
 
 if __name__ == "__main__":

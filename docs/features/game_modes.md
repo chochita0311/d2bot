@@ -1,4 +1,4 @@
-# Game Modes
+﻿# Game Modes
 
 This document organizes how the app should classify Diablo 2 character-select modes and route behavior.
 
@@ -54,7 +54,8 @@ At the character-select screen, the app should classify characters by two dimens
 
 Planned visual signal:
 
-- green background icon on the right-upper edge of a character row
+- if the green-background ladder marker is present on the right-upper edge of a character row, classify it as ladder
+- if that marker is absent, classify it as standard
 
 ### B. Ruleset / game family
 
@@ -63,7 +64,8 @@ Planned visual signal:
 
 Planned visual signal:
 
-- gold-background `X` icon on the right-upper edge of a character row
+- if the gold-background `X` marker is present on the right-upper edge of a character row, classify it as Resurrection
+- if that marker is absent, classify it as ROTW
 
 ## Detection strategy
 
@@ -100,7 +102,6 @@ Examples:
 - diablo_run
 - baal_run
 - terror_zone
-- countess_run
 
 These define reusable behavior like:
 
@@ -135,3 +136,5 @@ That means the next stage should be:
 - crop the right-upper marker area from each row
 - classify the marker color/icon style
 - map the row to ladder vs standard and ROTW vs Resurrection
+
+

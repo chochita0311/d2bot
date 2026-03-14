@@ -1,20 +1,20 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 import time
 
 import cv2 as cv
 
-from d2bot.capture import ScreenCapture, SessionRecorder
-from d2bot.config import BotConfig
-from d2bot.controller import BotController
-from d2bot.detectors import TemplateMatcher, draw_overlay
+from diablo2.common.capture import ScreenCapture, SessionRecorder
+from diablo2.common.config import BotConfig
+from diablo2.common.controller import BotController
+from diablo2.common.detectors import TemplateMatcher, draw_overlay
 
 
 class DiabloBot:
     def __init__(self, config: BotConfig):
         self.config = config
-        self.log = logging.getLogger("d2bot.bot")
+        self.log = logging.getLogger("diablo2.bot")
         self.capture = ScreenCapture(config.capture)
         self.controller = BotController(dry_run=config.dry_run)
         self.matcher = TemplateMatcher(config.farm.templates)
@@ -49,8 +49,12 @@ class DiabloBot:
 
         frame_delay = 1.0 / max(1, self.config.capture.fps)
         self.log.info("Watching monitor region: %s", self.capture.target)
+        self.log.info("Loaded farm profile: %s", self.config.farm.name)
         self.log.info("Farm goal: %s", self.config.farm.goal)
-        self.log.info("Loot whitelist: %s", ", ".join(self.config.farm.loot_whitelist))
+        self.log.info("Hunting objective: %s", self.config.farm.hunting.objective)
+        fixed_labels = [item.label for item in self.config.shared_loot.fixed_items] + self.config.farm.loot.keep_labels
+        self.log.info("Loot keep labels: %s", ", ".join(fixed_labels))
+        self.log.info("Run-specific rules: %s", self.config.farm.run_specific_rules)
 
         try:
             while not self.controller.stop_requested:
@@ -68,7 +72,7 @@ class DiabloBot:
                         fx=self.config.capture.preview_scale,
                         fy=self.config.capture.preview_scale,
                     )
-                    cv.imshow("d2bot preview", scaled)
+                    cv.imshow("Diablo2 Preview", scaled)
                     if cv.waitKey(1) & 0xFF == 27:
                         self.controller.request_stop()
 
@@ -80,3 +84,4 @@ class DiabloBot:
             cv.destroyAllWindows()
 
         return 0
+

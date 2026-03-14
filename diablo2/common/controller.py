@@ -17,7 +17,7 @@ except ImportError:  # pragma: no cover
 class BotController:
     def __init__(self, dry_run: bool):
         self.dry_run = dry_run
-        self.log = logging.getLogger("d2bot.controller")
+        self.log = logging.getLogger("diablo2.controller")
         self.paused = False
         self.stop_requested = False
 

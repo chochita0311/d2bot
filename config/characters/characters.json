@@ -1,0 +1,33 @@
+﻿{
+  "game_modes": {
+    "progression_modes": [
+      "ladder",
+      "standard"
+    ],
+    "ruleset_families": [
+      "rotw",
+      "resurrection"
+    ],
+    "detection_notes": {
+      "ladder_marker_present": "if the right-upper edge of a character row shows the green-background ladder marker, classify the row as ladder",
+      "ladder_marker_absent": "if the green-background ladder marker is absent, classify the row as standard",
+      "resurrection_marker_present": "if the right-upper edge of a character row shows the gold-background X marker, classify the row as resurrection",
+      "resurrection_marker_absent": "if the gold-background X marker is absent, classify the row as rotw"
+    }
+  },
+  "characters": {
+    "abyss_knight": {
+      "display_name": "Abyss-Knight",
+      "progression_mode": "ladder",
+      "ruleset_family": "resurrection",
+      "preferred_run_profile": "summoner"
+    },
+    "storage": {
+      "display_name": "STORAGE",
+      "progression_mode": "standard",
+      "ruleset_family": "rotw",
+      "preferred_run_profile": "summoner"
+    }
+  }
+}
+

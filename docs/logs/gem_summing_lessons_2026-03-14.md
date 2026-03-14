@@ -18,7 +18,7 @@ This write-up is meant to save future iterations from repeating the same mistake
 
 ## What Was Built
 
-The current gem summing flow lives in `d2bot/gem_summing.py`.
+The current gem summing flow lives in `diablo2/actions/gem_summing.py`.
 
 Current structure:
 - detect the opened stash using `assets/stash/stash_open_gems_focused.png`
@@ -150,7 +150,7 @@ This solved the infinite-repeat behavior and allowed the run to complete.
 
 ## Cube Interaction Lessons
 
-### 1. °∞Cube had 2 items°± means the transfer/transmute state is not clean
+### 1. ‚ÄúCube had 2 items‚Äù means the transfer/transmute state is not clean
 
 Frequent warnings like:
 - `cube had 2 item(s) after transmute`
@@ -204,7 +204,7 @@ These changes should stay, as long as state validation remains conservative.
 
 ### 2. Speed without state protection is dangerous
 
-The core lesson is not °∞go slower.°±
+The core lesson is not ‚Äúgo slower.‚Äù
 The core lesson is:
 - faster actions are acceptable
 - faster rereads are not acceptable if they overwrite reliable tracked state with noisy OCR
@@ -265,7 +265,7 @@ Priority order for future improvement:
 ## Proven Pain Points
 
 These are the recurring hardships future work should remember immediately:
-- stash OCR can be °∞good enough to plan°± and still be bad enough to revive a finished slot
+- stash OCR can be ‚Äúgood enough to plan‚Äù and still be bad enough to revive a finished slot
 - the hardest bugs were caused by state inconsistency, not just recognition quality
 - speeding up a stable but naive loop is easy; keeping it correct under noisy reads is the real difficulty
 - feature quality improved only after combining multiple defenses: better assets, consensus reads, tracked counts, and guarded resync
@@ -273,7 +273,7 @@ These are the recurring hardships future work should remember immediately:
 ## Reference Files
 
 Main implementation:
-- `d2bot/gem_summing.py`
+- `diablo2/actions/gem_summing.py`
 
 Related assets:
 - `assets/stash/stash_open_gems_focused.png`
@@ -282,3 +282,4 @@ Related assets:
 
 Asset generation helper:
 - `scripts/split_gem_assets.py`
+

@@ -1,0 +1,57 @@
+{
+  "run_profiles": {
+    "summoner": {
+      "name": "summoner",
+      "goal": "farm Key of Hate from The Summoner in Arcane Sanctuary",
+      "description": "Reusable farming profile for Act 2 Arcane Sanctuary runs that prioritize reaching and killing The Summoner, then handing loot through the shared fixed-item rules plus any run-specific additions.",
+      "hunting": {
+        "objective": "navigate to Arcane Sanctuary through the waypoint, find The Summoner, kill nearby threats only when needed, and finish the run after the boss and approved loot are handled",
+        "waypoint_act": 2,
+        "waypoint_name": "Arcane Sanctuary",
+        "target_monsters": [
+          "The Summoner",
+          "????"
+        ],
+        "target_areas": [
+          "Arcane Sanctuary",
+          "??? ??"
+        ],
+        "route_notes": [
+          "Use the Act 2 waypoint menu and travel directly to Arcane Sanctuary.",
+          "Treat the four Arcane Sanctuary wings as the search space for locating The Summoner.",
+          "Ignore optional packs unless they block the path or create a survival risk.",
+          "Once The Summoner dies, switch priority from pathing/combat to approved loot pickup and safe exit.",
+          "End the run if the target area or boss location cannot be confirmed safely within the timeout."
+        ],
+        "fight_style": "boss_priority_safe_clear",
+        "search_timeout_seconds": 90,
+        "disengage_on_uncertainty": true
+      },
+      "loot": {
+        "keep_labels": [],
+        "ignore_labels": [],
+        "potion_columns_reserved": 2,
+        "free_inventory_slots_min": 6,
+        "identify_before_drop": false,
+        "pickup_gold": false
+      },
+      "life": {
+        "use_healing_potion_below": 0.7,
+        "use_rejuvenation_below": 0.45,
+        "emergency_retreat_below": 0.25,
+        "use_mana_potion_below": 0.35,
+        "town_portal_on_risk": true,
+        "stop_on_death_screen": true,
+        "belt_restock_healing_below": 4,
+        "belt_restock_mana_below": 4
+      },
+      "run_specific_rules": [
+        "Only this profile should contain Arcane Sanctuary and Summoner assumptions; hunting and loot engines stay reusable.",
+        "The run counts as successful only when The Summoner is killed and a Key of Hate pickup decision is made.",
+        "If a Key of Hate label is detected, keep it even if the inventory is near the minimum free-slot threshold.",
+        "Do not continue clearing the sanctuary after the target and approved loot are resolved."
+      ],
+      "templates": []
+    }
+  }
+}

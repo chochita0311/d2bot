@@ -10,7 +10,7 @@ import cv2 as cv
 import mss
 import numpy as np
 
-from d2bot.config import CaptureConfig, RecordingConfig
+from diablo2.common.config import CaptureConfig, RecordingConfig
 
 
 SRCCOPY = 0x00CC0020

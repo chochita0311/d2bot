@@ -12,9 +12,9 @@ from queue import Queue
 import cv2 as cv
 import numpy as np
 
-from d2bot.capture import ScreenCapture, focus_window, resolve_window_from_config
-from d2bot.config import CaptureConfig
-from d2bot.controller import keyboard, pydirectinput
+from diablo2.common.capture import ScreenCapture, focus_window, resolve_window_from_config
+from diablo2.common.config import CaptureConfig
+from diablo2.common.controller import keyboard, pydirectinput
 
 
 @dataclass

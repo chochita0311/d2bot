@@ -7,8 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from queue import Queue
 
-from d2bot.capture import ScreenCapture, SessionRecorder
-from d2bot.config import CaptureConfig, RecordingConfig
+from diablo2.common.capture import ScreenCapture, SessionRecorder
+from diablo2.common.config import CaptureConfig, RecordingConfig
 
 
 @dataclass

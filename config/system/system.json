@@ -1,0 +1,24 @@
+{
+  "dry_run": true,
+  "overlay": true,
+  "log_level": "INFO",
+  "capture": {
+    "fps": 8,
+    "monitor_index": 1,
+    "preview_scale": 0.7,
+    "region": null,
+    "window_title": "Diablo",
+    "window_title_mode": "contains",
+    "follow_window": true,
+    "capture_backend": "auto"
+  },
+  "recording": {
+    "enabled": false,
+    "output_path": "recordings/session.avi",
+    "codec": "XVID"
+  },
+  "hotkeys": {
+    "pause": "f8",
+    "stop": "f9"
+  }
+}

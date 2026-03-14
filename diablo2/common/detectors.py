@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2 as cv
 import numpy as np
 
-from d2bot.config import TemplateRule
+from diablo2.common.config import TemplateRule
 
 
 @dataclass

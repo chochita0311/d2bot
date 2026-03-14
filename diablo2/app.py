@@ -5,10 +5,10 @@ import logging
 import sys
 from pathlib import Path
 
-from d2bot.capture import list_windows
-from d2bot.bot import DiabloBot
-from d2bot.config import load_config
-from d2bot.gui import run_gui
+from diablo2.common.capture import list_windows
+from diablo2.core.bot import DiabloBot
+from diablo2.common.config import load_config
+from diablo2.ui.gui import run_gui
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -20,8 +20,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--config",
-        default="config.json",
-        help="Path to bot config JSON file",
+        default="config",
+        help="Path to a bot config JSON file or config directory",
     )
     parser.add_argument(
         "--cli",

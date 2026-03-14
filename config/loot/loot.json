@@ -1,0 +1,33 @@
+﻿{
+  "shared_loot": {
+    "description": "Fixed items that should stay on the basic keep list regardless of run payload or character.",
+    "ignore_labels": [
+      "gold",
+      "scroll of identify",
+      "scroll of town portal",
+      "healing potion",
+      "mana potion",
+      "stamina potion",
+      "antidote potion",
+      "thawing potion"
+    ],
+    "fixed_items": [
+      {
+        "label": "key of hate",
+        "ground_template": "assets/items/keys/key_of_hate_on_the_ground.png",
+        "inventory_template": "assets/items/keys/key_of_hate_in_inventory.png",
+        "threshold": 0.8
+      },
+      {
+        "label": "rune",
+        "ground_template": "assets/items/runes/rune_on_the_ground.png",
+        "threshold": 0.8
+      },
+      {
+        "label": "amethyst",
+        "ground_template": "assets/items/gems/amethyst_on_the_ground.png",
+        "threshold": 0.8
+      }
+    ]
+  }
+}

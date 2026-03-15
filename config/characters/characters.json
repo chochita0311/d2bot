@@ -19,15 +19,18 @@
     "abyss_knight": {
       "display_name": "Abyss-Knight",
       "progression_mode": "ladder",
-      "ruleset_family": "resurrection",
-      "preferred_run_profile": "summoner"
-    },
-    "storage": {
-      "display_name": "STORAGE",
-      "progression_mode": "standard",
       "ruleset_family": "rotw",
-      "preferred_run_profile": "summoner"
+      "preferred_run_profile": "summoner",
+      "actions": {
+        "movement_skill_key": "a",
+        "primary_attack_skill_key": "s",
+        "left_skill_key": null,
+        "interact_skill_key": null,
+        "buff_skill_keys": ["right-click", "f3"],
+        "pre_run_buff_order": ["right-click", "f3", "f3"],
+        "attack_pattern": "single_skill",
+        "engagement_style": "ranged_kite"
+      }
     }
   }
 }
-

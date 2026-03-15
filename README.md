@@ -19,6 +19,7 @@ Environment setup is documented in `docs/setup/environment.md`.
 - Supports the older OpenCV preview loop through `--cli`
 - Uses a JSON config so you can control capture settings without rewriting code
 - Supports reusable run-profile config sections for hunting, loot, life management, and farm-specific rules
+- Exposes the Summoner payload order in the GUI so the run body is defined before room create/exit wrapping
 
 ## Quick start
 

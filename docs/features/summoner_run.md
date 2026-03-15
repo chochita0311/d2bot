@@ -4,14 +4,25 @@ Source recording: `recordings/diablo2_20260314_010525.avi`
 
 ## Goal
 
-Describe the observed Summoner Run as a state-based spec that can be implemented incrementally.
+Describe the observed Summoner Run as a payload-first state spec that can be implemented before room creation and room exit are wrapped around it.
 
-## Observed timeline
+## Payload boundary
 
-- `0s-3s`: character select ready
-- `3s-4s`: click `플레이`
-- `4s-5s`: choose `지옥`
-- `5s-8s`: loading
+For now, define only the body of the run:
+
+- start after the room is already created and the character can act in town
+- finish when the target work is done and the character is back in a safe handoff state
+- keep reusable room creation and room exit outside this module
+
+Long-term wrapper shape:
+
+- create room via `run_lifecycle.create_room(...)`
+- execute the Summoner payload
+- exit room via `run_lifecycle.exit_room(...)`
+- repeat until the run budget is exhausted
+
+## Observed payload timeline
+
 - `8s-10s`: Act 1 town spawn
 - `9s-10s`: tap `ALT` once to enable item labels
 - `10s-13s`: move to waypoint and open it
@@ -23,216 +34,162 @@ Describe the observed Summoner Run as a state-based spec that can be implemented
 - `80s-84s`: click `호라존의 일지`
 - `84s-86s`: use red portal
 - `85s-86s`: Canyon arrival
-- `93s-105s`: Act 1 town again, post-run handling visible, full remake not shown before recording ends
+- `93s-105s`: Act 1 town again, post-run handling visible
 
-## Lifecycle states
+## Payload states
 
-### 1. `character_select_ready`
-
-Expected evidence:
-
-- character list visible
-- `플레이` button visible
-- correct character row already selected
-
-Success action:
-
-- click `플레이`
-
-Failure / retry:
-
-- stop if character-select screen cannot be confirmed safely
-
-### 2. `difficulty_select_ready`
+### 1. `act1_town_loaded`
 
 Expected evidence:
 
-- difficulty modal visible
-- `지옥` button visible
+- town spawn is complete
+- life and mana orbs are visible
+- movement and input are available
 
 Success action:
 
-- click `지옥`
+- prepare the run body from an in-game starting state
 
-Failure / retry:
-
-- if modal does not appear after play, retry with bounded attempts
-
-### 3. `loading_after_create`
+### 2. `labels_enabled`
 
 Expected evidence:
 
-- loading panel visible
+- dropped item labels remain visible without holding `ALT`
 
 Success action:
 
-- wait until town screen is visible
+- move toward the waypoint
 
-### 4. `act1_town_loaded`
+### 3. `waypoint_open`
 
 Expected evidence:
 
-- Rogue Encampment scene visible
-- life and mana orbs visible
-- movement/input available
+- waypoint menu is visible
+- Act tabs are available
 
 Success action:
 
-- tap `ALT` once if labels are not already enabled
+- switch to Act 2 and click `비전의 성역`
 
-### 5. `labels_enabled`
+### 4. `arcane_loaded`
 
 Expected evidence:
 
-- dropped item labels stay visible without holding `ALT`
+- Arcane Sanctuary area name or recognizable geometry is visible
 
 Success action:
 
-- move to waypoint area
+- commit to one wing and start the live coordinator loop
 
-### 6. `waypoint_open`
+### 5. `wing_search_started`
 
 Expected evidence:
 
-- waypoint panel visible
+- route progress continues along one wing
+- combat happens only when blockers or threats force it
 
 Success action:
 
-- switch to Act 2 tab
-- click `비전의 성역`
+- continue coordinator decisions until the Summoner platform is found
 
-### 7. `arcane_loaded`
+### 6. `summoner_detected`
 
 Expected evidence:
 
-- Arcane Sanctuary area name or recognizable geometry visible
+- `소환사` / Summoner platform is visible
+- boss identity or platform geometry is confidently confirmed
 
 Success action:
 
-- commit to one wing and start search
+- kill the target safely
 
-### 8. `wing_search_started`
+### 7. `summoner_killed`
 
 Expected evidence:
 
-- movement and combat along one wing
+- target is dead
+- post-kill drops are visible
 
 Success action:
 
-- clear blockers only
-- continue until Summoner platform is found
+- run the loot decision pass
 
-### 9. `summoner_detected`
+### 8. `loot_scan_complete`
 
 Expected evidence:
 
-- `소환사` / Summoner platform visible
-- boss name visible or platform geometry strongly confirmed
+- visible drops have been kept or ignored
+- `key of hate` decision is complete
 
 Success action:
 
-- kill target
+- if the journal is available, click `호라존의 일지`
 
-### 10. `summoner_killed`
+### 9. `journal_clicked`
 
 Expected evidence:
 
-- target dead
-- post-kill item labels visible
+- journal interaction succeeded
+- red portal is available
 
 Success action:
 
-- run loot scan for `key of hate`
+- enter the portal
 
-### 11. `loot_scan_complete`
+### 10. `canyon_loaded`
 
 Expected evidence:
 
-- keep-or-ignore decision made for visible drops
+- Canyon / portal destination is loaded
 
 Success action:
 
-- if no key and journal available, click `호라존의 일지`
+- return to town and settle into a safe post-run handoff state
 
-### 12. `journal_clicked`
+### 11. `post_run_complete`
 
 Expected evidence:
 
-- journal interacted with
-- red portal available
+- no target actions are pending
+- the payload is ready for the reusable room-exit wrapper
 
 Success action:
 
-- enter portal
+- hand off to room-exit logic when that wrapper is attached
 
-### 13. `canyon_loaded`
+## Coordinator behavior inside the payload
 
-Expected evidence:
+Use [run_coordination.md](run_coordination.md) for the live priority model.
 
-- Canyon / red portal destination loaded
+Inside `wing_search_started` through `loot_scan_complete`, the payload should behave like one coordinator loop that keeps watching:
 
-Success action:
+- survival and emergency actions first
+- mandatory combat second
+- safe fixed-item loot pickup third
+- route progress and search movement fourth
 
-- return to town and prepare for remake
-
-### 14. `post_run_complete`
-
-Expected evidence:
-
-- back in town with no further target actions pending
-
-Success action:
-
-- leave game
-- return to character select
-- start next run if repeat budget remains
-
-## Execution shape
-
-The future Summoner Run should be arranged as three layers:
-
-- front half: create room and enter the game safely
-- payload: perform the actual Summoner job
-- back half: leave the game and return to character select
-
-The reusable room-half logic should live in `run_lifecycle` and be imported by future runs such as Summoner Run or Diablo Run.
-
-That means the long-term flow should read like:
-
-- make room via `run_lifecycle.create_room(...)`
-- run Summoner job in the farm module
-- exit room via `run_lifecycle.exit_room(...)`
-
-Inside the Summoner payload, the job can then be split again into:
-
-- hunt
-- loot
-- act and waypoint movement
-- journal and portal handling
-- town return and finish
-
-## First implementation target
-
-Build only the room lifecycle first:
-
-- `character_select_ready`
-- `difficulty_select_ready`
-- `loading_after_create`
-- `act1_town_loaded`
-- leave game / return to character select
-- repeat until count is exhausted or user interrupts
-
-This gives a safe loop for testing room creation and remake before waypointing or combat is added.
+Do not split the middle of the run into isolated scripts that compete with each other.
 
 ## Profile resolution
 
-The Summoner payload should not depend on `run_profiles` having the active selection embedded inside it.
+The Summoner payload should resolve its own profile id, `summoner`, directly from `run_profiles`.
 
-The Summoner module should resolve its own required profile id, `summoner`, directly from `run_profiles`.
+That keeps the run catalog reusable while still letting the Summoner payload pull together:
 
-That keeps the run catalog reusable while still letting the Summoner payload pull its own hunting, loot, life, and run-specific pieces together without a shared global run selection.
+- hunting rules
+- loot rules
+- life rules
+- run-specific completion rules
 
-## Shared coordinator reference
+## Current implementation target
 
-Use [run_coordination.md](run_coordination.md) for the general live coordination model that combines hunting, combat, loot watching, and safety priority during a run.
+Organize and expose the payload structure first:
 
+- payload state list in code
+- payload summary from the `summoner` run profile
+- GUI visibility for the payload order and handoff boundary
+
+After that, add the wrapper halves:
+
+- front half: room create and game entry
+- back half: safe game exit and remake loop

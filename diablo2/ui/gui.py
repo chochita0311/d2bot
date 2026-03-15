@@ -1,8 +1,21 @@
 ﻿from __future__ import annotations
 
+import ctypes
 import os
 import sys
 from pathlib import Path
+
+
+def _configure_windows_dpi() -> None:
+    if sys.platform != "win32":
+        return
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    except Exception:
+        try:
+            ctypes.windll.user32.SetProcessDPIAware()
+        except Exception:
+            pass
 
 
 def _configure_tk_environment() -> None:
@@ -18,6 +31,7 @@ def _configure_tk_environment() -> None:
             return
 
 
+_configure_windows_dpi()
 _configure_tk_environment()
 
 import tkinter as tk
@@ -31,17 +45,24 @@ from diablo2.actions.gem_summing import GemActionEvent, GemSummingSession
 from diablo2.actions.loot_pickup import LootEvent, LootPickupSession
 from diablo2.actions.recording import RecorderEvent, RecordingSession
 from diablo2.actions.run_lifecycle import LifecycleEvent, RunLifecycleSession
+from diablo2.actions.summoner_payload import SummonerEvent, SummonerRunSession
 from diablo2.runs.summoner_run import resolve_summoner_run
 
 
 class D2BotControlPanel:
+    WINDOW_SIZE = "980x680"
+    WINDOW_MIN_SIZE = (940, 640)
+    CONTROL_PANEL_TITLE = "Diablo2 Helper"
+    PREFERRED_GAME_PATTERNS = ("diablo ii: resurrected", "diablo ii", "resurrected", "diablo2")
+
     def __init__(self, config_path: str | Path):
         self.config_path = Path(config_path)
         self.config: BotConfig = load_config(self.config_path)
         self.root = tk.Tk()
-        self.root.title("Diablo2 Control Panel")
-        self.root.geometry("1080x620")
-        self.root.minsize(920, 560)
+        self.root.title(self.CONTROL_PANEL_TITLE)
+        self.root.geometry(self.WINDOW_SIZE)
+        self.root.minsize(*self.WINDOW_MIN_SIZE)
+        self.root.resizable(True, True)
 
         self.window_title_var = tk.StringVar(value=self.config.capture.window_title or "Diablo")
         self.backend_var = tk.StringVar(value=self.config.capture.capture_backend)
@@ -55,11 +76,24 @@ class D2BotControlPanel:
         self.lifecycle_session = RunLifecycleSession(self.config.capture)
         self.gem_session = GemSummingSession(self.config.capture)
         self.loot_session = LootPickupSession(self.config)
+        self.summoner_session = SummonerRunSession(self.config)
 
         self._build_ui()
+        self._pin_window_geometry()
         self._refresh_windows(select_current=True)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(250, self._poll_events)
+
+    def _pin_window_geometry(self) -> None:
+        self.root.update_idletasks()
+        self.root.geometry(self.WINDOW_SIZE)
+        self.root.minsize(*self.WINDOW_MIN_SIZE)
+
+    def _preserve_current_geometry(self) -> None:
+        self.root.update_idletasks()
+        width = max(self.root.winfo_width(), self.WINDOW_MIN_SIZE[0])
+        height = max(self.root.winfo_height(), self.WINDOW_MIN_SIZE[1])
+        self.root.geometry(f"{width}x{height}")
 
     def _build_ui(self) -> None:
         self.root.columnconfigure(0, weight=1)
@@ -75,6 +109,7 @@ class D2BotControlPanel:
             textvariable=self.window_title_var,
             state="readonly",
             values=(),
+            width=48,
         )
         self.window_title_box.grid(row=0, column=1, sticky="ew", padx=(8, 12))
         self.window_title_box.bind("<<ComboboxSelected>>", self._use_selected_window)
@@ -183,6 +218,29 @@ class D2BotControlPanel:
         ttk.Label(footer, text="Output").grid(row=1, column=0, sticky="w", pady=(8, 0))
         ttk.Label(footer, textvariable=self.output_var).grid(row=1, column=1, sticky="w", padx=(8, 0), pady=(8, 0))
 
+    def _choose_default_window(self, titles: list[str], current_value: str) -> str | None:
+        normalized = [(title, title.casefold()) for title in titles if title.strip()]
+        non_panel = [item for item in normalized if item[1] != self.CONTROL_PANEL_TITLE.casefold()]
+
+        if current_value:
+            for title, lowered in non_panel:
+                if lowered == current_value:
+                    return title
+            for title, lowered in non_panel:
+                if current_value in lowered:
+                    return title
+
+        for pattern in self.PREFERRED_GAME_PATTERNS:
+            for title, lowered in non_panel:
+                if pattern in lowered:
+                    return title
+
+        if non_panel:
+            return non_panel[0][0]
+        if normalized:
+            return normalized[0][0]
+        return None
+
     def _validate_repeat_count(self, proposed: str) -> bool:
         return proposed.isdigit() or proposed == ""
 
@@ -201,14 +259,16 @@ class D2BotControlPanel:
             self._append_log("warning", "No visible windows found.")
             return
         if select_current:
-            current = self.window_title_var.get().casefold()
-            for title in titles:
-                if current and current in title.casefold():
-                    self.window_title_var.set(title)
-                    return
+            current = self.window_title_var.get().strip().casefold()
+            selected = self._choose_default_window(titles, current)
+            if selected is not None:
+                self.window_title_var.set(selected)
+                return
         current_value = self.window_title_var.get().strip()
         if not current_value and titles:
-            self.window_title_var.set(titles[0])
+            selected = self._choose_default_window(titles, "")
+            if selected is not None:
+                self.window_title_var.set(selected)
 
     def _use_selected_window(self, event: object | None = None) -> None:
         value = self.window_title_var.get().strip()
@@ -223,8 +283,10 @@ class D2BotControlPanel:
         self.lifecycle_session.capture_config = self.config.capture
         self.gem_session.capture_config = self.config.capture
         self.loot_session.update_config(self.config)
+        self.summoner_session.update_config(self.config)
 
     def start_recording(self) -> None:
+        self._preserve_current_geometry()
         self._apply_runtime_config()
         try:
             output_path = self.recording_session.start()
@@ -238,12 +300,14 @@ class D2BotControlPanel:
         self.stop_button.state(["!disabled"])
 
     def stop_recording(self) -> None:
+        self._preserve_current_geometry()
         self.recording_session.stop()
         self.status_var.set("Idle")
         self.record_button.state(["!disabled"])
         self.stop_button.state(["disabled"])
 
     def start_run_lifecycle(self) -> None:
+        self._preserve_current_geometry()
         self._apply_runtime_config()
         try:
             repeat_count = self._parse_repeat_count()
@@ -260,6 +324,7 @@ class D2BotControlPanel:
         self.stop_action_button.state(["!disabled"])
 
     def start_loot_pickup(self) -> None:
+        self._preserve_current_geometry()
         self._apply_runtime_config()
         try:
             self.loot_session.start()
@@ -275,13 +340,24 @@ class D2BotControlPanel:
         self.stop_action_button.state(["!disabled"])
 
     def start_key_of_hate(self) -> None:
-        self._append_log("info", "Summoner Run is ready in the UI, but the hunting loop is not implemented yet. Use Start Room Lifecycle to test create-exit-remake first.")
-        messagebox.showinfo(
-            "Summoner Run",
-            "Summoner hunting is not implemented yet.\n\nStart with Room Lifecycle to test room create, exit, and remake loops.",
-        )
+        self._preserve_current_geometry()
+        self._apply_runtime_config()
+        try:
+            resolve_summoner_run(self.config)
+            self.summoner_session.start()
+        except Exception as exc:
+            messagebox.showerror("Summoner Run Error", str(exc))
+            self._append_log("error", str(exc))
+            return
+        self.status_var.set("Summoner Run")
+        self.lifecycle_button.state(["disabled"])
+        self.loot_button.state(["disabled"])
+        self.key_button.state(["disabled"])
+        self.gem_button.state(["disabled"])
+        self.stop_action_button.state(["!disabled"])
 
     def start_gem_summing(self) -> None:
+        self._preserve_current_geometry()
         self._apply_runtime_config()
         try:
             self.gem_session.start()
@@ -297,12 +373,15 @@ class D2BotControlPanel:
         self.stop_action_button.state(["!disabled"])
 
     def stop_current_action(self) -> None:
+        self._preserve_current_geometry()
         if self.lifecycle_session.is_running:
             self.lifecycle_session.stop()
         if self.gem_session.is_running:
             self.gem_session.stop()
         if self.loot_session.is_running:
             self.loot_session.stop()
+        if self.summoner_session.is_running:
+            self.summoner_session.stop()
         self.status_var.set("Idle")
         self.lifecycle_button.state(["!disabled"])
         self.loot_button.state(["!disabled"])
@@ -311,6 +390,7 @@ class D2BotControlPanel:
         self.stop_action_button.state(["disabled"])
 
     def capture_snapshot(self) -> None:
+        self._preserve_current_geometry()
         self._apply_runtime_config()
         snapshots_dir = Path("assets") / "private"
         snapshots_dir.mkdir(parents=True, exist_ok=True)
@@ -332,13 +412,14 @@ class D2BotControlPanel:
         self._append_log("info", f"Snapshot saved: {snapshot_path.name}")
 
     def _append_log(self, level: str, message: str) -> None:
+        self._preserve_current_geometry()
         self.log_text.configure(state="normal")
         self.log_text.insert("end", f"[{level.upper()}] {message}\n")
         self.log_text.see("end")
         self.log_text.configure(state="disabled")
 
     def _refresh_action_controls(self) -> None:
-        action_running = self.lifecycle_session.is_running or self.gem_session.is_running or self.loot_session.is_running
+        action_running = self.lifecycle_session.is_running or self.gem_session.is_running or self.loot_session.is_running or self.summoner_session.is_running
         if action_running:
             self.lifecycle_button.state(["disabled"])
             self.loot_button.state(["disabled"])
@@ -377,6 +458,11 @@ class D2BotControlPanel:
             self._append_log(event.level, event.message)
             if event.level == "error":
                 self.status_var.set("Error")
+        while not self.summoner_session.events.empty():
+            event: SummonerEvent = self.summoner_session.events.get_nowait()
+            self._append_log(event.level, event.message)
+            if event.level == "error":
+                self.status_var.set("Error")
         self._refresh_action_controls()
         self.root.after(250, self._poll_events)
 
@@ -389,9 +475,12 @@ class D2BotControlPanel:
             self.gem_session.stop()
         if self.loot_session.is_running:
             self.loot_session.stop()
+        if self.summoner_session.is_running:
+            self.summoner_session.stop()
         self.root.destroy()
 
     def run(self) -> int:
+        self._pin_window_geometry()
         self.root.mainloop()
         return 0
 

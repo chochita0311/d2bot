@@ -158,7 +158,11 @@ class SummonerRunOrchestrator:
             self._thread = threading.Thread(target=self._run, args=(run_number,), daemon=True)
             self._is_running = True
             self._thread.start()
-        self.events.put(self.event_class("info", f"Summoner run started for stage make_room -> arcane_entry -> buff_before_run -> north_go (run {run_number})."))
+        self.events.put(
+            self.event_class(
+                "info", f"Summoner run started for stage make_room -> arcane_entry -> buff_before_run -> north_go (run {run_number})."
+            )
+        )
 
     def stop(self) -> None:
         self._stop_event.set()
@@ -265,7 +269,11 @@ class SummonerRunOrchestrator:
 
     def _resolve_act1_waypoint_template_path(self) -> Path:
         base = Path("assets/waypoint/act1")
-        candidates = [path for path in sorted(base.glob("*.png")) if "on_map" not in path.name and "when_hover" not in path.name and "list" not in path.name]
+        candidates = [
+            path
+            for path in sorted(base.glob("*.png"))
+            if "on_map" not in path.name and "when_hover" not in path.name and "list" not in path.name
+        ]
         if not candidates:
             raise RuntimeError("Required Act 1 waypoint template is missing.")
         return candidates[0]

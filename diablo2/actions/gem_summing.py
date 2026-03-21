@@ -194,7 +194,9 @@ class GemSummingSession:
             target = capture.target
             stash_match = self._locate_template(initial_packet.frame, self._stash_template, self.MATCH_THRESHOLD)
             if stash_match is None:
-                raise RuntimeError("Could not find the opened gem stash panel in the starting screen. Open stash + cube first, then start again.")
+                raise RuntimeError(
+                    "Could not find the opened gem stash panel in the starting screen. Open stash + cube first, then start again."
+                )
 
             cube_button_match = self._locate_best_template(
                 initial_packet.frame,
@@ -202,7 +204,9 @@ class GemSummingSession:
                 self.BUTTON_MATCH_THRESHOLD,
             )
             if cube_button_match is None:
-                raise RuntimeError("Could not find the Horadric Cube transmute button in the starting screen. Open stash + cube first, then start again.")
+                raise RuntimeError(
+                    "Could not find the Horadric Cube transmute button in the starting screen. Open stash + cube first, then start again."
+                )
 
             self._click_relative(capture, stash_match, *self.GEM_TAB_POINT)
             self._sleep_range(*self.UI_SETTLE_SLEEP)
@@ -402,10 +406,7 @@ class GemSummingSession:
                         resolved[row][col] = tracked_value
                         corrected_slots.append((row, col, tracked_value, reread_value))
             if corrected_slots:
-                labels = ", ".join(
-                    f"{self.LEVEL_NAMES[row]} {self.GEM_NAMES[col]} {old}->{new}"
-                    for row, col, old, new in corrected_slots
-                )
+                labels = ", ".join(f"{self.LEVEL_NAMES[row]} {self.GEM_NAMES[col]} {old}->{new}" for row, col, old, new in corrected_slots)
                 self.events.put(GemActionEvent("warning", f"Count resync kept tracked values on {len(corrected_slots)} slot(s): {labels}"))
 
         if invalid_slots:
@@ -441,13 +442,14 @@ class GemSummingSession:
 
     def _read_count_value(self, crop: np.ndarray) -> tuple[int, float]:
         processed_variants = self._preprocess_count_crop(crop)
-        ones_digit, ones_score, ones_scores = self._classify_digit_variants(processed_variants, self._ones_templates, self.RIGHT_DIGIT_START)
-        tens_digit, tens_score, tens_scores = self._classify_digit_variants(processed_variants, self._tens_templates, 0, self.LEFT_DIGIT_WIDTH)
-        blank_score = self._classify_blank_left(processed_variants)
-        tens_present = (
-            tens_score > blank_score + self.TENS_MARGIN_SCORE
-            and (tens_score - self._second_best_score(tens_scores)) >= 0.02
+        ones_digit, ones_score, ones_scores = self._classify_digit_variants(
+            processed_variants, self._ones_templates, self.RIGHT_DIGIT_START
         )
+        tens_digit, tens_score, tens_scores = self._classify_digit_variants(
+            processed_variants, self._tens_templates, 0, self.LEFT_DIGIT_WIDTH
+        )
+        blank_score = self._classify_blank_left(processed_variants)
+        tens_present = tens_score > blank_score + self.TENS_MARGIN_SCORE and (tens_score - self._second_best_score(tens_scores)) >= 0.02
         value = int(f"{tens_digit}{ones_digit}") if tens_present else int(ones_digit)
         ones_margin = ones_score - self._second_best_score(ones_scores)
         left_margin = (tens_score - max(blank_score, self._second_best_score(tens_scores))) if tens_present else (blank_score - tens_score)

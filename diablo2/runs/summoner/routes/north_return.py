@@ -5,7 +5,5 @@ ROUTE_SEGMENT = RunRouteSegment(
     label="north way return",
     direction="return",
     status="planned",
-    notes=(
-        "Return path organizer is reserved here but not implemented yet.",
-    ),
+    notes=("Return path organizer is reserved here but not implemented yet.",),
 )

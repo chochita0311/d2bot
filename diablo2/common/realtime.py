@@ -117,8 +117,12 @@ class RealtimeVisionRuntime:
     def start(self) -> None:
         self._threads = [
             threading.Thread(target=self._capture_loop, name="d2-capture", daemon=True),
-            threading.Thread(target=self._vision_loop, args=("fast", self.fast_vision_fn, self.fast_interval), name="d2-fast-vision", daemon=True),
-            threading.Thread(target=self._vision_loop, args=("slow", self.slow_vision_fn, self.slow_interval), name="d2-slow-vision", daemon=True),
+            threading.Thread(
+                target=self._vision_loop, args=("fast", self.fast_vision_fn, self.fast_interval), name="d2-fast-vision", daemon=True
+            ),
+            threading.Thread(
+                target=self._vision_loop, args=("slow", self.slow_vision_fn, self.slow_interval), name="d2-slow-vision", daemon=True
+            ),
             threading.Thread(target=self._decision_loop, name="d2-decision", daemon=True),
         ]
         for thread in self._threads:

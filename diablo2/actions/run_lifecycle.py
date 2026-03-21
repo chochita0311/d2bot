@@ -72,9 +72,7 @@ class RunLifecycleSession:
 
         self._character_select_template = self._load_image(self.CHARACTER_SELECT_TEMPLATE_PATH)
         self._difficulty_template = self._load_image(self.DIFFICULTY_TEMPLATE_PATH)
-        self._difficulty_button_templates = {
-            name: self._load_image(path) for name, path in self.DIFFICULTY_BUTTON_TEMPLATE_PATHS.items()
-        }
+        self._difficulty_button_templates = {name: self._load_image(path) for name, path in self.DIFFICULTY_BUTTON_TEMPLATE_PATHS.items()}
         self._loading_template = self._load_image(self.LOADING_TEMPLATE_PATH)
         self._exit_template = self._load_image(self.EXIT_TEMPLATE_PATH)
 
@@ -95,7 +93,9 @@ class RunLifecycleSession:
             self._thread.start()
         loop_text = "until stopped" if repeat_count is None else f"for {repeat_count} run(s)"
         difficulty_label = {"normal": "Normal", "nightmare": "Nightmare", "hell": "Hell"}[self._difficulty]
-        self.events.put(LifecycleEvent("info", f"Run lifecycle started {loop_text} on {difficulty_label}. Press {self.STOP_HOTKEY.upper()} to stop."))
+        self.events.put(
+            LifecycleEvent("info", f"Run lifecycle started {loop_text} on {difficulty_label}. Press {self.STOP_HOTKEY.upper()} to stop.")
+        )
 
     def stop(self) -> None:
         self._stop_event.set()
@@ -162,7 +162,9 @@ class RunLifecycleSession:
         self._press_key("esc")
         self._wait_for_template(capture, self._exit_template, self.EXIT_THRESHOLD, 8.0, "exit menu")
         self._click_relative(capture, self.SAVE_AND_EXIT_POINT)
-        self._wait_for_template(capture, self._character_select_template, self.CHARACTER_SELECT_THRESHOLD, 20.0, "character select after exit")
+        self._wait_for_template(
+            capture, self._character_select_template, self.CHARACTER_SELECT_THRESHOLD, 20.0, "character select after exit"
+        )
 
     def _focus_game_window(self, capture: ScreenCapture) -> None:
         window = resolve_window_from_config(self.capture_config)

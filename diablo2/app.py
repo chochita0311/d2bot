@@ -47,10 +47,7 @@ def main() -> int:
     args = build_parser().parse_args()
     if args.list_windows:
         for window in list_windows():
-            _safe_print(
-                f"{window.title} | left={window.left} top={window.top} "
-                f"width={window.width} height={window.height}"
-            )
+            _safe_print(f"{window.title} | left={window.left} top={window.top} " f"width={window.width} height={window.height}")
         return 0
 
     if not args.cli:

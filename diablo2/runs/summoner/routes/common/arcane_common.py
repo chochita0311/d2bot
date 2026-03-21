@@ -83,7 +83,9 @@ def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
     session._arcane_summoner_north_template = session._load_optional_image(ARCANE_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north Summoner")
-    session._arcane_without_summoner_north_template = session._load_optional_image(ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north without-Summoner")
+    session._arcane_without_summoner_north_template = session._load_optional_image(
+        ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north without-Summoner"
+    )
     session._arcane_north_way_template = session._load_image(ARCANE_NORTH_WAY_TEMPLATE_PATH)
     session._arcane_horazon_journal_template = session._load_image(ARCANE_HORAZON_JOURNAL_TEMPLATE_PATH)
     session._arcane_summoner_location_template = session._load_image(ARCANE_SUMMONER_LOCATION_TEMPLATE_PATH)
@@ -105,10 +107,14 @@ def run_arcane_pre_run_buffs(session) -> None:
         session.events.put(session.event_class("info", "Summoner: no character action profile is configured; skipping Arcane entry buffs."))
         return
     if not actions.pre_run_buff_order:
-        session.events.put(session.event_class("info", "Summoner: character has no pre-run buff order configured; skipping Arcane entry buffs."))
+        session.events.put(
+            session.event_class("info", "Summoner: character has no pre-run buff order configured; skipping Arcane entry buffs.")
+        )
         return
 
-    session.events.put(session.event_class("info", f"Summoner: replaying {len(actions.pre_run_buff_order)} configured Arcane entry buff action(s)."))
+    session.events.put(
+        session.event_class("info", f"Summoner: replaying {len(actions.pre_run_buff_order)} configured Arcane entry buff action(s).")
+    )
     for index, token in enumerate(actions.pre_run_buff_order, start=1):
         session.events.put(session.event_class("info", f"Summoner: Arcane buff step {index}/{len(actions.pre_run_buff_order)} -> {token}."))
         execute_configured_action(session, token)
@@ -131,15 +137,27 @@ def sleep_after_buff_action(session, actions, token: str) -> None:
 
 def run_arcane_controller(session, capture) -> None:
     state = build_initial_arcane_belief_state()
-    session.events.put(session.event_class("info", "Summoner: Arcane controller initialized at the hub; fixed wing order is north -> east -> south -> west."))
-    session.events.put(session.event_class("info", "Summoner: Arcane wing angle mapping is north=2 o'clock, east=4 o'clock, south=8 o'clock, west=10 o'clock."))
+    session.events.put(
+        session.event_class(
+            "info", "Summoner: Arcane controller initialized at the hub; fixed wing order is north -> east -> south -> west."
+        )
+    )
+    session.events.put(
+        session.event_class(
+            "info", "Summoner: Arcane wing angle mapping is north=2 o'clock, east=4 o'clock, south=8 o'clock, west=10 o'clock."
+        )
+    )
     log_arcane_state(session, state)
     next_wing = peek_next_arcane_wing(state)
     if next_wing is None:
         session.events.put(session.event_class("info", "Summoner: no Arcane wings remain to search."))
         return
     commit_arcane_wing(state, next_wing)
-    session.events.put(session.event_class("info", f"Summoner: committed to Arcane wing '{next_wing.key}' ({next_wing.clock_label}) as the first search branch."))
+    session.events.put(
+        session.event_class(
+            "info", f"Summoner: committed to Arcane wing '{next_wing.key}' ({next_wing.clock_label}) as the first search branch."
+        )
+    )
     log_arcane_state(session, state)
 
 
@@ -172,7 +190,12 @@ def log_arcane_state(session, state: ArcaneBeliefState) -> None:
     current = state.current_wing or "none"
     checked = ", ".join(state.checked_wings) if state.checked_wings else "none"
     remaining = ", ".join(state.remaining_wings) if state.remaining_wings else "none"
-    session.events.put(session.event_class("info", f"Summoner: Arcane state phase={state.phase}, current_wing={current}, checked={checked}, remaining={remaining}, anchor={state.last_safe_anchor}, danger={state.danger_level}."))
+    session.events.put(
+        session.event_class(
+            "info",
+            f"Summoner: Arcane state phase={state.phase}, current_wing={current}, checked={checked}, remaining={remaining}, anchor={state.last_safe_anchor}, danger={state.danger_level}.",
+        )
+    )
 
 
 def load_arcane_monster_templates(session) -> dict[str, np.ndarray]:

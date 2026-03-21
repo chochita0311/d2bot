@@ -50,9 +50,7 @@ class RecordingSession:
             self._thread = threading.Thread(target=self._run, daemon=True)
             self._is_running = True
             self._thread.start()
-            self.events.put(
-                RecorderEvent("info", f"Recording started: {self._output_path.name}")
-            )
+            self.events.put(RecorderEvent("info", f"Recording started: {self._output_path.name}"))
             return self._output_path
 
     def stop(self) -> None:

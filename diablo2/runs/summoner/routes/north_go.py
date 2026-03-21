@@ -158,22 +158,32 @@ def run_arcane_north_go(session, capture) -> None:
         if slow_payload is not None and slow_payload["north_terminal"] is not None:
             terminal = slow_payload["north_terminal"]
             if terminal == "summoner":
-                session.events.put(session.event_class("info", "Arcane North Test: detected north dead end with Summoner layout; stopping north run here."))
+                session.events.put(
+                    session.event_class("info", "Arcane North Test: detected north dead end with Summoner layout; stopping north run here.")
+                )
             else:
-                session.events.put(session.event_class("info", "Arcane North Test: detected north dead end without Summoner; stopping north run here."))
+                session.events.put(
+                    session.event_class("info", "Arcane North Test: detected north dead end without Summoner; stopping north run here.")
+                )
             session.request_stop()
             return {"status": "terminal", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if slow_payload is not None and slow_payload["monster_hit"] is not None:
             if now - control["last_monster_log_at"] >= 0.35:
-                session.events.put(session.event_class("info", f"Arcane North Test: monster detected during run -> {slow_payload['monster_hit']}."))
+                session.events.put(
+                    session.event_class("info", f"Arcane North Test: monster detected during run -> {slow_payload['monster_hit']}.")
+                )
                 control["last_monster_log_at"] = now
             control["pause_until"] = max(control["pause_until"], now + random.uniform(*ARCANE_NORTH_TEST_TICK_SLEEP))
             return {"status": "pause_monster", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if slow_payload is not None and slow_payload["loot_label"] is not None:
             if now - control["last_loot_log_at"] >= 0.35:
-                session.events.put(session.event_class("info", f"Arcane North Test: loot remains visible, delaying north movement for {slow_payload['loot_label']}."))
+                session.events.put(
+                    session.event_class(
+                        "info", f"Arcane North Test: loot remains visible, delaying north movement for {slow_payload['loot_label']}."
+                    )
+                )
                 control["last_loot_log_at"] = now
             control["pause_until"] = max(control["pause_until"], now + random.uniform(*ARCANE_NORTH_TEST_TICK_SLEEP))
             return {"status": "pause_loot", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
@@ -197,32 +207,84 @@ def run_arcane_north_go(session, capture) -> None:
             control["star_ticks"] = control["star_ticks"] + 1 if fast_payload["star_detected"] else 0
 
         if path_stage == 0 and first_fork_change is not None:
-            control["first_fork_stagnant_ticks"] = control["first_fork_stagnant_ticks"] + 1 if first_fork_change < ARCANE_FIRST_FORK_PROGRESS_THRESHOLD else 0
+            control["first_fork_stagnant_ticks"] = (
+                control["first_fork_stagnant_ticks"] + 1 if first_fork_change < ARCANE_FIRST_FORK_PROGRESS_THRESHOLD else 0
+            )
             if control["first_fork_stagnant_ticks"] >= ARCANE_FIRST_FORK_STAGNANT_LIMIT:
                 control["first_fork_stagnant_ticks"] = 0
                 control["second_fork_stagnant_ticks"] = 0
                 control["star_ticks"] = 0
                 control["stagnant_ticks"] = 0
-                control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"] = _advance_arcane_path_stage(session, control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"], "upper-right corner stabilized")
+                (
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                ) = _advance_arcane_path_stage(
+                    session,
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                    "upper-right corner stabilized",
+                )
                 control["pending_stage_repress"] = True
         elif path_stage == 1 and second_fork_change is not None:
-            control["second_fork_stagnant_ticks"] = control["second_fork_stagnant_ticks"] + 1 if second_fork_change < ARCANE_SECOND_FORK_PROGRESS_THRESHOLD else 0
+            control["second_fork_stagnant_ticks"] = (
+                control["second_fork_stagnant_ticks"] + 1 if second_fork_change < ARCANE_SECOND_FORK_PROGRESS_THRESHOLD else 0
+            )
             if control["second_fork_stagnant_ticks"] >= ARCANE_SECOND_FORK_STAGNANT_LIMIT:
                 control["second_fork_stagnant_ticks"] = 0
                 control["star_ticks"] = 0
                 control["stagnant_ticks"] = 0
-                control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"] = _advance_arcane_path_stage(session, control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"], "upper-left corner stabilized")
+                (
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                ) = _advance_arcane_path_stage(
+                    session,
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                    "upper-left corner stabilized",
+                )
                 control["pending_stage_repress"] = True
         elif control["star_ticks"] >= ARCANE_STAR_STAGNANT_LIMIT:
             control["star_ticks"] = 0
             control["stagnant_ticks"] = 0
-            control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"] = _advance_arcane_path_stage(session, control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"], "star dead-end detected")
+            (
+                control["path_stage"],
+                control["path_stage_move_ticks"],
+                control["effective_stage_move_ticks"],
+                control["observed_branch_span_ticks"],
+            ) = _advance_arcane_path_stage(
+                session,
+                control["path_stage"],
+                control["path_stage_move_ticks"],
+                control["effective_stage_move_ticks"],
+                control["observed_branch_span_ticks"],
+                "star dead-end detected",
+            )
             control["pending_stage_repress"] = True
         elif frame_change is not None:
             control["stagnant_ticks"] = control["stagnant_ticks"] + 1 if frame_change < ARCANE_PROGRESS_CHANGE_THRESHOLD else 0
             if control["stagnant_ticks"] >= ARCANE_PROGRESS_STAGNANT_LIMIT:
                 control["stagnant_ticks"] = 0
-                control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"] = _advance_arcane_path_stage(session, control["path_stage"], control["path_stage_move_ticks"], control["effective_stage_move_ticks"], control["observed_branch_span_ticks"], "low frame change detected")
+                (
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                ) = _advance_arcane_path_stage(
+                    session,
+                    control["path_stage"],
+                    control["path_stage_move_ticks"],
+                    control["effective_stage_move_ticks"],
+                    control["observed_branch_span_ticks"],
+                    "low frame change detected",
+                )
                 control["pending_stage_repress"] = True
 
         control["north_steps"] += 1
@@ -279,7 +341,14 @@ def run_arcane_north_go(session, capture) -> None:
             )
         )
         session._sleep_range(*ARCANE_MOVE_STEP_SETTLE)
-        return {"status": "move", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms, "path_stage": control["path_stage"], "final_ratio": final_ratio}
+        return {
+            "status": "move",
+            "frame_age_ms": frame_age_ms,
+            "fast_age_ms": fast_age_ms,
+            "slow_age_ms": slow_age_ms,
+            "path_stage": control["path_stage"],
+            "final_ratio": final_ratio,
+        }
 
     runtime = RealtimeVisionRuntime(
         session.config.capture,
@@ -305,13 +374,17 @@ def run_arcane_north_go(session, capture) -> None:
     session.events.put(session.event_class("info", "Arcane North Test: stopped."))
 
 
-def _steer_arcane_movement(session, capture_target, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int, teleporter_hover_detected: bool = False) -> tuple[float, float]:
+def _steer_arcane_movement(
+    session, capture_target, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int, teleporter_hover_detected: bool = False
+) -> tuple[float, float]:
     floor_ratio = base_ratio if path_stage >= 3 else _resolve_arcane_floor_guided_ratio(session, frame, base_ratio, path_stage)
     session._aim_relative_ratio(capture_target, *floor_ratio, apply_jitter=False)
     session._sleep_range(*session.CLICK_SETTLE)
     if not teleporter_hover_detected:
         return floor_ratio
-    session.events.put(session.event_class("info", "Arcane North Test: teleporter hover detected while steering; nudging cursor beside it."))
+    session.events.put(
+        session.event_class("info", "Arcane North Test: teleporter hover detected while steering; nudging cursor beside it.")
+    )
     for offset in ARCANE_TELEPORTER_NUDGE_OFFSETS:
         nudged_ratio = session._apply_offset(floor_ratio, offset)
         session._aim_relative_ratio(capture_target, *nudged_ratio, apply_jitter=False)
@@ -320,7 +393,9 @@ def _steer_arcane_movement(session, capture_target, frame: np.ndarray, base_rati
     return floor_ratio
 
 
-def _resolve_arcane_floor_guided_ratio(session, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int = 0) -> tuple[float, float]:
+def _resolve_arcane_floor_guided_ratio(
+    session, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int = 0
+) -> tuple[float, float]:
     best_ratio = base_ratio
     best_score = -1.0
     offsets = ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS if path_stage >= 3 else ARCANE_FLOOR_CANDIDATE_OFFSETS
@@ -354,24 +429,52 @@ def _score_arcane_floor_at_ratio(session, frame: np.ndarray, ratio: tuple[float,
     return _score_arcane_floor_patch(patch)
 
 
-def _resolve_arcane_north_cursor_ratio(session, frame: np.ndarray, path_stage: int, effective_stage_move_ticks: int, observed_branch_span_ticks: int | None, north_way_detected: bool | None = None, upper_right_floor_visible: bool | None = None) -> tuple[float, float]:
+def _resolve_arcane_north_cursor_ratio(
+    session,
+    frame: np.ndarray,
+    path_stage: int,
+    effective_stage_move_ticks: int,
+    observed_branch_span_ticks: int | None,
+    north_way_detected: bool | None = None,
+    upper_right_floor_visible: bool | None = None,
+) -> tuple[float, float]:
     if path_stage <= 0:
         return ARCANE_NORTH_CURSOR_RATIO
     if path_stage == 1:
         return ARCANE_NEXT_PATH_CURSOR_RATIO
     if path_stage == 2:
         return ARCANE_RETURN_NORTH_CURSOR_RATIO
-    return _resolve_arcane_final_stage_ratio(session, frame, effective_stage_move_ticks, observed_branch_span_ticks, north_way_detected=north_way_detected, upper_right_floor_visible=upper_right_floor_visible)
+    return _resolve_arcane_final_stage_ratio(
+        session,
+        frame,
+        effective_stage_move_ticks,
+        observed_branch_span_ticks,
+        north_way_detected=north_way_detected,
+        upper_right_floor_visible=upper_right_floor_visible,
+    )
 
 
-def _resolve_arcane_final_stage_ratio(session, frame: np.ndarray, effective_stage_move_ticks: int, observed_branch_span_ticks: int | None, north_way_detected: bool | None = None, upper_right_floor_visible: bool | None = None) -> tuple[float, float]:
+def _resolve_arcane_final_stage_ratio(
+    session,
+    frame: np.ndarray,
+    effective_stage_move_ticks: int,
+    observed_branch_span_ticks: int | None,
+    north_way_detected: bool | None = None,
+    upper_right_floor_visible: bool | None = None,
+) -> tuple[float, float]:
     four_oclock_ratio = _resolve_arcane_floor_guided_ratio(session, frame, ARCANE_FOUR_OCLOCK_CURSOR_RATIO, 3)
     if effective_stage_move_ticks >= ARCANE_FINAL_STAGE_MIN_FOUR_OCLOCK_TICKS:
         north_way_ready = _detect_arcane_final_north_way(session, frame) if north_way_detected is None else north_way_detected
-        upper_right_ready = _detect_arcane_final_upper_right_floor(session, frame) if upper_right_floor_visible is None else upper_right_floor_visible
+        upper_right_ready = (
+            _detect_arcane_final_upper_right_floor(session, frame) if upper_right_floor_visible is None else upper_right_floor_visible
+        )
         if north_way_ready or upper_right_ready:
             return _resolve_arcane_floor_guided_ratio(session, frame, ARCANE_FINAL_NORTH_BEND_CURSOR_RATIO, 2)
-    travel_budget = min(observed_branch_span_ticks, ARCANE_FINAL_STAGE_TRAVEL_TICKS) if observed_branch_span_ticks is not None else ARCANE_FINAL_STAGE_TRAVEL_TICKS
+    travel_budget = (
+        min(observed_branch_span_ticks, ARCANE_FINAL_STAGE_TRAVEL_TICKS)
+        if observed_branch_span_ticks is not None
+        else ARCANE_FINAL_STAGE_TRAVEL_TICKS
+    )
     if effective_stage_move_ticks < travel_budget:
         return four_oclock_ratio
     final_north_ratio = _resolve_arcane_floor_guided_ratio(session, frame, ARCANE_FINAL_NORTH_BEND_CURSOR_RATIO, 2)
@@ -380,7 +483,14 @@ def _resolve_arcane_final_stage_ratio(session, frame: np.ndarray, effective_stag
     return ARCANE_FINAL_NORTH_BEND_CURSOR_RATIO
 
 
-def _advance_arcane_path_stage(session, path_stage: int, path_stage_move_ticks: int, effective_stage_move_ticks: int, observed_branch_span_ticks: int | None, reason: str) -> tuple[int, int, int, int | None]:
+def _advance_arcane_path_stage(
+    session,
+    path_stage: int,
+    path_stage_move_ticks: int,
+    effective_stage_move_ticks: int,
+    observed_branch_span_ticks: int | None,
+    reason: str,
+) -> tuple[int, int, int, int | None]:
     if path_stage >= 3:
         return path_stage, path_stage_move_ticks, effective_stage_move_ticks, observed_branch_span_ticks
     next_stage = path_stage + 1
@@ -389,7 +499,9 @@ def _advance_arcane_path_stage(session, path_stage: int, path_stage_move_ticks: 
     detail = ""
     if observed_branch_span_ticks is not None and next_stage >= 3:
         detail = f" (using final travel budget {min(observed_branch_span_ticks, ARCANE_FINAL_STAGE_TRAVEL_TICKS)} tick(s) after trim)"
-    session.events.put(session.event_class("info", f"Arcane North Test: {reason}, advancing path aim to {_arcane_path_stage_label(next_stage)}.{detail}"))
+    session.events.put(
+        session.event_class("info", f"Arcane North Test: {reason}, advancing path aim to {_arcane_path_stage_label(next_stage)}.{detail}")
+    )
     return next_stage, 0, 0, observed_branch_span_ticks
 
 
@@ -409,7 +521,7 @@ def _detect_arcane_dead_end_star(session, frame: np.ndarray) -> bool:
 
 def _arcane_upper_right_floor_score(session, frame: np.ndarray) -> float:
     height, width = frame.shape[:2]
-    patch = frame[0:max(1, height // 4), (width * 3) // 4:width]
+    patch = frame[0 : max(1, height // 4), (width * 3) // 4 : width]
     if patch.size == 0:
         return -1.0
     return _score_arcane_floor_patch(patch)
@@ -427,17 +539,27 @@ def _detect_arcane_final_north_way(session, frame: np.ndarray) -> bool:
 
 
 def _detect_arcane_north_terminal(session, frame: np.ndarray) -> str | None:
-    if session._arcane_summoner_north_template is not None and session._locate_template(frame, session._arcane_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None:
+    if (
+        session._arcane_summoner_north_template is not None
+        and session._locate_template(frame, session._arcane_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None
+    ):
         return "summoner"
     if _detect_arcane_summoner_clues(session, frame):
         return "summoner"
-    if session._arcane_without_summoner_north_template is not None and session._locate_template(frame, session._arcane_without_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None:
+    if (
+        session._arcane_without_summoner_north_template is not None
+        and session._locate_template(frame, session._arcane_without_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None
+    ):
         return "without_summoner"
     return None
 
 
 def _detect_arcane_summoner_clues(session, frame: np.ndarray) -> bool:
-    for template in (session._arcane_horazon_journal_template, session._arcane_summoner_location_template, session._arcane_summoner_location_background_template):
+    for template in (
+        session._arcane_horazon_journal_template,
+        session._arcane_summoner_location_template,
+        session._arcane_summoner_location_background_template,
+    ):
         if session._locate_template(frame, template, ARCANE_SUMMONER_CLUE_THRESHOLD) is not None:
             return True
     return False
@@ -459,7 +581,9 @@ def _measure_arcane_first_fork_change(session, previous_frame: np.ndarray | None
     return float(cv.absdiff(prev_small, curr_small).mean())
 
 
-def _measure_arcane_progress_change(session, previous_frame: np.ndarray | None, current_frame: np.ndarray, path_stage: int = 0) -> float | None:
+def _measure_arcane_progress_change(
+    session, previous_frame: np.ndarray | None, current_frame: np.ndarray, path_stage: int = 0
+) -> float | None:
     if previous_frame is None:
         return None
     prev_small = cv.resize(cv.cvtColor(_arcane_progress_roi(previous_frame, path_stage), cv.COLOR_BGR2GRAY), (160, 90))
@@ -482,16 +606,16 @@ def _measure_arcane_progress_trend(recent_frames: tuple, path_stage: int) -> flo
 
 def _arcane_second_fork_roi(frame: np.ndarray) -> np.ndarray:
     height, width = frame.shape[:2]
-    return frame[0:max(1, height // 4), 0:max(1, width // 4)]
+    return frame[0 : max(1, height // 4), 0 : max(1, width // 4)]
 
 
 def _arcane_first_fork_roi(frame: np.ndarray) -> np.ndarray:
     height, width = frame.shape[:2]
-    return frame[0:max(1, height // 4), (width * 3) // 4:width]
+    return frame[0 : max(1, height // 4), (width * 3) // 4 : width]
 
 
 def _arcane_progress_roi(frame: np.ndarray, path_stage: int = 0) -> np.ndarray:
     height, width = frame.shape[:2]
     if path_stage >= 3:
-        return frame[0:max(1, height // 3), (width * 2) // 3:width]
-    return frame[int(height * 0.08):int(height * 0.82), int(width * 0.08):int(width * 0.92)]
+        return frame[0 : max(1, height // 3), (width * 2) // 3 : width]
+    return frame[int(height * 0.08) : int(height * 0.82), int(width * 0.08) : int(width * 0.92)]

@@ -76,20 +76,14 @@ class ScreenCapture:
     def _resolve_window(self) -> WindowInfo:
         window = find_window(self.config.window_title, self.config.window_title_mode)
         if window is None:
-            raise RuntimeError(
-                f"Could not find window with title "
-                f"{self.config.window_title_mode} '{self.config.window_title}'."
-            )
+            raise RuntimeError(f"Could not find window with title " f"{self.config.window_title_mode} '{self.config.window_title}'.")
         return window
 
     def _resolve_target(self) -> dict[str, int]:
         if self.config.window_title:
             window = find_window(self.config.window_title, self.config.window_title_mode)
             if window is None:
-                raise RuntimeError(
-                    f"Could not find window with title "
-                    f"{self.config.window_title_mode} '{self.config.window_title}'."
-                )
+                raise RuntimeError(f"Could not find window with title " f"{self.config.window_title_mode} '{self.config.window_title}'.")
             return {
                 "left": window.left,
                 "top": window.top,
@@ -215,7 +209,6 @@ def _release_capture_objects(hwnd: int, hwnd_dc: int, mem_dc: int, bitmap: int, 
         USER32.ReleaseDC(hwnd, hwnd_dc)
 
 
-
 def focus_window(window: WindowInfo) -> bool:
     hwnd = window.handle
     USER32.ShowWindow(hwnd, SW_RESTORE)
@@ -261,6 +254,7 @@ def resolve_window_from_config(config: CaptureConfig) -> WindowInfo | None:
     if not config.window_title:
         return None
     return find_window(config.window_title, config.window_title_mode)
+
 
 def list_windows() -> list[WindowInfo]:
     windows: list[WindowInfo] = []

@@ -51,7 +51,9 @@ class RunDefinition:
             if hunting.waypoint_act and hunting.waypoint_name
             else "(not configured)"
         )
-        active_route = ", ".join(segment.label for segment in self.route_segments if segment.status == "ready") or "(route pieces not ready)"
+        active_route = (
+            ", ".join(segment.label for segment in self.route_segments if segment.status == "ready") or "(route pieces not ready)"
+        )
         ports = ", ".join(port.key for port in (*self.decision_ports, *self.shared_ports)) or "(none yet)"
         return [
             f"goal: {self.profile.goal}",

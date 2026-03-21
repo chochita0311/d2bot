@@ -21,13 +21,13 @@ def _configure_windows_dpi() -> None:
 def _configure_tk_environment() -> None:
     base_root = Path(sys.base_prefix)
     candidates = [
-        (base_root / 'tcl' / 'tcl8.6', base_root / 'tcl' / 'tk8.6'),
-        (base_root / 'Library' / 'lib' / 'tcl8.6', base_root / 'Library' / 'lib' / 'tk8.6'),
+        (base_root / "tcl" / "tcl8.6", base_root / "tcl" / "tk8.6"),
+        (base_root / "Library" / "lib" / "tcl8.6", base_root / "Library" / "lib" / "tk8.6"),
     ]
     for tcl_path, tk_path in candidates:
         if tcl_path.exists() and tk_path.exists():
-            os.environ.setdefault('TCL_LIBRARY', str(tcl_path))
-            os.environ.setdefault('TK_LIBRARY', str(tk_path))
+            os.environ.setdefault("TCL_LIBRARY", str(tcl_path))
+            os.environ.setdefault("TK_LIBRARY", str(tk_path))
             return
 
 
@@ -135,13 +135,9 @@ class D2BotControlPanel:
         self.stop_button.grid(row=0, column=1, sticky="ew", padx=8)
         self.stop_button.state(["disabled"])
 
-        ttk.Button(recording_actions, text="Capture Snapshot", command=self.capture_snapshot).grid(
-            row=0, column=2, sticky="ew", padx=8
-        )
+        ttk.Button(recording_actions, text="Capture Snapshot", command=self.capture_snapshot).grid(row=0, column=2, sticky="ew", padx=8)
 
-        ttk.Button(recording_actions, text="Refresh Windows", command=self._refresh_windows).grid(
-            row=0, column=3, sticky="ew", padx=(8, 0)
-        )
+        ttk.Button(recording_actions, text="Refresh Windows", command=self._refresh_windows).grid(row=0, column=3, sticky="ew", padx=(8, 0))
 
         main = ttk.Frame(self.root, padding=(16, 0, 16, 16))
         main.grid(row=2, column=0, sticky="nsew")
@@ -191,9 +187,15 @@ class D2BotControlPanel:
 
         difficulty_options = ttk.Frame(difficulty_box, padding=(8, 8, 8, 6))
         difficulty_options.grid(row=1, column=0, columnspan=2, sticky="ew")
-        ttk.Radiobutton(difficulty_options, text="\ubcf4\ud1b5", value="normal", variable=self.difficulty_var).grid(row=0, column=0, sticky="w")
-        ttk.Radiobutton(difficulty_options, text="\uc545\ubabd", value="nightmare", variable=self.difficulty_var).grid(row=0, column=1, sticky="w", padx=(12, 0))
-        ttk.Radiobutton(difficulty_options, text="\uc9c0\uc625", value="hell", variable=self.difficulty_var).grid(row=0, column=2, sticky="w", padx=(12, 0))
+        ttk.Radiobutton(difficulty_options, text="\ubcf4\ud1b5", value="normal", variable=self.difficulty_var).grid(
+            row=0, column=0, sticky="w"
+        )
+        ttk.Radiobutton(difficulty_options, text="\uc545\ubabd", value="nightmare", variable=self.difficulty_var).grid(
+            row=0, column=1, sticky="w", padx=(12, 0)
+        )
+        ttk.Radiobutton(difficulty_options, text="\uc9c0\uc625", value="hell", variable=self.difficulty_var).grid(
+            row=0, column=2, sticky="w", padx=(12, 0)
+        )
         ttk.Separator(difficulty_box, orient="horizontal").grid(row=2, column=0, columnspan=2, sticky="ew")
 
         self.key_button = ttk.Button(play_panel, text="Summoner Run", command=self.start_key_of_hate)
@@ -442,7 +444,12 @@ class D2BotControlPanel:
         self.log_text.configure(state="disabled")
 
     def _refresh_action_controls(self) -> None:
-        action_running = self.lifecycle_session.is_running or self.gem_session.is_running or self.loot_session.is_running or self.summoner_session.is_running
+        action_running = (
+            self.lifecycle_session.is_running
+            or self.gem_session.is_running
+            or self.loot_session.is_running
+            or self.summoner_session.is_running
+        )
         if action_running:
             self.lifecycle_button.state(["disabled"])
             self.loot_button.state(["disabled"])

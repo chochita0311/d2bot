@@ -84,4 +84,3 @@ class DiabloBot:
             cv.destroyAllWindows()
 
         return 0
-

@@ -192,7 +192,9 @@ def click_relative_ratio(session, capture, ratio_x: float, ratio_y: float, apply
     sleep_range(session, *session.ACTION_SLEEP)
 
 
-def hold_move_relative_ratio(session, capture, ratio_x: float, ratio_y: float, hold_seconds: tuple[float, float], apply_jitter: bool = True) -> None:
+def hold_move_relative_ratio(
+    session, capture, ratio_x: float, ratio_y: float, hold_seconds: tuple[float, float], apply_jitter: bool = True
+) -> None:
     abs_x = capture.target["left"] + int(capture.target["width"] * ratio_x)
     abs_y = capture.target["top"] + int(capture.target["height"] * ratio_y)
     if apply_jitter:
@@ -219,7 +221,9 @@ def hold_move_until_waypoint(session, capture, ratio_x: float, ratio_y: float, h
             if check_for_user_interrupt(session):
                 raise RuntimeError("stopped by user interference")
             packet = capture.grab()
-            match = locate_best_template(session, packet.frame, [session._act1_waypoint_hover_template, session._act1_waypoint_template], session.WAYPOINT_THRESHOLD)
+            match = locate_best_template(
+                session, packet.frame, [session._act1_waypoint_hover_template, session._act1_waypoint_template], session.WAYPOINT_THRESHOLD
+            )
             if match is not None:
                 return match
             time.sleep(0.02)
@@ -298,7 +302,10 @@ def check_for_user_interrupt(session) -> bool:
     if session._last_pointer is None:
         return False
     current = pydirectinput.position()
-    if abs(current[0] - session._last_pointer[0]) > session.USER_INTERRUPT_DISTANCE or abs(current[1] - session._last_pointer[1]) > session.USER_INTERRUPT_DISTANCE:
+    if (
+        abs(current[0] - session._last_pointer[0]) > session.USER_INTERRUPT_DISTANCE
+        or abs(current[1] - session._last_pointer[1]) > session.USER_INTERRUPT_DISTANCE
+    ):
         session._stop_event.set()
         return True
     return False

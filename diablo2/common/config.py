@@ -51,6 +51,8 @@ class CharacterProfile:
     ruleset_family: str
     preferred_run_profile: str | None = None
     actions: CharacterActions = field(default_factory=CharacterActions)
+
+
 @dataclass
 class TemplateRule:
     name: str
@@ -273,10 +275,7 @@ def load_config(path: str | Path) -> BotConfig:
     }
 
     run_profiles_raw = raw.get("run_profiles", {})
-    run_profiles = {
-        profile_name: _build_farm_profile(profile_name, profile_raw)
-        for profile_name, profile_raw in run_profiles_raw.items()
-    }
+    run_profiles = {profile_name: _build_farm_profile(profile_name, profile_raw) for profile_name, profile_raw in run_profiles_raw.items()}
 
     farm_raw = raw.get("farm", {})
     legacy_farm = _build_farm_profile("farm", farm_raw) if farm_raw else FarmProfile()
@@ -298,6 +297,3 @@ def load_config(path: str | Path) -> BotConfig:
         run_profiles=run_profiles,
         farm=selected_farm,
     )
-
-
-

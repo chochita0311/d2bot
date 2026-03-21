@@ -1,4 +1,4 @@
-﻿{
+{
   "game_modes": {
     "progression_modes": [
       "ladder",
@@ -26,10 +26,21 @@
         "primary_attack_skill_key": "s",
         "left_skill_key": null,
         "interact_skill_key": null,
-        "buff_skill_keys": ["right-click", "f3"],
-        "pre_run_buff_order": ["right-click", "f3", "f3"],
+        "buff_skill_keys": [
+          "right-click",
+          "f3"
+        ],
+        "pre_run_buff_order": [
+          "right-click",
+          "f3",
+          "f3"
+        ],
         "attack_pattern": "single_skill",
-        "engagement_style": "ranged_kite"
+        "engagement_style": "ranged_kite",
+        "buff_action_pause_seconds": {
+          "right-click": 0.35,
+          "f3": 0.8
+        }
       }
     }
   }

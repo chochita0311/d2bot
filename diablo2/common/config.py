@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
@@ -31,6 +31,26 @@ class HotkeyConfig:
     stop: str = "f9"
 
 
+@dataclass
+class CharacterActions:
+    movement_skill_key: str | None = None
+    primary_attack_skill_key: str | None = None
+    left_skill_key: str | None = None
+    interact_skill_key: str | None = None
+    buff_skill_keys: list[str] = field(default_factory=list)
+    pre_run_buff_order: list[str] = field(default_factory=list)
+    buff_action_pause_seconds: dict[str, float] = field(default_factory=dict)
+    attack_pattern: str = "single_skill"
+    engagement_style: str = "safe"
+
+
+@dataclass
+class CharacterProfile:
+    display_name: str
+    progression_mode: str
+    ruleset_family: str
+    preferred_run_profile: str | None = None
+    actions: CharacterActions = field(default_factory=CharacterActions)
 @dataclass
 class TemplateRule:
     name: str
@@ -112,6 +132,7 @@ class BotConfig:
     recording: RecordingConfig = field(default_factory=RecordingConfig)
     hotkeys: HotkeyConfig = field(default_factory=HotkeyConfig)
     shared_loot: SharedLootProfile = field(default_factory=SharedLootProfile)
+    characters: dict[str, CharacterProfile] = field(default_factory=dict)
     run_profiles: dict[str, FarmProfile] = field(default_factory=dict)
     farm: FarmProfile = field(default_factory=FarmProfile)
 
@@ -124,6 +145,30 @@ def _build_template(rule: dict[str, Any]) -> TemplateRule:
         action=rule.get("action", "log"),
         label=rule.get("label"),
         context=rule.get("context", "any"),
+    )
+
+
+def _build_character_actions(raw: dict[str, Any]) -> CharacterActions:
+    return CharacterActions(
+        movement_skill_key=raw.get("movement_skill_key"),
+        primary_attack_skill_key=raw.get("primary_attack_skill_key"),
+        left_skill_key=raw.get("left_skill_key"),
+        interact_skill_key=raw.get("interact_skill_key"),
+        buff_skill_keys=list(raw.get("buff_skill_keys", [])),
+        pre_run_buff_order=list(raw.get("pre_run_buff_order", [])),
+        buff_action_pause_seconds={str(key).lower(): float(value) for key, value in raw.get("buff_action_pause_seconds", {}).items()},
+        attack_pattern=raw.get("attack_pattern", "single_skill"),
+        engagement_style=raw.get("engagement_style", "safe"),
+    )
+
+
+def _build_character_profile(name: str, raw: dict[str, Any]) -> CharacterProfile:
+    return CharacterProfile(
+        display_name=raw.get("display_name", name),
+        progression_mode=raw.get("progression_mode", "standard"),
+        ruleset_family=raw.get("ruleset_family", "rotw"),
+        preferred_run_profile=raw.get("preferred_run_profile"),
+        actions=_build_character_actions(raw.get("actions", {})),
     )
 
 
@@ -222,6 +267,10 @@ def load_config(path: str | Path) -> BotConfig:
     recording = RecordingConfig(**raw.get("recording", {}))
     hotkeys = HotkeyConfig(**raw.get("hotkeys", {}))
     shared_loot = _build_shared_loot_profile(raw.get("shared_loot", {}))
+    characters = {
+        character_name: _build_character_profile(character_name, character_raw)
+        for character_name, character_raw in raw.get("characters", {}).items()
+    }
 
     run_profiles_raw = raw.get("run_profiles", {})
     run_profiles = {
@@ -245,6 +294,10 @@ def load_config(path: str | Path) -> BotConfig:
         recording=recording,
         hotkeys=hotkeys,
         shared_loot=shared_loot,
+        characters=characters,
         run_profiles=run_profiles,
         farm=selected_farm,
     )
+
+
+

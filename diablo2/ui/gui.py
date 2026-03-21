@@ -45,8 +45,7 @@ from diablo2.actions.gem_summing import GemActionEvent, GemSummingSession
 from diablo2.actions.loot_pickup import LootEvent, LootPickupSession
 from diablo2.actions.recording import RecorderEvent, RecordingSession
 from diablo2.actions.run_lifecycle import LifecycleEvent, RunLifecycleSession
-from diablo2.actions.summoner_payload import SummonerEvent, SummonerRunSession
-from diablo2.runs.summoner_run import resolve_summoner_run
+from diablo2.runs.summoner import SummonerEvent, build_summoner_orchestrator, resolve_summoner_run
 
 
 class D2BotControlPanel:
@@ -76,7 +75,7 @@ class D2BotControlPanel:
         self.lifecycle_session = RunLifecycleSession(self.config.capture)
         self.gem_session = GemSummingSession(self.config.capture)
         self.loot_session = LootPickupSession(self.config)
-        self.summoner_session = SummonerRunSession(self.config)
+        self.summoner_session = build_summoner_orchestrator(self.config)
 
         self._build_ui()
         self._pin_window_geometry()
@@ -200,14 +199,17 @@ class D2BotControlPanel:
         self.key_button = ttk.Button(play_panel, text="Summoner Run", command=self.start_key_of_hate)
         self.key_button.grid(row=4, column=0, sticky="ew", pady=(8, 0))
 
+        self.arcane_north_button = ttk.Button(play_panel, text="North Go Test", command=self.start_arcane_north_test)
+        self.arcane_north_button.grid(row=5, column=0, sticky="ew", pady=(8, 0))
+
         spacer = ttk.Frame(play_panel, height=18)
-        spacer.grid(row=5, column=0, sticky="ew")
+        spacer.grid(row=6, column=0, sticky="ew")
 
         self.loot_button = ttk.Button(play_panel, text="Item Looting", command=self.start_loot_pickup)
-        self.loot_button.grid(row=6, column=0, sticky="ew")
+        self.loot_button.grid(row=7, column=0, sticky="ew")
 
         self.lifecycle_button = ttk.Button(play_panel, text="Start Room Lifecycle", command=self.start_run_lifecycle)
-        self.lifecycle_button.grid(row=7, column=0, sticky="ew", pady=(8, 0))
+        self.lifecycle_button.grid(row=8, column=0, sticky="ew", pady=(8, 0))
 
         footer = ttk.Frame(self.root, padding=(16, 0, 16, 16))
         footer.grid(row=3, column=0, sticky="ew")
@@ -319,6 +321,7 @@ class D2BotControlPanel:
         self.status_var.set("Run Lifecycle")
         self.lifecycle_button.state(["disabled"])
         self.loot_button.state(["disabled"])
+        self.arcane_north_button.state(["disabled"])
         self.key_button.state(["disabled"])
         self.gem_button.state(["disabled"])
         self.stop_action_button.state(["!disabled"])
@@ -335,6 +338,7 @@ class D2BotControlPanel:
         self.status_var.set("Item Looting")
         self.lifecycle_button.state(["disabled"])
         self.loot_button.state(["disabled"])
+        self.arcane_north_button.state(["disabled"])
         self.key_button.state(["disabled"])
         self.gem_button.state(["disabled"])
         self.stop_action_button.state(["!disabled"])
@@ -344,7 +348,7 @@ class D2BotControlPanel:
         self._apply_runtime_config()
         try:
             resolve_summoner_run(self.config)
-            self.summoner_session.start()
+            self.summoner_session.start(run_number=1)
         except Exception as exc:
             messagebox.showerror("Summoner Run Error", str(exc))
             self._append_log("error", str(exc))
@@ -352,6 +356,24 @@ class D2BotControlPanel:
         self.status_var.set("Summoner Run")
         self.lifecycle_button.state(["disabled"])
         self.loot_button.state(["disabled"])
+        self.arcane_north_button.state(["disabled"])
+        self.key_button.state(["disabled"])
+        self.gem_button.state(["disabled"])
+        self.stop_action_button.state(["!disabled"])
+
+    def start_arcane_north_test(self) -> None:
+        self._preserve_current_geometry()
+        self._apply_runtime_config()
+        try:
+            self.summoner_session.start_north_go_test()
+        except Exception as exc:
+            messagebox.showerror("North Go Test Error", str(exc))
+            self._append_log("error", str(exc))
+            return
+        self.status_var.set("North Go Test")
+        self.lifecycle_button.state(["disabled"])
+        self.loot_button.state(["disabled"])
+        self.arcane_north_button.state(["disabled"])
         self.key_button.state(["disabled"])
         self.gem_button.state(["disabled"])
         self.stop_action_button.state(["!disabled"])
@@ -385,6 +407,7 @@ class D2BotControlPanel:
         self.status_var.set("Idle")
         self.lifecycle_button.state(["!disabled"])
         self.loot_button.state(["!disabled"])
+        self.arcane_north_button.state(["!disabled"])
         self.key_button.state(["!disabled"])
         self.gem_button.state(["!disabled"])
         self.stop_action_button.state(["disabled"])
@@ -429,6 +452,7 @@ class D2BotControlPanel:
             return
         self.lifecycle_button.state(["!disabled"])
         self.loot_button.state(["!disabled"])
+        self.arcane_north_button.state(["!disabled"])
         self.key_button.state(["!disabled"])
         self.gem_button.state(["!disabled"])
         self.stop_action_button.state(["disabled"])

@@ -181,6 +181,91 @@ That keeps the run catalog reusable while still letting the Summoner payload pul
 - life rules
 - run-specific completion rules
 
+## Current staged implementation
+
+The current executable Summoner run stage is intentionally narrower than the full payload timeline above.
+
+Right now the orchestrated flow is:
+
+1. `make_room`
+2. `arcane_entry`
+3. `buff_before_run`
+4. `north_go`
+
+This is the current implementation target in code, even though the full long-term payload spec also includes post-Summoner work such as journal interaction, portal usage, and post-run return handling.
+
+## Planner priority direction
+
+During live movement and route execution, the intended planner priority is:
+
+1. Life care
+2. Monster-close detection and combat
+3. Wanted item looting
+4. Movement
+
+Interpretation:
+
+- movement should be the default fallback behavior, not the top-level brain
+- if life care is needed, it should preempt everything else
+- if a dangerous or close monster requires action, combat should preempt loot and route movement
+- if a wanted item is visible and the situation is safe, looting can temporarily preempt movement
+- if nothing higher priority is active, the route piece continues moving
+
+## Threaded planner direction
+
+The intended long-term live coordinator structure is:
+
+- capture thread updates the latest frame continuously
+- fast vision thread extracts lightweight navigation and threat signals
+- slow vision thread extracts landmark, template, and heavier recognition signals
+- decision thread arbitrates survival, combat, loot, and movement
+
+In this model:
+
+- route files like `north_go.py` should eventually become movement-intent providers
+- the planner should decide whether movement is allowed on each tick
+- the same planner model should later be reusable across Summoner, Diablo, and other runs
+
+## Current route-control limitation
+
+For the current implementation stage, the immediate focus is only reaching the route goal reliably.
+
+That means the current `north_go` controller is still being optimized for uninterrupted forward progress toward the north end, not for full interruption-safe route recovery.
+
+Two high-value short-term fixes were identified for that goal:
+
+- require more confirmed progress before advancing path stages
+- keep floor-guided correction alive in final stage movement as well
+
+## Future interruption note
+
+Later, when hunting and looting are allowed to interrupt route movement, the current route-stage logic will not be sufficient by itself.
+
+Example future situation:
+
+- moving toward `2 o'clock`
+- route is interrupted by combat or wanted loot
+- character temporarily turns backward or moves off the route
+- after the interruption, route movement should resume and continue toward the goal
+
+The current route controller is not yet designed for that case, because it still assumes mostly one-way forward staged progress.
+
+That means later we will need pause/resume-safe route control with concepts like:
+
+- route active vs route paused
+- interruption reason tracking
+- temporary local detour ownership by combat or loot logic
+- route re-acquire / route rejoin step before continuing staged movement
+- path-stage advance disabled while route ownership is not active
+
+For now, this is intentionally out of scope.
+
+The current implementation focus remains:
+
+- reach the goal first
+- keep the route stable under uninterrupted movement
+- postpone full hunting/looting interruption recovery until after basic route completion is reliable
+
 ## Current implementation target
 
 Organize and expose the payload structure first:

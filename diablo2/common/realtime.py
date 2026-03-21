@@ -99,6 +99,7 @@ class RealtimeVisionRuntime:
         slow_interval: float = 0.04,
         decision_interval: float = 0.01,
         idle_sleep: float = 0.005,
+        capture_fps: float | None = None,
         error_handler: Callable[[str, Exception], None] | None = None,
     ) -> None:
         self.capture_config = capture_config
@@ -110,6 +111,7 @@ class RealtimeVisionRuntime:
         self.slow_interval = slow_interval
         self.decision_interval = decision_interval
         self.idle_sleep = idle_sleep
+        self.capture_fps = capture_fps
         self.error_handler = error_handler
         self.state = RealtimeRuntimeState()
         self._threads: list[threading.Thread] = []
@@ -139,7 +141,8 @@ class RealtimeVisionRuntime:
         try:
             capture = ScreenCapture(self.capture_config)
             sequence_id = 0
-            frame_delay = 1.0 / max(1, self.capture_config.fps)
+            effective_fps = self.capture_fps if self.capture_fps is not None else self.capture_config.fps
+            frame_delay = 1.0 / max(1.0, effective_fps)
             while not self.stop_event.is_set():
                 loop_started_at = time.time()
                 packet = capture.grab()
@@ -179,6 +182,10 @@ class RealtimeVisionRuntime:
                             produced_at=time.time(),
                         ),
                     )
+
+                newest_frame = self.state.latest_frame()
+                if newest_frame is not None and newest_frame.sequence_id != last_sequence_id:
+                    continue
                 if interval > 0:
                     self.stop_event.wait(interval)
         except Exception as exc:  # pragma: no cover

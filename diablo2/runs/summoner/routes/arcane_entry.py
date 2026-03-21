@@ -25,7 +25,7 @@ from diablo2.runs.summoner.runtime.runtime_helpers import (
 PORT = RunPort(
     key="arcane_entry",
     kind="payload",
-    description="Travel from Act 1 town to the Arcane Sanctuary entry and settle the character for route execution.",
+    description="Travel from Act 1 town to the Arcane Sanctuary entry.",
     status="ready",
     notes=(
         "Owns the current waypoint-finding and Arcane Sanctuary travel flow.",

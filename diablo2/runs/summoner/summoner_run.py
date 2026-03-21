@@ -14,6 +14,7 @@ from diablo2.runs.base import RunDefinition, RunPayloadState, RunPort
 from diablo2.runs.summoner.routes.common.arcane_common import (
     build_initial_arcane_belief_state,
     commit_arcane_wing,
+    ensure_arcane_item_labels,
     load_arcane_assets,
     load_arcane_monster_templates,
     log_arcane_state,
@@ -160,7 +161,7 @@ class SummonerRunOrchestrator:
             self._thread.start()
         self.events.put(
             self.event_class(
-                "info", f"Summoner run started for stage make_room -> arcane_entry -> buff_before_run -> north_go (run {run_number})."
+                "info", f"Summoner run started for stage make_room -> arcane_entry -> enable_labels -> buff_before_run -> north_go (run {run_number})."
             )
         )
 
@@ -195,6 +196,7 @@ class SummonerRunOrchestrator:
         capture = ScreenCapture(self.config.capture)
         focus_game_window(self, capture)
         self.enter_arcane(capture)
+        self.enable_labels()
         self.buff_before_run()
         self.run_north_go(capture)
 
@@ -216,6 +218,10 @@ class SummonerRunOrchestrator:
     def enter_arcane(self, capture: ScreenCapture) -> None:
         run_arcane_entry(self, capture)
         self.events.put(self.event_class("info", "Summoner: arcane_entry completed."))
+
+    def enable_labels(self) -> None:
+        ensure_arcane_item_labels(self)
+        self.events.put(self.event_class("info", "Summoner: enable_labels stage completed."))
 
     def buff_before_run(self) -> None:
         run_arcane_pre_run_buffs(self)
@@ -450,7 +456,7 @@ def build_summoner_definition(config: BotConfig) -> RunDefinition:
         metadata={
             "organizer": "runs/summoner/summoner_run.py",
             "route_owner": "individual route files under runs/summoner",
-            "current_stage": "make_room -> arcane_entry -> buff_before_run",
+            "current_stage": "make_room -> arcane_entry -> enable_labels -> buff_before_run",
         },
     )
 

@@ -34,6 +34,8 @@ class HotkeyConfig:
 @dataclass
 class CharacterActions:
     movement_skill_key: str | None = None
+    movement_travel_mode: str = "hold"
+    movement_reposition_mode: str = "press"
     primary_attack_skill_key: str | None = None
     left_skill_key: str | None = None
     interact_skill_key: str | None = None
@@ -153,6 +155,8 @@ def _build_template(rule: dict[str, Any]) -> TemplateRule:
 def _build_character_actions(raw: dict[str, Any]) -> CharacterActions:
     return CharacterActions(
         movement_skill_key=raw.get("movement_skill_key"),
+        movement_travel_mode=raw.get("movement_travel_mode", "hold"),
+        movement_reposition_mode=raw.get("movement_reposition_mode", "press"),
         primary_attack_skill_key=raw.get("primary_attack_skill_key"),
         left_skill_key=raw.get("left_skill_key"),
         interact_skill_key=raw.get("interact_skill_key"),

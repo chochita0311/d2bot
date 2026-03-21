@@ -29,6 +29,7 @@ class ArcaneBeliefState:
 
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
+ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/character_waypoint.png")
 ARCANE_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_north.png")
 ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/without_summoner_north.png")
 ARCANE_NORTH_WAY_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/north_way.png")
@@ -48,7 +49,9 @@ ARCANE_WINGS: tuple[ArcaneWing, ...] = (
 ARCANE_MONSTER_TEMPLATE_DIR = Path("assets/monster/act2/arcane_sanctuary")
 ARCANE_MONSTER_THRESHOLD = 0.78
 ARCANE_NORTH_TEST_TICK_SLEEP = (0.12, 0.18)
-ARCANE_ZERO_POINT_CURSOR_RATIO = (0.50, 0.46)
+ARCANE_ZERO_POINT_CURSOR_RATIO = (0.50, 0.50)
+ARCANE_HUB_CENTER_TEMPLATE_SLICE = (260, 540, 610, 900)
+ARCANE_HUB_CENTER_TEMPLATE_THRESHOLD = 0.66
 ARCANE_NORTH_CURSOR_RATIO = (0.84, 0.24)
 ARCANE_NEXT_PATH_CURSOR_RATIO = (0.12, 0.18)
 ARCANE_RETURN_NORTH_CURSOR_RATIO = (0.88, 0.12)
@@ -82,6 +85,9 @@ ARCANE_FINAL_QUARTER_FLOOR_THRESHOLD = 20.0
 def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
+    character_waypoint = session._load_image(ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH)
+    top, bottom, left, right = ARCANE_HUB_CENTER_TEMPLATE_SLICE
+    session._arcane_hub_center_template = character_waypoint[top:bottom, left:right].copy()
     session._arcane_summoner_north_template = session._load_optional_image(ARCANE_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north Summoner")
     session._arcane_without_summoner_north_template = session._load_optional_image(
         ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north without-Summoner"
@@ -96,8 +102,32 @@ def load_arcane_assets(session) -> None:
 def settle_arcane_entry(session, capture) -> None:
     session.events.put(session.event_class("info", "Summoner: waiting for Arcane Sanctuary to finish loading."))
     session._sleep_range(*ARCANE_ENTRY_SETTLE)
+ 
+
+def ensure_arcane_item_labels(session) -> None:
     session.events.put(session.event_class("info", "Summoner: pressing ALT once to enable item labels in Arcane Sanctuary."))
     session._press_key("alt")
+    session._sleep_range(*ARCANE_LABELS_SETTLE)
+
+
+def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
+    session.events.put(session.event_class("info", f"Summoner: centering at the Arcane hub before starting {wing_key}_go."))
+    focus_ratio = ARCANE_ZERO_POINT_CURSOR_RATIO
+    frame = capture.grab().frame
+    hub_match = session._locate_template(frame, session._arcane_hub_center_template, ARCANE_HUB_CENTER_TEMPLATE_THRESHOLD)
+    if hub_match is not None:
+        center_x = hub_match.top_left[0] + (hub_match.width // 2)
+        center_y = hub_match.top_left[1] + (hub_match.height // 2)
+        frame_height, frame_width = frame.shape[:2]
+        focus_ratio = (center_x / frame_width, center_y / frame_height)
+        session.events.put(
+            session.event_class(
+                "info",
+                f"Summoner: hub focus located at ratio=({focus_ratio[0]:.3f}, {focus_ratio[1]:.3f}) before {wing_key}_go.",
+            )
+        )
+    session._arcane_hub_focus_ratio = focus_ratio
+    session._aim_relative_ratio(capture, *focus_ratio, apply_jitter=False)
     session._sleep_range(*ARCANE_LABELS_SETTLE)
 
 
@@ -123,7 +153,6 @@ def run_arcane_pre_run_buffs(session) -> None:
 
 def prepare_arcane_entry(session, capture) -> None:
     settle_arcane_entry(session, capture)
-    run_arcane_pre_run_buffs(session)
 
 
 def sleep_after_buff_action(session, actions, token: str) -> None:

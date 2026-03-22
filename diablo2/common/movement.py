@@ -5,6 +5,11 @@ from dataclasses import dataclass
 from diablo2.common.config import CharacterActions
 
 
+# 전 run 공통 화면 제약 메모
+# 하단 상태창 UI가 실제 게임 월드 일부를 가리는 구조
+# 기준 자산: assets/character/play/status.png
+# east, south, south-east 계열 조준/경로 샘플링에서는
+# 화면 하단 ratio를 곧바로 믿지 말고 UI 점유 영역 고려 필요
 MOVEMENT_MODE_HOLD = "hold"
 MOVEMENT_MODE_PRESS = "press"
 MOVEMENT_INTENT_TRAVEL = "travel"

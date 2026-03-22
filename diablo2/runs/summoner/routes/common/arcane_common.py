@@ -35,6 +35,8 @@ class ArcaneBeliefState:
 
 # Arcane Sanctuary 템플릿 경로 묶음
 # hover blocker, hub 정렬, Summoner 위치 판정용 자산
+# Arcane Sanctuary 공통 템플릿 경로 묶음
+# hover blocker, hub 정렬, Summoner 위치 판정 자산
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
 ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/chest_when_hover.png")
 ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_chest_when_hover.png")
@@ -51,11 +53,15 @@ ARCANE_SUMMONER_LOCATION_BACKGROUND_TEMPLATE_PATH = Path("assets/map/act2/arcane
 
 # Arcane Sanctuary 진입 후 기본 settle 값
 # 로딩 대기, ALT 라벨, 버프 step 간격
+# Arcane Sanctuary 진입 직후 기본 settle 값
+# 로딩 대기, ALT 토글, 버프 step 간격
 ARCANE_SANCTUARY_RATIO = (220 / 447, 498 / 597)
 ARCANE_ENTRY_SETTLE = (2.4, 2.8)
 ARCANE_LABELS_SETTLE = (0.28, 0.38)
 ARCANE_BUFF_STEP_SETTLE = (0.35, 0.5)
 
+# 고정 wing 순서
+# Summoner 탐색 시작 기준: north -> east -> south -> west
 # 고정 wing 순서
 # Summoner 탐색 시작 기준: north -> east -> south -> west
 ARCANE_WINGS: tuple[ArcaneWing, ...] = (
@@ -66,6 +72,8 @@ ARCANE_WINGS: tuple[ArcaneWing, ...] = (
 )
 
 # 전역 탐색/이동 기준점
+# hub zero point, 과거 단일 경로 조준 ratio, floor 보정 후보군
+# 전역 탐색/이동 기준값
 # hub zero point, 과거 단일 경로 조준 ratio, floor 보정 후보군
 ARCANE_MONSTER_TEMPLATE_DIR = Path("assets/monster/act2/arcane_sanctuary")
 ARCANE_MONSTER_THRESHOLD = 0.78
@@ -82,6 +90,53 @@ ARCANE_FLOOR_SCORE_RADIUS = 18
 ARCANE_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.03, 0.0), (-0.03, 0.0), (0.0, 0.03), (0.0, -0.03), (0.05, -0.02), (-0.05, 0.02))
 ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.02, 0.02), (0.04, 0.04), (0.06, 0.06), (-0.02, -0.02))
 
+# Arcane 공용 방향별 open probe 3점
+# probe가 단일 source of truth
+# steering candidate는 아래에서 probe로부터 파생 계산
+
+# Arcane 공용 방향 3점 구조
+# north, west는 probe 3점으로부터 파생 계산
+# primary = probe 두 번째 점
+# sharp = probe 첫 번째와 두 번째의 중점
+# soft = probe 두 번째와 세 번째의 중점
+# east, south는 하단 status UI 점유 영역을 고려한 별도 보정 필요
+# Arcane 공통 방향 3점 구조
+# absolute 화면 ratio 기준
+# north, west는 서로 좌우 대칭
+# east, south도 서로 좌우 대칭
+# east, south는 하단 status UI 회피 기준 반영
+ARCANE_NORTH_DIRECTION_POINTS = {
+    "primary": (11.0 / 12.0, 1.0 / 6.0),
+    "sharp": (7.0 / 8.0, 1.0 / 6.0),
+    "soft": (11.0 / 12.0, 1.0 / 4.0),
+}
+ARCANE_WEST_DIRECTION_POINTS = {
+    "primary": (1.0 / 12.0, 1.0 / 6.0),
+    "sharp": (1.0 / 8.0, 1.0 / 6.0),
+    "soft": (1.0 / 12.0, 1.0 / 4.0),
+}
+ARCANE_EAST_DIRECTION_POINTS = {
+    "primary": (11.0 / 12.0, 11.0 / 12.0),
+    "sharp": (5.0 / 6.0, 2.0 / 3.0),
+    "soft": (2.0 / 3.0, 5.0 / 6.0),
+}
+ARCANE_SOUTH_DIRECTION_POINTS = {
+    "primary": (1.0 - ARCANE_EAST_DIRECTION_POINTS["primary"][0], ARCANE_EAST_DIRECTION_POINTS["primary"][1]),
+    "sharp": (1.0 - ARCANE_EAST_DIRECTION_POINTS["sharp"][0], ARCANE_EAST_DIRECTION_POINTS["sharp"][1]),
+    "soft": (1.0 - ARCANE_EAST_DIRECTION_POINTS["soft"][0], ARCANE_EAST_DIRECTION_POINTS["soft"][1]),
+}
+
+# 방향별 open probe 원 반경 비율
+# north, west는 기존 기준 유지
+# east, south는 하단 status UI 혼입을 줄이기 위한 작은 반경
+# 방향 open probe 원 반경 비율
+# north, west는 기존 기준 유지
+# east, south는 하단 status UI 섞임을 줄이기 위한 작은 반경
+ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO = 0.16
+ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO = 0.12
+
+# 템플릿 매칭 임계값 묶음
+# hover, star, north terminal, Summoner clue 판정 기준
 # 템플릿 매칭 임계값 묶음
 # hover, star, north terminal, Summoner clue 판정 기준
 ARCANE_TELEPORTER_HOVER_THRESHOLD = 0.82
@@ -93,6 +148,8 @@ ARCANE_NORTH_WAY_THRESHOLD = 0.78
 
 # 정체/분기 판정 기준
 # 화면 변화량과 floor score 차이 기반 분기 선택 기준
+# 정체/분기 판정 기준
+# 화면 변화량과 floor score 차이 기반 분기 선택 기준
 ARCANE_STAR_STAGNANT_LIMIT = 2
 ARCANE_FIRST_FORK_PROGRESS_THRESHOLD = 5.0
 ARCANE_FIRST_FORK_STAGNANT_LIMIT = 2
@@ -102,6 +159,8 @@ ARCANE_BRANCH_SPAN_TRIM_TICKS = 3
 
 # hover blocker 회피 오프셋
 # chest 계열 기준의 큰 회피 폭 하나로 통일
+# hover blocker 회피 오프셋
+# chest 계열 기준 넓은 회피폭 하나로 통일
 ARCANE_HOVER_NUDGE_OFFSETS = (
     (0.16, 0.0),
     (-0.16, 0.0),
@@ -115,6 +174,8 @@ ARCANE_HOVER_NUDGE_OFFSETS = (
 
 # 후반부/분기 바닥 평가 기준
 # dead-end 방지와 final bend 진행 판단용 기준
+# 일반부/분기 바닥 평가 기준
+# dead-end 방지와 final bend 진행 판단 기준
 ARCANE_PROGRESS_CHANGE_THRESHOLD = 8.0
 ARCANE_PROGRESS_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_FLOOR_PREFERENCE_THRESHOLD = 90.0
@@ -125,6 +186,8 @@ ARCANE_FINAL_QUARTER_FLOOR_THRESHOLD = 20.0
 
 
 # Arcane 공용 템플릿을 session 필드로 preload
+# hover blocker, hub, terminal, Summoner 탐색에서 재사용
+# Arcane 공통 템플릿 preload
 # hover blocker, hub, terminal, Summoner 탐색에서 재사용
 def load_arcane_assets(session) -> None:
     # Arcane 공용 템플릿 preload
@@ -147,11 +210,14 @@ def load_arcane_assets(session) -> None:
 
 
 # Arcane Sanctuary 진입 직후 로딩 settle
+# Arcane Sanctuary 진입 직후 로딩 settle
 def settle_arcane_entry(session, capture) -> None:
     session.events.put(session.event_class("info", "Summoner: waiting for Arcane Sanctuary to finish loading."))
     session._sleep_range(*ARCANE_ENTRY_SETTLE)
 
 
+# 아이템 라벨 표시를 위한 ALT 1회 입력
+# Arcane 진입 직후 loot label 인식 안정화 단계
 # 아이템 라벨 표시를 위한 ALT 1회 입력
 # Arcane 진입 직후 loot label 인식 안정화 단계
 def ensure_arcane_item_labels(session) -> None:
@@ -162,6 +228,8 @@ def ensure_arcane_item_labels(session) -> None:
 
 # wing 진입 전 hub 중심 재정렬
 # hub template 중심 우선, 실패 시 zero point fallback
+# wing 진입 전 hub 중심점 보정
+# hub template 우선, 실패 시 zero point fallback
 def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
     # 시작 전 hub 중심 재정렬
     # 템플릿 매칭 실패 시 zero point fallback 사용

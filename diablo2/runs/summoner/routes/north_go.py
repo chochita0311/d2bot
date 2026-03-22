@@ -19,16 +19,20 @@ from diablo2.common.realtime import RealtimeVisionRuntime, RuntimeSnapshot
 from diablo2.runs.base import RunRouteSegment
 from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_CHEST_HOVER_THRESHOLD,
+    ARCANE_EAST_DIRECTION_POINTS,
     ARCANE_FLOOR_CANDIDATE_OFFSETS,
     ARCANE_FLOOR_SCORE_RADIUS,
     ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS,
     ARCANE_HOVER_NUDGE_OFFSETS,
     ARCANE_MOVE_STEP_SETTLE,
+    ARCANE_NORTH_DIRECTION_POINTS,
+    ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO,
     ARCANE_NORTH_TERMINAL_THRESHOLD,
     ARCANE_NORTH_TEST_TICK_SLEEP,
     ARCANE_PROGRESS_CHANGE_THRESHOLD,
     ARCANE_SUMMONER_CLUE_THRESHOLD,
     ARCANE_TELEPORTER_HOVER_THRESHOLD,
+    ARCANE_WEST_DIRECTION_POINTS,
     ARCANE_WINGS,
     ARCANE_ZERO_POINT_CURSOR_RATIO,
     prepare_arcane_hub_start,
@@ -87,32 +91,6 @@ ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 # west/east 쪽은 커서를 화면 끝까지 뻗지 않고 중심 쪽으로 줄여 제어성을 높임
 ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
 
-# north_open gate가 upper-right 사분면에서 참조하는 원형 probe의 상대 좌표
-#
-# 전체 화면
-# +--------------------------------------------------+
-# |                            upper-right quarter   |
-# |                         +----------------------+ |
-# |                         |        A       B     | |
-# |                         |                      | |
-# |                         |                C     | |
-# |                         |                      | |
-# |                         +----------------------+ |
-# |                                                  |
-# +--------------------------------------------------+
-#
-# A = (0.833, 0.167)
-# B = (0.917, 0.167)
-# C = (0.917, 0.333)
-ARCANE_NORTH_OPEN_CIRCLE_PROBES = (
-    (2.0 / 3.0, 1.0 / 3.0),
-    (5.0 / 6.0, 1.0 / 3.0),
-    (5.0 / 6.0, 2.0 / 3.0),
-)
-
-# 각 north_open probe 원의 반경 비율, 너무 크면 다른 통로가 섞이고 너무 작으면 노이즈가 커짐
-ARCANE_NORTH_OPEN_CIRCLE_RADIUS_RATIO = 0.16
-
 
 @dataclass(frozen=True)
 class ArcaneDirectionCandidate:
@@ -141,22 +119,84 @@ class ArcaneDirectionCandidate:
 # north_primary is aligned with north_open probe B.
 # north_sharp is the midpoint of probes A and B.
 # north_soft is the midpoint of probes B and C.
+# west family is the horizontal mirror of north family.
 #
 # P = north_primary = (0.9167, 0.1667)
 # H = north_sharp   = (0.8750, 0.1667)
 # S = north_soft    = (0.9167, 0.2500)
-# T = west_turn     = (0.15, 0.18)
-# W = west_soft     = (0.21, 0.23)
-# E = east_soft     = (0.84, 0.70)
-# D = east_turn     = (0.90, 0.80)
+# U = west_primary  = (0.0833, 0.1667)
+# T = west_sharp    = (0.1250, 0.1667)
+# W = west_soft     = (0.0833, 0.2500)
+# E = east_primary  = (0.9167, 0.9167)
+# I = east_soft     = (0.6667, 0.8333)
+# D = east_sharp    = (0.8333, 0.6667)
 ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
-    ArcaneDirectionCandidate("north_primary", "2 o'clock primary", (11.0 / 12.0, 1.0 / 6.0), family="north", north_family=True, bias=0.22),
-    ArcaneDirectionCandidate("north_soft", "2 o'clock soft", (11.0 / 12.0, 1.0 / 4.0), family="north", north_family=True, bias=0.18),
-    ArcaneDirectionCandidate("north_sharp", "2 o'clock sharp", (7.0 / 8.0, 1.0 / 6.0), family="north", north_family=True, bias=0.18),
-    ArcaneDirectionCandidate("west_turn", "10 o'clock turn", (0.15, 0.18), family="west", bias=0.04),
-    ArcaneDirectionCandidate("west_soft", "10 o'clock soft", (0.21, 0.23), family="west", bias=0.03),
-    ArcaneDirectionCandidate("east_soft", "4 o'clock soft", (0.84, 0.70), family="east", bias=0.02),
-    ArcaneDirectionCandidate("east_turn", "4 o'clock bend", (0.90, 0.80), family="east", bias=0.00),
+    ArcaneDirectionCandidate(
+        "north_primary",
+        "2 o'clock primary",
+        ARCANE_NORTH_DIRECTION_POINTS["primary"],
+        family="north",
+        north_family=True,
+        bias=0.22,
+    ),
+    ArcaneDirectionCandidate(
+        "north_soft",
+        "2 o'clock soft",
+        ARCANE_NORTH_DIRECTION_POINTS["soft"],
+        family="north",
+        north_family=True,
+        bias=0.18,
+    ),
+    ArcaneDirectionCandidate(
+        "north_sharp",
+        "2 o'clock sharp",
+        ARCANE_NORTH_DIRECTION_POINTS["sharp"],
+        family="north",
+        north_family=True,
+        bias=0.18,
+    ),
+    ArcaneDirectionCandidate(
+        "west_primary",
+        "10 o'clock primary",
+        ARCANE_WEST_DIRECTION_POINTS["primary"],
+        family="west",
+        bias=0.04,
+    ),
+    ArcaneDirectionCandidate(
+        "west_soft",
+        "10 o'clock soft",
+        ARCANE_WEST_DIRECTION_POINTS["soft"],
+        family="west",
+        bias=0.03,
+    ),
+    ArcaneDirectionCandidate(
+        "west_sharp",
+        "10 o'clock sharp",
+        ARCANE_WEST_DIRECTION_POINTS["sharp"],
+        family="west",
+        bias=0.03,
+    ),
+    ArcaneDirectionCandidate(
+        "east_primary",
+        "4 o'clock primary",
+        ARCANE_EAST_DIRECTION_POINTS["primary"],
+        family="east",
+        bias=0.02,
+    ),
+    ArcaneDirectionCandidate(
+        "east_soft",
+        "4 o'clock soft",
+        ARCANE_EAST_DIRECTION_POINTS["soft"],
+        family="east",
+        bias=0.01,
+    ),
+    ArcaneDirectionCandidate(
+        "east_sharp",
+        "4 o'clock sharp",
+        ARCANE_EAST_DIRECTION_POINTS["sharp"],
+        family="east",
+        bias=0.00,
+    ),
 )
 
 
@@ -679,8 +719,12 @@ def _score_arcane_direction_path(
 def _score_arcane_north_open_signal(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> float:
     floor_mask = fast_maps["floor_mask"]
     probe_values: list[float] = []
-    for probe_ratio in ARCANE_NORTH_OPEN_CIRCLE_PROBES:
-        floor_ratio = _sample_arcane_upper_right_circle(floor_mask, probe_ratio, ARCANE_NORTH_OPEN_CIRCLE_RADIUS_RATIO)
+    for probe_ratio in ARCANE_NORTH_DIRECTION_POINTS.values():
+        floor_ratio = _sample_arcane_circle_at_ratio(
+            floor_mask,
+            probe_ratio,
+            ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO,
+        )
         probe_values.append(floor_ratio)
     if not probe_values:
         return 0.0
@@ -740,18 +784,13 @@ def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, fl
 
 # upper-right 사분면 내부의 상대 좌표 probe 하나를 원형 영역으로 샘플링
 # north_open gate는 이 함수를 세 번 호출해 3개 probe 중 가장 좋은 값을 사용
-def _sample_arcane_upper_right_circle(image: np.ndarray, probe_ratio: tuple[float, float], radius_ratio: float) -> float:
+def _sample_arcane_circle_at_ratio(image: np.ndarray, probe_ratio: tuple[float, float], radius_ratio: float) -> float:
     height, width = image.shape[:2]
-    upper_right_left = width * 0.5
-    upper_right_top = 0.0
-    upper_right_width = width * 0.5
-    upper_right_height = height * 0.5
-
-    center_x = int(upper_right_left + (upper_right_width * probe_ratio[0]))
-    center_y = int(upper_right_top + (upper_right_height * probe_ratio[1]))
+    center_x = int(width * probe_ratio[0])
+    center_y = int(height * probe_ratio[1])
     radius = max(
         ARCANE_FAST_MIN_PATCH_RADIUS,
-        int(min(upper_right_width / 3.0, upper_right_height / 3.0) * radius_ratio * 3.0),
+        int(min(width, height) * 0.5 * radius_ratio),
     )
 
     left = max(0, center_x - radius)

@@ -96,11 +96,13 @@
   - `north_soft`
   - `north_sharp`
 - west family
-  - `west_turn`
+  - `west_primary`
   - `west_soft`
+  - `west_sharp`
 - east family
+  - `east_primary`
   - `east_soft`
-  - `east_turn`
+  - `east_sharp`
 
 각 후보 score는 대략 아래 3개를 더해서 만듭니다.
 
@@ -220,6 +222,61 @@
 
 이 함수는 매 tick마다 다음 순서로 생각합니다.
 
+### 7-0. 이 단계가 속한 더 큰 목적
+
+`north_go` 하나만 보면 "지금 북쪽 통로에서 어디로 조준할까"를 결정하는 작은 제어 루프지만, 더 큰 맥락에서는 Summoner run 전체 목표의 일부입니다.
+
+현재 문서 기준으로 상위 목적은 대략 다음 순서로 이해하면 됩니다.
+
+1. Arcane Sanctuary에서 Summoner를 찾기
+2. Summoner를 찾으면 전투 단계로 넘기기
+3. Summoner 처치 후 key drop이 있으면 회수 단계로 넘기기
+4. 그 뒤 Act 1로 복귀하고 새 방 생성으로 이어지기
+
+즉 `north_go`의 직접 임무는:
+
+- "북쪽 경로를 따라가면서 Summoner 위치 또는 north terminal에 도달할 때까지 이동 제어"
+
+입니다.
+
+아직 구현이 완성되지 않은 상위 우선순위도 있습니다.
+
+- 생존 처리
+  - 예: potion 사용
+- hunting
+  - 예: 일반 몬스터를 적극적으로 잡는 판단
+- looting
+  - 예: 일반 드랍을 우선적으로 줍는 판단
+
+이런 것들은 장기적으로 `summoner_run` 레벨에서 한 번 더 정리되는 편이 맞고, 현재는 `north_go` 문서에 "이 로직이 더 큰 run 안에서 어떤 위치인가"를 설명하는 정도로만 적어 두는 상태입니다.
+
+### 7-0-1. 현재 `north_go` 안에서의 실제 우선순위
+
+현재 코드 기준으로 `north_go` decision은 "Summoner를 빨리 찾는 이동"에 가장 강하게 맞춰져 있습니다.
+
+그래서 지금 이 단계의 우선순위는 대략 이렇게 읽으면 됩니다.
+
+1. 사용자 중단 여부
+2. stale frame 여부
+3. terminal 도달 여부
+4. 당장 멈춰야 하는 이벤트
+   - monster
+   - loot
+5. 그 외에는 계속 전진 방향 선택
+
+중요한 점은 현재 `monster`와 `loot`은 "적극 처리"보다 "잠깐 멈출 이유가 있는지" 수준으로만 들어와 있다는 점입니다.
+
+즉 지금의 `north_go`는:
+
+- 전투 AI 중심
+- 파밍 AI 중심
+
+이 아니라,
+
+- 탐색/이동 중심
+
+입니다.
+
 ### 7-1. user interrupt 확인
 
 사용자 입력이 들어왔으면 즉시 중단합니다.
@@ -264,9 +321,35 @@ slow 결과가 fresh할 때:
 
 즉 방향 결정보다 먼저 "지금 당장 멈춰야 하는 이유가 있나"를 봅니다.
 
+이 우선순위가 의미하는 바는 다음과 같습니다.
+
+- terminal
+  - 현재 north 경로의 목표 지점에 도달했다는 뜻
+  - `north_go` 단계 자체를 끝낼 수 있는 가장 강한 조건
+- monster
+  - 장기적으로는 생존/전투 단계로 이어질 수 있는 신호
+  - 현재는 적극 hunting보다는 일시 pause 성격
+- loot
+  - 장기적으로는 key drop 회수 같은 상위 목표와 연결될 수 있는 신호
+  - 현재는 적극 looting보다는 일시 pause 성격
+
+즉 "멈춤 이유"의 강도는 현재 문맥에서 대략
+
+- terminal > monster/loot > 방향 재선택
+
+순서입니다.
+
 ### 7-4. 방향 후보 선택
 
 pause할 이유가 없으면 `_choose_arcane_direction()`으로 들어갑니다.
+
+즉 `_decision()`의 마지막 질문은:
+
+- "지금 멈춰야 하나?"
+- 아니면
+- "계속 전진한다면 north / west / east 중 어디가 가장 좋은가?"
+
+입니다.
 
 ## 8. 최종 방향 선택 규칙
 

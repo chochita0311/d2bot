@@ -18,6 +18,8 @@ from diablo2.common.movement import (
 from diablo2.common.realtime import RealtimeVisionRuntime, RuntimeSnapshot
 from diablo2.runs.base import RunRouteSegment
 from diablo2.runs.summoner.routes.common.arcane_common import (
+    ARCANE_CHEST_HOVER_THRESHOLD,
+    ARCANE_CHEST_NUDGE_OFFSETS,
     ARCANE_FLOOR_CANDIDATE_OFFSETS,
     ARCANE_FLOOR_SCORE_RADIUS,
     ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS,
@@ -60,7 +62,8 @@ ARCANE_FAST_MIN_PATCH_RADIUS = 8
 ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.1
 ARCANE_VOTE_KEEP_MARGIN = 0.045
 ARCANE_FAMILY_KEEP_MARGIN = 0.06
-ARCANE_NORTH_RECLAIM_MARGIN = 0.08
+ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
+ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
 ARCANE_NORTH_OPEN_CIRCLE_PROBES = (
     (2.0 / 3.0, 1.0 / 3.0),
     (5.0 / 6.0, 1.0 / 3.0),
@@ -85,8 +88,8 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
     ArcaneDirectionCandidate("north_sharp", "2 o'clock sharp", (0.89, 0.18), family="north", north_family=True, bias=0.18),
     ArcaneDirectionCandidate("left_turn", "10 o'clock turn", (0.15, 0.18), family="left", bias=0.04),
     ArcaneDirectionCandidate("left_soft", "10 o'clock soft", (0.21, 0.23), family="left", bias=0.03),
-    ArcaneDirectionCandidate("bend_soft", "4 o'clock soft", (0.84, 0.70), family="right", bias=0.02),
-    ArcaneDirectionCandidate("bend_drop", "4 o'clock bend", (0.90, 0.80), family="right", bias=0.00),
+    ArcaneDirectionCandidate("right_soft", "4 o'clock soft", (0.84, 0.70), family="right", bias=0.02),
+    ArcaneDirectionCandidate("right_turn", "4 o'clock bend", (0.90, 0.80), family="right", bias=0.00),
     ArcaneDirectionCandidate("north_recover", "2 o'clock recover", (0.88, 0.12), family="north", north_family=True, bias=0.14),
 )
 
@@ -172,12 +175,7 @@ def run_arcane_north_go(session, capture) -> None:
             "north_terminal": _detect_arcane_north_terminal(session, frame_packet.frame),
             "loot_label": loot_hit.label if loot_hit is not None else None,
             "monster_hit": session._scan_arcane_monsters(frame_packet.frame),
-            "teleporter_hover_detected": session._locate_template(
-                frame_packet.frame,
-                session._arcane_teleporter_hover_template,
-                ARCANE_TELEPORTER_HOVER_THRESHOLD,
-            )
-            is not None,
+            "hover_blocker_kind": _detect_arcane_hover_blocker(session, frame_packet.frame),
         }
 
     def _decision(snapshot: RuntimeSnapshot) -> dict[str, object] | None:
@@ -203,6 +201,7 @@ def run_arcane_north_go(session, capture) -> None:
         slow_age_ms = int((now - snapshot.slow_vision.source_captured_at) * 1000) if snapshot.slow_vision is not None else None
         fast_switch_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_SWITCH_LIMIT_MS
         fast_steer_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_STEER_LIMIT_MS
+        allow_side_family_switch = fast_steer_fresh if control["route_family"] in {"left", "right"} else fast_switch_fresh
         slow_fresh = slow_age_ms is not None and slow_age_ms <= ARCANE_SLOW_STALE_LIMIT_MS
 
         if not fast_steer_fresh:
@@ -214,8 +213,8 @@ def run_arcane_north_go(session, capture) -> None:
             direction_score = 0.0
             north_open = 0.0
             target_ref = _TargetRef(latest_frame.target)
-            teleporter_hover_detected = slow_payload["teleporter_hover_detected"] if slow_payload is not None and slow_fresh else False
-            if teleporter_hover_detected:
+            hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
+            if hover_blocker_kind is not None:
                 release_movement_intent(session, actions, movement_state)
                 session._sleep_range(*session.CLICK_SETTLE)
             final_ratio = _steer_arcane_movement(
@@ -224,7 +223,8 @@ def run_arcane_north_go(session, capture) -> None:
                 latest_frame.frame,
                 cursor_ratio,
                 0,
-                teleporter_hover_detected=teleporter_hover_detected,
+                hover_blocker_kind=hover_blocker_kind,
+                direction_family=direction_family,
             )
             action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_TRAVEL)
             control["north_steps"] += 1
@@ -286,23 +286,27 @@ def run_arcane_north_go(session, capture) -> None:
         if frame_change is not None and fast_payload.get("progress_trend") is not None:
             frame_change = max(frame_change, fast_payload["progress_trend"])
 
+        direction_votes = fast_payload["direction_votes"] if fast_payload is not None else []
+        family_signals = dict(fast_payload.get("family_signals", {})) if fast_payload is not None else {}
         direction_choice = _choose_arcane_direction(
-            fast_payload["direction_votes"] if fast_payload is not None else [],
+            direction_votes,
             control["last_direction_key"],
             control["route_family"],
-            dict(fast_payload.get("family_signals", {})) if fast_payload is not None else {},
+            family_signals,
             control["route_family_steps"],
-            fast_switch_fresh,
+            allow_side_family_switch,
         )
+        previous_route_family = control["route_family"]
         direction_key = direction_choice["key"]
         direction_label = direction_choice["label"]
         direction_family = direction_choice["family"]
         cursor_ratio = direction_choice["ratio"]
         direction_score = direction_choice["score"]
         north_open = direction_choice["north_open"]
+        quick_reopen_steer = previous_route_family in {"left", "right"} and direction_family == "north"
         target_ref = _TargetRef(latest_frame.target)
-        teleporter_hover_detected = slow_payload["teleporter_hover_detected"] if slow_payload is not None and slow_fresh else False
-        if teleporter_hover_detected:
+        hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
+        if hover_blocker_kind is not None:
             release_movement_intent(session, actions, movement_state)
             session._sleep_range(*session.CLICK_SETTLE)
         final_ratio = _steer_arcane_movement(
@@ -311,7 +315,9 @@ def run_arcane_north_go(session, capture) -> None:
             latest_frame.frame,
             cursor_ratio,
             0,
-            teleporter_hover_detected=teleporter_hover_detected,
+            hover_blocker_kind=hover_blocker_kind,
+            fast_reacquire=quick_reopen_steer,
+            direction_family=direction_family,
         )
         action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_TRAVEL)
         control["north_steps"] += 1
@@ -363,22 +369,52 @@ def run_arcane_north_go(session, capture) -> None:
 
 
 def _steer_arcane_movement(
-    session, capture_target, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int, teleporter_hover_detected: bool = False
+    session,
+    capture_target,
+    frame: np.ndarray,
+    base_ratio: tuple[float, float],
+    path_stage: int,
+    hover_blocker_kind: str | None = None,
+    fast_reacquire: bool = False,
+    direction_family: str | None = None,
 ) -> tuple[float, float]:
-    floor_ratio = _resolve_arcane_floor_guided_ratio(session, frame, base_ratio, path_stage)
+    guided_ratio = base_ratio if fast_reacquire else _resolve_arcane_floor_guided_ratio(session, frame, base_ratio, path_stage)
+    if direction_family in {"left", "right"}:
+        floor_ratio = _scale_arcane_ratio_from_center(guided_ratio, ARCANE_CURSOR_RADIUS_SCALE)
+    else:
+        floor_ratio = guided_ratio
     session._aim_relative_ratio(capture_target, *floor_ratio, apply_jitter=False)
-    session._sleep_range(*session.CLICK_SETTLE)
-    if not teleporter_hover_detected:
+    if fast_reacquire:
+        session._sleep_range(*ARCANE_NORTH_REOPEN_FAST_SETTLE)
+    else:
+        session._sleep_range(*session.CLICK_SETTLE)
+    if hover_blocker_kind is None:
         return floor_ratio
     session.events.put(
-        session.event_class("info", "Arcane North Test: teleporter hover detected while steering; nudging cursor beside it.")
+        session.event_class("info", f"Arcane North Test: {hover_blocker_kind} hover detected while steering; nudging cursor away from it.")
     )
-    for offset in ARCANE_TELEPORTER_NUDGE_OFFSETS:
+    nudge_offsets = ARCANE_CHEST_NUDGE_OFFSETS if hover_blocker_kind == "chest" else ARCANE_TELEPORTER_NUDGE_OFFSETS
+    for offset in nudge_offsets:
         nudged_ratio = session._apply_offset(floor_ratio, offset)
         session._aim_relative_ratio(capture_target, *nudged_ratio, apply_jitter=False)
         session._sleep_range(*session.CLICK_SETTLE)
         return nudged_ratio
     return floor_ratio
+
+
+def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
+    if session._locate_template(frame, session._arcane_chest_hover_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
+        return "chest"
+    if session._locate_template(frame, session._arcane_teleporter_hover_template, ARCANE_TELEPORTER_HOVER_THRESHOLD) is not None:
+        return "teleporter"
+    return None
+
+
+def _scale_arcane_ratio_from_center(ratio: tuple[float, float], scale: float) -> tuple[float, float]:
+    center_x, center_y = 0.5, 0.5
+    scaled_x = center_x + ((ratio[0] - center_x) * scale)
+    scaled_y = center_y + ((ratio[1] - center_y) * scale)
+    return (scaled_x, scaled_y)
 
 
 def _resolve_arcane_floor_guided_ratio(
@@ -486,16 +522,8 @@ def _choose_arcane_direction(
     current_family_vote = best_by_family.get(current_family)
     north_family_vote = best_by_family.get("north")
     north_closed = north_open < ARCANE_NORTH_OPEN_FLOOR_RATIO
-    candidate_families = (
-        {family: vote for family, vote in best_by_family.items() if family != "north"}
-        if north_closed
-        else best_by_family
-    )
-    if not candidate_families:
-        candidate_families = best_by_family
-    best_vote = max(candidate_families.values(), key=lambda vote: float(vote["score"]))
-    current_family_vote = best_by_family.get(current_family)
-    north_family_vote = best_by_family.get("north")
+    left_family_vote = best_by_family.get("left")
+    right_family_vote = best_by_family.get("right")
 
     if north_closed and current_family == "north":
         current_family_vote = None
@@ -505,20 +533,29 @@ def _choose_arcane_direction(
         north_family_vote["north_open"] = north_open
         return north_family_vote
 
+    family_compare_scores: dict[str, float] = {}
+    if left_family_vote is not None:
+        family_compare_scores["left"] = float(left_family_vote["score"])
+    if right_family_vote is not None:
+        family_compare_scores["right"] = float(right_family_vote["score"])
+
+    if family_compare_scores:
+        best_family = max(family_compare_scores, key=family_compare_scores.get)
+        best_vote = best_by_family[best_family]
+    elif current_family_vote is not None:
+        best_vote = current_family_vote
+    else:
+        best_vote = max(votes, key=lambda vote: float(vote["score"]))
+
     if not allow_family_switch and current_family_vote is not None:
         best_vote = current_family_vote
     elif (
-        current_family != "north"
+        current_family in {"left", "right"}
         and current_family_vote is not None
-        and north_family_vote is not None
-        and north_open >= ARCANE_NORTH_OPEN_FLOOR_RATIO
-        and (float(north_family_vote["score"]) - float(current_family_vote["score"])) >= ARCANE_NORTH_RECLAIM_MARGIN
+        and best_vote["family"] != current_family
+        and (float(best_vote["score"]) - float(current_family_vote["score"])) <= ARCANE_FAMILY_KEEP_MARGIN
     ):
-        best_vote = north_family_vote
-    elif current_family_vote is not None and (float(best_vote["score"]) - float(current_family_vote["score"])) <= ARCANE_FAMILY_KEEP_MARGIN:
         best_vote = current_family_vote
-    elif current_family == "north" and north_open >= ARCANE_NORTH_OPEN_FLOOR_RATIO and north_family_vote is not None:
-        best_vote = north_family_vote
 
     previous_vote = next((vote for vote in votes if vote["key"] == previous_key), None)
     if (

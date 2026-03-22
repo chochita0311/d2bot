@@ -28,6 +28,7 @@ class ArcaneBeliefState:
 
 
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
+ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/chest_when_hover.png")
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
 ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/character_waypoint.png")
 ARCANE_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_north.png")
@@ -62,6 +63,7 @@ ARCANE_FLOOR_SCORE_RADIUS = 18
 ARCANE_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.03, 0.0), (-0.03, 0.0), (0.0, 0.03), (0.0, -0.03), (0.05, -0.02), (-0.05, 0.02))
 ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.02, 0.02), (0.04, 0.04), (0.06, 0.06), (-0.02, -0.02))
 ARCANE_TELEPORTER_HOVER_THRESHOLD = 0.82
+ARCANE_CHEST_HOVER_THRESHOLD = 0.82
 ARCANE_STAR_THRESHOLD = 0.82
 ARCANE_NORTH_TERMINAL_THRESHOLD = 0.8
 ARCANE_SUMMONER_CLUE_THRESHOLD = 0.78
@@ -72,7 +74,26 @@ ARCANE_FIRST_FORK_STAGNANT_LIMIT = 2
 ARCANE_SECOND_FORK_PROGRESS_THRESHOLD = 5.0
 ARCANE_SECOND_FORK_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_SPAN_TRIM_TICKS = 3
-ARCANE_TELEPORTER_NUDGE_OFFSETS = ((0.04, 0.0), (-0.04, 0.0), (0.0, 0.04), (0.0, -0.04))
+ARCANE_TELEPORTER_NUDGE_OFFSETS = (
+    (0.10, 0.0),
+    (-0.10, 0.0),
+    (0.0, 0.10),
+    (0.0, -0.10),
+    (0.08, 0.06),
+    (-0.08, 0.06),
+    (0.08, -0.06),
+    (-0.08, -0.06),
+)
+ARCANE_CHEST_NUDGE_OFFSETS = (
+    (0.16, 0.0),
+    (-0.16, 0.0),
+    (0.0, 0.16),
+    (0.0, -0.16),
+    (0.14, 0.10),
+    (-0.14, 0.10),
+    (0.14, -0.10),
+    (-0.14, -0.10),
+)
 ARCANE_PROGRESS_CHANGE_THRESHOLD = 8.0
 ARCANE_PROGRESS_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_FLOOR_PREFERENCE_THRESHOLD = 90.0
@@ -84,6 +105,7 @@ ARCANE_FINAL_QUARTER_FLOOR_THRESHOLD = 20.0
 
 def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
+    session._arcane_chest_hover_template = session._load_image(ARCANE_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
     character_waypoint = session._load_image(ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH)
     top, bottom, left, right = ARCANE_HUB_CENTER_TEMPLATE_SLICE

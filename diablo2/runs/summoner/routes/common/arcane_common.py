@@ -6,6 +6,12 @@ from pathlib import Path
 import numpy as np
 
 from diablo2.common.controller import pydirectinput
+from diablo2.common.movement import (
+    MOVEMENT_INTENT_REPOSITION,
+    MovementExecutionState,
+    apply_movement_intent,
+    release_movement_intent,
+)
 
 
 @dataclass(frozen=True)
@@ -30,7 +36,7 @@ class ArcaneBeliefState:
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
 ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/chest_when_hover.png")
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
-ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/character_waypoint.png")
+ARCANE_HUB_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/hub_center.png")
 ARCANE_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_north.png")
 ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/without_summoner_north.png")
 ARCANE_NORTH_WAY_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/north_way.png")
@@ -51,7 +57,6 @@ ARCANE_MONSTER_TEMPLATE_DIR = Path("assets/monster/act2/arcane_sanctuary")
 ARCANE_MONSTER_THRESHOLD = 0.78
 ARCANE_NORTH_TEST_TICK_SLEEP = (0.12, 0.18)
 ARCANE_ZERO_POINT_CURSOR_RATIO = (0.50, 0.50)
-ARCANE_HUB_CENTER_TEMPLATE_SLICE = (260, 540, 610, 900)
 ARCANE_HUB_CENTER_TEMPLATE_THRESHOLD = 0.66
 ARCANE_NORTH_CURSOR_RATIO = (0.84, 0.24)
 ARCANE_NEXT_PATH_CURSOR_RATIO = (0.12, 0.18)
@@ -107,9 +112,7 @@ def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
     session._arcane_chest_hover_template = session._load_image(ARCANE_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
-    character_waypoint = session._load_image(ARCANE_CHARACTER_WAYPOINT_TEMPLATE_PATH)
-    top, bottom, left, right = ARCANE_HUB_CENTER_TEMPLATE_SLICE
-    session._arcane_hub_center_template = character_waypoint[top:bottom, left:right].copy()
+    session._arcane_hub_center_template = session._load_image(ARCANE_HUB_CENTER_TEMPLATE_PATH)
     session._arcane_summoner_north_template = session._load_optional_image(ARCANE_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north Summoner")
     session._arcane_without_summoner_north_template = session._load_optional_image(
         ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north without-Summoner"
@@ -151,6 +154,19 @@ def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
     session._arcane_hub_focus_ratio = focus_ratio
     session._aim_relative_ratio(capture, *focus_ratio, apply_jitter=False)
     session._sleep_range(*ARCANE_LABELS_SETTLE)
+    actions = resolve_arcane_character_actions(session)
+    if actions is None or not actions.movement_skill_key:
+        raise RuntimeError(f"Arcane {wing_key}_go requires a character with movement_skill_key configured.")
+    movement_state = MovementExecutionState()
+    hub_action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_REPOSITION)
+    session.events.put(
+        session.event_class(
+            "info",
+            f"Summoner: repositioning onto the Arcane hub focus at ratio=({focus_ratio[0]:.3f}, {focus_ratio[1]:.3f}) {hub_action_phrase}",
+        )
+    )
+    session._sleep_range(*session.CLICK_SETTLE)
+    release_movement_intent(session, actions, movement_state)
 
 
 def run_arcane_pre_run_buffs(session) -> None:

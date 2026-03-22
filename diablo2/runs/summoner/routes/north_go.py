@@ -131,16 +131,6 @@ def run_arcane_north_go(session, capture) -> None:
     prepare_arcane_hub_start(session, capture, "north")
     zero_point_ratio = getattr(session, "_arcane_hub_focus_ratio", ARCANE_ZERO_POINT_CURSOR_RATIO)
     movement_state = MovementExecutionState()
-    session._aim_relative_ratio(capture, *zero_point_ratio, apply_jitter=False)
-    hub_action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_REPOSITION)
-    session.events.put(
-        session.event_class(
-            "info",
-            f"Summoner: repositioning onto the Arcane hub focus at ratio=({zero_point_ratio[0]:.3f}, {zero_point_ratio[1]:.3f}) {hub_action_phrase}",
-        )
-    )
-    session._sleep_range(*session.CLICK_SETTLE)
-    release_movement_intent(session, actions, movement_state)
     session.events.put(
         session.event_class(
             "info",

@@ -44,12 +44,7 @@ ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_san
 ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_coffin_when_hover.png")
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
 ARCANE_HUB_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/hub_center.png")
-ARCANE_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_north.png")
-ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/without_summoner_north.png")
-ARCANE_NORTH_WAY_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/north_way.png")
-ARCANE_HORAZON_JOURNAL_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/horazon_journal.png")
-ARCANE_SUMMONER_LOCATION_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_location.png")
-ARCANE_SUMMONER_LOCATION_BACKGROUND_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/summoner_location_background.png")
+ARCANE_GOAL_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/goal_center.png")
 
 # Arcane Sanctuary 진입 후 기본 settle 값
 # 로딩 대기, ALT 라벨, 버프 step 간격
@@ -121,9 +116,9 @@ ARCANE_EAST_DIRECTION_POINTS = {
     "soft": (2.0 / 3.0, 5.0 / 6.0),
 }
 ARCANE_SOUTH_DIRECTION_POINTS = {
-    "primary": (1.0 - ARCANE_EAST_DIRECTION_POINTS["primary"][0], ARCANE_EAST_DIRECTION_POINTS["primary"][1]),
-    "sharp": (1.0 - ARCANE_EAST_DIRECTION_POINTS["sharp"][0], ARCANE_EAST_DIRECTION_POINTS["sharp"][1]),
-    "soft": (1.0 - ARCANE_EAST_DIRECTION_POINTS["soft"][0], ARCANE_EAST_DIRECTION_POINTS["soft"][1]),
+    "primary": (1.0 / 12.0, 11.0 / 12.0),
+    "sharp": (1.0 / 6.0, 2.0 / 3.0),
+    "soft": (1.0 / 3.0, 5.0 / 6.0),
 }
 
 # 방향별 open probe 원 반경 비율
@@ -142,8 +137,7 @@ ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO = 0.12
 ARCANE_TELEPORTER_HOVER_THRESHOLD = 0.82
 ARCANE_CHEST_HOVER_THRESHOLD = 0.82
 ARCANE_STAR_THRESHOLD = 0.82
-ARCANE_NORTH_TERMINAL_THRESHOLD = 0.8
-ARCANE_SUMMONER_CLUE_THRESHOLD = 0.78
+ARCANE_GOAL_CENTER_THRESHOLD = 0.8
 ARCANE_NORTH_WAY_THRESHOLD = 0.78
 
 # 정체/분기 판정 기준
@@ -198,19 +192,18 @@ def load_arcane_assets(session) -> None:
     session._arcane_small_coffin_hover_template = session._load_image(ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH)
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
     session._arcane_hub_center_template = session._load_image(ARCANE_HUB_CENTER_TEMPLATE_PATH)
-    session._arcane_summoner_north_template = session._load_optional_image(ARCANE_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north Summoner")
-    session._arcane_without_summoner_north_template = session._load_optional_image(
-        ARCANE_WITHOUT_SUMMONER_NORTH_TEMPLATE_PATH, "Arcane north without-Summoner"
-    )
-    session._arcane_north_way_template = session._load_image(ARCANE_NORTH_WAY_TEMPLATE_PATH)
-    session._arcane_horazon_journal_template = session._load_image(ARCANE_HORAZON_JOURNAL_TEMPLATE_PATH)
-    session._arcane_summoner_location_template = session._load_image(ARCANE_SUMMONER_LOCATION_TEMPLATE_PATH)
-    session._arcane_summoner_location_background_template = session._load_image(ARCANE_SUMMONER_LOCATION_BACKGROUND_TEMPLATE_PATH)
+    session._arcane_goal_center_template = session._load_image(ARCANE_GOAL_CENTER_TEMPLATE_PATH)
     session._arcane_monster_templates = None
 
 
 # Arcane Sanctuary 진입 직후 로딩 settle
 # Arcane Sanctuary 진입 직후 로딩 settle
+def detect_arcane_terminal(session, frame: np.ndarray) -> str | None:
+    if session._locate_template(frame, session._arcane_goal_center_template, ARCANE_GOAL_CENTER_THRESHOLD) is not None:
+        return "goal_center"
+    return None
+
+
 def settle_arcane_entry(session, capture) -> None:
     session.events.put(session.event_class("info", "Summoner: waiting for Arcane Sanctuary to finish loading."))
     session._sleep_range(*ARCANE_ENTRY_SETTLE)

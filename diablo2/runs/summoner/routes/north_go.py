@@ -20,6 +20,7 @@ from diablo2.runs.base import RunRouteSegment
 from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_CHEST_HOVER_THRESHOLD,
     ARCANE_EAST_DIRECTION_POINTS,
+    ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO,
     ARCANE_FLOOR_CANDIDATE_OFFSETS,
     ARCANE_FLOOR_SCORE_RADIUS,
     ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS,
@@ -27,14 +28,13 @@ from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_MOVE_STEP_SETTLE,
     ARCANE_NORTH_DIRECTION_POINTS,
     ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO,
-    ARCANE_NORTH_TERMINAL_THRESHOLD,
     ARCANE_NORTH_TEST_TICK_SLEEP,
     ARCANE_PROGRESS_CHANGE_THRESHOLD,
-    ARCANE_SUMMONER_CLUE_THRESHOLD,
     ARCANE_TELEPORTER_HOVER_THRESHOLD,
     ARCANE_WEST_DIRECTION_POINTS,
     ARCANE_WINGS,
     ARCANE_ZERO_POINT_CURSOR_RATIO,
+    detect_arcane_terminal,
     prepare_arcane_hub_start,
 )
 from diablo2.runs.summoner.routes.common.arcane_palette import (
@@ -62,7 +62,7 @@ ARCANE_FAST_SWITCH_LIMIT_MS = 120
 ARCANE_FAST_STEER_LIMIT_MS = 350
 
 # slow 비전(몬스터, loot, hover blocker)이 이 시간보다 오래되면 의사결정에 반영하지 않음
-ARCANE_SLOW_STALE_LIMIT_MS = 450
+ARCANE_SLOW_STALE_LIMIT_MS = 1800
 
 # ray 경로 중간 샘플을 평가할 때 각 샘플 중심에서 잘라볼 패치 반경의 기본값
 ARCANE_DIRECTION_PATCH_RADIUS = 42
@@ -83,13 +83,13 @@ ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.1
 ARCANE_VOTE_KEEP_MARGIN = 0.045
 
 # west/east family 자체를 바꿀 때 쓰는 더 큰 hysteresis 여유값
-ARCANE_FAMILY_KEEP_MARGIN = 0.06
 
 # side branch에서 north로 재진입했을 때 커서 재조준을 매우 빠르게 끝내기 위한 settle 값
 ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
 # west/east 쪽은 커서를 화면 끝까지 뻗지 않고 중심 쪽으로 줄여 제어성을 높임
-ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
+ARCANE_CURSOR_RADIUS_SCALE = 4.3 / 7.0
+ARCANE_SIDE_GATE_KEEP_MARGIN = 0.22
 
 
 @dataclass(frozen=True)
@@ -273,7 +273,7 @@ def run_arcane_north_go(session, capture) -> None:
     def _slow_vision(frame_packet) -> dict[str, object]:
         loot_hit = loot_session.scan_frame(frame_packet.frame)
         return {
-            "north_terminal": _detect_arcane_north_terminal(session, frame_packet.frame),
+            "terminal": detect_arcane_terminal(session, frame_packet.frame),
             "loot_label": loot_hit.label if loot_hit is not None else None,
             "monster_hit": session._scan_arcane_monsters(frame_packet.frame),
             "hover_blocker_kind": _detect_arcane_hover_blocker(session, frame_packet.frame),
@@ -288,6 +288,14 @@ def run_arcane_north_go(session, capture) -> None:
         if latest_frame is None or latest_frame.sequence_id == control["last_frame_id"]:
             return None
         control["last_frame_id"] = latest_frame.sequence_id
+
+        latest_terminal = detect_arcane_terminal(session, latest_frame.frame)
+        if latest_terminal is not None:
+            session.events.put(
+                session.event_class("info", "Arcane North Test: detected Arcane goal center on latest frame; stopping north run here.")
+            )
+            session.request_stop()
+            return {"status": "terminal_latest_frame"}
 
         now = snapshot.sampled_at
         fast_payload = control["last_fast_payload"]
@@ -349,16 +357,10 @@ def run_arcane_north_go(session, capture) -> None:
                 "final_ratio": final_ratio,
             }
 
-        if slow_payload is not None and slow_fresh and slow_payload["north_terminal"] is not None:
-            terminal = slow_payload["north_terminal"]
-            if terminal == "summoner":
-                session.events.put(
-                    session.event_class("info", "Arcane North Test: detected north dead end with Summoner layout; stopping north run here.")
-                )
-            else:
-                session.events.put(
-                    session.event_class("info", "Arcane North Test: detected north dead end without Summoner; stopping north run here.")
-                )
+        if slow_payload is not None and slow_fresh and slow_payload["terminal"] is not None:
+            session.events.put(
+                session.event_class("info", "Arcane North Test: detected Arcane goal center; stopping north run here.")
+            )
             session.request_stop()
             return {"status": "terminal", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
@@ -632,12 +634,13 @@ def _choose_arcane_direction(
             "north_open": 0.0,
         }
     north_open = max(0.0, float(family_signals.get("north", 0.0)))
+    west_open = max(0.0, float(family_signals.get("west", 0.0)))
+    east_open = max(0.0, float(family_signals.get("east", 0.0)))
     by_family: dict[str, list[dict[str, object]]] = {}
     for vote in votes:
         by_family.setdefault(str(vote["family"]), []).append(vote)
 
     best_by_family = {family: max(items, key=lambda vote: float(vote["score"])) for family, items in by_family.items()}
-    best_vote = max(votes, key=lambda vote: float(vote["score"]))
     current_family_vote = best_by_family.get(current_family)
     north_family_vote = best_by_family.get("north")
     north_closed = north_open < ARCANE_NORTH_OPEN_FLOOR_RATIO
@@ -652,38 +655,65 @@ def _choose_arcane_direction(
         north_family_vote["north_open"] = north_open
         return north_family_vote
 
-    family_compare_scores: dict[str, float] = {}
-    if west_family_vote is not None:
-        family_compare_scores["west"] = float(west_family_vote["score"])
-    if east_family_vote is not None:
-        family_compare_scores["east"] = float(east_family_vote["score"])
-
-    if family_compare_scores:
-        best_family = max(family_compare_scores, key=family_compare_scores.get)
-        best_vote = best_by_family[best_family]
+    side_family_vote = _choose_arcane_side_family_vote(
+        west_family_vote,
+        east_family_vote,
+        current_family_vote,
+        current_family,
+        previous_key,
+        west_open,
+        east_open,
+        allow_family_switch,
+    )
+    if side_family_vote is not None:
+        best_vote = side_family_vote
     elif current_family_vote is not None:
         best_vote = current_family_vote
     else:
         best_vote = max(votes, key=lambda vote: float(vote["score"]))
-
-    if not allow_family_switch and current_family_vote is not None:
-        best_vote = current_family_vote
-    elif (
-        current_family in {"west", "east"}
-        and current_family_vote is not None
-        and best_vote["family"] != current_family
-        and (float(best_vote["score"]) - float(current_family_vote["score"])) <= ARCANE_FAMILY_KEEP_MARGIN
-    ):
-        best_vote = current_family_vote
-
-    previous_vote = next((vote for vote in votes if vote["key"] == previous_key), None)
-    if (
-        previous_vote is not None
-        and not (north_closed and bool(previous_vote.get("north_family")))
-        and (float(best_vote["score"]) - float(previous_vote["score"])) <= ARCANE_VOTE_KEEP_MARGIN
-    ):
-        best_vote = previous_vote
     best_vote["north_open"] = north_open
+    return best_vote
+
+
+def _choose_arcane_side_family_vote(
+    west_family_vote: dict[str, object] | None,
+    east_family_vote: dict[str, object] | None,
+    current_family_vote: dict[str, object] | None,
+    current_family: str,
+    previous_key: str,
+    west_open: float,
+    east_open: float,
+    allow_family_switch: bool,
+) -> dict[str, object] | None:
+    side_votes: dict[str, dict[str, object]] = {}
+    side_gates: dict[str, float] = {}
+    if west_family_vote is not None:
+        side_votes["west"] = west_family_vote
+        side_gates["west"] = west_open
+    if east_family_vote is not None:
+        side_votes["east"] = east_family_vote
+        side_gates["east"] = east_open
+    if not side_votes:
+        return None
+
+    best_family = max(side_gates, key=side_gates.get)
+    best_vote = side_votes[best_family]
+
+    if not allow_family_switch and current_family in side_votes and current_family_vote is not None:
+        return current_family_vote
+
+    if current_family in side_votes and current_family_vote is not None and best_family != current_family:
+        gate_margin = side_gates[best_family] - side_gates[current_family]
+        if gate_margin <= ARCANE_SIDE_GATE_KEEP_MARGIN:
+            best_family = current_family
+            best_vote = current_family_vote
+
+    previous_vote = next((vote for vote in side_votes.values() if vote["key"] == previous_key), None)
+    if previous_vote is not None and previous_vote["family"] == best_family:
+        score_margin = float(best_vote["score"]) - float(previous_vote["score"])
+        if score_margin <= ARCANE_VOTE_KEEP_MARGIN:
+            best_vote = previous_vote
+
     return best_vote
 
 
@@ -731,13 +761,43 @@ def _score_arcane_north_open_signal(frame: np.ndarray, fast_maps: dict[str, np.n
     return max(probe_values)
 
 
+def _score_arcane_west_open_signal(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> float:
+    floor_mask = fast_maps["floor_mask"]
+    probe_values: list[float] = []
+    for probe_ratio in ARCANE_WEST_DIRECTION_POINTS.values():
+        floor_ratio = _sample_arcane_circle_at_ratio(
+            floor_mask,
+            probe_ratio,
+            ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO,
+        )
+        probe_values.append(floor_ratio)
+    if not probe_values:
+        return 0.0
+    return max(probe_values)
+
+
+def _score_arcane_east_open_signal(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> float:
+    floor_mask = fast_maps["floor_mask"]
+    probe_values: list[float] = []
+    for probe_ratio in ARCANE_EAST_DIRECTION_POINTS.values():
+        floor_ratio = _sample_arcane_circle_at_ratio(
+            floor_mask,
+            probe_ratio,
+            ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO,
+        )
+        probe_values.append(floor_ratio)
+    if not probe_values:
+        return 0.0
+    return max(probe_values)
+
+
 # family별 별도 gate 신호를 모음
 # 현재는 north만 별도 open gate가 있고 west/east는 0으로 둠
 def _score_arcane_family_signals(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> dict[str, float]:
     return {
         "north": _score_arcane_north_open_signal(frame, fast_maps),
-        "west": 0.0,
-        "east": 0.0,
+        "west": _score_arcane_west_open_signal(frame, fast_maps),
+        "east": _score_arcane_east_open_signal(frame, fast_maps),
     }
 
 
@@ -818,36 +878,6 @@ def _arcane_direction_continuity_bonus(previous_ratio: tuple[float, float], cand
     dy = previous_ratio[1] - candidate_ratio[1]
     distance = (dx * dx + dy * dy) ** 0.5
     return max(0.0, 0.18 - distance) * 0.7
-
-
-# 북쪽 루트의 끝(소환사 배치 또는 비소환사 dead end)에 도달했는지 감지
-# template와 summoner clue를 함께 사용해 north_go를 언제 멈출지 결정
-def _detect_arcane_north_terminal(session, frame: np.ndarray) -> str | None:
-    if (
-        session._arcane_summoner_north_template is not None
-        and session._locate_template(frame, session._arcane_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None
-    ):
-        return "summoner"
-    if _detect_arcane_summoner_clues(session, frame):
-        return "summoner"
-    if (
-        session._arcane_without_summoner_north_template is not None
-        and session._locate_template(frame, session._arcane_without_summoner_north_template, ARCANE_NORTH_TERMINAL_THRESHOLD) is not None
-    ):
-        return "without_summoner"
-    return None
-
-
-# 소환사 방 근처에서만 보이는 보조 단서들을 찾아 terminal 감지를 보강
-def _detect_arcane_summoner_clues(session, frame: np.ndarray) -> bool:
-    for template in (
-        session._arcane_horazon_journal_template,
-        session._arcane_summoner_location_template,
-        session._arcane_summoner_location_background_template,
-    ):
-        if session._locate_template(frame, template, ARCANE_SUMMONER_CLUE_THRESHOLD) is not None:
-            return True
-    return False
 
 
 # 연속 두 프레임의 ROI 차이를 평균값으로 계산해 "얼마나 실제로 화면이 변했는지" 측정

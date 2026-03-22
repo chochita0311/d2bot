@@ -52,23 +52,50 @@ ROUTE_SEGMENT = RunRouteSegment(
     ),
 )
 
+# 마지막 fast 비전 결과가 이 시간보다 오래되면 family 전환을 매우 보수적으로 봄
 ARCANE_FAST_SWITCH_LIMIT_MS = 120
+
+# 조준 자체는 family 전환보다 조금 더 느슨하게 허용해 stale 프레임 고착을 줄임
 ARCANE_FAST_STEER_LIMIT_MS = 350
+
+# slow 비전(몬스터, loot, hover blocker)이 이 시간보다 오래되면 의사결정에 반영하지 않음
 ARCANE_SLOW_STALE_LIMIT_MS = 450
+
+# ray 경로 중간 샘플을 평가할 때 각 샘플 중심에서 잘라볼 패치 반경의 기본값
 ARCANE_DIRECTION_PATCH_RADIUS = 42
+
+# center -> candidate 직선 위에서 어느 지점을 샘플할지 정하는 비율
 ARCANE_DIRECTION_PATH_SAMPLES = (0.45, 0.65, 0.85)
+
+# fast 판단용 축소 맵 비율, 작을수록 빠르지만 세부 구조는 덜 봄
 ARCANE_FAST_SCALE = 0.35
+
+# 축소 후에도 패치가 너무 작아지지 않도록 보장하는 최소 반경
 ARCANE_FAST_MIN_PATCH_RADIUS = 8
+
+# north_open gate가 이 값보다 낮으면 "2시 방향이 닫혔다"고 판단
 ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.1
+
+# 새 후보가 이전 후보보다 이 정도 이상 좋아야 바로 갈아타게 만드는 hysteresis 여유값
 ARCANE_VOTE_KEEP_MARGIN = 0.045
+
+# left/right family 자체를 바꿀 때 쓰는 더 큰 hysteresis 여유값
 ARCANE_FAMILY_KEEP_MARGIN = 0.06
+
+# side branch에서 north로 재진입했을 때 커서 재조준을 매우 빠르게 끝내기 위한 settle 값
 ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
+
+# left/right 쪽은 커서를 화면 끝까지 뻗지 않고 중심 쪽으로 줄여 제어성을 높임
 ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
+
+# north_open gate가 upper-right 사분면에서 참조하는 원형 probe의 상대 좌표
 ARCANE_NORTH_OPEN_CIRCLE_PROBES = (
     (2.0 / 3.0, 1.0 / 3.0),
     (5.0 / 6.0, 1.0 / 3.0),
     (5.0 / 6.0, 2.0 / 3.0),
 )
+
+# 각 north_open probe 원의 반경 비율, 너무 크면 다른 통로가 섞이고 너무 작으면 노이즈가 커짐
 ARCANE_NORTH_OPEN_CIRCLE_RADIUS_RATIO = 0.16
 
 
@@ -94,6 +121,8 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
 )
 
 
+# Arcane 북쪽 루트의 실시간 제어 루프 전체를 담당
+# hub 정렬, fast/slow 비전 파이프라인, 방향 선택, 실제 커서 조준과 이동까지 여기서 이어짐
 def run_arcane_north_go(session, capture) -> None:
     actions = session._resolve_arcane_character_actions()
     if actions is None or not actions.movement_skill_key:
@@ -128,6 +157,7 @@ def run_arcane_north_go(session, capture) -> None:
     loot_session = LootPickupSession(session.config)
     previous_fast_frame: np.ndarray | None = None
 
+    # runtime 콜백 안에서도 최신 target dict를 같은 형태로 넘기기 위한 얇은 Wrapper
     class _TargetRef:
         def __init__(self, target: dict[str, int]):
             self.target = target
@@ -147,9 +177,12 @@ def run_arcane_north_go(session, capture) -> None:
     }
     movement_state = MovementExecutionState()
 
+    # runtime worker에서 발생한 예외를 이벤트 로그로 올려 메인 UI가 이유를 알 수 있게 함
     def _runtime_error(stage: str, exc: Exception) -> None:
         session.events.put(session.event_class("error", f"Arcane North Test {stage} thread failed: {exc}"))
 
+    # 고속 비전 단계
+    # 방향 후보 vote와 north gate 신호처럼 자주 바뀌는 판단 값을 빠르게 계산
     def _fast_vision(frame_packet) -> dict[str, object]:
         nonlocal previous_fast_frame
         current_frame = frame_packet.frame
@@ -169,6 +202,8 @@ def run_arcane_north_go(session, capture) -> None:
         previous_fast_frame = current_frame
         return payload
 
+    # 저속 비전 단계
+    # monster, loot, hover blocker, terminal 같은 상대적으로 무거운 감지를 수행
     def _slow_vision(frame_packet) -> dict[str, object]:
         loot_hit = loot_session.scan_frame(frame_packet.frame)
         return {
@@ -178,6 +213,8 @@ def run_arcane_north_go(session, capture) -> None:
             "hover_blocker_kind": _detect_arcane_hover_blocker(session, frame_packet.frame),
         }
 
+    # fast/slow 비전 결과를 모아 실제로 어디를 가리킬지 결정하고 이동 명령까지 실행
+    # stale frame 처리, north gate 우선 순위, family hysteresis, hover 회피가 모두 여기서 합쳐짐
     def _decision(snapshot: RuntimeSnapshot) -> dict[str, object] | None:
         if session._check_for_user_interrupt():
             raise RuntimeError("stopped by user interference")
@@ -368,6 +405,8 @@ def run_arcane_north_go(session, capture) -> None:
     session.events.put(session.event_class("info", "Arcane North Test: stopped."))
 
 
+# 최종 후보 ratio를 실제 커서 이동 ratio로 변환해 조준
+# 필요하면 floor-guided 보정, side family 반경 축소, hover blocker 회피까지 한 번에 처리
 def _steer_arcane_movement(
     session,
     capture_target,
@@ -402,6 +441,8 @@ def _steer_arcane_movement(
     return floor_ratio
 
 
+# 현재 프레임에서 커서 hover 때문에 이동을 방해할 수 있는 오브젝트를 찾음
+# chest와 teleporter를 구분해서 이후 nudge 강도를 다르게 적용
 def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
     if session._locate_template(frame, session._arcane_chest_hover_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
         return "chest"
@@ -410,6 +451,8 @@ def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
     return None
 
 
+# 화면 중심을 기준으로 목표 ratio를 안쪽으로 당김
+# 주로 left/right side branch에서 너무 먼 조준으로 제어가 거칠어지는 것을 막기 위해 사용
 def _scale_arcane_ratio_from_center(ratio: tuple[float, float], scale: float) -> tuple[float, float]:
     center_x, center_y = 0.5, 0.5
     scaled_x = center_x + ((ratio[0] - center_x) * scale)
@@ -417,6 +460,8 @@ def _scale_arcane_ratio_from_center(ratio: tuple[float, float], scale: float) ->
     return (scaled_x, scaled_y)
 
 
+# base_ratio 주변 후보들 중 실제 floor-like 패치가 가장 좋은 점을 골라 조준점을 미세 보정
+# 특히 좁은 Arcane 통로에서 텅 빈 void를 직접 찍지 않도록 도와줌
 def _resolve_arcane_floor_guided_ratio(
     session, frame: np.ndarray, base_ratio: tuple[float, float], path_stage: int = 0
 ) -> tuple[float, float]:
@@ -432,12 +477,16 @@ def _resolve_arcane_floor_guided_ratio(
     return best_ratio
 
 
+# 작은 패치 하나가 얼마나 "Arcane 바닥답게" 보이는지 점수화
+# floor gray는 가산하고 star/void는 감산
 def _score_arcane_floor_patch(patch: np.ndarray) -> float:
     floor_ratio = palette_match_ratio(patch, ARCANE_FLOOR_GRAY_PALETTE_BGR, ARCANE_FLOOR_MAX_DISTANCE)
     star_void_ratio = palette_match_ratio(patch, ARCANE_STAR_VOID_PALETTE_BGR, ARCANE_STAR_VOID_MAX_DISTANCE)
     return (floor_ratio * 100.0) - (star_void_ratio * 80.0)
 
 
+# 특정 화면 ratio 주변 패치를 잘라 _score_arcane_floor_patch에 넘긴다.
+# floor-guided 조준 보정의 기본 점수 함수다.
 def _score_arcane_floor_at_ratio(session, frame: np.ndarray, ratio: tuple[float, float]) -> float:
     height, width = frame.shape[:2]
     center_x = int(width * ratio[0])
@@ -453,6 +502,8 @@ def _score_arcane_floor_at_ratio(session, frame: np.ndarray, ratio: tuple[float,
     return _score_arcane_floor_patch(patch)
 
 
+# fast 판단용으로 원본 프레임을 축소하고 floor/star 여부를 빠르게 볼 수 있는 mask를 만듦
+# 이후 ray 샘플 점수와 north_open probe가 이 결과를 재사용
 def _build_arcane_fast_maps(frame: np.ndarray) -> dict[str, np.ndarray]:
     scaled_frame = cv.resize(frame, None, fx=ARCANE_FAST_SCALE, fy=ARCANE_FAST_SCALE, interpolation=cv.INTER_AREA)
     floor_distance = palette_distance_map_bgr(scaled_frame, ARCANE_FLOOR_GRAY_PALETTE_BGR)
@@ -462,6 +513,8 @@ def _build_arcane_fast_maps(frame: np.ndarray) -> dict[str, np.ndarray]:
     return {"floor_mask": floor_mask, "star_mask": star_mask, "scale": ARCANE_FAST_SCALE}
 
 
+# 모든 방향 candidate에 대해 ray 기반 openness 점수와 bias, continuity bonus를 합쳐 vote를 만듦
+# north family 후보들의 경로 점수는 north_open 보조값도 함께 계산해 둠
 def _score_arcane_direction_candidates(
     frame: np.ndarray,
     fast_maps: dict[str, np.ndarray],
@@ -494,6 +547,8 @@ def _score_arcane_direction_candidates(
     return votes
 
 
+# north gate와 left/right family hysteresis를 적용해 이번 tick의 최종 방향 후보 하나를 고름
+# "2시가 열리면 north 우선" 규칙과 "조금만 좋아서는 바로 갈아타지 않음" 규칙이 여기에 있음
 def _choose_arcane_direction(
     votes: list[dict[str, object]],
     previous_key: str,
@@ -568,6 +623,8 @@ def _choose_arcane_direction(
     return best_vote
 
 
+# center에서 candidate까지 가는 직선 경로 위 중간 샘플들을 보고 openness를 계산
+# 현재 bend 문제가 생기는 핵심 로직이기도 하며, 곡선 길을 직선 ray로 본다는 한계가 있음
 def _score_arcane_direction_path(
     frame: np.ndarray,
     fast_maps: dict[str, np.ndarray],
@@ -593,6 +650,8 @@ def _score_arcane_direction_path(
     return floor_ratio, star_void_ratio, openness
 
 
+# north_open gate 전용 점수
+# upper-right 사분면 안의 원형 probe 3개를 검사하고, 그중 가장 floor-like 한 값을 사용
 def _score_arcane_north_open_signal(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> float:
     floor_mask = fast_maps["floor_mask"]
     probe_values: list[float] = []
@@ -604,6 +663,8 @@ def _score_arcane_north_open_signal(frame: np.ndarray, fast_maps: dict[str, np.n
     return max(probe_values)
 
 
+# family별 별도 gate 신호를 모음
+# 현재는 north만 별도 open gate가 있고 left/right는 0으로 둠
 def _score_arcane_family_signals(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> dict[str, float]:
     return {
         "north": _score_arcane_north_open_signal(frame, fast_maps),
@@ -612,6 +673,8 @@ def _score_arcane_family_signals(frame: np.ndarray, fast_maps: dict[str, np.ndar
     }
 
 
+# 저장해 둔 key를 다시 candidate 객체로 되돌림
+# stale-fast hold 같은 fallback 구간에서 마지막 방향 복원에 사용
 def _resolve_arcane_direction_candidate(key: str) -> ArcaneDirectionCandidate:
     for candidate in ARCANE_DIRECTION_CANDIDATES:
         if candidate.key == key:
@@ -619,10 +682,14 @@ def _resolve_arcane_direction_candidate(key: str) -> ArcaneDirectionCandidate:
     return ARCANE_DIRECTION_CANDIDATES[0]
 
 
+# 두 ratio 사이를 선형 보간
+# ray 샘플 지점 계산의 가장 기초가 되는 유틸
 def _interpolate_ratio(start: tuple[float, float], end: tuple[float, float], t: float) -> tuple[float, float]:
     return (start[0] + ((end[0] - start[0]) * t), start[1] + ((end[1] - start[1]) * t))
 
 
+# 컬러 프레임에서 특정 ratio 주변 정사각 패치를 잘라냄
+# 주로 시각 디버깅이나 추가 색상 기반 점수화에 재사용할 수 있는 기본 도구
 def _crop_arcane_patch_at_ratio(frame: np.ndarray, ratio: tuple[float, float], radius: int) -> np.ndarray:
     height, width = frame.shape[:2]
     center_x = int(width * ratio[0])
@@ -634,6 +701,8 @@ def _crop_arcane_patch_at_ratio(frame: np.ndarray, ratio: tuple[float, float], r
     return frame[top:bottom, left:right]
 
 
+# 1채널 스칼라 이미지(mask 등)에서 특정 ratio 주변 패치를 잘라냄
+# ray 샘플 구간의 floor/star 평균 계산에 사용
 def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, float], radius: int) -> np.ndarray:
     height, width = image.shape[:2]
     center_x = int(width * ratio[0])
@@ -645,6 +714,8 @@ def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, fl
     return image[top:bottom, left:right]
 
 
+# upper-right 사분면 내부의 상대 좌표 probe 하나를 원형 영역으로 샘플링
+# north_open gate는 이 함수를 세 번 호출해 3개 probe 중 가장 좋은 값을 사용
 def _sample_arcane_upper_right_circle(
     image: np.ndarray, probe_ratio: tuple[float, float], radius_ratio: float
 ) -> float:
@@ -679,6 +750,8 @@ def _sample_arcane_upper_right_circle(
     return float(patch[mask].mean())
 
 
+# 직전 조준 방향과 가까운 후보에 작은 가산점을 줘서 미세한 흔들림을 줄임
+# 큰 전략 변경이 아니라 tie-breaker에 가까운 안정화 장치
 def _arcane_direction_continuity_bonus(previous_ratio: tuple[float, float], candidate_ratio: tuple[float, float]) -> float:
     dx = previous_ratio[0] - candidate_ratio[0]
     dy = previous_ratio[1] - candidate_ratio[1]
@@ -686,6 +759,8 @@ def _arcane_direction_continuity_bonus(previous_ratio: tuple[float, float], cand
     return max(0.0, 0.18 - distance) * 0.7
 
 
+# 북쪽 루트의 끝(소환사 배치 또는 비소환사 dead end)에 도달했는지 감지
+# template와 summoner clue를 함께 사용해 north_go를 언제 멈출지 결정
 def _detect_arcane_north_terminal(session, frame: np.ndarray) -> str | None:
     if (
         session._arcane_summoner_north_template is not None
@@ -702,6 +777,7 @@ def _detect_arcane_north_terminal(session, frame: np.ndarray) -> str | None:
     return None
 
 
+# 소환사 방 근처에서만 보이는 보조 단서들을 찾아 terminal 감지를 보강
 def _detect_arcane_summoner_clues(session, frame: np.ndarray) -> bool:
     for template in (
         session._arcane_horazon_journal_template,
@@ -713,6 +789,8 @@ def _detect_arcane_summoner_clues(session, frame: np.ndarray) -> bool:
     return False
 
 
+# 연속 두 프레임의 ROI 차이를 평균값으로 계산해 "얼마나 실제로 화면이 변했는지" 측정
+# 텔포는 빨라도 화면 변화가 적으면 제자리 왕복이나 dead movement로 볼 수 있음
 def _measure_arcane_progress_change(session, previous_frame: np.ndarray | None, current_frame: np.ndarray) -> float | None:
     if previous_frame is None:
         return None
@@ -721,6 +799,7 @@ def _measure_arcane_progress_change(session, previous_frame: np.ndarray | None, 
     return float(cv.absdiff(prev_small, curr_small).mean())
 
 
+# 최근 여러 프레임의 progress change 평균을 계산해 순간 노이즈보다 조금 더 안정적인 진척도를 만듦
 def _measure_arcane_progress_trend(recent_frames: tuple) -> float | None:
     if len(recent_frames) < 3:
         return None
@@ -734,6 +813,7 @@ def _measure_arcane_progress_trend(recent_frames: tuple) -> float | None:
     return float(sum(values) / len(values))
 
 
+# UI 가장자리 영향을 줄이기 위해 화면 중앙부만 잘라 progress 비교에 사용
 def _arcane_progress_roi(frame: np.ndarray) -> np.ndarray:
     height, width = frame.shape[:2]
     return frame[int(height * 0.08) : int(height * 0.82), int(width * 0.08) : int(width * 0.92)]

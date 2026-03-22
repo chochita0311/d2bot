@@ -79,13 +79,13 @@ ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.1
 # 새 후보가 이전 후보보다 이 정도 이상 좋아야 바로 갈아타게 만드는 hysteresis 여유값
 ARCANE_VOTE_KEEP_MARGIN = 0.045
 
-# left/right family 자체를 바꿀 때 쓰는 더 큰 hysteresis 여유값
+# west/east family 자체를 바꿀 때 쓰는 더 큰 hysteresis 여유값
 ARCANE_FAMILY_KEEP_MARGIN = 0.06
 
 # side branch에서 north로 재진입했을 때 커서 재조준을 매우 빠르게 끝내기 위한 settle 값
 ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
-# left/right 쪽은 커서를 화면 끝까지 뻗지 않고 중심 쪽으로 줄여 제어성을 높임
+# west/east 쪽은 커서를 화면 끝까지 뻗지 않고 중심 쪽으로 줄여 제어성을 높임
 ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
 
 # north_open gate가 upper-right 사분면에서 참조하는 원형 probe의 상대 좌표
@@ -113,10 +113,10 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
     ArcaneDirectionCandidate("north_primary", "2 o'clock primary", (0.84, 0.24), family="north", north_family=True, bias=0.22),
     ArcaneDirectionCandidate("north_soft", "2 o'clock soft", (0.79, 0.27), family="north", north_family=True, bias=0.18),
     ArcaneDirectionCandidate("north_sharp", "2 o'clock sharp", (0.89, 0.18), family="north", north_family=True, bias=0.18),
-    ArcaneDirectionCandidate("left_turn", "10 o'clock turn", (0.15, 0.18), family="left", bias=0.04),
-    ArcaneDirectionCandidate("left_soft", "10 o'clock soft", (0.21, 0.23), family="left", bias=0.03),
-    ArcaneDirectionCandidate("right_soft", "4 o'clock soft", (0.84, 0.70), family="right", bias=0.02),
-    ArcaneDirectionCandidate("right_turn", "4 o'clock bend", (0.90, 0.80), family="right", bias=0.00),
+    ArcaneDirectionCandidate("west_turn", "10 o'clock turn", (0.15, 0.18), family="west", bias=0.04),
+    ArcaneDirectionCandidate("west_soft", "10 o'clock soft", (0.21, 0.23), family="west", bias=0.03),
+    ArcaneDirectionCandidate("east_soft", "4 o'clock soft", (0.84, 0.70), family="east", bias=0.02),
+    ArcaneDirectionCandidate("east_turn", "4 o'clock bend", (0.90, 0.80), family="east", bias=0.00),
     ArcaneDirectionCandidate("north_recover", "2 o'clock recover", (0.88, 0.12), family="north", north_family=True, bias=0.14),
 )
 
@@ -163,7 +163,6 @@ def run_arcane_north_go(session, capture) -> None:
         "last_direction_key": "north_primary",
         "last_direction_ratio": (0.84, 0.24),
         "route_family": "north",
-        "route_family_steps": 0,
     }
     movement_state = MovementExecutionState()
 
@@ -228,7 +227,7 @@ def run_arcane_north_go(session, capture) -> None:
         slow_age_ms = int((now - snapshot.slow_vision.source_captured_at) * 1000) if snapshot.slow_vision is not None else None
         fast_switch_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_SWITCH_LIMIT_MS
         fast_steer_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_STEER_LIMIT_MS
-        allow_side_family_switch = fast_steer_fresh if control["route_family"] in {"left", "right"} else fast_switch_fresh
+        allow_side_family_switch = fast_steer_fresh if control["route_family"] in {"west", "east"} else fast_switch_fresh
         slow_fresh = slow_age_ms is not None and slow_age_ms <= ARCANE_SLOW_STALE_LIMIT_MS
 
         if not fast_steer_fresh:
@@ -257,7 +256,6 @@ def run_arcane_north_go(session, capture) -> None:
             control["north_steps"] += 1
             control["last_direction_key"] = direction_key
             control["last_direction_ratio"] = final_ratio
-            control["route_family_steps"] += 1
             session.events.put(
                 session.event_class(
                     "info",
@@ -320,7 +318,6 @@ def run_arcane_north_go(session, capture) -> None:
             control["last_direction_key"],
             control["route_family"],
             family_signals,
-            control["route_family_steps"],
             allow_side_family_switch,
         )
         previous_route_family = control["route_family"]
@@ -330,7 +327,7 @@ def run_arcane_north_go(session, capture) -> None:
         cursor_ratio = direction_choice["ratio"]
         direction_score = direction_choice["score"]
         north_open = direction_choice["north_open"]
-        quick_reopen_steer = previous_route_family in {"left", "right"} and direction_family == "north"
+        quick_reopen_steer = previous_route_family in {"west", "east"} and direction_family == "north"
         target_ref = _TargetRef(latest_frame.target)
         hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
         if hover_blocker_kind is not None:
@@ -350,11 +347,8 @@ def run_arcane_north_go(session, capture) -> None:
         control["north_steps"] += 1
         control["last_direction_key"] = direction_key
         control["last_direction_ratio"] = final_ratio
-        if direction_family == control["route_family"]:
-            control["route_family_steps"] += 1
-        else:
+        if direction_family != control["route_family"]:
             control["route_family"] = direction_family
-            control["route_family_steps"] = 1
         session.events.put(
             session.event_class(
                 "info",
@@ -408,7 +402,7 @@ def _steer_arcane_movement(
     direction_family: str | None = None,
 ) -> tuple[float, float]:
     guided_ratio = base_ratio if fast_reacquire else _resolve_arcane_floor_guided_ratio(session, frame, base_ratio, path_stage)
-    if direction_family in {"left", "right"}:
+    if direction_family in {"west", "east"}:
         floor_ratio = _scale_arcane_ratio_from_center(guided_ratio, ARCANE_CURSOR_RADIUS_SCALE)
     else:
         floor_ratio = guided_ratio
@@ -442,7 +436,7 @@ def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
 
 
 # 화면 중심을 기준으로 목표 ratio를 안쪽으로 당김
-# 주로 left/right side branch에서 너무 먼 조준으로 제어가 거칠어지는 것을 막기 위해 사용
+# 주로 west/east side branch에서 너무 먼 조준으로 제어가 거칠어지는 것을 막기 위해 사용
 def _scale_arcane_ratio_from_center(ratio: tuple[float, float], scale: float) -> tuple[float, float]:
     center_x, center_y = 0.5, 0.5
     scaled_x = center_x + ((ratio[0] - center_x) * scale)
@@ -537,14 +531,13 @@ def _score_arcane_direction_candidates(
     return votes
 
 
-# north gate와 left/right family hysteresis를 적용해 이번 tick의 최종 방향 후보 하나를 고름
+# north gate와 west/east family hysteresis를 적용해 이번 tick의 최종 방향 후보 하나를 고름
 # "2시가 열리면 north 우선" 규칙과 "조금만 좋아서는 바로 갈아타지 않음" 규칙이 여기에 있음
 def _choose_arcane_direction(
     votes: list[dict[str, object]],
     previous_key: str,
     current_family: str,
     family_signals: dict[str, float],
-    family_steps: int,
     allow_family_switch: bool,
 ) -> dict[str, object]:
     if not votes:
@@ -567,8 +560,8 @@ def _choose_arcane_direction(
     current_family_vote = best_by_family.get(current_family)
     north_family_vote = best_by_family.get("north")
     north_closed = north_open < ARCANE_NORTH_OPEN_FLOOR_RATIO
-    left_family_vote = best_by_family.get("left")
-    right_family_vote = best_by_family.get("right")
+    west_family_vote = best_by_family.get("west")
+    east_family_vote = best_by_family.get("east")
 
     if north_closed and current_family == "north":
         current_family_vote = None
@@ -579,10 +572,10 @@ def _choose_arcane_direction(
         return north_family_vote
 
     family_compare_scores: dict[str, float] = {}
-    if left_family_vote is not None:
-        family_compare_scores["left"] = float(left_family_vote["score"])
-    if right_family_vote is not None:
-        family_compare_scores["right"] = float(right_family_vote["score"])
+    if west_family_vote is not None:
+        family_compare_scores["west"] = float(west_family_vote["score"])
+    if east_family_vote is not None:
+        family_compare_scores["east"] = float(east_family_vote["score"])
 
     if family_compare_scores:
         best_family = max(family_compare_scores, key=family_compare_scores.get)
@@ -595,7 +588,7 @@ def _choose_arcane_direction(
     if not allow_family_switch and current_family_vote is not None:
         best_vote = current_family_vote
     elif (
-        current_family in {"left", "right"}
+        current_family in {"west", "east"}
         and current_family_vote is not None
         and best_vote["family"] != current_family
         and (float(best_vote["score"]) - float(current_family_vote["score"])) <= ARCANE_FAMILY_KEEP_MARGIN
@@ -654,12 +647,12 @@ def _score_arcane_north_open_signal(frame: np.ndarray, fast_maps: dict[str, np.n
 
 
 # family별 별도 gate 신호를 모음
-# 현재는 north만 별도 open gate가 있고 left/right는 0으로 둠
+# 현재는 north만 별도 open gate가 있고 west/east는 0으로 둠
 def _score_arcane_family_signals(frame: np.ndarray, fast_maps: dict[str, np.ndarray]) -> dict[str, float]:
     return {
         "north": _score_arcane_north_open_signal(frame, fast_maps),
-        "left": 0.0,
-        "right": 0.0,
+        "west": 0.0,
+        "east": 0.0,
     }
 
 

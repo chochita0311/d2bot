@@ -5,8 +5,8 @@
 기준 좌표 해석은 다음과 같습니다.
 
 - `north` = `2 o'clock`
-- `left` = `10 o'clock`
-- `right` = `4 o'clock`
+- `west` = `10 o'clock`
+- `east` = `4 o'clock`
 
 `north_go`는 단순히 한 번 목표점을 찍고 끝나는 함수가 아니라, 실시간 비전 결과를 계속 받아서 방향을 다시 평가하고 커서를 다시 조준하는 작은 제어 루프입니다.
 
@@ -36,9 +36,7 @@
   - 직전에 실제로 조준한 ratio입니다.
 - `route_family`
   - 현재 큰 방향 family입니다.
-  - `north`, `left`, `right` 중 하나입니다.
-- `route_family_steps`
-  - 같은 family를 몇 tick째 유지 중인지 기록합니다.
+  - `north`, `west`, `east` 중 하나입니다.
 - `last_fast_payload`, `last_slow_payload`
   - 가장 최근 fast/slow 비전 계산 결과를 저장합니다.
 
@@ -46,17 +44,22 @@
 
 ## 3. Runtime 구조
 
-실제 반복 루프는 `RealtimeVisionRuntime`으로 돌고, 안에 세 가지 콜백이 들어갑니다.
+실제 반복 루프는 `RealtimeVisionRuntime`으로 돌고, 내부적으로 별도 capture thread와 세 가지 콜백 thread가 함께 돕니다.
 
+- `_capture_loop`
 - `_fast_vision`
 - `_slow_vision`
 - `_decision`
 
-흐름은 크게 다음과 같습니다.
+즉 구조를 thread 기준으로 보면:
 
-1. fast 비전이 방향 관련 점수를 자주 계산합니다.
-2. slow 비전이 monster, loot, hover blocker, terminal을 비교적 천천히 계산합니다.
-3. decision 단계가 두 결과를 합쳐 이번 tick의 실제 이동 방향을 정합니다.
+1. capture thread가 최신 frame을 계속 캡처합니다.
+2. runtime state가 `latest_frame`과 최근 5개 frame(`recent_frames`)을 공유 상태로 유지합니다.
+3. fast vision thread가 최신 frame을 읽어 방향 관련 점수를 자주 계산합니다.
+4. slow vision thread가 최신 frame을 읽어 monster, loot, hover blocker, terminal을 비교적 천천히 계산합니다.
+5. decision thread가 snapshot을 읽어 이번 tick의 실제 이동 방향을 정합니다.
+
+중요한 점은 이 구조가 "프레임 큐를 하나씩 소비"하기보다는 "가장 최신 frame과 최근 몇 frame을 공유 상태로 읽는 구조"에 가깝다는 점입니다.
 
 ## 4. Fast 비전 단계
 
@@ -93,12 +96,12 @@
   - `north_soft`
   - `north_sharp`
   - `north_recover`
-- left family
-  - `left_turn`
-  - `left_soft`
-- right family
-  - `right_soft`
-  - `right_turn`
+- west family
+  - `west_turn`
+  - `west_soft`
+- east family
+  - `east_soft`
+  - `east_turn`
 
 각 후보 score는 대략 아래 3개를 더해서 만듭니다.
 
@@ -142,7 +145,7 @@
 
 [ _score_arcane_north_open_signal() ](/D:/python/d2bot/diablo2/runs/summoner/routes/north_go.py#L628)는 `2 o'clock`이 열렸는지 따로 판정합니다.
 
-이건 left/right 평가처럼 ray 직선을 보지 않습니다.
+이건 west/east 평가처럼 ray 직선을 보지 않습니다.
 
 대신:
 
@@ -156,7 +159,7 @@
 
 이고,
 
-`left/right` 후보 점수는:
+`west/east` 후보 점수는:
 
 - "10시 또는 4시로 가는 경로가 더 좋아 보이는가?"를 보는 vote
 
@@ -282,12 +285,12 @@ pause할 이유가 없으면 `_choose_arcane_direction()`으로 들어갑니다.
 
 즉 `2시 방향이 열려 있으면 north 우선`이 현재 최상위 규칙입니다.
 
-### 8-2. north가 닫히면 left vs right 비교
+### 8-2. north가 닫히면 west vs east 비교
 
 `north_open`이 닫혔으면:
 
-- left family 최고점 1개
-- right family 최고점 1개
+- west family 최고점 1개
+- east family 최고점 1개
 
 를 비교해서 더 높은 family를 고릅니다.
 
@@ -300,7 +303,7 @@ pause할 이유가 없으면 `_choose_arcane_direction()`으로 들어갑니다.
 
 ### 8-3. family hysteresis
 
-이미 `left`나 `right`를 가는 중이면, 새 family가 조금만 좋아서는 바로 바꾸지 않습니다.
+이미 `west`나 `east`를 가는 중이면, 새 family가 조금만 좋아서는 바로 바꾸지 않습니다.
 
 기준은 [ARCANE_FAMILY_KEEP_MARGIN](/D:/python/d2bot/diablo2/runs/summoner/routes/north_go.py#L60) 입니다.
 
@@ -331,7 +334,7 @@ family 수준 말고 candidate 수준에서도 한 번 더 안정화합니다.
 이 함수는 다음 순서로 동작합니다.
 
 1. 필요하면 floor-guided ratio로 base ratio를 조금 보정
-2. family가 `left/right`면 중심 쪽으로 반경 축소
+2. family가 `west/east`면 중심 쪽으로 반경 축소
 3. 커서를 그 ratio로 실제 이동
 4. `fast_reacquire`면 아주 짧게 settle
 5. hover blocker가 있으면 nudge offset으로 추가 회피
@@ -348,7 +351,7 @@ family 수준 말고 candidate 수준에서도 한 번 더 안정화합니다.
 
 ### 9-2. side family 반경 축소
 
-family가 `left` 또는 `right`이면 [ARCANE_CURSOR_RADIUS_SCALE](/D:/python/d2bot/diablo2/runs/summoner/routes/north_go.py#L63)을 적용해 목표를 화면 중심 쪽으로 당깁니다.
+family가 `west` 또는 `east`이면 [ARCANE_CURSOR_RADIUS_SCALE](/D:/python/d2bot/diablo2/runs/summoner/routes/north_go.py#L63)을 적용해 목표를 화면 중심 쪽으로 당깁니다.
 
 이유는:
 
@@ -357,7 +360,7 @@ family가 `left` 또는 `right`이면 [ARCANE_CURSOR_RADIUS_SCALE](/D:/python/d2
 
 ### 9-3. 빠른 north 재진입
 
-직전 family가 `left/right`였는데 이번에 `north`가 다시 열린 경우,
+직전 family가 `west/east`였는데 이번에 `north`가 다시 열린 경우,
 
 - `quick_reopen_steer = True`
 
@@ -408,7 +411,7 @@ family가 `left` 또는 `right`이면 [ARCANE_CURSOR_RADIUS_SCALE](/D:/python/d2
 3. slow 비전으로 terminal / monster / loot / hover를 계산
 4. stale이면 마지막 방향 유지
 5. `north_open`이 열리면 무조건 north family 우선
-6. north가 닫히면 left vs right 최고 후보 비교
+6. north가 닫히면 west vs east 최고 후보 비교
 7. family hysteresis와 previous-vote hysteresis로 작은 흔들림 방지
 8. 최종 후보를 floor-guided + radius scale + hover 회피를 거쳐 실제 조준
 9. terminal이 보이면 종료
@@ -419,14 +422,14 @@ family가 `left` 또는 `right`이면 [ARCANE_CURSOR_RADIUS_SCALE](/D:/python/d2
 
 - 빠르다
 - 구조가 단순하다
-- `north gate`와 `left/right vote`가 분리돼 있어 해석이 쉽다
+- `north gate`와 `west/east vote`가 분리돼 있어 해석이 쉽다
 - hysteresis가 있어 완전 난수처럼 흔들리지는 않는다
 
 ### 약점
 
 - `10/4` candidate 평가는 여전히 직선 ray 샘플 기반이다
 - 실제 Arcane bend는 곡선인데, 현재 평가는 직선 경로를 가정한다
-- 그래서 curved branch에서 `left <-> right`가 뒤집히는 장면이 생길 수 있다
+- 그래서 curved branch에서 `west <-> east`가 뒤집히는 장면이 생길 수 있다
 - 특히 한 자리에서 계속 `10`과 `4`가 둘 다 그럴듯해 보이는 장면에 약하다
 
 즉 지금 `north_go`의 핵심 병목은:

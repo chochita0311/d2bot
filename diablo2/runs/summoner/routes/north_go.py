@@ -19,17 +19,16 @@ from diablo2.common.realtime import RealtimeVisionRuntime, RuntimeSnapshot
 from diablo2.runs.base import RunRouteSegment
 from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_CHEST_HOVER_THRESHOLD,
-    ARCANE_CHEST_NUDGE_OFFSETS,
     ARCANE_FLOOR_CANDIDATE_OFFSETS,
     ARCANE_FLOOR_SCORE_RADIUS,
     ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS,
+    ARCANE_HOVER_NUDGE_OFFSETS,
     ARCANE_MOVE_STEP_SETTLE,
     ARCANE_NORTH_TERMINAL_THRESHOLD,
     ARCANE_NORTH_TEST_TICK_SLEEP,
     ARCANE_PROGRESS_CHANGE_THRESHOLD,
     ARCANE_SUMMONER_CLUE_THRESHOLD,
     ARCANE_TELEPORTER_HOVER_THRESHOLD,
-    ARCANE_TELEPORTER_NUDGE_OFFSETS,
     ARCANE_WINGS,
     ARCANE_ZERO_POINT_CURSOR_RATIO,
     prepare_arcane_hub_start,
@@ -89,6 +88,22 @@ ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 ARCANE_CURSOR_RADIUS_SCALE = 5.0 / 7.0
 
 # north_open gate가 upper-right 사분면에서 참조하는 원형 probe의 상대 좌표
+#
+# 전체 화면
+# +--------------------------------------------------+
+# |                            upper-right quarter   |
+# |                         +----------------------+ |
+# |                         |        A       B     | |
+# |                         |                      | |
+# |                         |                C     | |
+# |                         |                      | |
+# |                         +----------------------+ |
+# |                                                  |
+# +--------------------------------------------------+
+#
+# A = (0.833, 0.167)
+# B = (0.917, 0.167)
+# C = (0.917, 0.333)
 ARCANE_NORTH_OPEN_CIRCLE_PROBES = (
     (2.0 / 3.0, 1.0 / 3.0),
     (5.0 / 6.0, 1.0 / 3.0),
@@ -109,15 +124,39 @@ class ArcaneDirectionCandidate:
     bias: float = 0.0
 
 
+#
+# 전체 화면 기준 candidate 대략 위치
+#
+# +--------------------------------------------------+
+# |                                  H    P          |
+# |                                         S        |
+# |      T  W                                        |
+# |                                                  |
+# |                                                  |
+# |                                                  |
+# |                                E                 |
+# |                                   D              |
+# +--------------------------------------------------+
+#
+# north_primary is aligned with north_open probe B.
+# north_sharp is the midpoint of probes A and B.
+# north_soft is the midpoint of probes B and C.
+#
+# P = north_primary = (0.9167, 0.1667)
+# H = north_sharp   = (0.8750, 0.1667)
+# S = north_soft    = (0.9167, 0.2500)
+# T = west_turn     = (0.15, 0.18)
+# W = west_soft     = (0.21, 0.23)
+# E = east_soft     = (0.84, 0.70)
+# D = east_turn     = (0.90, 0.80)
 ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
-    ArcaneDirectionCandidate("north_primary", "2 o'clock primary", (0.84, 0.24), family="north", north_family=True, bias=0.22),
-    ArcaneDirectionCandidate("north_soft", "2 o'clock soft", (0.79, 0.27), family="north", north_family=True, bias=0.18),
-    ArcaneDirectionCandidate("north_sharp", "2 o'clock sharp", (0.89, 0.18), family="north", north_family=True, bias=0.18),
+    ArcaneDirectionCandidate("north_primary", "2 o'clock primary", (11.0 / 12.0, 1.0 / 6.0), family="north", north_family=True, bias=0.22),
+    ArcaneDirectionCandidate("north_soft", "2 o'clock soft", (11.0 / 12.0, 1.0 / 4.0), family="north", north_family=True, bias=0.18),
+    ArcaneDirectionCandidate("north_sharp", "2 o'clock sharp", (7.0 / 8.0, 1.0 / 6.0), family="north", north_family=True, bias=0.18),
     ArcaneDirectionCandidate("west_turn", "10 o'clock turn", (0.15, 0.18), family="west", bias=0.04),
     ArcaneDirectionCandidate("west_soft", "10 o'clock soft", (0.21, 0.23), family="west", bias=0.03),
     ArcaneDirectionCandidate("east_soft", "4 o'clock soft", (0.84, 0.70), family="east", bias=0.02),
     ArcaneDirectionCandidate("east_turn", "4 o'clock bend", (0.90, 0.80), family="east", bias=0.00),
-    ArcaneDirectionCandidate("north_recover", "2 o'clock recover", (0.88, 0.12), family="north", north_family=True, bias=0.14),
 )
 
 
@@ -161,7 +200,7 @@ def run_arcane_north_go(session, capture) -> None:
         "last_monster_log_at": 0.0,
         "last_loot_log_at": 0.0,
         "last_direction_key": "north_primary",
-        "last_direction_ratio": (0.84, 0.24),
+        "last_direction_ratio": (11.0 / 12.0, 1.0 / 6.0),
         "route_family": "north",
     }
     movement_state = MovementExecutionState()
@@ -178,9 +217,7 @@ def run_arcane_north_go(session, capture) -> None:
         recent_frames = runtime.state.snapshot().recent_frames
         trend_change = _measure_arcane_progress_trend(recent_frames)
         fast_maps = _build_arcane_fast_maps(current_frame)
-        direction_votes = _score_arcane_direction_candidates(
-            current_frame, fast_maps, control["last_direction_ratio"], zero_point_ratio
-        )
+        direction_votes = _score_arcane_direction_candidates(current_frame, fast_maps, control["last_direction_ratio"], zero_point_ratio)
         family_signals = _score_arcane_family_signals(current_frame, fast_maps)
         payload = {
             "progress_change": _measure_arcane_progress_change(session, previous_fast_frame, current_frame),
@@ -416,8 +453,7 @@ def _steer_arcane_movement(
     session.events.put(
         session.event_class("info", f"Arcane North Test: {hover_blocker_kind} hover detected while steering; nudging cursor away from it.")
     )
-    nudge_offsets = ARCANE_CHEST_NUDGE_OFFSETS if hover_blocker_kind == "chest" else ARCANE_TELEPORTER_NUDGE_OFFSETS
-    for offset in nudge_offsets:
+    for offset in ARCANE_HOVER_NUDGE_OFFSETS:
         nudged_ratio = session._apply_offset(floor_ratio, offset)
         session._aim_relative_ratio(capture_target, *nudged_ratio, apply_jitter=False)
         session._sleep_range(*session.CLICK_SETTLE)
@@ -426,10 +462,17 @@ def _steer_arcane_movement(
 
 
 # 현재 프레임에서 커서 hover 때문에 이동을 방해할 수 있는 오브젝트를 찾음
-# chest와 teleporter를 구분해서 이후 nudge 강도를 다르게 적용
+# chest 계열(큰 chest, 작은 chest, 잠긴 chest, coffin)과 teleporter를 구분해서 이후 nudge 강도를 다르게 적용
 def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
-    if session._locate_template(frame, session._arcane_chest_hover_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
-        return "chest"
+    chest_hover_templates = (
+        session._arcane_chest_hover_template,
+        session._arcane_small_chest_hover_template,
+        session._arcane_small_locked_chest_hover_template,
+        session._arcane_small_coffin_hover_template,
+    )
+    for chest_template in chest_hover_templates:
+        if session._locate_template(frame, chest_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
+            return "chest"
     if session._locate_template(frame, session._arcane_teleporter_hover_template, ARCANE_TELEPORTER_HOVER_THRESHOLD) is not None:
         return "teleporter"
     return None
@@ -508,9 +551,7 @@ def _score_arcane_direction_candidates(
     votes: list[dict[str, object]] = []
     north_path_open = 0.0
     for candidate in ARCANE_DIRECTION_CANDIDATES:
-        path_floor_ratio, path_star_void_ratio, openness = _score_arcane_direction_path(
-            frame, fast_maps, zero_point_ratio, candidate.ratio
-        )
+        path_floor_ratio, path_star_void_ratio, openness = _score_arcane_direction_path(frame, fast_maps, zero_point_ratio, candidate.ratio)
         continuity_bonus = _arcane_direction_continuity_bonus(previous_ratio, candidate.ratio)
         score = openness + candidate.bias + continuity_bonus
         vote = {
@@ -699,9 +740,7 @@ def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, fl
 
 # upper-right 사분면 내부의 상대 좌표 probe 하나를 원형 영역으로 샘플링
 # north_open gate는 이 함수를 세 번 호출해 3개 probe 중 가장 좋은 값을 사용
-def _sample_arcane_upper_right_circle(
-    image: np.ndarray, probe_ratio: tuple[float, float], radius_ratio: float
-) -> float:
+def _sample_arcane_upper_right_circle(image: np.ndarray, probe_ratio: tuple[float, float], radius_ratio: float) -> float:
     height, width = image.shape[:2]
     upper_right_left = width * 0.5
     upper_right_top = 0.0

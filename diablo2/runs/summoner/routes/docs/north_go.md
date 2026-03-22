@@ -95,7 +95,6 @@
   - `north_primary`
   - `north_soft`
   - `north_sharp`
-  - `north_recover`
 - west family
   - `west_turn`
   - `west_soft`

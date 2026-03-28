@@ -42,6 +42,43 @@
           "f3": 0.8
         }
       }
+    },
+    "constantin": {
+      "display_name": "Constantin",
+      "progression_mode": "standard",
+      "ruleset_family": "rotw",
+      "preferred_run_profile": "summoner",
+      "actions": {
+        "movement_skill_key": "a",
+        "primary_attack_skill_key": "s",
+        "left_skill_key": null,
+        "interact_skill_key": null,
+        "buff_skill_keys": [
+          "w",
+          "right-click",
+          "f1",
+          "f2",
+          "f3"
+        ],
+        "pre_run_buff_order": [
+          "w",
+          "f1",
+          "f1",
+          "f2",
+          "f3",
+          "f3",
+          "w",
+          "right-click"
+        ],
+        "attack_pattern": "single_skill",
+        "engagement_style": "ranged_kite",
+        "buff_action_pause_seconds": {
+          "right-click": 0.35,
+          "f1": 0.1,
+          "f2": 0.1,
+          "f3": 0.8
+        }
+      }
     }
   }
 }

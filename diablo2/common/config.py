@@ -137,8 +137,36 @@ class BotConfig:
     hotkeys: HotkeyConfig = field(default_factory=HotkeyConfig)
     shared_loot: SharedLootProfile = field(default_factory=SharedLootProfile)
     characters: dict[str, CharacterProfile] = field(default_factory=dict)
+    active_character: str | None = None
     run_profiles: dict[str, FarmProfile] = field(default_factory=dict)
     farm: FarmProfile = field(default_factory=FarmProfile)
+
+
+def get_active_character_key(config: BotConfig) -> str | None:
+    if config.active_character in config.characters:
+        return config.active_character
+    if not config.characters:
+        return None
+    return next(iter(config.characters))
+
+
+def get_active_character_profile(config: BotConfig) -> CharacterProfile | None:
+    key = get_active_character_key(config)
+    if key is None:
+        return None
+    return config.characters.get(key)
+
+
+def apply_character_selection(config: BotConfig, character_key: str | None) -> None:
+    if character_key not in config.characters:
+        config.active_character = get_active_character_key(config)
+        return
+
+    config.active_character = character_key
+    profile = config.characters[character_key]
+    preferred_profile = profile.preferred_run_profile
+    if preferred_profile and preferred_profile in config.run_profiles:
+        config.farm = config.run_profiles[preferred_profile]
 
 
 def _build_template(rule: dict[str, Any]) -> TemplateRule:
@@ -289,7 +317,9 @@ def load_config(path: str | Path) -> BotConfig:
         first_profile_name = next(iter(run_profiles))
         selected_farm = run_profiles[first_profile_name]
 
-    return BotConfig(
+    active_character = next(iter(characters)) if characters else None
+
+    config = BotConfig(
         dry_run=raw.get("dry_run", True),
         overlay=raw.get("overlay", True),
         log_level=raw.get("log_level", "INFO"),
@@ -298,6 +328,9 @@ def load_config(path: str | Path) -> BotConfig:
         hotkeys=hotkeys,
         shared_loot=shared_loot,
         characters=characters,
+        active_character=active_character,
         run_profiles=run_profiles,
         farm=selected_farm,
     )
+    apply_character_selection(config, active_character)
+    return config

@@ -1,6 +1,6 @@
 ﻿# Diablo2
 
-Windows-first starter scaffold for watching a Diablo 2 game window, matching templates, recording sessions, and growing toward simple farming automation.
+Windows-first helper project for watching a Diablo II game window, recording sessions, and running early automation flows through either a desktop GUI or the older CLI preview loop.
 
 Project constraints and safety boundaries are documented in `docs/project/policy.md`.
 Working notes and roadmap are documented in `docs/project/notes.md`.
@@ -11,7 +11,7 @@ Environment setup is documented in `docs/setup/environment.md`.
 
 ## What it does now
 
-- Launches a small desktop GUI control panel by default
+- Launches a desktop GUI control panel by default
 - Can record a named Diablo window to video with start and stop buttons
 - Can capture a one-shot snapshot of the current Diablo window
 - Can target a visible game window by title
@@ -19,7 +19,6 @@ Environment setup is documented in `docs/setup/environment.md`.
 - Supports the older OpenCV preview loop through `--cli`
 - Uses a JSON config so you can control capture settings without rewriting code
 - Supports reusable run-profile config sections for hunting, loot, life management, and farm-specific rules
-- Exposes the Summoner payload order in the GUI so the run body is defined before room create/exit wrapping
 
 ## Quick start
 
@@ -43,7 +42,7 @@ python main.py
 
 4. In the GUI:
 
-- select the Diablo window from the list, or type its title
+- select the Diablo window from the list
 - choose `auto`, `window`, or `screen` capture
 - click `Start Recording` to begin saving video
 - click `Stop Recording` to finish
@@ -84,6 +83,10 @@ Edit files under `config/`. For field-by-field help, see [config/config.md](conf
 ## Current seeded run profiles
 
 - `summoner`: Arcane Sanctuary (`비전의 성역`) run for The Summoner (`소환술사`) and `key of hate`
+
+## For contributors
+
+Contributor and coding-agent instructions live in `AGENTS.md`.
 
 ## Suggested next upgrades
 

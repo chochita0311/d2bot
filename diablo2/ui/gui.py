@@ -40,7 +40,7 @@ from tkinter import messagebox, ttk
 import cv2 as cv
 
 from diablo2.common.capture import ScreenCapture, list_windows
-from diablo2.common.config import BotConfig, load_config
+from diablo2.common.config import BotConfig, apply_character_selection, get_active_character_key, load_config
 from diablo2.actions.gem_summing import GemActionEvent, GemSummingSession
 from diablo2.actions.loot_pickup import LootEvent, LootPickupSession
 from diablo2.actions.recording import RecorderEvent, RecordingSession
@@ -48,9 +48,17 @@ from diablo2.actions.run_lifecycle import LifecycleEvent, RunLifecycleSession
 from diablo2.runs.summoner import SummonerEvent, build_summoner_orchestrator, resolve_summoner_run
 
 
+#
+# 메인 데스크톱 제어 패널.
+# 녹화, 테스트 액션, 런 오케스트레이션을 여기서 다룬다.
+# 창 크기는 아래 Tk 레이아웃 코드를 건드리지 않아도 되도록
+# 단순한 width/height 상수로 따로 관리한다.
+#
 class D2BotControlPanel:
-    WINDOW_SIZE = "980x680"
-    WINDOW_MIN_SIZE = (940, 640)
+    DEFAULT_WINDOW_WIDTH = 1120
+    DEFAULT_WINDOW_HEIGHT = 760
+    MIN_WINDOW_WIDTH = 1020
+    MIN_WINDOW_HEIGHT = 700
     CONTROL_PANEL_TITLE = "Diablo2 Helper"
     PREFERRED_GAME_PATTERNS = ("diablo ii: resurrected", "diablo ii", "resurrected", "diablo2")
 
@@ -59,17 +67,19 @@ class D2BotControlPanel:
         self.config: BotConfig = load_config(self.config_path)
         self.root = tk.Tk()
         self.root.title(self.CONTROL_PANEL_TITLE)
-        self.root.geometry(self.WINDOW_SIZE)
-        self.root.minsize(*self.WINDOW_MIN_SIZE)
+        self.root.geometry(self._default_window_geometry())
+        self.root.minsize(self.MIN_WINDOW_WIDTH, self.MIN_WINDOW_HEIGHT)
         self.root.resizable(True, True)
 
         self.window_title_var = tk.StringVar(value=self.config.capture.window_title or "Diablo")
         self.backend_var = tk.StringVar(value=self.config.capture.capture_backend)
+        self.character_var = tk.StringVar()
         self.repeat_count_var = tk.StringVar()
         self.difficulty_var = tk.StringVar(value="hell")
         self.status_var = tk.StringVar(value="Idle")
         self.output_var = tk.StringVar(value="No recording yet")
         self.window_list_var = tk.StringVar()
+        self._character_display_to_key: dict[str, str] = {}
 
         self.recording_session = RecordingSession(self.config.capture)
         self.lifecycle_session = RunLifecycleSession(self.config.capture)
@@ -78,23 +88,38 @@ class D2BotControlPanel:
         self.summoner_session = build_summoner_orchestrator(self.config)
 
         self._build_ui()
+        self._refresh_character_options()
         self._pin_window_geometry()
         self._refresh_windows(select_current=True)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(250, self._poll_events)
 
+    # 위젯 트리가 만들어진 뒤 원하는 시작 창 크기를 한 번 더 고정한다.
+    # Tk가 초기 레이아웃 과정에서 크기를 조금 바꿀 수 있어서 다시 잡아준다.
     def _pin_window_geometry(self) -> None:
         self.root.update_idletasks()
-        self.root.geometry(self.WINDOW_SIZE)
-        self.root.minsize(*self.WINDOW_MIN_SIZE)
+        self.root.geometry(self._default_window_geometry())
+        self.root.minsize(self.MIN_WINDOW_WIDTH, self.MIN_WINDOW_HEIGHT)
 
+    # 시작할 때 적용할 기본 geometry 문자열.
+    # 처음 뜨는 창 크기를 바꾸고 싶으면 위 width/height 상수를 수정하면 된다.
+    def _default_window_geometry(self) -> str:
+        return f"{self.DEFAULT_WINDOW_WIDTH}x{self.DEFAULT_WINDOW_HEIGHT}"
+
+    # 버튼/액션으로 UI가 갱신되는 동안 현재 창 크기를 유지한다.
+    # 최소 크기만 보장하고, 사용자가 직접 늘리거나 줄인 크기는 최대한 보존한다.
     def _preserve_current_geometry(self) -> None:
         self.root.update_idletasks()
-        width = max(self.root.winfo_width(), self.WINDOW_MIN_SIZE[0])
-        height = max(self.root.winfo_height(), self.WINDOW_MIN_SIZE[1])
+        width = max(self.root.winfo_width(), self.MIN_WINDOW_WIDTH)
+        height = max(self.root.winfo_height(), self.MIN_WINDOW_HEIGHT)
         self.root.geometry(f"{width}x{height}")
 
     def _build_ui(self) -> None:
+        # 루트 행 구성:
+        # 0 = 캡처 헤더
+        # 1 = 녹화 액션 버튼 줄
+        # 2 = 메인 콘텐츠(로그 + 플레이 컨트롤)
+        # 3 = 하단 상태 / 출력 영역
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(2, weight=1)
 
@@ -139,6 +164,9 @@ class D2BotControlPanel:
 
         ttk.Button(recording_actions, text="Refresh Windows", command=self._refresh_windows).grid(row=0, column=3, sticky="ew", padx=(8, 0))
 
+        # 메인 콘텐츠는 남는 공간을 대부분 로그 패널 쪽으로 보낸다.
+        # 오른쪽 플레이 패널은 본래 필요한 폭에 가깝게 유지하고,
+        # 창이 넓어지거나 높아질 때 왼쪽 로그 영역이 주로 확장된다.
         main = ttk.Frame(self.root, padding=(16, 0, 16, 16))
         main.grid(row=2, column=0, sticky="nsew")
         main.columnconfigure(0, weight=1)
@@ -150,6 +178,9 @@ class D2BotControlPanel:
         self.log_panel.columnconfigure(0, weight=1)
         self.log_panel.rowconfigure(0, weight=1)
 
+        # 로그 텍스트는 창 크기에 맞춰 가로/세로 둘 다 같이 늘어난다.
+        # 한 번에 더 많은 로그를 보고 싶다면 이 위젯은 이미 늘어나도록 되어 있으니
+        # 보통은 위 기본 창 크기 상수만 키우면 된다.
         self.log_text = tk.Text(self.log_panel, state="disabled", wrap="word")
         self.log_text.grid(row=0, column=0, sticky="nsew")
 
@@ -198,20 +229,33 @@ class D2BotControlPanel:
         )
         ttk.Separator(difficulty_box, orient="horizontal").grid(row=2, column=0, columnspan=2, sticky="ew")
 
+        character_box = ttk.Frame(play_panel, padding=(0, 0, 0, 12))
+        character_box.grid(row=4, column=0, sticky="ew")
+        character_box.columnconfigure(0, weight=1)
+        ttk.Label(character_box, text="Character").grid(row=0, column=0, sticky="w")
+        self.character_box = ttk.Combobox(
+            character_box,
+            textvariable=self.character_var,
+            state="readonly",
+            values=(),
+        )
+        self.character_box.grid(row=1, column=0, sticky="ew", pady=(6, 0))
+        self.character_box.bind("<<ComboboxSelected>>", self._use_selected_character)
+
         self.key_button = ttk.Button(play_panel, text="Summoner Run", command=self.start_key_of_hate)
-        self.key_button.grid(row=4, column=0, sticky="ew", pady=(8, 0))
+        self.key_button.grid(row=5, column=0, sticky="ew", pady=(8, 0))
 
         self.arcane_north_button = ttk.Button(play_panel, text="North Go Test", command=self.start_arcane_north_test)
-        self.arcane_north_button.grid(row=5, column=0, sticky="ew", pady=(8, 0))
+        self.arcane_north_button.grid(row=6, column=0, sticky="ew", pady=(8, 0))
 
         spacer = ttk.Frame(play_panel, height=18)
-        spacer.grid(row=6, column=0, sticky="ew")
+        spacer.grid(row=7, column=0, sticky="ew")
 
         self.loot_button = ttk.Button(play_panel, text="Item Looting", command=self.start_loot_pickup)
-        self.loot_button.grid(row=7, column=0, sticky="ew")
+        self.loot_button.grid(row=8, column=0, sticky="ew")
 
         self.lifecycle_button = ttk.Button(play_panel, text="Start Room Lifecycle", command=self.start_run_lifecycle)
-        self.lifecycle_button.grid(row=8, column=0, sticky="ew", pady=(8, 0))
+        self.lifecycle_button.grid(row=9, column=0, sticky="ew", pady=(8, 0))
 
         footer = ttk.Frame(self.root, padding=(16, 0, 16, 16))
         footer.grid(row=3, column=0, sticky="ew")
@@ -280,9 +324,40 @@ class D2BotControlPanel:
             return
         self._append_log("info", f"Selected window: {value}")
 
+    def _refresh_character_options(self) -> None:
+        displays: list[str] = []
+        self._character_display_to_key = {}
+        for key, profile in self.config.characters.items():
+            display = profile.display_name or key
+            displays.append(display)
+            self._character_display_to_key[display] = key
+        self.character_box.configure(values=displays)
+
+        active_key = get_active_character_key(self.config)
+        if active_key is None:
+            self.character_var.set("")
+            return
+
+        active_profile = self.config.characters[active_key]
+        self.character_var.set(active_profile.display_name or active_key)
+
+    def _use_selected_character(self, event: object | None = None) -> None:
+        display = self.character_var.get().strip()
+        if not display:
+            return
+        character_key = self._character_display_to_key.get(display)
+        if character_key is None:
+            return
+        apply_character_selection(self.config, character_key)
+        self.loot_session.update_config(self.config)
+        self.summoner_session.update_config(self.config)
+        self._append_log("info", f"Selected character: {display}")
+
     def _apply_runtime_config(self) -> None:
         self.config.capture.window_title = self.window_title_var.get().strip() or None
         self.config.capture.capture_backend = self.backend_var.get().strip() or "auto"
+        selected_character = self._character_display_to_key.get(self.character_var.get().strip())
+        apply_character_selection(self.config, selected_character)
         self.recording_session.capture_config = self.config.capture
         self.lifecycle_session.capture_config = self.config.capture
         self.gem_session.capture_config = self.config.capture

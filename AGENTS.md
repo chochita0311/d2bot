@@ -54,7 +54,7 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 
 ## Config Notes
 
-- Prefer changing behavior through `config/` when possible instead of hardcoding values.
+- Prefer changing behavior through `config/` when possible instead of hard coding values.
 - Keep capture-related behavior aligned with the config guides and current runtime behavior.
 
 ## Verification
@@ -65,4 +65,7 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 ## Documentation
 
 - Update nearby comments when changing non-obvious behavior.
+- When code changes, check whether nearby comments became stale and refresh them if needed.
 - If a new constant or manual tuning point is introduced, make it easy to find and edit.
+- Keep relevant project description files in `.md` up to date when behavior, structure, setup, or developer workflow changes.
+- Put developer-facing maintenance guidance in `AGENTS.md`, and keep first-time user guidance in `README.md` or other user-facing Markdown docs.

@@ -36,10 +36,18 @@ class ArcaneBeliefState:
 # Arcane Sanctuary 공용 템플릿 경로 모음.
 # hover blocker, hub 정렬, 목표 지점 감지에 재사용한다.
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
-ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/chest_when_hover.png")
-ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_chest_when_hover.png")
-ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_locked_chest_when_hover.png")
-ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_coffin_when_hover.png")
+ARCANE_SHRINE_HOVER_TEMPLATE_PATH = Path("assets/shrine/shrine.png")
+ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/chest_when_hover.png")
+ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_chest_when_hover.png")
+ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_locked_chest_when_hover.png")
+ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_coffin_when_hover.png")
+ARCANE_TERMINAL_END_TEMPLATE_PATHS: tuple[tuple[str, Path], ...] = (
+    ("chest", Path("assets/chests/act2/arcane_sanctuary/chest.png")),
+    ("chest2", Path("assets/chests/act2/arcane_sanctuary/chest2.png")),
+    ("chest3", Path("assets/chests/act2/arcane_sanctuary/chest3.png")),
+    ("small_chest", Path("assets/chests/act2/arcane_sanctuary/small_chest.png")),
+    ("small_coffin", Path("assets/chests/act2/arcane_sanctuary/small_coffin.png")),
+)
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
 ARCANE_HUB_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/hub_center.png")
 ARCANE_GOAL_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/goal_center.png")
@@ -112,9 +120,11 @@ ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO = 0.12
 # 템플릿 매칭 임계값 모음.
 # hover, star, terminal 같은 공용 감지에 사용한다.
 ARCANE_TELEPORTER_HOVER_THRESHOLD = 0.82
+ARCANE_SHRINE_HOVER_THRESHOLD = 0.82
 ARCANE_CHEST_HOVER_THRESHOLD = 0.82
 ARCANE_STAR_THRESHOLD = 0.82
 ARCANE_GOAL_CENTER_THRESHOLD = 0.8
+ARCANE_END_CHEST_THRESHOLD = 0.8
 ARCANE_NORTH_WAY_THRESHOLD = 0.78
 
 # 정체/분기 판단 기준.
@@ -151,13 +161,17 @@ ARCANE_FINAL_QUARTER_FLOOR_THRESHOLD = 20.0
 
 
 # Arcane 공용 템플릿을 session 필드로 preload 한다.
-# hover blocker, hub, terminal, Summoner 탐색에서 공용으로 재사용한다.
+# hover blocker, hub, end/goal 감지에서 재사용한다.
 def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
+    session._arcane_shrine_hover_template = session._load_image(ARCANE_SHRINE_HOVER_TEMPLATE_PATH)
     session._arcane_chest_hover_template = session._load_image(ARCANE_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_small_chest_hover_template = session._load_image(ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_small_locked_chest_hover_template = session._load_image(ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_small_coffin_hover_template = session._load_image(ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH)
+    session._arcane_terminal_end_templates = tuple(
+        (template_name, session._load_image(template_path)) for template_name, template_path in ARCANE_TERMINAL_END_TEMPLATE_PATHS
+    )
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
     session._arcane_hub_center_template = session._load_image(ARCANE_HUB_CENTER_TEMPLATE_PATH)
     session._arcane_goal_center_template = session._load_image(ARCANE_GOAL_CENTER_TEMPLATE_PATH)
@@ -165,13 +179,41 @@ def load_arcane_assets(session) -> None:
     session._arcane_monster_templates = None
 
 
-# Arcane terminal 목표 지점을 감지한다.
-# 기본 goal_center와 gold에 일부 가려진 변형 템플릿 둘 다 허용한다.
-def detect_arcane_terminal(session, frame: np.ndarray) -> str | None:
+# Arcane end 목표 지점을 감지한다.
+# goal_center 계열과 NEWS 공통 chest/coffin end 특징을 같은 end 판정으로 함께 본다.
+# chest/coffin 계열은 5개 후보 중 3개 이상이 동시에 잡힐 때만 end로 인정한다.
+def detect_arcane_end(session, frame: np.ndarray) -> str | None:
     if session._locate_template(frame, session._arcane_goal_center_template, ARCANE_GOAL_CENTER_THRESHOLD) is not None:
         return "goal_center"
     if session._locate_template(frame, session._arcane_goal_center_covered_gold_template, ARCANE_GOAL_CENTER_THRESHOLD) is not None:
         return "goal_center_covered_gold"
+
+    matched_template_names: list[str] = []
+    for template_name, template in getattr(session, "_arcane_terminal_end_templates", ()):
+        if session._locate_template(frame, template, ARCANE_END_CHEST_THRESHOLD) is not None:
+            matched_template_names.append(template_name)
+    if len(matched_template_names) >= 3:
+        return f"common_end:{','.join(matched_template_names)}"
+
+    return None
+
+
+# 현재 프레임에서 커서 hover 때문에 이동을 방해하는 오브젝트를 찾는다.
+# chest 계열, shrine, teleporter를 구분해서 Arcane 공용 회피 동작에 쓴다.
+def detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
+    chest_hover_templates = (
+        session._arcane_chest_hover_template,
+        session._arcane_small_chest_hover_template,
+        session._arcane_small_locked_chest_hover_template,
+        session._arcane_small_coffin_hover_template,
+    )
+    for chest_template in chest_hover_templates:
+        if session._locate_template(frame, chest_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
+            return "chest"
+    if session._locate_template(frame, session._arcane_shrine_hover_template, ARCANE_SHRINE_HOVER_THRESHOLD) is not None:
+        return "shrine"
+    if session._locate_template(frame, session._arcane_teleporter_hover_template, ARCANE_TELEPORTER_HOVER_THRESHOLD) is not None:
+        return "teleporter"
     return None
 
 

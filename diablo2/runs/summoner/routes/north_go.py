@@ -30,11 +30,13 @@ from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO,
     ARCANE_NORTH_TEST_TICK_SLEEP,
     ARCANE_PROGRESS_CHANGE_THRESHOLD,
+    ARCANE_SHRINE_HOVER_THRESHOLD,
     ARCANE_TELEPORTER_HOVER_THRESHOLD,
     ARCANE_WEST_DIRECTION_POINTS,
     ARCANE_WINGS,
     ARCANE_ZERO_POINT_CURSOR_RATIO,
-    detect_arcane_terminal,
+    detect_arcane_end,
+    detect_arcane_hover_blocker,
     prepare_arcane_hub_start,
 )
 from diablo2.runs.summoner.routes.common.arcane_palette import (
@@ -96,8 +98,8 @@ ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
 # west/east 쪽은 커서를 너무 바깥으로 보내지 않도록
 # 중심 쪽으로 조금 줄여 조향 안정성을 높인다.
-ARCANE_CURSOR_RADIUS_SCALE = 4.2 / 7.0
-ARCANE_SIDE_GATE_KEEP_MARGIN = 0.22
+ARCANE_CURSOR_RADIUS_SCALE = 3.8 / 7.0
+ARCANE_SIDE_GATE_KEEP_MARGIN = 0.35
 
 
 @dataclass(frozen=True)
@@ -266,14 +268,14 @@ def run_arcane_north_go(session, capture) -> None:
         return payload
 
     # 저속 비전 단계.
-    # monster, loot, hover blocker, terminal 같은 상대적으로 무거운 감지를 수행한다.
+    # monster, loot, hover blocker, end 같은 상대적으로 무거운 감지를 수행한다.
     def _slow_vision(frame_packet) -> dict[str, object]:
         loot_hit = loot_session.scan_frame(frame_packet.frame)
         return {
-            "terminal": detect_arcane_terminal(session, frame_packet.frame),
+            "end": detect_arcane_end(session, frame_packet.frame),
             "loot_label": loot_hit.label if loot_hit is not None else None,
             "monster_hit": session._scan_arcane_monsters(frame_packet.frame),
-            "hover_blocker_kind": _detect_arcane_hover_blocker(session, frame_packet.frame),
+            "hover_blocker_kind": detect_arcane_hover_blocker(session, frame_packet.frame),
         }
 
     # fast/slow 비전 결과를 모아 실제로 어디를 가리킬지 결정하고 이동 명령까지 수행한다.
@@ -286,13 +288,13 @@ def run_arcane_north_go(session, capture) -> None:
             return None
         control["last_frame_id"] = latest_frame.sequence_id
 
-        latest_terminal = detect_arcane_terminal(session, latest_frame.frame)
-        if latest_terminal is not None:
+        latest_end = detect_arcane_end(session, latest_frame.frame)
+        if latest_end is not None:
             session.events.put(
                 session.event_class("info", "Arcane North Test: detected Arcane goal center on latest frame; stopping north run here.")
             )
             session.request_stop()
-            return {"status": "terminal_latest_frame"}
+            return {"status": "end_latest_frame"}
 
         now = snapshot.sampled_at
         fast_payload = control["last_fast_payload"]
@@ -354,12 +356,12 @@ def run_arcane_north_go(session, capture) -> None:
                 "final_ratio": final_ratio,
             }
 
-        if slow_payload is not None and slow_fresh and slow_payload["terminal"] is not None:
+        if slow_payload is not None and slow_fresh and slow_payload["end"] is not None:
             session.events.put(
                 session.event_class("info", "Arcane North Test: detected Arcane goal center; stopping north run here.")
             )
             session.request_stop()
-            return {"status": "terminal", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
+            return {"status": "end", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if slow_payload is not None and slow_fresh and slow_payload["monster_hit"] is not None:
             if now - control["last_monster_log_at"] >= 0.35:
@@ -498,23 +500,6 @@ def _steer_arcane_movement(
         session._sleep_range(*session.CLICK_SETTLE)
         return nudged_ratio
     return floor_ratio
-
-
-# 현재 프레임에서 커서 hover 때문에 이동을 방해하는 오브젝트를 찾는다.
-# chest 계열과 teleporter를 구분해서 이후 nudge 강도를 다르게 적용할 수 있게 한다.
-def _detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
-    chest_hover_templates = (
-        session._arcane_chest_hover_template,
-        session._arcane_small_chest_hover_template,
-        session._arcane_small_locked_chest_hover_template,
-        session._arcane_small_coffin_hover_template,
-    )
-    for chest_template in chest_hover_templates:
-        if session._locate_template(frame, chest_template, ARCANE_CHEST_HOVER_THRESHOLD) is not None:
-            return "chest"
-    if session._locate_template(frame, session._arcane_teleporter_hover_template, ARCANE_TELEPORTER_HOVER_THRESHOLD) is not None:
-        return "teleporter"
-    return None
 
 
 # 화면 중심을 기준으로 목표 ratio를 안쪽으로 줄인다.

@@ -25,11 +25,20 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 ## Code Style
 
 - Follow existing Python style in the touched file.
-- Keep comments short and intent-focused.
-- Match the comment style already used in files like `diablo2/runs/summoner/routes/north_go.py`.
-- For UI code, prefer section comments that explain layout intent over line-by-line commentary.
-- Write code comments in Korean.
 - Avoid adding noisy comments for obvious assignments.
+
+## Comment Style
+
+- Keep comments short and intent-focused.
+- Prefer comments that explain why a block exists, what decision rule it applies, or how a tuning constant affects behavior.
+- Use section comments for grouped constants, control-flow stages, and non-obvious helper functions.
+- Avoid line-by-line narration; skip comments that only restate the code literally.
+- Write code comments in Korean.
+- For UI code, prefer section comments that explain layout intent over line-by-line commentary.
+- Do not regenerate Korean comments through lossy shell or whole-file rewrite flows that can collapse characters into `?`.
+- Prefer targeted edits when changing Korean comments, especially in existing files with mixed old encodings.
+- After editing Korean text, verify the file still contains real Unicode Korean characters instead of literal `?`.
+- If terminal output looks broken, verify the file bytes or decoded text rather than trusting the console rendering.
 
 ## GUI Notes
 

@@ -33,10 +33,8 @@ class ArcaneBeliefState:
     summoner_detected: bool = False
 
 
-# Arcane Sanctuary ?쒗뵆由?寃쎈줈 臾띠쓬
-# hover blocker, hub ?뺣젹, Summoner ?꾩튂 ?먯젙???먯궛
-# Arcane Sanctuary 怨듯넻 ?쒗뵆由?寃쎈줈 臾띠쓬
-# hover blocker, hub ?뺣젹, Summoner ?꾩튂 ?먯젙 ?먯궛
+# Arcane Sanctuary 공용 템플릿 경로 모음.
+# hover blocker, hub 정렬, 목표 지점 감지에 재사용한다.
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
 ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/chest_when_hover.png")
 ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/small_chest_when_hover.png")
@@ -45,19 +43,17 @@ ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary
 ARCANE_STAR_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/star.png")
 ARCANE_HUB_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/hub_center.png")
 ARCANE_GOAL_CENTER_TEMPLATE_PATH = Path("assets/waypoint/act2/goal_center.png")
+ARCANE_GOAL_CENTER_COVERED_GOLD_TEMPLATE_PATH = Path("assets/waypoint/act2/goal_center_covered_gold.png")
 
-# Arcane Sanctuary 吏꾩엯 ??湲곕낯 settle 媛?
-# 濡쒕뵫 ?湲? ALT ?쇰꺼, 踰꾪봽 step 媛꾧꺽
-# Arcane Sanctuary 吏꾩엯 吏곹썑 湲곕낯 settle 媛?# 濡쒕뵫 ?湲? ALT ?좉?, 踰꾪봽 step 媛꾧꺽
+# Arcane Sanctuary 진입 직후 공용 settle 값.
+# 로딩 대기, ALT 라벨 표시, 버프 step 간격에 사용한다.
 ARCANE_SANCTUARY_RATIO = (220 / 447, 498 / 597)
 ARCANE_ENTRY_SETTLE = (2.4, 2.8)
 ARCANE_LABELS_SETTLE = (0.28, 0.38)
 ARCANE_BUFF_STEP_SETTLE = (0.35, 0.5)
 
-# 怨좎젙 wing ?쒖꽌
-# Summoner ?먯깋 ?쒖옉 湲곗?: north -> east -> south -> west
-# 怨좎젙 wing ?쒖꽌
-# Summoner ?먯깋 ?쒖옉 湲곗?: north -> east -> south -> west
+# 고정 wing 탐색 순서.
+# Summoner 탐색은 north -> east -> south -> west 순으로 시작한다.
 ARCANE_WINGS: tuple[ArcaneWing, ...] = (
     ArcaneWing("north", "2 o'clock", 1),
     ArcaneWing("east", "4 o'clock", 2),
@@ -65,8 +61,8 @@ ARCANE_WINGS: tuple[ArcaneWing, ...] = (
     ArcaneWing("west", "10 o'clock", 4),
 )
 
-# 전역 탐색/이동 기준값
-# hub zero point, 과거 단일 경로 조작 ratio, floor 보정 후보군
+# 전역 탐색/이동 기준값.
+# hub zero point, 경로 조작 ratio, floor 보정 후보군을 묶어 둔다.
 ARCANE_MONSTER_TEMPLATE_DIR = Path("assets/monster/act2/arcane_sanctuary")
 ARCANE_MONSTER_THRESHOLD = 0.78
 ARCANE_NORTH_TEST_TICK_SLEEP = (0.12, 0.18)
@@ -82,19 +78,10 @@ ARCANE_FLOOR_SCORE_RADIUS = 18
 ARCANE_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.03, 0.0), (-0.03, 0.0), (0.0, 0.03), (0.0, -0.03), (0.05, -0.02), (-0.05, 0.02))
 ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.02, 0.02), (0.04, 0.04), (0.06, 0.06), (-0.02, -0.02))
 
-# Arcane 怨듭슜 諛⑺뼢蹂?open probe 3??
-# probe媛 ?⑥씪 source of truth
-# steering candidate???꾨옒?먯꽌 probe濡쒕????뚯깮 怨꾩궛
-
-# Arcane 怨듭슜 諛⑺뼢 3??援ъ“
-# north, west??probe 3?먯쑝濡쒕????뚯깮 怨꾩궛
-# primary = probe ??踰덉㎏ ??
-# sharp = probe 泥?踰덉㎏? ??踰덉㎏??以묒젏
-# soft = probe ??踰덉㎏? ??踰덉㎏??以묒젏
-# east, south???섎떒 status UI ?먯쑀 ?곸뿭??怨좊젮??蹂꾨룄 蹂댁젙 ?꾩슂
-# Arcane 怨듯넻 諛⑺뼢 3??援ъ“
-# absolute ?붾㈃ ratio 湲곗?
-# north, west???쒕줈 醫뚯슦 ?移?# east, south???쒕줈 醫뚯슦 ?移?# east, south???섎떒 status UI ?뚰뵾 湲곗? 諛섏쁺
+# Arcane 공용 방향 후보 비율.
+# probe가 기준 source of truth 역할을 하고, steering 후보는 여기에 맞춰 파생 계산한다.
+# primary, sharp, soft는 같은 방향 안에서 서로 다른 조준 지점이다.
+# east, south는 하단 UI 영역을 피하기 위해 별도 보정 비율을 사용한다.
 ARCANE_NORTH_DIRECTION_POINTS = {
     "primary": (11.0 / 12.0, 1.0 / 6.0),
     "sharp": (7.0 / 8.0, 1.0 / 6.0),
@@ -116,29 +103,22 @@ ARCANE_SOUTH_DIRECTION_POINTS = {
     "soft": (1.0 / 3.0, 5.0 / 6.0),
 }
 
-# 諛⑺뼢蹂?open probe ??諛섍꼍 鍮꾩쑉
-# north, west??湲곗〈 湲곗? ?좎?
-# east, south???섎떒 status UI ?쇱엯??以꾩씠湲??꾪븳 ?묒? 諛섍꼍
-# 諛⑺뼢 open probe ??諛섍꼍 鍮꾩쑉
-# north, west??湲곗〈 湲곗? ?좎?
-# east, south???섎떒 status UI ?욎엫??以꾩씠湲??꾪븳 ?묒? 諛섍꼍
+# 방향별 open probe 반경 비율.
+# north, west는 기존 기준을 유지하고,
+# east, south는 하단 status UI 영향을 줄이기 위해 더 작은 반경을 쓴다.
 ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO = 0.16
 ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO = 0.12
 
-# ?쒗뵆由?留ㅼ묶 ?꾧퀎媛?臾띠쓬
-# hover, star, north terminal, Summoner clue ?먯젙 湲곗?
-# ?쒗뵆由?留ㅼ묶 ?꾧퀎媛?臾띠쓬
-# hover, star, north terminal, Summoner clue ?먯젙 湲곗?
+# 템플릿 매칭 임계값 모음.
+# hover, star, terminal 같은 공용 감지에 사용한다.
 ARCANE_TELEPORTER_HOVER_THRESHOLD = 0.82
 ARCANE_CHEST_HOVER_THRESHOLD = 0.82
 ARCANE_STAR_THRESHOLD = 0.82
 ARCANE_GOAL_CENTER_THRESHOLD = 0.8
 ARCANE_NORTH_WAY_THRESHOLD = 0.78
 
-# ?뺤껜/遺꾧린 ?먯젙 湲곗?
-# ?붾㈃ 蹂?붾웾怨?floor score 李⑥씠 湲곕컲 遺꾧린 ?좏깮 湲곗?
-# ?뺤껜/遺꾧린 ?먯젙 湲곗?
-# ?붾㈃ 蹂?붾웾怨?floor score 李⑥씠 湲곕컲 遺꾧린 ?좏깮 湲곗?
+# 정체/분기 판단 기준.
+# 화면 변화량과 floor score 차이를 기반으로 분기 선택과 정체 판단을 한다.
 ARCANE_STAR_STAGNANT_LIMIT = 2
 ARCANE_FIRST_FORK_PROGRESS_THRESHOLD = 5.0
 ARCANE_FIRST_FORK_STAGNANT_LIMIT = 2
@@ -146,9 +126,8 @@ ARCANE_SECOND_FORK_PROGRESS_THRESHOLD = 5.0
 ARCANE_SECOND_FORK_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_SPAN_TRIM_TICKS = 3
 
-# hover blocker ?뚰뵾 ?ㅽ봽??
-# chest 怨꾩뿴 湲곗??????뚰뵾 ???섎굹濡??듭씪
-# hover blocker ?뚰뵾 ?ㅽ봽??# chest 怨꾩뿴 湲곗? ?볦? ?뚰뵾???섎굹濡??듭씪
+# hover blocker 회피 오프셋.
+# chest 계열 hover에 막혔을 때 주변 후보 점으로 벗어나는 데 쓴다.
 ARCANE_HOVER_NUDGE_OFFSETS = (
     (0.16, 0.0),
     (-0.16, 0.0),
@@ -160,10 +139,8 @@ ARCANE_HOVER_NUDGE_OFFSETS = (
     (-0.14, -0.10),
 )
 
-# ?꾨컲遺/遺꾧린 諛붾떏 ?됯? 湲곗?
-# dead-end 諛⑹?? final bend 吏꾪뻾 ?먮떒??湲곗?
-# ?쇰컲遺/遺꾧린 諛붾떏 ?됯? 湲곗?
-# dead-end 諛⑹?? final bend 吏꾪뻾 ?먮떒 湲곗?
+# 일반부/분기부 진행 판단 기준.
+# dead-end 진입과 final bend 진행 여부를 결정할 때 사용한다.
 ARCANE_PROGRESS_CHANGE_THRESHOLD = 8.0
 ARCANE_PROGRESS_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_FLOOR_PREFERENCE_THRESHOLD = 90.0
@@ -173,11 +150,9 @@ ARCANE_FINAL_STAGE_MIN_FOUR_OCLOCK_TICKS = 1
 ARCANE_FINAL_QUARTER_FLOOR_THRESHOLD = 20.0
 
 
-# Arcane 공용 템플릿을 session 필드로 preload
+# Arcane 공용 템플릿을 session 필드로 preload 한다.
 # hover blocker, hub, terminal, Summoner 탐색에서 공용으로 재사용한다.
 def load_arcane_assets(session) -> None:
-    # Arcane 공용 템플릿 preload
-    # Arcane 怨듭슜 ?쒗뵆由?preload
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
     session._arcane_chest_hover_template = session._load_image(ARCANE_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_small_chest_hover_template = session._load_image(ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH)
@@ -186,14 +161,17 @@ def load_arcane_assets(session) -> None:
     session._arcane_star_template = session._load_image(ARCANE_STAR_TEMPLATE_PATH)
     session._arcane_hub_center_template = session._load_image(ARCANE_HUB_CENTER_TEMPLATE_PATH)
     session._arcane_goal_center_template = session._load_image(ARCANE_GOAL_CENTER_TEMPLATE_PATH)
+    session._arcane_goal_center_covered_gold_template = session._load_image(ARCANE_GOAL_CENTER_COVERED_GOLD_TEMPLATE_PATH)
     session._arcane_monster_templates = None
 
 
-# Arcane Sanctuary 吏꾩엯 吏곹썑 濡쒕뵫 settle
-# Arcane Sanctuary 吏꾩엯 吏곹썑 濡쒕뵫 settle
+# Arcane terminal 목표 지점을 감지한다.
+# 기본 goal_center와 gold에 일부 가려진 변형 템플릿 둘 다 허용한다.
 def detect_arcane_terminal(session, frame: np.ndarray) -> str | None:
     if session._locate_template(frame, session._arcane_goal_center_template, ARCANE_GOAL_CENTER_THRESHOLD) is not None:
         return "goal_center"
+    if session._locate_template(frame, session._arcane_goal_center_covered_gold_template, ARCANE_GOAL_CENTER_THRESHOLD) is not None:
+        return "goal_center_covered_gold"
     return None
 
 
@@ -202,23 +180,17 @@ def settle_arcane_entry(session, capture) -> None:
     session._sleep_range(*ARCANE_ENTRY_SETTLE)
 
 
-# ?꾩씠???쇰꺼 ?쒖떆瑜??꾪븳 ALT 1???낅젰
-# Arcane 吏꾩엯 吏곹썑 loot label ?몄떇 ?덉젙???④퀎
-# ?꾩씠???쇰꺼 ?쒖떆瑜??꾪븳 ALT 1???낅젰
-# Arcane 吏꾩엯 吏곹썑 loot label ?몄떇 ?덉젙???④퀎
+# 아이템 라벨 표시를 위해 ALT를 한 번 누른다.
+# Arcane 진입 직후 loot label 인식 안정화 단계다.
 def ensure_arcane_item_labels(session) -> None:
     session.events.put(session.event_class("info", "Summoner: pressing ALT once to enable item labels in Arcane Sanctuary."))
     session._press_key("alt")
     session._sleep_range(*ARCANE_LABELS_SETTLE)
 
 
-# wing 吏꾩엯 ??hub 以묒떖 ?ъ젙??
-# hub template 以묒떖 ?곗꽑, ?ㅽ뙣 ??zero point fallback
-# wing 吏꾩엯 ??hub 以묒떖??蹂댁젙
-# hub template ?곗꽑, ?ㅽ뙣 ??zero point fallback
+# wing 진입 전에 hub 중심으로 시점을 맞춘다.
+# hub template를 우선 사용하고, 실패하면 zero point 비율로 fallback 한다.
 def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
-    # ?쒖옉 ??hub 以묒떖 ?ъ젙??
-    # ?쒗뵆由?留ㅼ묶 ?ㅽ뙣 ??zero point fallback ?ъ슜
     session.events.put(session.event_class("info", f"Summoner: centering at the Arcane hub before starting {wing_key}_go."))
     focus_ratio = ARCANE_ZERO_POINT_CURSOR_RATIO
     frame = capture.grab().frame
@@ -252,9 +224,9 @@ def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
     release_movement_intent(session, actions, movement_state)
 
 
-# 罹먮┃???ㅼ젙??pre-run buff ?쒖꽌 ?ъ깮
+# 캐릭터 설정에 들어 있는 pre-run buff 순서를 재생한다.
+# 현재 선택된 캐릭터 액션 설정을 기준으로 동작한다.
 def run_arcane_pre_run_buffs(session) -> None:
-    # 罹먮┃???ㅼ젙???ㅼ뼱 ?덈뒗 pre-run buff replay
     actions = resolve_arcane_character_actions(session)
     if actions is None:
         session.events.put(session.event_class("info", "Summoner: no character action profile is configured; skipping Arcane entry buffs."))
@@ -274,13 +246,13 @@ def run_arcane_pre_run_buffs(session) -> None:
         sleep_after_buff_action(session, actions, token)
 
 
-# ?꾩옱 common ?④퀎?먯꽌??Arcane entry settle留??섑뻾
+# 현재 common 단계에서는 Arcane entry settle만 수행한다.
 def prepare_arcane_entry(session, capture) -> None:
     settle_arcane_entry(session, capture)
 
 
-# 踰꾪봽 ?≪뀡 ???湲??쒓컙 ?곸슜
-# token蹂?媛쒕퀎 pause ?곗꽑, ?놁쑝硫?怨듭슜 settle ?ъ슜
+# 버프 액션 뒤 대기 시간을 적용한다.
+# token별 개별 pause가 있으면 우선하고, 없으면 공용 settle 값을 쓴다.
 def sleep_after_buff_action(session, actions, token: str) -> None:
     normalized = token.strip().lower()
     pause_seconds = actions.buff_action_pause_seconds.get(normalized)
@@ -290,9 +262,9 @@ def sleep_after_buff_action(session, actions, token: str) -> None:
     session._sleep_range(pause_seconds, pause_seconds)
 
 
-# Arcane controller belief state 珥덇린?붿? 泥?wing commit
+# Arcane controller belief state를 초기화하고 첫 wing을 commit 한다.
+# 이 함수는 공용 belief state를 만들고 첫 탐색 branch를 확정한다.
 def run_arcane_controller(session, capture) -> None:
-    # 怨듭슜 belief state 珥덇린?붿? 泥?wing commit
     state = build_initial_arcane_belief_state()
     session.events.put(
         session.event_class(
@@ -318,7 +290,7 @@ def run_arcane_controller(session, capture) -> None:
     log_arcane_state(session, state)
 
 
-# hub 湲곗? 珥덇린 belief state ?앹꽦
+# hub 기준 초기 belief state를 만든다.
 def build_initial_arcane_belief_state() -> ArcaneBeliefState:
     return ArcaneBeliefState(
         phase="hub",
@@ -330,8 +302,8 @@ def build_initial_arcane_belief_state() -> ArcaneBeliefState:
     )
 
 
-# ?꾩쭅 諛⑸Ц?섏? ?딆? ?ㅼ쓬 wing 諛섑솚
-# ARCANE_WINGS 怨좎젙 ?쒖꽌 湲곗? peek ?④퀎
+# 아직 방문하지 않은 다음 wing을 반환한다.
+# ARCANE_WINGS의 고정 순서를 기준으로 peek 한다.
 def peek_next_arcane_wing(state: ArcaneBeliefState) -> ArcaneWing | None:
     for wing in ARCANE_WINGS:
         if wing.key in state.remaining_wings:
@@ -339,17 +311,16 @@ def peek_next_arcane_wing(state: ArcaneBeliefState) -> ArcaneWing | None:
     return None
 
 
-# ?꾩옱 wing 吏꾩엯 commit怨?remaining 紐⑸줉 媛깆떊
-# anchor瑜??대떦 wing 異쒓뎄 湲곗??쇰줈 ?꾪솚
+# 현재 wing 진입을 commit 하고 remaining 목록을 갱신한다.
+# anchor는 해당 wing 출구 기준 이름으로 바꾼다.
 def commit_arcane_wing(state: ArcaneBeliefState, wing: ArcaneWing) -> None:
-    # ?꾩옱 wing 吏꾩엯 commit怨?remaining 紐⑸줉 媛깆떊
     state.phase = "wing_search"
     state.current_wing = wing.key
     state.last_safe_anchor = f"hub_exit_{wing.key}"
     state.remaining_wings = [candidate for candidate in state.remaining_wings if candidate != wing.key]
 
 
-# belief state瑜??щ엺???쎄린 ?ъ슫 濡쒓렇 臾몄옄?대줈 異쒕젰
+# belief state를 읽기 쉬운 로그 문자열로 출력한다.
 def log_arcane_state(session, state: ArcaneBeliefState) -> None:
     current = state.current_wing or "none"
     checked = ", ".join(state.checked_wings) if state.checked_wings else "none"
@@ -362,10 +333,9 @@ def log_arcane_state(session, state: ArcaneBeliefState) -> None:
     )
 
 
-# Arcane monster template ?대뜑 ??png ?꾨? 濡쒕뱶
-# ?뚯씪 stem??monster ?대쫫 key濡??ъ슜
+# Arcane monster template 폴더의 png 파일을 모두 로드한다.
+# 파일 stem을 monster 이름 key로 사용한다.
 def load_arcane_monster_templates(session) -> dict[str, np.ndarray]:
-    # ?대뜑 ??png瑜?stem ?대쫫?쇰줈 濡쒕뱶
     templates: dict[str, np.ndarray] = {}
     if not ARCANE_MONSTER_TEMPLATE_DIR.exists():
         return templates
@@ -377,9 +347,8 @@ def load_arcane_monster_templates(session) -> dict[str, np.ndarray]:
     return templates
 
 
-# ?꾩옱 ?꾨젅?꾩뿉??threshold瑜??섎뒗 理쒓퀬 score monster ?대쫫 諛섑솚
+# 현재 프레임에서 threshold를 넘는 최고 score monster 이름을 반환한다.
 def scan_arcane_monsters(session, frame: np.ndarray) -> str | None:
-    # threshold瑜??섎뒗 理쒓퀬 score monster ?대쫫 諛섑솚
     if not session._arcane_monster_templates:
         return None
     best_name: str | None = None
@@ -392,8 +361,8 @@ def scan_arcane_monsters(session, frame: np.ndarray) -> str | None:
     return best_name
 
 
-# Arcane run????action profile ?좏깮
-# summoner profile ?곗꽑, ?놁쑝硫?泥?罹먮┃??fallback
+# Arcane run에서 사용할 캐릭터 액션 프로필을 고른다.
+# 현재 선택된 캐릭터를 우선하고, 없으면 summoner 선호 캐릭터, 그래도 없으면 첫 캐릭터로 fallback 한다.
 def resolve_arcane_character_actions(session):
     characters = getattr(session.config, "characters", {})
     if not characters:
@@ -407,10 +376,9 @@ def resolve_arcane_character_actions(session):
     return next(iter(characters.values())).actions
 
 
-# ?ㅼ젙 臾몄옄??token???ㅼ젣 ?낅젰 ?숈옉?쇰줈 蹂??
-# click token? 留덉슦???낅젰, ?섎㉧吏??key ?낅젰
+# 설정 문자열 token을 실제 입력 동작으로 바꾼다.
+# click token은 마우스 입력, 나머지는 key 입력으로 처리한다.
 def execute_configured_action(session, token: str) -> None:
-    # ?ㅼ젙 臾몄옄?댁쓣 ?ㅼ젣 ?낅젰?쇰줈 蹂??
     normalized = token.strip().lower()
     if not normalized:
         return

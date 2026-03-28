@@ -89,9 +89,11 @@ ARCANE_FOUR_OCLOCK_FLOOR_CANDIDATE_OFFSETS = ((0.0, 0.0), (0.02, 0.02), (0.04, 0
 # primary, sharp, soft는 같은 방향 안에서 서로 다른 조준 지점이다.
 # east, south는 하단 UI 영역을 피하기 위해 별도 보정 비율을 사용한다.
 ARCANE_NORTH_DIRECTION_POINTS = {
-    "primary": (11.0 / 12.0, 1.0 / 6.0),
-    "sharp": (7.0 / 8.0, 1.0 / 6.0),
-    "soft": (11.0 / 12.0, 1.0 / 4.0),
+    "primary": (11.0 / 12.0, 1.0 / 12.0),
+    "upper_sharp": (7.0 / 12.0, 1.0 / 12.0),
+    "sharp": (3.0 / 4.0, 1.0 / 6.0),
+    "soft": (5.0 / 6.0, 1.0 / 4.0),
+    "lower_soft": (11.0 / 12.0, 5.0 / 12.0),
 }
 ARCANE_WEST_DIRECTION_POINTS = {
     "primary": (1.0 / 12.0, 1.0 / 6.0),
@@ -105,14 +107,16 @@ ARCANE_EAST_DIRECTION_POINTS = {
 }
 ARCANE_SOUTH_DIRECTION_POINTS = {
     "primary": (1.0 / 12.0, 11.0 / 12.0),
-    "sharp": (1.0 / 6.0, 2.0 / 3.0),
-    "soft": (1.0 / 3.0, 5.0 / 6.0),
+    "upper_sharp": (5.0 / 12.0, 3.0 / 4.0),
+    "sharp": (1.0 / 3.0, 3.0 / 4.0),
+    "soft": (1.0 / 6.0, 2.0 / 3.0),
+    "lower_soft": (1.0 / 12.0, 7.0 / 12.0),
 }
 
 # 방향별 open probe 반경 비율.
 # north, west는 기존 기준을 유지하고,
 # east, south는 하단 status UI 영향을 줄이기 위해 더 작은 반경을 쓴다.
-ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO = 0.16
+ARCANE_NORTH_WEST_OPEN_CIRCLE_RADIUS_RATIO = 0.12
 ARCANE_EAST_SOUTH_OPEN_CIRCLE_RADIUS_RATIO = 0.12
 
 # 템플릿 매칭 임계값 모음.

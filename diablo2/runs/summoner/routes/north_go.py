@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import time
 from dataclasses import dataclass
 
 import cv2 as cv
@@ -31,6 +32,7 @@ from diablo2.runs.summoner.routes.common.arcane_common import (
     ARCANE_NORTH_TEST_TICK_SLEEP,
     ARCANE_PROGRESS_CHANGE_THRESHOLD,
     ARCANE_SHRINE_HOVER_THRESHOLD,
+    ARCANE_SOUTH_DIRECTION_POINTS,
     ARCANE_TELEPORTER_HOVER_THRESHOLD,
     ARCANE_WEST_DIRECTION_POINTS,
     ARCANE_WINGS,
@@ -72,10 +74,10 @@ ARCANE_FAST_STEER_LIMIT_MS = 350
 ARCANE_SLOW_STALE_LIMIT_MS = 1800
 
 # ray 경로 중간 샘플을 볼 때 사용할 patch 반경 기본값.
-ARCANE_DIRECTION_PATCH_RADIUS = 42
+ARCANE_DIRECTION_PATCH_RADIUS = 35
 
 # center -> candidate 직선 경로 위에서 볼 샘플 지점 비율.
-ARCANE_DIRECTION_PATH_SAMPLES = (0.45, 0.65, 0.85)
+ARCANE_DIRECTION_PATH_SAMPLES = (0.75, 0.95,)
 
 # fast 판단용 축소 맵 비율.
 # 작을수록 빠르지만 구조를 너무 잃지 않는 선으로 잡는다.
@@ -86,21 +88,21 @@ ARCANE_FAST_MIN_PATCH_RADIUS = 8
 
 # north_open gate가 이 값보다 낮으면
 # 2시 방향 북쪽 family를 닫힌 것으로 본다.
-ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.1
+ARCANE_NORTH_OPEN_FLOOR_RATIO = 0.35
 
 # 새 후보가 이전 후보보다 이 정도 이상 좋아야
 # 바로 갈아타도록 만드는 hysteresis 여유값.
-ARCANE_VOTE_KEEP_MARGIN = 0.045
+ARCANE_VOTE_KEEP_MARGIN = 0.035
 
 # west/east side branch에서 north로 다시 붙을 때
 # 커서를 빠르게 다시 잡기 위한 매우 짧은 settle 값.
 ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
-# west/east 쪽은 커서를 너무 바깥으로 보내지 않도록
-# 중심 쪽으로 조금 줄여 조향 안정성을 높인다.
-ARCANE_CURSOR_RADIUS_SCALE = 4.3 / 7.0
+# west/east 조향 ratio를 화면 중심 기준으로 다시 스케일한다.
+# 1.0보다 작으면 안쪽으로 줄고, 1.0이면 원래 점을 유지하며, 1.0보다 크면 더 바깥으로 뻗는다.
+ARCANE_CURSOR_RADIUS_SCALE = 7.9 / 7.0
 # side gate 차이가 이 값 이하면 기존 east/west family를 유지한다.
-ARCANE_SIDE_GATE_KEEP_MARGIN = 0.55
+ARCANE_SIDE_GATE_KEEP_MARGIN = 0.9
 # side branch에서 frame change가 이 값 이하로 반복되면 정체로 본다.
 ARCANE_SIDE_STUCK_FRAME_CHANGE_THRESHOLD = 4.5
 # side 정체가 이 횟수 이상 쌓이면 반대 방향 turn-around를 시도한다.
@@ -117,7 +119,26 @@ ARCANE_RUNTIME_FAST_INTERVAL = 0.002
 ARCANE_RUNTIME_DECISION_INTERVAL = 0.002
 # 한 번 steering한 뒤 다음 decision으로 넘어가기 전 대기를 최소화한다.
 ARCANE_DECISION_STEP_SETTLE = (0.0, 0.002)
+# west/east side reposition을 몇 번마다 잠깐 멈출지 정하는 간격.
+ARCANE_SIDE_REPOSITION_PAUSE_STEPS = 1
+# side reposition 직후 화면이 너무 빠르게 바뀌지 않도록 짧게 멈추는 시간.
+ARCANE_SIDE_REPOSITION_PAUSE = (0.23, 0.23)
 
+# decision이 최신 frame보다 조금 뒤처진 fast snapshot은 허용하되
+# 너무 오래된 결과는 cached fast payload가 있을 때만 건너뛴다.
+ARCANE_FAST_SEQUENCE_GAP_LIMIT = 5
+
+# progress trend는 cost가 큰 편이라 fast frame마다 다 계산하지 않고
+# 몇 frame마다 한 번만 다시 계산해 cached 값을 재사용한다.
+ARCANE_FAST_TREND_INTERVAL = 3
+
+# ray sample 중 최고 openness와 크게 차이 나지 않으면
+# 더 먼 sample을 steer target으로 유지해 너무 가까운 곳만 찍지 않게 한다.
+ARCANE_STEER_SAMPLE_KEEP_MARGIN = 0.06
+
+# steer target이 캐릭터 중심 근처 안쪽 원에 들어오지 않도록 막는 최소 중심 거리.
+# 중심 (0.5, 0.5) 기준 실제 거리이며, 안쪽이면 같은 방향으로 이 경계까지 밀어낸다.
+ARCANE_MIN_STEER_CENTER_DISTANCE = 0.235
 
 @dataclass(frozen=True)
 class ArcaneDirectionCandidate:
@@ -142,7 +163,7 @@ class ArcaneDirectionCandidate:
 # |                                   D              |
 # +--------------------------------------------------+
 #
-# P = north_primary, H = north_sharp, S = north_soft
+# P = north_primary, H = north_upper_sharp, S = north_soft
 # T/W = west family, E/D = east family 보조 지점
 ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
     ArcaneDirectionCandidate(
@@ -151,7 +172,7 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
         ARCANE_NORTH_DIRECTION_POINTS["primary"],
         family="north",
         north_family=True,
-        bias=0.22,
+        bias=0.0,
     ),
     ArcaneDirectionCandidate(
         "north_soft",
@@ -159,7 +180,7 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
         ARCANE_NORTH_DIRECTION_POINTS["soft"],
         family="north",
         north_family=True,
-        bias=0.18,
+        bias=0.0,
     ),
     ArcaneDirectionCandidate(
         "north_sharp",
@@ -167,7 +188,7 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
         ARCANE_NORTH_DIRECTION_POINTS["sharp"],
         family="north",
         north_family=True,
-        bias=0.18,
+        bias=0.0,
     ),
     ArcaneDirectionCandidate(
         "west_primary",
@@ -191,6 +212,13 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
         bias=0.03,
     ),
     ArcaneDirectionCandidate(
+        "west_lower_soft",
+        "10 o'clock lower soft",
+        (1.0 / 12.0, 63.0 / 128.0),
+        family="west",
+        bias=0.00,
+    ),
+    ArcaneDirectionCandidate(
         "east_primary",
         "4 o'clock primary",
         ARCANE_EAST_DIRECTION_POINTS["primary"],
@@ -208,6 +236,13 @@ ARCANE_DIRECTION_CANDIDATES: tuple[ArcaneDirectionCandidate, ...] = (
         "east_sharp",
         "4 o'clock sharp",
         ARCANE_EAST_DIRECTION_POINTS["sharp"],
+        family="east",
+        bias=0.00,
+    ),
+    ArcaneDirectionCandidate(
+        "east_upper_sharp",
+        "4 o'clock upper sharp",
+        (65.0 / 128.0, 3.0 / 4.0),
         family="east",
         bias=0.00,
     ),
@@ -251,13 +286,16 @@ def run_arcane_north_go(session, capture) -> None:
         "pause_until": 0.0,
         "last_frame_id": -1,
         "last_fast_payload": None,
+        "last_fast_sequence_id": -1,
+        "last_progress_trend": None,
         "last_slow_payload": None,
         "last_monster_log_at": 0.0,
         "last_loot_log_at": 0.0,
         "last_direction_key": "north_primary",
-        "last_direction_ratio": (11.0 / 12.0, 1.0 / 6.0),
+        "last_direction_ratio": ARCANE_NORTH_DIRECTION_POINTS["primary"],
         "route_family": "north",
         "side_stuck_steps": 0,
+        "side_reposition_steps": 0,
     }
     movement_state = MovementExecutionState()
 
@@ -270,9 +308,13 @@ def run_arcane_north_go(session, capture) -> None:
     # 방향 후보 vote와 north gate 신호처럼 자주 갱신돼야 하는 값을 빠르게 계산한다.
     def _fast_vision(frame_packet) -> dict[str, object]:
         nonlocal previous_fast_frame
+        started_at = time.perf_counter()
         current_frame = frame_packet.frame
-        recent_frames = runtime.state.snapshot().recent_frames
-        trend_change = _measure_arcane_progress_trend(recent_frames)
+        trend_change = control["last_progress_trend"]
+        if trend_change is None or frame_packet.sequence_id % ARCANE_FAST_TREND_INTERVAL == 0:
+            recent_frames = runtime.state.snapshot().recent_frames
+            trend_change = _measure_arcane_progress_trend(recent_frames)
+            control["last_progress_trend"] = trend_change
         fast_maps = _build_arcane_fast_maps(current_frame)
         direction_votes = _score_arcane_direction_candidates(current_frame, fast_maps, control["last_direction_ratio"], zero_point_ratio)
         family_signals = _score_arcane_family_signals(current_frame, fast_maps)
@@ -281,6 +323,7 @@ def run_arcane_north_go(session, capture) -> None:
             "progress_trend": trend_change,
             "direction_votes": direction_votes,
             "family_signals": family_signals,
+            "fast_proc_ms": round((time.perf_counter() - started_at) * 1000, 1),
         }
         previous_fast_frame = current_frame
         return payload
@@ -316,9 +359,13 @@ def run_arcane_north_go(session, capture) -> None:
 
         now = snapshot.sampled_at
         fast_payload = control["last_fast_payload"]
+        fast_sequence_gap = None
         if snapshot.fast_vision is not None:
-            fast_payload = snapshot.fast_vision.payload
-            control["last_fast_payload"] = fast_payload
+            fast_sequence_gap = latest_frame.sequence_id - snapshot.fast_vision.source_sequence_id
+            if fast_sequence_gap <= ARCANE_FAST_SEQUENCE_GAP_LIMIT or fast_payload is None:
+                fast_payload = snapshot.fast_vision.payload
+                control["last_fast_payload"] = fast_payload
+                control["last_fast_sequence_id"] = snapshot.fast_vision.source_sequence_id
         slow_payload = control["last_slow_payload"]
         if snapshot.slow_vision is not None:
             slow_payload = snapshot.slow_vision.payload
@@ -327,6 +374,7 @@ def run_arcane_north_go(session, capture) -> None:
         frame_age_ms = int((now - latest_frame.captured_at) * 1000)
         fast_age_ms = int((now - snapshot.fast_vision.source_captured_at) * 1000) if snapshot.fast_vision is not None else None
         slow_age_ms = int((now - snapshot.slow_vision.source_captured_at) * 1000) if snapshot.slow_vision is not None else None
+        fast_proc_ms = fast_payload.get("fast_proc_ms") if fast_payload is not None else None
         fast_switch_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_SWITCH_LIMIT_MS
         fast_steer_fresh = fast_age_ms is not None and fast_age_ms <= ARCANE_FAST_STEER_LIMIT_MS
         allow_side_family_switch = fast_steer_fresh if control["route_family"] in {"west", "east"} else fast_switch_fresh
@@ -354,14 +402,16 @@ def run_arcane_north_go(session, capture) -> None:
                 hover_blocker_kind=hover_blocker_kind,
                 direction_family=direction_family,
             )
-            action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_TRAVEL)
+            movement_intent = MOVEMENT_INTENT_TRAVEL if direction_family == "north" else MOVEMENT_INTENT_REPOSITION
+            action_phrase = apply_movement_intent(session, actions, movement_state, movement_intent)
             control["north_steps"] += 1
             control["last_direction_key"] = direction_key
             control["last_direction_ratio"] = final_ratio
+            side_pause_note = _apply_arcane_side_reposition_pause(session, control, direction_family)
             session.events.put(
                 session.event_class(
                     "info",
-                    f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change=None, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase} (stale-fast hold)",
+                    f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change=None, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}{side_pause_note} (stale-fast hold)",
                 )
             )
             session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
@@ -370,6 +420,7 @@ def run_arcane_north_go(session, capture) -> None:
                 "frame_age_ms": frame_age_ms,
                 "fast_age_ms": fast_age_ms,
                 "slow_age_ms": slow_age_ms,
+                "fast_sequence_gap": fast_sequence_gap,
                 "direction_key": direction_key,
                 "final_ratio": final_ratio,
             }
@@ -429,7 +480,7 @@ def run_arcane_north_go(session, capture) -> None:
         direction_key = direction_choice["key"]
         direction_label = direction_choice["label"]
         direction_family = direction_choice["family"]
-        cursor_ratio = direction_choice["ratio"]
+        cursor_ratio = direction_choice.get("steer_ratio", direction_choice["ratio"])
         direction_score = direction_choice["score"]
         north_open = direction_choice["north_open"]
         quick_reopen_steer = previous_route_family in {"west", "east"} and direction_family == "north"
@@ -448,7 +499,8 @@ def run_arcane_north_go(session, capture) -> None:
             fast_reacquire=quick_reopen_steer,
             direction_family=direction_family,
         )
-        action_phrase = apply_movement_intent(session, actions, movement_state, MOVEMENT_INTENT_TRAVEL)
+        movement_intent = MOVEMENT_INTENT_TRAVEL if direction_family == "north" else MOVEMENT_INTENT_REPOSITION
+        action_phrase = apply_movement_intent(session, actions, movement_state, movement_intent)
         control["north_steps"] += 1
         control["last_direction_key"] = direction_key
         control["last_direction_ratio"] = final_ratio
@@ -456,10 +508,11 @@ def run_arcane_north_go(session, capture) -> None:
             control["route_family"] = direction_family
         if direction_family not in {"west", "east"} or direction_family != previous_route_family:
             control["side_stuck_steps"] = 0
+        side_pause_note = _apply_arcane_side_reposition_pause(session, control, direction_family)
         session.events.put(
             session.event_class(
                 "info",
-                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, side_stuck_steps={control['side_stuck_steps']}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}",
+                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, side_stuck_steps={control['side_stuck_steps']}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}{side_pause_note}",
             )
         )
         session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
@@ -468,6 +521,7 @@ def run_arcane_north_go(session, capture) -> None:
             "frame_age_ms": frame_age_ms,
             "fast_age_ms": fast_age_ms,
             "slow_age_ms": slow_age_ms,
+            "fast_sequence_gap": fast_sequence_gap,
             "direction_key": direction_key,
             "final_ratio": final_ratio,
         }
@@ -494,6 +548,18 @@ def run_arcane_north_go(session, capture) -> None:
         release_movement_intent(session, actions, movement_state)
 
     session.events.put(session.event_class("info", "Arcane North Test: stopped."))
+
+
+def _apply_arcane_side_reposition_pause(session, control: dict[str, object], direction_family: str) -> str:
+    if direction_family not in {"west", "east"}:
+        control["side_reposition_steps"] = 0
+        return ""
+    control["side_reposition_steps"] = int(control["side_reposition_steps"]) + 1
+    if int(control["side_reposition_steps"]) < ARCANE_SIDE_REPOSITION_PAUSE_STEPS:
+        return ""
+    control["side_reposition_steps"] = 0
+    session._sleep_range(*ARCANE_SIDE_REPOSITION_PAUSE)
+    return " (side reposition pause)"
 
 
 # 최종 후보 ratio를 실제 커서 이동 ratio로 바꿔 조정한다.
@@ -604,13 +670,19 @@ def _score_arcane_direction_candidates(
     votes: list[dict[str, object]] = []
     north_path_open = 0.0
     for candidate in ARCANE_DIRECTION_CANDIDATES:
-        path_floor_ratio, path_star_void_ratio, openness = _score_arcane_direction_path(frame, fast_maps, zero_point_ratio, candidate.ratio)
+        path_floor_ratio, path_star_void_ratio, openness, steer_ratio = _score_arcane_direction_path(
+            frame,
+            fast_maps,
+            zero_point_ratio,
+            candidate.ratio,
+        )
         continuity_bonus = _arcane_direction_continuity_bonus(previous_ratio, candidate.ratio)
         score = openness + candidate.bias + continuity_bonus
         vote = {
             "key": candidate.key,
             "label": candidate.label,
             "ratio": candidate.ratio,
+            "steer_ratio": steer_ratio,
             "family": candidate.family,
             "score": score,
             "floor_ratio": path_floor_ratio,
@@ -642,6 +714,7 @@ def _choose_arcane_direction(
             "label": fallback.label,
             "family": fallback.family,
             "ratio": fallback.ratio,
+            "steer_ratio": fallback.ratio,
             "score": 0.0,
             "north_open": 0.0,
         }
@@ -749,24 +822,41 @@ def _score_arcane_direction_path(
     fast_maps: dict[str, np.ndarray],
     zero_point_ratio: tuple[float, float],
     candidate_ratio: tuple[float, float],
-) -> tuple[float, float, float]:
+) -> tuple[float, float, float, tuple[float, float]]:
     floor_values: list[float] = []
     star_values: list[float] = []
+    sample_scores: list[tuple[float, float, tuple[float, float]]] = []
     scaled_radius = max(ARCANE_FAST_MIN_PATCH_RADIUS, int(ARCANE_DIRECTION_PATCH_RADIUS * float(fast_maps.get("scale", 1.0))))
     for t in ARCANE_DIRECTION_PATH_SAMPLES:
         sample_ratio = _interpolate_ratio(zero_point_ratio, candidate_ratio, t)
-        floor_patch = _crop_arcane_scalar_patch_at_ratio(fast_maps["floor_mask"], sample_ratio, scaled_radius)
-        star_patch = _crop_arcane_scalar_patch_at_ratio(fast_maps["star_mask"], sample_ratio, scaled_radius)
+        left, right, top, bottom = _resolve_arcane_patch_bounds(fast_maps["floor_mask"], sample_ratio, scaled_radius)
+        floor_patch = fast_maps["floor_mask"][top:bottom, left:right]
+        star_patch = fast_maps["star_mask"][top:bottom, left:right]
         if floor_patch.size == 0 or star_patch.size == 0:
             continue
-        floor_values.append(float(floor_patch.mean()))
-        star_values.append(float(star_patch.mean()))
+        floor_value = float(floor_patch.mean())
+        star_value = float(star_patch.mean())
+        floor_values.append(floor_value)
+        star_values.append(star_value)
+        sample_openness = floor_value - (star_value * 0.85)
+        sample_scores.append((sample_openness, t, sample_ratio))
     if not floor_values:
-        return 0.0, 1.0, -1.0
+        return 0.0, 1.0, -1.0, candidate_ratio
     floor_ratio = float(sum(floor_values) / len(floor_values))
     star_void_ratio = float(sum(star_values) / len(star_values))
     openness = floor_ratio - (star_void_ratio * 0.85)
-    return floor_ratio, star_void_ratio, openness
+    best_sample_openness = max(score for score, _, _ in sample_scores)
+    eligible_samples = [
+        (t, sample_ratio)
+        for score, t, sample_ratio in sample_scores
+        if score >= (best_sample_openness - ARCANE_STEER_SAMPLE_KEEP_MARGIN)
+    ]
+    if not eligible_samples:
+        steer_ratio = candidate_ratio
+    else:
+        steer_ratio = max(eligible_samples, key=lambda item: item[0])[1]
+    steer_ratio = _enforce_arcane_min_center_distance(steer_ratio, (0.5, 0.5), ARCANE_MIN_STEER_CENTER_DISTANCE)
+    return floor_ratio, star_void_ratio, openness, steer_ratio
 
 
 # north_open gate 계산용 함수.
@@ -841,6 +931,26 @@ def _interpolate_ratio(start: tuple[float, float], end: tuple[float, float], t: 
     return (start[0] + ((end[0] - start[0]) * t), start[1] + ((end[1] - start[1]) * t))
 
 
+# steer target이 캐릭터 중심 근처 안쪽 원에 들어오면
+# 같은 방향으로 최소 반경 경계까지 밀어내어 너무 가까운 조준을 막는다.
+def _enforce_arcane_min_center_distance(
+    ratio: tuple[float, float],
+    center_ratio: tuple[float, float],
+    min_distance: float,
+) -> tuple[float, float]:
+    dx = ratio[0] - center_ratio[0]
+    dy = ratio[1] - center_ratio[1]
+    distance = float((dx * dx + dy * dy) ** 0.5)
+    if distance <= 0.0:
+        return ratio
+    if distance >= min_distance:
+        return ratio
+    scale = min_distance / distance
+    adjusted_x = center_ratio[0] + (dx * scale)
+    adjusted_y = center_ratio[1] + (dy * scale)
+    return (max(0.0, min(1.0, adjusted_x)), max(0.0, min(1.0, adjusted_y)))
+
+
 # 컬러 프레임에서 특정 ratio 주변 patch를 잘라낸다.
 def _crop_arcane_patch_at_ratio(frame: np.ndarray, ratio: tuple[float, float], radius: int) -> np.ndarray:
     height, width = frame.shape[:2]
@@ -855,6 +965,11 @@ def _crop_arcane_patch_at_ratio(frame: np.ndarray, ratio: tuple[float, float], r
 
 # 1채널 mask 이미지에서 특정 ratio 주변 patch를 잘라낸다.
 def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, float], radius: int) -> np.ndarray:
+    left, right, top, bottom = _resolve_arcane_patch_bounds(image, ratio, radius)
+    return image[top:bottom, left:right]
+
+
+def _resolve_arcane_patch_bounds(image: np.ndarray, ratio: tuple[float, float], radius: int) -> tuple[int, int, int, int]:
     height, width = image.shape[:2]
     center_x = int(width * ratio[0])
     center_y = int(height * ratio[1])
@@ -862,7 +977,7 @@ def _crop_arcane_scalar_patch_at_ratio(image: np.ndarray, ratio: tuple[float, fl
     right = min(width, center_x + radius)
     top = max(0, center_y - radius)
     bottom = min(height, center_y + radius)
-    return image[top:bottom, left:right]
+    return left, right, top, bottom
 
 
 # probe 원 안의 평균값으로 해당 지점이 얼마나 floor-like 한지 본다.

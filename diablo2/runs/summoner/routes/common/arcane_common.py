@@ -36,10 +36,8 @@ class ArcaneBeliefState:
 # Arcane Sanctuary 공용 템플릿 경로 모음.
 # hover blocker, hub 정렬, 목표 지점 감지에 재사용한다.
 ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH = Path("assets/map/act2/arcane_sanctuary/teleporter_when_hover.png")
-ARCANE_SHRINE_HOVER_TEMPLATE_PATH = Path("assets/shrine/shrine.png")
+ARCANE_SHRINE_HOVER_TEMPLATE_PATH = Path("assets/shrine/shrine_when_hover.png")
 ARCANE_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/chest_when_hover.png")
-ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_chest_when_hover.png")
-ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_locked_chest_when_hover.png")
 ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH = Path("assets/chests/act2/arcane_sanctuary/small_coffin_when_hover.png")
 ARCANE_TERMINAL_END_TEMPLATE_PATHS: tuple[tuple[str, Path], ...] = (
     ("chest", Path("assets/chests/act2/arcane_sanctuary/chest.png")),
@@ -137,16 +135,16 @@ ARCANE_SECOND_FORK_STAGNANT_LIMIT = 2
 ARCANE_BRANCH_SPAN_TRIM_TICKS = 3
 
 # hover blocker 회피 오프셋.
-# chest 계열 hover에 막혔을 때 주변 후보 점으로 벗어나는 데 쓴다.
+# upper-right를 우선으로 시도하고, 기존보다 조금 더 크게 벗어나도록 둔다.
 ARCANE_HOVER_NUDGE_OFFSETS = (
-    (0.16, 0.0),
-    (-0.16, 0.0),
-    (0.0, 0.16),
-    (0.0, -0.16),
-    (0.14, 0.10),
-    (-0.14, 0.10),
-    (0.14, -0.10),
-    (-0.14, -0.10),
+    (0.18, -0.14),
+    (0.20, 0.0),
+    (0.0, -0.20),
+    (0.18, 0.14),
+    (-0.20, 0.0),
+    (0.0, 0.20),
+    (-0.18, -0.14),
+    (-0.18, 0.14),
 )
 
 # 일반부/분기부 진행 판단 기준.
@@ -166,8 +164,6 @@ def load_arcane_assets(session) -> None:
     session._arcane_teleporter_hover_template = session._load_image(ARCANE_TELEPORTER_HOVER_TEMPLATE_PATH)
     session._arcane_shrine_hover_template = session._load_image(ARCANE_SHRINE_HOVER_TEMPLATE_PATH)
     session._arcane_chest_hover_template = session._load_image(ARCANE_CHEST_HOVER_TEMPLATE_PATH)
-    session._arcane_small_chest_hover_template = session._load_image(ARCANE_SMALL_CHEST_HOVER_TEMPLATE_PATH)
-    session._arcane_small_locked_chest_hover_template = session._load_image(ARCANE_SMALL_LOCKED_CHEST_HOVER_TEMPLATE_PATH)
     session._arcane_small_coffin_hover_template = session._load_image(ARCANE_SMALL_COFFIN_HOVER_TEMPLATE_PATH)
     session._arcane_terminal_end_templates = tuple(
         (template_name, session._load_image(template_path)) for template_name, template_path in ARCANE_TERMINAL_END_TEMPLATE_PATHS
@@ -203,8 +199,6 @@ def detect_arcane_end(session, frame: np.ndarray) -> str | None:
 def detect_arcane_hover_blocker(session, frame: np.ndarray) -> str | None:
     chest_hover_templates = (
         session._arcane_chest_hover_template,
-        session._arcane_small_chest_hover_template,
-        session._arcane_small_locked_chest_hover_template,
         session._arcane_small_coffin_hover_template,
     )
     for chest_template in chest_hover_templates:

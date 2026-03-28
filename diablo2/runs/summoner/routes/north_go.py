@@ -98,8 +98,8 @@ ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
 # west/east 쪽은 커서를 너무 바깥으로 보내지 않도록
 # 중심 쪽으로 조금 줄여 조향 안정성을 높인다.
-ARCANE_CURSOR_RADIUS_SCALE = 3.8 / 7.0
-ARCANE_SIDE_GATE_KEEP_MARGIN = 0.35
+ARCANE_CURSOR_RADIUS_SCALE = 2.5 / 7.0
+ARCANE_SIDE_GATE_KEEP_MARGIN = 0.28
 
 
 @dataclass(frozen=True)

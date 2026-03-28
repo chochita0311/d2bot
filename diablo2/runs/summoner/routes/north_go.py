@@ -98,8 +98,25 @@ ARCANE_NORTH_REOPEN_FAST_SETTLE = (0.0, 0.01)
 
 # west/east 쪽은 커서를 너무 바깥으로 보내지 않도록
 # 중심 쪽으로 조금 줄여 조향 안정성을 높인다.
-ARCANE_CURSOR_RADIUS_SCALE = 2.5 / 7.0
-ARCANE_SIDE_GATE_KEEP_MARGIN = 0.28
+ARCANE_CURSOR_RADIUS_SCALE = 4.3 / 7.0
+# side gate 차이가 이 값 이하면 기존 east/west family를 유지한다.
+ARCANE_SIDE_GATE_KEEP_MARGIN = 0.55
+# side branch에서 frame change가 이 값 이하로 반복되면 정체로 본다.
+ARCANE_SIDE_STUCK_FRAME_CHANGE_THRESHOLD = 4.5
+# side 정체가 이 횟수 이상 쌓이면 반대 방향 turn-around를 시도한다.
+ARCANE_SIDE_STUCK_BREAK_STEPS = 3
+# fast frame 판단 직후 커서 조준이 바로 이어지도록 north_go 전용 settle을 더 짧게 둔다.
+ARCANE_CURSOR_FAST_SETTLE = (0.0, 0.004)
+# hover blocker 때문에 movement를 놓았을 때 다시 조준하기 전 짧게만 기다린다.
+ARCANE_HOVER_RELEASE_SETTLE = (0.0, 0.006)
+# north_go runtime이 최신 frame을 더 자주 받도록 capture FPS를 별도로 올린다.
+ARCANE_RUNTIME_CAPTURE_FPS = 30.0
+# fast vision worker가 새 frame을 더 촘촘하게 다시 보도록 polling 간격을 줄인다.
+ARCANE_RUNTIME_FAST_INTERVAL = 0.002
+# decision worker가 최신 fast 결과를 더 빨리 반영하도록 decision 간격을 줄인다.
+ARCANE_RUNTIME_DECISION_INTERVAL = 0.002
+# 한 번 steering한 뒤 다음 decision으로 넘어가기 전 대기를 최소화한다.
+ARCANE_DECISION_STEP_SETTLE = (0.0, 0.002)
 
 
 @dataclass(frozen=True)
@@ -240,6 +257,7 @@ def run_arcane_north_go(session, capture) -> None:
         "last_direction_key": "north_primary",
         "last_direction_ratio": (11.0 / 12.0, 1.0 / 6.0),
         "route_family": "north",
+        "side_stuck_steps": 0,
     }
     movement_state = MovementExecutionState()
 
@@ -326,7 +344,7 @@ def run_arcane_north_go(session, capture) -> None:
             hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
             if hover_blocker_kind is not None:
                 release_movement_intent(session, actions, movement_state)
-                session._sleep_range(*session.CLICK_SETTLE)
+                session._sleep_range(*ARCANE_HOVER_RELEASE_SETTLE)
             final_ratio = _steer_arcane_movement(
                 session,
                 target_ref,
@@ -346,7 +364,7 @@ def run_arcane_north_go(session, capture) -> None:
                     f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change=None, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase} (stale-fast hold)",
                 )
             )
-            session._sleep_range(*ARCANE_MOVE_STEP_SETTLE)
+            session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
             return {
                 "status": "stale_fast_hold",
                 "frame_age_ms": frame_age_ms,
@@ -388,15 +406,24 @@ def run_arcane_north_go(session, capture) -> None:
         frame_change = fast_payload.get("progress_change") if fast_payload is not None else None
         if frame_change is not None and fast_payload.get("progress_trend") is not None:
             frame_change = max(frame_change, fast_payload["progress_trend"])
+        if control["route_family"] in {"west", "east"} and frame_change is not None:
+            if frame_change <= ARCANE_SIDE_STUCK_FRAME_CHANGE_THRESHOLD:
+                control["side_stuck_steps"] += 1
+            else:
+                control["side_stuck_steps"] = 0
+        else:
+            control["side_stuck_steps"] = 0
 
         direction_votes = fast_payload["direction_votes"] if fast_payload is not None else []
         family_signals = dict(fast_payload.get("family_signals", {})) if fast_payload is not None else {}
+        side_stuck_break = control["side_stuck_steps"] >= ARCANE_SIDE_STUCK_BREAK_STEPS
         direction_choice = _choose_arcane_direction(
             direction_votes,
             control["last_direction_key"],
             control["route_family"],
             family_signals,
             allow_side_family_switch,
+            side_stuck_break,
         )
         previous_route_family = control["route_family"]
         direction_key = direction_choice["key"]
@@ -410,7 +437,7 @@ def run_arcane_north_go(session, capture) -> None:
         hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
         if hover_blocker_kind is not None:
             release_movement_intent(session, actions, movement_state)
-            session._sleep_range(*session.CLICK_SETTLE)
+            session._sleep_range(*ARCANE_HOVER_RELEASE_SETTLE)
         final_ratio = _steer_arcane_movement(
             session,
             target_ref,
@@ -427,13 +454,15 @@ def run_arcane_north_go(session, capture) -> None:
         control["last_direction_ratio"] = final_ratio
         if direction_family != control["route_family"]:
             control["route_family"] = direction_family
+        if direction_family not in {"west", "east"} or direction_family != previous_route_family:
+            control["side_stuck_steps"] = 0
         session.events.put(
             session.event_class(
                 "info",
-                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}",
+                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, side_stuck_steps={control['side_stuck_steps']}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}",
             )
         )
-        session._sleep_range(*ARCANE_MOVE_STEP_SETTLE)
+        session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
         return {
             "status": "move",
             "frame_age_ms": frame_age_ms,
@@ -449,10 +478,10 @@ def run_arcane_north_go(session, capture) -> None:
         _fast_vision,
         _slow_vision,
         _decision,
-        fast_interval=0.005,
+        fast_interval=ARCANE_RUNTIME_FAST_INTERVAL,
         slow_interval=0.03,
-        decision_interval=0.005,
-        capture_fps=20.0,
+        decision_interval=ARCANE_RUNTIME_DECISION_INTERVAL,
+        capture_fps=ARCANE_RUNTIME_CAPTURE_FPS,
         error_handler=_runtime_error,
     )
     try:
@@ -488,7 +517,7 @@ def _steer_arcane_movement(
     if fast_reacquire:
         session._sleep_range(*ARCANE_NORTH_REOPEN_FAST_SETTLE)
     else:
-        session._sleep_range(*session.CLICK_SETTLE)
+        session._sleep_range(*ARCANE_CURSOR_FAST_SETTLE)
     if hover_blocker_kind is None:
         return floor_ratio
     session.events.put(
@@ -497,7 +526,7 @@ def _steer_arcane_movement(
     for offset in ARCANE_HOVER_NUDGE_OFFSETS:
         nudged_ratio = session._apply_offset(floor_ratio, offset)
         session._aim_relative_ratio(capture_target, *nudged_ratio, apply_jitter=False)
-        session._sleep_range(*session.CLICK_SETTLE)
+        session._sleep_range(*ARCANE_CURSOR_FAST_SETTLE)
         return nudged_ratio
     return floor_ratio
 
@@ -604,6 +633,7 @@ def _choose_arcane_direction(
     current_family: str,
     family_signals: dict[str, float],
     allow_family_switch: bool,
+    side_stuck_break: bool = False,
 ) -> dict[str, object]:
     if not votes:
         fallback = ARCANE_DIRECTION_CANDIDATES[0]
@@ -637,6 +667,13 @@ def _choose_arcane_direction(
         north_family_vote["north_open"] = north_open
         return north_family_vote
 
+    if side_stuck_break and current_family in {"west", "east"}:
+        turnaround_family = "east" if current_family == "west" else "west"
+        turnaround_vote = best_by_family.get(turnaround_family)
+        if turnaround_vote is not None:
+            turnaround_vote["north_open"] = north_open
+            return turnaround_vote
+
     side_family_vote = _choose_arcane_side_family_vote(
         west_family_vote,
         east_family_vote,
@@ -646,6 +683,7 @@ def _choose_arcane_direction(
         west_open,
         east_open,
         allow_family_switch,
+        side_stuck_break,
     )
     if side_family_vote is not None:
         best_vote = side_family_vote
@@ -668,6 +706,7 @@ def _choose_arcane_side_family_vote(
     west_open: float,
     east_open: float,
     allow_family_switch: bool,
+    side_stuck_break: bool = False,
 ) -> dict[str, object] | None:
     side_votes: dict[str, dict[str, object]] = {}
     side_gates: dict[str, float] = {}
@@ -683,16 +722,18 @@ def _choose_arcane_side_family_vote(
     best_family = max(side_gates, key=side_gates.get)
     best_vote = side_votes[best_family]
 
-    if not allow_family_switch and current_family in side_votes and current_family_vote is not None:
+    if side_stuck_break:
+        current_family_vote = None
+    elif not allow_family_switch and current_family in side_votes and current_family_vote is not None:
         return current_family_vote
 
-    if current_family in side_votes and current_family_vote is not None and best_family != current_family:
+    if not side_stuck_break and current_family in side_votes and current_family_vote is not None and best_family != current_family:
         gate_margin = side_gates[best_family] - side_gates[current_family]
         if gate_margin <= ARCANE_SIDE_GATE_KEEP_MARGIN:
             best_family = current_family
             best_vote = current_family_vote
 
-    previous_vote = next((vote for vote in side_votes.values() if vote["key"] == previous_key), None)
+    previous_vote = None if side_stuck_break else next((vote for vote in side_votes.values() if vote["key"] == previous_key), None)
     if previous_vote is not None and previous_vote["family"] == best_family:
         score_margin = float(best_vote["score"]) - float(previous_vote["score"])
         if score_margin <= ARCANE_VOTE_KEEP_MARGIN:

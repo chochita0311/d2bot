@@ -220,3 +220,84 @@ fast vision이 너무 오래되면 새 방향 결정을 하지 않습니다.
 - 이 문서는 현재 generic `goal_center` terminal 구조를 기준으로 작성되었습니다.
 - 예전 Summoner 전용 terminal 감지는 더 이상 `north_go`의 일부가 아닙니다.
 - 이후 `south_go`, `east_go`, `west_go`도 같은 terminal helper를 재사용할 수 있습니다.
+
+## Temporary Tuning Note
+
+This section is intentionally temporary while `north_go` responsiveness is being revised and tested.
+It can be removed later after the tuning direction is finalized.
+
+Current temporary tuning points in [north_go.py](/D:/python/d2bot/diablo2/runs/summoner/routes/north_go.py):
+
+- `ARCANE_RUNTIME_CAPTURE_FPS = 30.0`
+- `ARCANE_RUNTIME_FAST_INTERVAL = 0.002`
+- `ARCANE_RUNTIME_DECISION_INTERVAL = 0.002`
+- `ARCANE_CURSOR_FAST_SETTLE = (0.0, 0.004)`
+- `ARCANE_HOVER_RELEASE_SETTLE = (0.0, 0.006)`
+- `ARCANE_DECISION_STEP_SETTLE = (0.0, 0.002)`
+
+Current temporary stuck-escape tuning:
+
+- `ARCANE_SIDE_STUCK_FRAME_CHANGE_THRESHOLD = 4.5`
+- `ARCANE_SIDE_STUCK_BREAK_STEPS = 3`
+- if side-stuck repeats enough times, `north_go` forces a one-tick turn-around by choosing the opposite side family
+
+Why these notes exist:
+
+- recent tests showed that responsiveness problems were not only about route choice
+- capture freshness, fast/decision polling, and route-local settle timing also affect how quickly the cursor reacts
+- a softer side-lock break was not strong enough, so the current test branch uses a forced opposite-side escape
+
+Rollback guidance while revising:
+
+- if the route starts feeling unstable, roll back the timing-only constants first
+- if the route stops escaping side loops, compare behavior with and without the forced opposite-side stuck escape
+- revert one tuning group at a time so recordings can isolate which change helped or hurt
+
+### Responsiveness Reduction Order
+
+1. Make decision consume only the newest fast result.
+Right now the decision loop can act on a fast snapshot that is already `180-250ms` old. The best fix is to ignore a fast payload if its `source_sequence_id` is behind the latest captured frame by more than a small gap, and prefer waiting one more tick for fresher fast vision.
+
+2. Raise capture a little more, but only if actual delivered freshness improves.
+We are at `30 FPS` now. Test `36` or `40`, not jump to `60`. If `fast_age` does not materially drop, then more FPS is just extra load.
+
+3. Cut work inside `_fast_vision()`.
+That path still does:
+
+- progress trend over recent frames
+- fast map build
+- direction scoring
+- family signal scoring
+
+If more snap is needed, simplify the hottest part first:
+
+- compute `progress_trend` less often, or only every few frames
+- reuse one fast map for both direction and family scoring, which is already partly happening
+- if needed, reduce candidate/path sampling slightly
+
+4. Let decision skip stale slow data more aggressively.
+Slow data is often `2s+` old in the logs. That does not directly create `fast_age`, but it can still add hesitation around hover/monster checks. Keep slow vision for safety, but avoid letting it influence steering unless it is fresh enough.
+
+5. Prefer latest-frame-only behavior in fast vision.
+If the fast worker is ever busy on an older frame while newer frames arrive, effectively drop intermediate work and always process the newest frame next. That reduces backlog feel.
+
+6. Add timing logs before changing more logic.
+Log:
+
+- capture age
+- fast processing time
+- decision processing time
+- sequence gap between latest frame and fast snapshot
+
+That should tell us whether the real bottleneck is:
+
+- capture
+- fast scoring CPU time
+- decision acting on stale snapshots
+
+Current recommendation for the next code change:
+
+- first add a freshness gate so decision refuses overly stale fast payloads
+- then, if needed, trim `_fast_vision()` cost a bit
+
+This is the safest order for improving responsiveness without destabilizing the route again.

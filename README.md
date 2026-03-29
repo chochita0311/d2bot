@@ -3,11 +3,11 @@
 Windows-first helper project for watching a Diablo II game window, recording sessions, and running early automation flows through either a desktop GUI or the older CLI preview loop.
 
 Project constraints and safety boundaries are documented in `docs/project/policy.md`.
-Working notes and roadmap are documented in `docs/project/notes.md`.
-Game mode notes are documented in `docs/features/game_modes.md`.
-Farm profile structure is documented in `docs/features/farm_profiles.md`.
-Run coordinator behavior is documented in `docs/features/run_coordination.md`.
-Environment setup is documented in `docs/setup/environment.md`.
+Architecture notes are documented in `docs/project/architecture.md`.
+Roadmap and open planning items are documented in `docs/project/roadmap.md`.
+Game mode notes are documented in `docs/features/game-modes.md`.
+Farm profile structure is documented in `docs/features/farm-profiles.md`.
+Run coordinator behavior is documented in `docs/features/run-coordination.md`.
 
 ## What it does now
 
@@ -17,30 +17,36 @@ Environment setup is documented in `docs/setup/environment.md`.
 - Can target a visible game window by title
 - Can try named-window capture before falling back to desktop-region capture
 - Supports the older OpenCV preview loop through `--cli`
-- Uses a JSON config so you can control capture settings without rewriting code
+- Uses a JSON config, so you can control capture settings without rewriting code
 - Supports reusable run-profile config sections for hunting, loot, life management, and farm-specific rules
 
 ## Quick start
 
-1. Activate the local project environment:
+1. Create a local virtual environment:
 
 ```powershell
-. .\scripts\activate-project.ps1
+python -m venv .venv
 ```
 
-2. Install dependencies:
+2. Activate it in PowerShell:
+
+```powershell
+. .\.venv\Scripts\Activate.ps1
+```
+
+3. Install dependencies:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-3. Launch the GUI:
+4. Launch the GUI:
 
 ```powershell
 python main.py
 ```
 
-4. In the GUI:
+5. In the GUI:
 
 - select the Diablo window from the list
 - choose `auto`, `window`, or `screen` capture
@@ -87,11 +93,3 @@ Edit files under `config/`. For field-by-field help, see [config/config.md](conf
 ## For contributors
 
 Contributor and coding-agent instructions live in `AGENTS.md`.
-
-## Suggested next upgrades
-
-1. Add waypoint-screen detection and route-state tracking for Act 2 travel.
-2. Build a reusable hunting engine that consumes `hunting` rules instead of hardcoded path logic.
-3. Add OCR or label detection for real loot decisions beyond fixed-item template matches.
-4. Add life and mana monitoring for survival logic.
-5. Add more GUI controls for profile selection and safe automation toggles.

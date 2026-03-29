@@ -29,5 +29,3 @@ This file is the right place for future character-level overrides such as:
 - loot additions or removals
 - buff behavior
 - inventory or potion assumptions
-
-

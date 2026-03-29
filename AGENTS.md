@@ -2,70 +2,40 @@
 
 ## Purpose
 
-This file is for contributors and coding agents working inside this repository.
+This file is the project entrance map for contributors and coding agents working inside this repository.
+Keep this file short and map-like. Put detailed guidance in the linked Markdown documents.
 Keep user onboarding, setup, and basic usage in `README.md`.
 
 ## Codebase Map
 
 - `main.py`: project entrypoint
-- `diablo2/app.py`: CLI argument handling and GUI/CLI dispatch
-- `diablo2/ui/`: Tkinter desktop GUI
-- `diablo2/common/`: capture, config, and shared helpers
-- `diablo2/actions/`: user-triggered actions and sessions
-- `diablo2/runs/`: run-specific automation logic
+- `diablo2/`: main Python package
 - `config/`: runtime behavior and profiles
+- `docs/`: project, feature, setup, and maintenance documentation
+- `assets/`: image templates and other runtime assets
+- `scripts/`: local helper scripts
+- `exec-plans/`: active and completed execution plans
 
-## Working Style
+## Key Docs
 
-- Prefer small, focused changes that preserve current behavior unless the task explicitly asks for a UI or behavior change.
-- Read the local code first before changing project structure or patterns.
-- Keep edits Windows-friendly.
-- Do not revert unrelated user changes.
+- `README.md`: user-facing project overview and startup
+- `docs/project/policy.md`: project safety and technical boundaries
+- `docs/project/architecture.md`: product direction and system structure notes
+- `docs/project/roadmap.md`: build order, open questions, and near-term upgrades
+- `docs/project/developer-guide.md`: detailed development workflow, style, verification, and documentation rules
+- `docs/project/gui-maintenance.md`: GUI layout and window-tuning maintenance notes
+- `config/config.md`: config directory overview
+- `exec-plans/execution-plan.md`: execution-plan workflow and template
 
-## Code Style
+## Working Rules
 
-- Follow existing Python style in the touched file.
-- Avoid adding noisy comments for obvious assignments.
+- When changing code or documents, review related comments, nearby docs, and adjacent maintenance guidance, and update them if they became stale.
+- Use kebab-case for markdown filenames under `docs/` unless there is a strong reason to preserve an existing name.
+- Always keep project guidance neat, clean, and concise. If information is duplicated across docs, merge it into the appropriate upper-layer source and restructure the docs so they stay maintainable.
+- Put detailed maintenance guidance in the linked docs above instead of expanding `AGENTS.md` unless the change affects the entrance-map itself.
 
-## Comment Style
+## Execution Plans
 
-- Keep comments short and intent-focused.
-- Prefer comments that explain why a block exists, what decision rule it applies, or how a tuning constant affects behavior.
-- Use section comments for grouped constants, control-flow stages, and non-obvious helper functions.
-- Avoid line-by-line narration; skip comments that only restate the code literally.
-- Write code comments in Korean.
-- For UI code, prefer section comments that explain layout intent over line-by-line commentary.
-- Do not regenerate Korean comments through lossy shell or whole-file rewrite flows that can collapse characters into `?`.
-- Prefer targeted edits when changing Korean comments, especially in existing files with mixed old encodings.
-- After editing Korean text, verify the file still contains real Unicode Korean characters instead of literal `?`.
-- If terminal output looks broken, verify the file bytes or decoded text rather than trusting the console rendering.
-
-## GUI Notes
-
-- The main desktop window lives in `diablo2/ui/gui.py`.
-- Keep `diablo2/ui/gui.py` as the main reference point for GUI layout and window-size tuning guidance.
-- Default startup size is controlled by:
-  - `DEFAULT_WINDOW_WIDTH`
-  - `DEFAULT_WINDOW_HEIGHT`
-  - `MIN_WINDOW_WIDTH`
-  - `MIN_WINDOW_HEIGHT`
-- When adjusting the main window, prefer changing those constants instead of scattering raw geometry strings.
-- Preserve the existing layout rule that the log panel expands while the right control panel stays close to its natural width.
-
-## Config Notes
-
-- Prefer changing behavior through `config/` when possible instead of hard coding values.
-- Keep capture-related behavior aligned with the config guides and current runtime behavior.
-
-## Verification
-
-- For Python-only edits, run at least `python -m py_compile` on changed files when practical.
-- If a change affects GUI layout, verify the touched module still imports and compiles cleanly.
-
-## Documentation
-
-- Update nearby comments when changing non-obvious behavior.
-- When code changes, check whether nearby comments became stale and refresh them if needed.
-- If a new constant or manual tuning point is introduced, make it easy to find and edit.
-- Keep relevant project description files in `.md` up to date when behavior, structure, setup, or developer workflow changes.
-- Put developer-facing maintenance guidance in `AGENTS.md`, and keep first-time user guidance in `README.md` or other user-facing Markdown docs.
+- Before developing, refactoring, or making a substantial documentation change, always start by writing a detailed plan in `exec-plans/` so the current task context, decisions, and progress are preserved.
+- For multi-step implementation, refactor, or documentation work, keep the active plan up to date under `exec-plans/active/`.
+- Execution-plan workflow and template live in `exec-plans/execution-plan.md`.

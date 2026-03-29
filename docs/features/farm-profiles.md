@@ -108,7 +108,7 @@ These should stay in the Summoner Run profile instead of the shared hunting or l
 
 ## Implementation direction
 
-General live action priority and coordination are documented in [run_coordination.md](run_coordination.md).
+General live action priority and coordination are documented in [run-coordination.md](run-coordination.md).
 
 The code should read the active run profile and eventually hand its sections to:
 

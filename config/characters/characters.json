@@ -79,6 +79,41 @@
           "f3": 0.8
         }
       }
+    },
+    "flash": {
+      "display_name": "Flash",
+      "progression_mode": "standard",
+      "ruleset_family": "resurrection",
+      "preferred_run_profile": "summoner",
+      "actions": {
+        "movement_skill_key": "f2",
+        "primary_attack_skill_key": "f4",
+        "left_skill_key": null,
+        "interact_skill_key": null,
+        "buff_skill_keys": [
+          "w",
+          "a",
+          "s",
+          "d"
+        ],
+        "pre_run_buff_order": [
+          "w",
+          "a",
+          "a",
+          "s",
+          "d",
+          "f1",
+          "w"
+        ],
+        "attack_pattern": "single_skill",
+        "engagement_style": "ranged_kite",
+        "buff_action_pause_seconds": {
+          "a": 0.1,
+          "s": 0.1,
+          "d": 0.1,
+          "f1": 0.1
+        }
+      }
     }
   }
 }

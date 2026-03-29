@@ -3,7 +3,6 @@
 
 # Python environments
 .venv/
-venv/
 .tools/virtualenv/
 .tools/virtualenv-appdata/
 

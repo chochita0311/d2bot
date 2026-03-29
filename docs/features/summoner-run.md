@@ -159,7 +159,7 @@ Success action:
 
 ## Coordinator behavior inside the payload
 
-Use [run_coordination.md](run_coordination.md) for the live priority model.
+Use [run-coordination.md](run-coordination.md) for the live priority model.
 
 Inside `wing_search_started` through `loot_scan_complete`, the payload should behave like one coordinator loop that keeps watching:
 

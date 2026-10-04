@@ -128,7 +128,7 @@ These define per-character behavior like:
 
 ## Practical interpretation for the current screenshot
 
-From the current character-select capture, the right-side list is clearly visible and is a good candidate for row-based detection.
+The [repository's character-select reference capture](../../assets/character/select/character_selection_current.png) shows the right-side list used for this proposed row-based detection. It is design evidence, not proof that automatic row classification or selection is implemented.
 
 That means the next stage should be:
 

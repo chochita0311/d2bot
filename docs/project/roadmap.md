@@ -2,15 +2,25 @@
 
 This document holds the current build order, open questions, and near-term upgrades.
 
-## Recommended build order
+## Established foundation
+
+- Tkinter desktop controls are the primary interface; the older CLI preview remains available.
+- Recursive JSON loading separates system settings, character actions, shared loot, and run profiles.
+- Named-window capture, recordings, snapshots, template actions, and room create/exit sessions are implemented.
+- Summoner is the first seeded run profile. Its executable stages currently end at the north-wing route goal, with a separate repeat-test path.
+- Character movement/buff configs and north-route capture/vision/decision workers are implemented.
+
+These pieces do not yet form complete farming or shared survival/interruption handling. Current stage boundaries are documented in [summoner-run.md](../features/summoner-run.md).
+
+## Remaining build order
 
 ### Phase 1: Safe foundation
 
-- capture only the game window region
-- keep dry-run as default
-- improve logs and recording
-- add user override detection
-- detect character-select screen and row regions
+- validate capture and action bounds across supported window layouts
+- extend CLI dry-run and pause/stop behavior to every live action path
+- resolve Summoner/North Go hotkey registration and difficulty propagation
+- validate existing logs, recording retention, and user-interruption handling
+- extend existing character-select screen detection to character-row scanning
 
 ### Phase 2: Vision and OCR
 
@@ -22,16 +32,13 @@ This document holds the current build order, open questions, and near-term upgra
 
 ### Phase 3: Action engine
 
-- build a small state machine
-- add simple click and key actions
+- extend the staged action engine with explicit recovery states
 - add safety timing and retries
 - add stop-on-uncertainty behavior
 - support selecting a specific character row by config
 
 ### Phase 4: Character profiles
 
-- add character build configs
-- map skills to hotkeys
 - add combat sequences
 - tune survival thresholds
 - allow per-character overrides on top of shared run profiles
@@ -46,16 +53,15 @@ This document holds the current build order, open questions, and near-term upgra
 ## Open questions
 
 - which Diablo 2 version and resolution will be the standard target
-- whether the app should use a desktop GUI or config-first workflow
 - how aggressive the manual-input interruption should be
-- how loot rules should be stored: JSON, YAML, or profile-specific files
-- which first character build should be supported
-- which first farm profile should be implemented
+- which combat build should be validated first beyond current movement/buff bindings
+- what screenshot or replay evidence will establish end-to-end run acceptance
 
 ## Near-term upgrades
 
-- add waypoint-screen detection and route-state tracking for Act 2 travel
+- validate the implemented Act 1 waypoint/Act 2 Arcane entry and north-route tracking across supported layouts
 - build a reusable hunting engine that consumes `hunting` rules instead of hardcoded path logic
 - add OCR or label detection for real loot decisions beyond fixed-item template matches
 - add life and mana monitoring for survival logic
-- add more GUI controls for profile selection and safe automation toggles
+- complete Summoner boss, loot decision, journal/portal, and post-run stages
+- add GUI controls for run-profile selection and shared dry-run/pause behavior

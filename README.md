@@ -11,14 +11,14 @@ Run coordinator behavior is documented in `docs/features/run-coordination.md`.
 
 ## What it does now
 
-- Launches a desktop GUI control panel by default
-- Can record a named Diablo window to video with start and stop buttons
-- Can capture a one-shot snapshot of the current Diablo window
-- Can target a visible game window by title
-- Can try named-window capture before falling back to desktop-region capture
+- Launches a Tkinter desktop control panel by default
+- Records a named Diablo window, captures snapshots, and selects a capture backend
+- Offers Gem Summing, Item Looting, Room Lifecycle, and staged Summoner/North Go actions
+- Uses character configs for movement keys and pre-run buff sequences
 - Supports the older OpenCV preview loop through `--cli`
-- Uses a JSON config, so you can control capture settings without rewriting code
-- Supports reusable run-profile config sections for hunting, loot, life management, and farm-specific rules
+- Loads JSON configs for capture, recording, character actions, and reusable run rules
+
+The Summoner flow currently covers room entry and north-wing navigation; full boss combat, survival management, and post-run handling remain development work. See [Summoner Run](docs/features/summoner-run.md) for implemented stages and planned behavior.
 
 ## Quick start
 
@@ -54,6 +54,20 @@ python main.py
 - click `Stop Recording` to finish
 - click `Capture Snapshot` for a still image
 
+## Play controls
+
+Select the matching `Character` config before starting an action. This selects skill settings and the preferred run profile; select the actual character in the game separately.
+
+| Control | Starting point and current scope |
+| --- | --- |
+| `Start Gem Summing` | Open the supported gem stash and Horadric Cube first; see [Gem Summing](docs/features/gem-summing.md) for count and verification behavior. |
+| `Summoner Run` | Start at character select; creates a room, enters Arcane Sanctuary, enables labels, buffs, and runs the north route once. |
+| `North Go Test` | Starts the same entry sequence and tests the north route, with optional repeated attempts and recordings. A blank `Repeat Count` uses the configured count, initially 1. |
+| `Item Looting` | Matches configured ground-item templates and clicks visible labels. |
+| `Start Room Lifecycle` | Creates and exits rooms from character select using `Difficulty`. A blank `Repeat Count` repeats until stopped. |
+
+Play controls send live mouse and keyboard input independently of the CLI `dry_run` setting. Use `Stop Action` to stop an action. `F10` is wired for Gem Summing, Item Looting, and standalone Room Lifecycle; Summoner and North Go currently rely on the stop button. The Summoner/North Go room-entry code currently uses Hell regardless of the GUI difficulty selection.
+
 ## Other commands
 
 List visible windows:
@@ -70,21 +84,9 @@ python main.py --cli --config config
 
 ## How to steer behavior
 
-Edit files under `config/`. For field-by-field help, see [config/config.md](config/config.md) and the matching `*.md` guide inside each config subfolder.
+Edit files under `config/`. The [config guide](config/config.md) links to the field reference for each area: app/capture settings, shared loot, run rules, and character actions.
 
-- `run_profiles.<name>`: reusable run definitions that payload modules resolve directly when needed
-- `run_profiles.<name>.hunting`: reusable target, waypoint, route, and combat intent
-- `shared_loot.fixed_items`: fixed items that should stay on the basic keep list for all runs
-- `run_profiles.<name>.loot`: run-specific keep or ignore decisions on top of the shared fixed-item list
-- `run_profiles.<name>.life`: reusable potion and retreat thresholds
-- `run_profiles.<name>.run_specific_rules`: assumptions that belong only to one run
-- `capture.window_title`: target a window such as `Diablo II` or `Diablo II: Resurrected`
-- `capture.window_title_mode`: `contains` or `exact`
-- `capture.follow_window`: refresh the capture box if the game window moves
-- `capture.capture_backend`: `auto`, `window`, or `screen`
-- `capture.region`: set a fixed part of the screen if you only want the game area
-- `recording.enabled`: used by the older CLI preview loop
-- `characters`: define character-specific overrides such as mode, ruleset family, and preferred run profile
+For the CLI, `dry_run` defaults to `true`, with `F8` pause and `F9` stop configured in the [system settings](config/system/system.md). Configured hunting, loot, and life rules describe intended behavior; their presence does not mean every rule has an executing engine yet.
 
 ## Current seeded run profiles
 
@@ -93,3 +95,4 @@ Edit files under `config/`. For field-by-field help, see [config/config.md](conf
 ## For contributors
 
 Contributor and coding-agent instructions live in `AGENTS.md`.
+The imported agent workflow and its local adoption notes are indexed in [docs/agents/README.md](docs/agents/README.md).

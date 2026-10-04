@@ -2,6 +2,24 @@
 
 This document organizes the high-level product direction and system structure for the Diablo 2 Windows GUI automation project.
 
+## Current implementation
+
+| Area | Responsibility |
+| --- | --- |
+| `main.py`, `diablo2/app.py` | CLI arguments and dispatch to the desktop GUI or CLI preview. |
+| `diablo2/ui/gui.py` | Tkinter capture/recording controls, character-config selection, and action launch/stop controls. |
+| `diablo2/actions/` | Recording, gem combining, ground-template loot pickup, and room create/exit sessions. |
+| `diablo2/runs/` | Run definitions and the staged Summoner orchestrator; route pieces and runtime helpers live under `runs/summoner/`. |
+| `diablo2/common/` | Config loading, Windows capture, template detection, movement input, real-time vision workers, CLI controller, and asynchronous logs. |
+| `diablo2/core/bot.py` | Older CLI capture/template/overlay loop. |
+| `config/`, `assets/` | Runtime settings and profiles, plus screenshot-derived matching assets. |
+
+The current Summoner stages are documented in [summoner-run.md](../features/summoner-run.md). The north route uses capture, fast/slow vision, and decision workers; detection can delay route decisions, but a complete survival/combat/loot coordinator is still a target.
+
+The CLI controller owns configurable dry-run, pause, and stop behavior. GUI action sessions send live input directly and have separate interruption handling; shared safety and pause coverage remain incomplete. See [system settings](../../config/system/system.md) for the actual setting and hotkey scope.
+
+The sections below describe product requirements and future extensions unless explicitly marked as current.
+
 ## Product direction
 
 The app should operate through normal Windows GUI interaction only:
@@ -11,32 +29,27 @@ The app should operate through normal Windows GUI interaction only:
 - decide what to do from configurable rules
 - send normal mouse and keyboard input when enabled
 
-The app should be useful even before full automation by supporting:
+Current observation tools include CLI dry-run/overlays, logging, recording, and snapshots. Further support should include:
 
-- dry-run mode
-- overlays
-- logging
-- session recording
+- shared dry-run behavior across action sessions
 - replay analysis
 
 ## Core system areas
 
 ### 1. Control surface
 
-The program needs a simple operator-facing control layer.
+The Tkinter desktop GUI is the current operator-facing control layer; the CLI preview remains available.
 
-Planned controls:
+Further controls:
 
 - start bot profile
 - pause and resume
 - stop immediately
 - enable dry-run vs live input
-- enable recording
 - switch between farm profiles
 
-Possible future UI:
+Possible future surfaces:
 
-- lightweight desktop GUI
 - tray icon
 - small overlay status panel
 
@@ -81,6 +94,8 @@ Required actions:
 
 Combat behavior should depend on the character build.
 
+Current character configs provide movement keys and buff action sequences. The GUI selects these configs; automatic in-game character-row selection and build-aware combat remain future work. Field details live in [characters.md](../../config/characters/characters.md).
+
 Examples:
 
 - hammerdin
@@ -102,33 +117,7 @@ Behavior inputs:
 
 The app should separate shared repeatable behavior from character-specific behavior.
 
-Shared repeatable behavior examples:
-
-- character-select screen detection
-- switching online or offline tabs
-- scanning character rows
-- selecting a character from the list
-- starting a run profile
-- returning to town
-- stash and sell loops
-
-Character-specific behavior examples:
-
-- skill bindings
-- build-specific combat logic
-- potion thresholds
-- preferred route
-- loot overrides
-
-Character rows should eventually be classified by:
-
-- progression mode: ladder or standard
-- ruleset family: ROTW or Resurrection
-
-Current visual clues from the captured character-select screen:
-
-- if the green-background ladder marker is present on the right-upper edge of a row, classify it as ladder; if absent, classify it as standard
-- if the gold-background `X` marker is present on the right-upper edge of a row, classify it as Resurrection; if absent, classify it as ROTW
+Shared screen/action services own repeatable UI transitions; character profiles supply bindings and overrides. Character-row detection and mode-marker design belong to [game-modes.md](../features/game-modes.md); configured fields belong to [characters.md](../../config/characters/characters.md).
 
 ### 6. Farm profiles
 
@@ -155,6 +144,8 @@ Each profile should eventually define:
 ### 7. Loot intelligence
 
 Loot handling should be data-driven, not buried inside code.
+
+The current pickup session matches configured ground-item templates and clicks their labels. OCR, affix evaluation, and a survival-aware approach/pickup coordinator remain future work.
 
 Needed features:
 

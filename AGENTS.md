@@ -13,8 +13,7 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 - `config/`: runtime behavior and profiles
 - `docs/`: project, feature, setup, and maintenance documentation
 - `assets/`: image templates and other runtime assets
-- `scripts/`: local helper scripts
-- `exec-plans/`: active and completed execution plans
+- `docs/plans/`: PRD, feature, spec, run, evaluation, fix, and heuristic artifacts
 
 ## Key Docs
 
@@ -24,8 +23,9 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 - `docs/project/roadmap.md`: build order, open questions, and near-term upgrades
 - `docs/project/developer-guide.md`: detailed development workflow, style, verification, and documentation rules
 - `docs/project/gui-maintenance.md`: GUI layout and window-tuning maintenance notes
+- `docs/agents/README.md`: local harness entrypoint, task routing, and import maintenance
 - `config/config.md`: config directory overview
-- `exec-plans/execution-plan.md`: execution-plan workflow and template
+- `docs/plans/README.md`: canonical planning artifacts and current work
 
 ## Working Rules
 
@@ -34,8 +34,9 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 - Always keep project guidance neat, clean, and concise. If information is duplicated across docs, merge it into the appropriate upper-layer source and restructure the docs so they stay maintainable.
 - Put detailed maintenance guidance in the linked docs above instead of expanding `AGENTS.md` unless the change affects the entrance-map itself.
 
-## Execution Plans
+## Planning And Execution Gate
 
-- Before developing, refactoring, or making a substantial documentation change, always start by writing a detailed plan in `exec-plans/` so the current task context, decisions, and progress are preserved.
-- For multi-step implementation, refactor, or documentation work, keep the active plan up to date under `exec-plans/active/`.
-- Execution-plan workflow and template live in `exec-plans/execution-plan.md`.
+- Follow `docs/agents/README.md` and the shared workflow for planning and approved feature execution; keep each artifact in its canonical owner under `docs/plans/`.
+- PRD requests are planning-only until the human owner approves the boundary. Draft PRDs and unapproved feature proposals must not trigger executable specs, code changes, or evaluation runs.
+- If an unresolved planning point can change scope, acceptance, dependencies, or user-visible behavior, resolve it with the human owner before execution.
+- When a canonical target starts or resumes and prior context materially affects the work, apply `docs/policies/harness/operator-briefing-and-review-receipts.md`; otherwise preserve the normal response shape.

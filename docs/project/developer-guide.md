@@ -35,13 +35,31 @@ This document holds development workflow details that are too specific or verbos
 - For Python-only edits, run at least `python -m py_compile` on changed files when practical.
 - If a change affects GUI layout, verify the touched module still imports and compiles cleanly.
 
+## Interpreter Diagnostics
+
+Use the project's `.venv\Scripts\python.exe` for both IDE and terminal checks. If package installation reports missing SSL support, first inspect that exact interpreter:
+
+```powershell
+.\.venv\Scripts\python.exe -c "import sys, ssl; print(sys.executable); print(sys.prefix); print(sys.base_prefix); print(ssl.OPENSSL_VERSION)"
+.\.venv\Scripts\python.exe -m pip --version
+```
+
+Check that the executable and pip belong to the intended environment. A failing `import ssl` must be resolved at the interpreter/base-environment boundary before diagnosing a particular package. Compare the same executable inside and outside the IDE. If rebuilding the environment is required, verify SSL in the chosen base interpreter first, then follow [README setup](../../README.md#quick-start) and select the rebuilt `.venv` in the IDE. Shell-only DLL/PATH fixes are diagnostic evidence rather than a stable IDE setup contract.
+
+## Evidence Handling
+
+Feature references own reusable operating and tuning guidance. Plans/runs and their evaluator reports own execution decisions and validation evidence. Keep the current approved boundary and actual evidence coverage in those canonical artifacts.
+
+For visual automation changes, retain the recordings and logs needed to explain a recognition, movement, or state-transition decision. The GUI log is a bounded live view; enabled file logging provides durable diagnostics. Mark recordings that must survive retention pruning and avoid removing evidence while another session uses it. See [system settings](../../config/system/system.md) for logging and recording retention, and the feature reference for the states that need observation.
+
 ## Documentation
 
 - If a new constant or manual tuning point is introduced, make it easy to find and edit.
 - Keep relevant project description files in `.md` up to date when behavior, structure, setup, or developer workflow changes.
-- Keep developer-facing maintenance guidance in repository docs such as `AGENTS.md`, `docs/project/*.md`, and `exec-plans/*.md`.
+- Keep project-specific maintenance guidance in repository docs such as `AGENTS.md` and `docs/project/*.md`. Shared harness policies own planning and execution rules; `docs/plans/` owns their artifacts.
 - Keep first-time user guidance in `README.md` or other user-facing markdown docs.
 
-## Execution Plans
+## Planning And Execution
 
-- Follow `exec-plans/execution-plan.md` for the shared workflow and template.
+- Use [the local harness guide](../agents/README.md) for the shared workflow and role contracts, and [planning artifacts](../plans/README.md) for templates and current records.
+- Project-specific implementation and verification rules remain in this guide; planning, approval, and run lifecycle rules remain in the installed shared policies.

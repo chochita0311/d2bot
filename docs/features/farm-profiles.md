@@ -28,51 +28,25 @@ Advanced rare, unique, or affix-threshold evaluation can be layered on later as 
 
 ## Shared model
 
-Each run profile can define these sections.
+Each run profile can define the sections below. [Run configuration](../../config/runs/runs.md) owns their supported fields and defaults; this document owns the reusable design intent. Configured intent does not imply that every behavior is already implemented.
 
 ### `hunting`
 
 Use this for reusable combat and pathing intent.
 
-Suggested fields:
-
-- `objective`
-- `waypoint_act`
-- `waypoint_name`
-- `target_monsters`
-- `target_areas`
-- `route_notes`
-- `fight_style`
-- `search_timeout_seconds`
-- `disengage_on_uncertainty`
+See [hunting fields](../../config/runs/runs.md#hunting).
 
 ### `loot`
 
 Use this for keep or ignore decisions.
 
-Suggested fields:
-
-- `keep_labels`
-- `ignore_labels`
-- `potion_columns_reserved`
-- `free_inventory_slots_min`
-- `identify_before_drop`
-- `pickup_gold`
+See [loot fields](../../config/runs/runs.md#loot).
 
 ### `life`
 
 Use this for safety and sustain rules.
 
-Suggested fields:
-
-- `use_healing_potion_below`
-- `use_rejuvenation_below`
-- `emergency_retreat_below`
-- `use_mana_potion_below`
-- `town_portal_on_risk`
-- `stop_on_death_screen`
-- `belt_restock_healing_below`
-- `belt_restock_mana_below`
+See [life fields](../../config/runs/runs.md#life).
 
 ### `run_specific_rules`
 

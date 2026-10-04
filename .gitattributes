@@ -1,0 +1,6 @@
+# Stable bytes for the imported harness's rendered SHA-256 baselines.
+docs/agents/** text eol=lf
+docs/plans/** text eol=lf
+docs/policies/harness/** text eol=lf
+docs/policies/design/** text eol=lf
+docs/policies/experience/** text eol=lf

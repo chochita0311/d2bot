@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "ai-assets",
+    "package_root": "agents",
+    "revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4"
+  },
+  "selection": {
+    "repository_surfaces": [
+      "backend",
+      "docs",
+      "frontend",
+      "infra"
+    ],
+    "excluded_capabilities": []
+  },
+  "mapping": {
+    "version": 1
+  },
+  "files": [
+    {
+      "source": "flows/workflow.md",
+      "target": "docs/agents/flows/workflow.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "48f250f93f3e0b50e18d1b021b65c8ec2bdbba79a19336969b22a35d07d39bea",
+      "rendered_sha256": "6f49a197cfb96021b1a4b60d33ca4b4710d610781022e1316fbd3bf37a9adafb"
+    },
+    {
+      "source": "operations/runner.md",
+      "target": "docs/agents/operations/runner.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "f476bc756298115ffb21ee1977e4a357eb96475d44f6eddb851373d970b91906",
+      "rendered_sha256": "eb1f623b783c33109077dc2f2c5591e36e1087357c2dda33c7dc8b89c8f006dc"
+    },
+    {
+      "source": "profiles/README.md",
+      "target": "docs/agents/profiles/README.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "fb4820e32091ea443e4e7911f68f93489d65a606193a613e5da77878ed902ecc",
+      "rendered_sha256": "fb4820e32091ea443e4e7911f68f93489d65a606193a613e5da77878ed902ecc"
+    },
+    {
+      "source": "profiles/backend-product.md",
+      "target": "docs/agents/profiles/backend-product.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "3b0368f776e9cbeb0881fed3bb6847488ed06502fafc1baec7815dda50ee3089",
+      "rendered_sha256": "3b0368f776e9cbeb0881fed3bb6847488ed06502fafc1baec7815dda50ee3089"
+    },
+    {
+      "source": "profiles/docs-content.md",
+      "target": "docs/agents/profiles/docs-content.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "ec7f047fc756ebc604dfbbd206b46e686a06d16a1061a9b0393c166dc49d2349",
+      "rendered_sha256": "d1f407325484342a52086f17c6b521ed7573a779c57de248d8bb0faa7c1c8adb"
+    },
+    {
+      "source": "profiles/foundation-contract.md",
+      "target": "docs/agents/profiles/foundation-contract.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "c2ca93643b2490c980d9dbf69f9acd32277c6e56f312e6d7d60f45c58a58cb1a",
+      "rendered_sha256": "c2ca93643b2490c980d9dbf69f9acd32277c6e56f312e6d7d60f45c58a58cb1a"
+    },
+    {
+      "source": "profiles/frontend-product.md",
+      "target": "docs/agents/profiles/frontend-product.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "264713d612a0b7e4c75080eef779ca5bfae5fad7a7aed974f85dc8c7c34b33d4",
+      "rendered_sha256": "264713d612a0b7e4c75080eef779ca5bfae5fad7a7aed974f85dc8c7c34b33d4"
+    },
+    {
+      "source": "profiles/fullstack-product.md",
+      "target": "docs/agents/profiles/fullstack-product.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "73e0c50a7cc3636ad8affe6d191268fba88deac88d0fc2f6143e5e5d9ff8199d",
+      "rendered_sha256": "73e0c50a7cc3636ad8affe6d191268fba88deac88d0fc2f6143e5e5d9ff8199d"
+    },
+    {
+      "source": "profiles/infra-devtool.md",
+      "target": "docs/agents/profiles/infra-devtool.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "136702b57aab429a009d9c8d53e2da79e467c61046a085467a3fb27570ade101",
+      "rendered_sha256": "136702b57aab429a009d9c8d53e2da79e467c61046a085467a3fb27570ade101"
+    },
+    {
+      "source": "roles/builder.md",
+      "target": "docs/agents/roles/builder.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "6a6991992ce24068170d6cab796dbc0627a442649c908cf51f1c1cb6b867efd3",
+      "rendered_sha256": "eb06fedda0da103f910fa23ea32f2b1623f06e3e89a7970132a0f58f3c995666"
+    },
+    {
+      "source": "roles/contract-evaluator.md",
+      "target": "docs/agents/roles/contract-evaluator.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "b5ef0daba0976919a3a399153ea6698661f75a5a57627f77f9c72333b5132f54",
+      "rendered_sha256": "dc6b009f72c56c8b7803647088823ad5d9d3b6a002aa8a2f4347fae3b399b5aa"
+    },
+    {
+      "source": "roles/design-evaluator.md",
+      "target": "docs/agents/roles/design-evaluator.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "837b96ead352738005fb6396152190d26d72203c16e6306af33b95e8d294099d",
+      "rendered_sha256": "5b78420a4b90eecf6d5be57d63b2060123a8c33d4922dc61725b7478d097a159"
+    },
+    {
+      "source": "roles/feature-planner.md",
+      "target": "docs/agents/roles/feature-planner.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "4b645c2b73c45d0027df74a653775cdeedcaeb1b06e8a36bbf6f1dca3c8223c4",
+      "rendered_sha256": "4b645c2b73c45d0027df74a653775cdeedcaeb1b06e8a36bbf6f1dca3c8223c4"
+    },
+    {
+      "source": "roles/fix-agent.md",
+      "target": "docs/agents/roles/fix-agent.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "787a694a3e20295674d899bbfe08d5849696b11abc1991b7a80c6ed8205cf8c6",
+      "rendered_sha256": "d9c1c235893c7079ec476d33f9d0f3bb484d7765c965af23931246e1a5e22f6f"
+    },
+    {
+      "source": "roles/functional-evaluator.md",
+      "target": "docs/agents/roles/functional-evaluator.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "75917cf4eeca11d727e02f46e63573423d0b092c3e9e40deea9132e4c5f3f7df",
+      "rendered_sha256": "31e6b27417e1ecde33ad84e3886c90de8b8ba360c36896950016580c6d68341e"
+    },
+    {
+      "source": "roles/orchestrator.md",
+      "target": "docs/agents/roles/orchestrator.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "4e01c7b2b34370cd1263ab2f6a4dcf02ed05860298060a1b2f50bc67126fe2e0",
+      "rendered_sha256": "441dbc658a496f088813c07ed709783090b77499984de40601627e0607a30f04"
+    },
+    {
+      "source": "roles/prd-normalizer.md",
+      "target": "docs/agents/roles/prd-normalizer.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "c6f018a8f744cacb344255ad1b4585f60d18645cea5272625dca38e155a337fa",
+      "rendered_sha256": "c6f018a8f744cacb344255ad1b4585f60d18645cea5272625dca38e155a337fa"
+    },
+    {
+      "source": "roles/spec-agent.md",
+      "target": "docs/agents/roles/spec-agent.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "bbf62349300a96da7523def9212dd56ebeb9c6d092e9ac9a3328d4db3e6194da",
+      "rendered_sha256": "bbf62349300a96da7523def9212dd56ebeb9c6d092e9ac9a3328d4db3e6194da"
+    },
+    {
+      "source": "roles/ux-heuristic-evaluator.md",
+      "target": "docs/agents/roles/ux-heuristic-evaluator.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "12187d7ead4145e61de6da17e439749dd5e495305d485111f2ff32314905194c",
+      "rendered_sha256": "b81dfb63d5bd0dac023cfdf64f83bc8443b220cd19731665f332a4ed81733592"
+    },
+    {
+      "source": "templates/operator-briefing.md",
+      "target": "docs/agents/templates/operator-briefing.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "51f8752e0c106cd2cdc3f4d73e7dfd23f29f036035b2d6df6697b937caa248f5",
+      "rendered_sha256": "51f8752e0c106cd2cdc3f4d73e7dfd23f29f036035b2d6df6697b937caa248f5"
+    },
+    {
+      "source": "templates/evaluation.md",
+      "target": "docs/plans/evaluation/template-evaluation.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "41c90f1d9d5f9bc943127047be7458e1dd203172dd34abd43d764d71d2cf94da",
+      "rendered_sha256": "6160a214f5950e0e105481d02dcaee37ee748fb2d3ea4307b6f750ee716702a9"
+    },
+    {
+      "source": "templates/feature.md",
+      "target": "docs/plans/feature/template-feature.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "de8d5160e871bc27aad19bd388208f4043a1d4d098fde4d0e1151a918b271760",
+      "rendered_sha256": "de8d5160e871bc27aad19bd388208f4043a1d4d098fde4d0e1151a918b271760"
+    },
+    {
+      "source": "templates/fix-log.md",
+      "target": "docs/plans/fix/template-fix-log.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "e8004de7876bbcd13ba62e8b1e90a1bd089a5101fafc27ccb94dc06322d4e2fd",
+      "rendered_sha256": "e8004de7876bbcd13ba62e8b1e90a1bd089a5101fafc27ccb94dc06322d4e2fd"
+    },
+    {
+      "source": "templates/heuristic-backlog.md",
+      "target": "docs/plans/heuristic/template-heuristic-backlog.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "d96f21eb6538d42b3cb9ebe6b08239f7b970888275ecee27ac1e7e53f42eaa6c",
+      "rendered_sha256": "d96f21eb6538d42b3cb9ebe6b08239f7b970888275ecee27ac1e7e53f42eaa6c"
+    },
+    {
+      "source": "templates/prd.md",
+      "target": "docs/plans/prd/template-prd.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "b89f73de8961384bec5646655b85f7ca6b8544598de9d7dde8b452862dfb976f",
+      "rendered_sha256": "b89f73de8961384bec5646655b85f7ca6b8544598de9d7dde8b452862dfb976f"
+    },
+    {
+      "source": "templates/run.md",
+      "target": "docs/plans/run/template-run.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "a94619ee5eb1402e2813b2be196fb489d3fe543243331e47bac101f734c31119",
+      "rendered_sha256": "a94619ee5eb1402e2813b2be196fb489d3fe543243331e47bac101f734c31119"
+    },
+    {
+      "source": "templates/spec.md",
+      "target": "docs/plans/spec/template-spec.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "9751a9690509dffe759392cd573f84869c62fb6fc4cd98cb558da0b2db83796f",
+      "rendered_sha256": "9751a9690509dffe759392cd573f84869c62fb6fc4cd98cb558da0b2db83796f"
+    },
+    {
+      "source": "policies/review/design-evaluation.md",
+      "target": "docs/policies/design/design-evaluation.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "68966c8d77deff51ab67211e30f081d46c97f806f4d24294cbc676b6215202b2",
+      "rendered_sha256": "7cbb1be320e80b2d2b96d9b83adf1fc3227a3f8e6aa97ff528acd1bb45ee5cc9"
+    },
+    {
+      "source": "policies/review/interaction-evaluation.md",
+      "target": "docs/policies/experience/interaction-evaluation.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "bce2901554517ac989775e32e7806d9d15e0b88f3bcf8953c95377b898f50ae3",
+      "rendered_sha256": "bce2901554517ac989775e32e7806d9d15e0b88f3bcf8953c95377b898f50ae3"
+    },
+    {
+      "source": "policies/harness/competence-first-delegation.md",
+      "target": "docs/policies/harness/competence-first-delegation.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "fda47a9e2b59f7ee4356901a71b5bdb9da337e3e9b60c06febc0373dd0a9de29",
+      "rendered_sha256": "fda47a9e2b59f7ee4356901a71b5bdb9da337e3e9b60c06febc0373dd0a9de29"
+    },
+    {
+      "source": "policies/harness/execution-loop-governance.md",
+      "target": "docs/policies/harness/execution-loop-governance.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "94746f4dc3cae848f840f109bcdec4074f96ebbb9dabd6c77ffa1403f72f5467",
+      "rendered_sha256": "94746f4dc3cae848f840f109bcdec4074f96ebbb9dabd6c77ffa1403f72f5467"
+    },
+    {
+      "source": "policies/harness/execution-profiles.md",
+      "target": "docs/policies/harness/execution-profiles.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "7639784f7257c2070091a7c707bed06e435fd9aa3936df3a73f6846cd3a06f67",
+      "rendered_sha256": "7639784f7257c2070091a7c707bed06e435fd9aa3936df3a73f6846cd3a06f67"
+    },
+    {
+      "source": "policies/harness/operator-briefing-and-review-receipts.md",
+      "target": "docs/policies/harness/operator-briefing-and-review-receipts.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "1c56d0dee105d820562a2d4f79f4a431caee89bfa502711db6e2fd52f7a390a4",
+      "rendered_sha256": "5bdc5e1d4de7b6470327678beb8b399c55c3baaba8591ed7c8c1ddec5788d2ec"
+    },
+    {
+      "source": "policies/harness/prd-feature-management.md",
+      "target": "docs/policies/harness/prd-feature-management.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "57c451069fdccd5e972b65ac98b74f112008a1f530d691db645810c1eea30533",
+      "rendered_sha256": "57c451069fdccd5e972b65ac98b74f112008a1f530d691db645810c1eea30533"
+    },
+    {
+      "source": "policies/harness/traceability-and-link-hygiene.md",
+      "target": "docs/policies/harness/traceability-and-link-hygiene.md",
+      "ownership": "managed",
+      "baseline_source_revision": "fe7bb3c98c297456a1d9f42ae252821b1d18b9b4",
+      "baseline_mapping_version": 1,
+      "source_sha256": "16007eab2e8286f20e3252ea3bda370dea3bb30f1aef1a83bf2889b8e7b8dd7d",
+      "rendered_sha256": "16007eab2e8286f20e3252ea3bda370dea3bb30f1aef1a83bf2889b8e7b8dd7d"
+    }
+  ]
+}

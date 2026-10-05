@@ -16,6 +16,16 @@ This document organizes the high-level product direction and system structure fo
 
 The current Summoner stages are documented in [summoner-run.md](../features/summoner-run.md). The north route uses capture, fast/slow vision, and decision workers; detection can delay route decisions, but a complete survival/combat/loot coordinator is still a target.
 
+[Character survival state](../../diablo2/common/survival.py) now provides character-owned policy validation, confirmed per-room buff/belt state, and input-free recovery/exit/replenishment requests. It has no capture or input dependencies and can be consumed by other runs. [Character configuration](../../config/characters/characters.md#survival) owns the fields; [FEAT-0003](../plans/feature/feat-0003-character-survival-state.md) owns the tested boundary. Input coordination, cooldowns and action-result confirmation remain separate integration work.
+
+[Survival HUD observation](../features/survival-observation.md) adds a separate CV producer and bounded input-free CLI. Shared layout/glyph/item assets read current/max resource pairs and expanded belt slots for one reviewed layout. Ratios never reuse pre-buff maxima; unknown readings remain unknown. The producer supplies no field, clear-surroundings or buff-effect confirmation and is not wired into the staged run's input executor.
+
+[Field buff confirmation](../features/field-buffs.md) adds a shared per-character/room transaction for ordered requests, dispatch acknowledgement and separately verified visual effects/equipment restoration. Confirmed timers use the conservative pre-input observation time. A supervised Arcane sequence supplied actual changed-max HUD references; generic I/II tab assets identify the active set without selecting an individual's battle gear. Belt inspection requires positive fresh closure before its movement gate passes. Field safety and whole-sequence effects currently require supervised evidence; the staged token executor remains unconnected.
+
+[Casting lookup](../../diablo2/common/casting.py) now combines a shared class/skill/form reference catalog with the selected character's class and current FCR. [Shared data](../../config/game-rules/casting.md) owns the initial Sorceress/Paladin tables; [personal configuration](../../config/characters/characters.md#casting) owns Flash's confirmed FCR 105. [FEAT-0004](../plans/feature/feat-0004-class-casting-rules.md) covers input-free frame estimates and unsupported-context holds. The catalog does not issue inputs or enable adaptive movement.
+
+[Common field control](../features/field-control.md) consumes that catalog with confirmed arrival timing, one held-key owner and a latest-observation mailbox. Independent deadlines release movement/attack on stale screens, buff renewal or action timeout; recovery, confirmed depletion, belt closure and loot confirmation preempt travel. A same-frame HUD bridge reconciles expanded belt counts without double-counting consumption. The injected continuous buff executor consumes each profile's order and gaps while retaining separate effect/equipment confirmation. These shared modules are implemented and short standard-input probes have run, but automatic scene/clear/death/pickup producers and staged GUI integration remain incomplete; [RUN-20261005-06](../plans/run/run-20261005-06-field-control-loop.md) owns current live limitations.
+
 The CLI controller owns configurable dry-run, pause, and stop behavior. GUI action sessions send live input directly and have separate interruption handling; shared safety and pause coverage remain incomplete. See [system settings](../../config/system/system.md) for the actual setting and hotkey scope.
 
 The sections below describe product requirements and future extensions unless explicitly marked as current.
@@ -39,6 +49,23 @@ Control consumes the latest valid observation; recording has bounded count/byte 
 Encoding, JSON formatting, file writes, rotation, directory scans, deletion, and shutdown drain belong outside the control path. Queue saturation must not fall back to synchronous producer writes. Storage health is distinct from capture/survival health: diagnostic loss is reported, emergency input stays available, and evidence-dependent continuation is gated at a verified safe boundary. Separate workers still require latency/CPU/memory measurements.
 
 The north runtime already separates capture/fast/slow/decision workers; its logger rotates bounded segments but has a synchronous high-priority overflow fallback. Town-loop evidence and PNG writes are synchronous. These are reuse candidates with unresolved gaps, not proof that this target is implemented. Retention will cover active segment bounds, total bytes/count/age, failed runs, free-space margins, and orphaned sessions; required assets are protected. [Development cleanup](developer-guide.md#evidence-handling) separately removes unneeded development data at session close.
+
+## Future adaptive teleport movement
+
+[Common encounter observation](../features/encounter-observation.md) now preserves region candidates, native crop/ground context, explicit personal radius and positive linked life-state evidence in input-free modules. Region manifests own shared appearances and terrain palettes; character policy owns thresholds/bindings. Run-specific input executors remain separate. Actual north supervision exposed pose/HUD misses and buff expiry during return, so live combat requires independent safety/buff supervision and confirmed observations before integration.
+
+The [navigation PRD](../plans/prd/prd-0005-arcane-navigation-and-recovery.md#adaptive-teleport-requirements) owns future teleport pacing across early-season and equipped characters. [Sourced class/casting references](../research/class-cast-rate-reference.md) distinguish shared rules from personal equipment and session observations. The proposed ownership is:
+
+| Layer | Ownership |
+| --- | --- |
+| Shared game rules | Verified ruleset/version, caster class, skill animation family and applicable form/animation conditions; FCR thresholds and cast frames. Profiles of the same class share this catalog. |
+| Individual character | Reference to the class, confirmed total FCR of the active equipment set, movement skill/bindings and personal safety settings. Display name is identity, not a casting rule. |
+| Shared control and session state | Rule lookup, bounded pacing/confirmation policy, observed arrival/observation delay and context validity. Session measurements do not rewrite class rules. |
+| Run | Landmarks, destination and completion rules; consumes the common movement control. |
+
+The common field controller already adjusts aim timing from class/FCR references and producer-confirmed arrival delays, with bounded waits and independent safety/stop releases. Automatic route landing/readiness producers and staged executor integration remain incomplete. Equipment swaps or class/skill/form changes invalidate assumptions as required by the selected contract. Casting expectations and capture/vision delay remain distinct under the [runtime PRD](../plans/prd/prd-0008-realtime-runtime-and-recording-retention.md). Missing class/FCR or unsupported rules never inherit another character's table.
+
+Each run supplies its landmarks, destination and completion rules. Summoner and future Diablo runs can consume the same timing/confirmation control; each route still needs its own validation. The staged north route still uses its existing controls. [RUN-20261005-06](../plans/run/run-20261005-06-field-control-loop.md) separates injected adaptation checks and short supervised input from the unverified full route and slower-equipment comparison.
 
 ## Product direction
 

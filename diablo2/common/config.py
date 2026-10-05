@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from diablo2.common.casting import CastingCatalog, CastingEstimate, CharacterCastingProfile
+from diablo2.common.survival import CharacterSurvivalPolicy
+
 
 @dataclass
 class CaptureConfig:
@@ -77,6 +80,13 @@ class CharacterProfile:
     ruleset_family: str
     preferred_run_profile: str | None = None
     actions: CharacterActions = field(default_factory=CharacterActions)
+    survival: CharacterSurvivalPolicy | None = None
+    character_class: str | None = None
+    casting: CharacterCastingProfile | None = None
+
+    def __post_init__(self):
+        if self.character_class is not None and (not isinstance(self.character_class, str) or not self.character_class.strip()):
+            raise ValueError("character_class must be a non-empty string or None")
 
 
 @dataclass
@@ -167,6 +177,7 @@ class BotConfig:
     active_character: str | None = None
     run_profiles: dict[str, FarmProfile] = field(default_factory=dict)
     farm: FarmProfile = field(default_factory=FarmProfile)
+    casting_rules: CastingCatalog = field(default_factory=CastingCatalog)
 
 
 def get_active_character_key(config: BotConfig) -> str | None:
@@ -182,6 +193,13 @@ def get_active_character_profile(config: BotConfig) -> CharacterProfile | None:
     if key is None:
         return None
     return config.characters.get(key)
+
+
+def get_active_casting_estimate(config: BotConfig) -> CastingEstimate:
+    profile = config.characters.get(config.active_character)
+    if profile is None:
+        return CastingEstimate("hold", "character_missing")
+    return config.casting_rules.estimate(profile.ruleset_family, profile.character_class, profile.casting)
 
 
 def apply_character_selection(config: BotConfig, character_key: str | None) -> None:
@@ -224,12 +242,17 @@ def _build_character_actions(raw: dict[str, Any]) -> CharacterActions:
 
 
 def _build_character_profile(name: str, raw: dict[str, Any]) -> CharacterProfile:
+    survival_raw = raw.get("survival")
+    casting_raw = raw.get("casting")
     return CharacterProfile(
         display_name=raw.get("display_name", name),
         progression_mode=raw.get("progression_mode", "standard"),
         ruleset_family=raw.get("ruleset_family", "rotw"),
         preferred_run_profile=raw.get("preferred_run_profile"),
         actions=_build_character_actions(raw.get("actions", {})),
+        survival=None if survival_raw is None else CharacterSurvivalPolicy.from_dict(survival_raw),
+        character_class=raw.get("character_class"),
+        casting=None if casting_raw is None else CharacterCastingProfile.from_dict(casting_raw),
     )
 
 
@@ -364,6 +387,7 @@ def load_config(path: str | Path) -> BotConfig:
         active_character=active_character,
         run_profiles=run_profiles,
         farm=selected_farm,
+        casting_rules=CastingCatalog.from_list(raw.get("casting_rule_sets", [])),
     )
     apply_character_selection(config, active_character)
     return config

@@ -9,6 +9,7 @@ This document holds the current build order, open questions, and near-term upgra
 - Named-window capture, recordings, snapshots, template actions, and room create/exit sessions are implemented.
 - Summoner is the first seeded run profile. Its executable stages currently end at the north-wing route goal, with a separate repeat-test path.
 - Character movement/buff configs and north-route capture/vision/decision workers are implemented.
+- Input-free [character survival state](../plans/feature/feat-0003-character-survival-state.md), [class casting reference lookup](../plans/feature/feat-0004-class-casting-rules.md), bounded [HUD/belt observation](../features/survival-observation.md), [buff confirmation](../features/field-buffs.md) and [shared field control](../features/field-control.md) are implemented. [RUN-20261005-06](../plans/run/run-20261005-06-field-control-loop.md) owns regression and short supervised input evidence. Automatic semantic producers, common executor live composition and staged integration remain incomplete.
 
 These pieces do not yet form complete farming or shared survival/interruption handling. Current stage boundaries are documented in [summoner-run.md](../features/summoner-run.md).
 
@@ -27,8 +28,9 @@ The [Summoner completion experiment plan](../features/summoner-experiment-plan.m
 
 ### Phase 2: Vision and OCR
 
+- shared north encounter candidates/terrain/radius/life-evidence contracts and assets are implemented; multi-pose tracking, live HUD uncertainty handling and independent buff/survival supervision remain required before combat integration ([current evidence](../plans/run/run-20261005-05-arcane-north-encounters.md))
 - detect core UI states
-- detect life and mana
+- extend reviewed life/mana observation to other layouts and combat conditions
 - add OCR for item labels
 - add configurable loot whitelist and ignore list
 - classify character rows by mode markers
@@ -65,6 +67,7 @@ The [Summoner completion experiment plan](../features/summoner-experiment-plan.m
 - validate the implemented Act 1 waypoint/Act 2 Arcane entry and north-route tracking across supported layouts
 - build a reusable hunting engine that consumes `hunting` rules instead of hardcoded path logic
 - add OCR or label detection for real loot decisions beyond fixed-item template matches
-- add life and mana monitoring for survival logic
+- expand life/mana and belt observation beyond the reviewed town layout and connect verified observations to survival logic
+- complete automatic belt/buff/field-safety and teleport arrival/readiness producers, then connect the implemented [common field controller](../features/field-control.md) to staged routes and action-result consumers
 - complete Summoner boss, loot decision, journal/portal, and post-run stages
 - add GUI controls for run-profile selection and shared dry-run/pause behavior

@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "layout_id": "remastered-ko-window-1922x1140",
+  "revision": "screen-reference-2026-10-05-v4",
+  "negative_references": [
+    {
+      "path": "references/town-mana-obscured.png",
+      "canvas_box": [250, 880, 1650, 1127],
+      "life": [985, 985],
+      "human_mana": [1075, 1075],
+      "expected_mana_reason": "glyph_ambiguous",
+      "evidence": "actual_town_capture",
+      "sha256": "588d76e96b9a15b86fdd87d0426a4824eb6e9483c953995c3c5876adaace8333",
+      "note": "background light overlaps numeric separator; not a glyph training template"
+    },
+    {
+      "path": "references/field-mana-obscured.png",
+      "canvas_box": [250, 880, 1650, 1127],
+      "life": [1580, 1580],
+      "human_mana": [1530, 1543],
+      "expected_mana_reason": "glyph_ambiguous",
+      "evidence": "actual_supervised_field_teleport_capture",
+      "sha256": "fe0a06fa096fb625a39e6d22879c9c0cb9f5ec96cb101c88ae0b748925035e7f",
+      "note": "unknown mana caused the held travel probe to release; not a glyph training template"
+    }
+  ],
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "resources": {
+    "life": {
+      "label_box": [
+        376,
+        915,
+        450,
+        940
+      ],
+      "number_box": [
+        454,
+        915,
+        570,
+        940
+      ],
+      "template": "life-label-ko.png",
+      "label_search_box": [
+        310,
+        905,
+        650,
+        946
+      ]
+    },
+    "mana": {
+      "label_box": [
+        1359,
+        915,
+        1413,
+        940
+      ],
+      "number_box": [
+        1415,
+        915,
+        1565,
+        940
+      ],
+      "template": "mana-label-ko.png",
+      "label_search_box": [
+        1290,
+        905,
+        1630,
+        946
+      ],
+      "label_variants": [
+        "mana-label-ko-buffed.png"
+      ]
+    }
+  },
+  "glyphs": {
+    "9": "glyphs/9.png",
+    "8": "glyphs/8.png",
+    "5": "glyphs/5.png",
+    "/": "glyphs/slash.png",
+    "1": "glyphs/1.png",
+    "0": "glyphs/0.png",
+    "7": "glyphs/7.png",
+    "3": "glyphs/3.png",
+    "4": "glyphs/4.png",
+    "6": "glyphs/6.png",
+    "2": "glyphs/2.png"
+  },
+  "matching": {
+    "label_score": 0.9,
+    "minimum_glyph_height": 10,
+    "number_max_gap": 12,
+    "glyph_score": 0.72,
+    "glyph_margin": 0.08,
+    "belt_anchor_distance": 0.06,
+    "item_distance": 0.075,
+    "item_margin": 0.025,
+    "closed_anchor_distance": 0.06
+  },
+  "belt": {
+    "anchor_box": [
+      1086,
+      886,
+      1336,
+      896
+    ],
+    "anchor_template": "belt-expanded-edge.png",
+    "origin": [
+      1088,
+      889
+    ],
+    "step": [
+      62,
+      57
+    ],
+    "slot_size": [
+      60,
+      57
+    ],
+    "items": {
+      "purple_potion": [
+        "purple-upper.png",
+        "purple-base.png",
+        "purple-middle-1.png",
+        "purple-middle-2.png"
+      ],
+      "town_portal_scroll": [
+        "scroll-upper.png",
+        "scroll-base.png",
+        "scroll-middle-1.png",
+        "scroll-middle-2.png"
+      ],
+      "empty": [
+        "empty-upper.png"
+      ]
+    },
+    "closed_anchor_box": [
+      1086,
+      1040,
+      1336,
+      1060
+    ],
+    "closed_anchor_template": "belt-closed-edge.png"
+  },
+  "references": [
+    {
+      "path": "references/field-nova-mana.png",
+      "canvas_box": [250, 880, 1650, 1127],
+      "life": [1580, 1580],
+      "mana": [1457, 1543],
+      "counts": null,
+      "evidence": "actual_supervised_field_held_nova_capture",
+      "sha256": "955eab9d9ee15ba3c7d3073388b27b8b699344b3271a559edbf079e11739e3d0"
+    },
+    {
+      "path": "references/expanded.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "evidence": "actual_town_capture"
+    },
+    {
+      "path": "references/eleven.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": [
+        3,
+        4,
+        4,
+        4
+      ],
+      "evidence": "actual_town_capture"
+    },
+    {
+      "path": "references/closed.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": null,
+      "evidence": "actual_town_capture"
+    },
+    {
+      "path": "references/restored.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "evidence": "actual_town_capture"
+    },
+    {
+      "path": "references/field-before.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_buff_capture"
+    },
+    {
+      "path": "references/field-swapped.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        895,
+        895
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_buff_capture"
+    },
+    {
+      "path": "references/before-orders.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        895,
+        895
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_buff_capture"
+    },
+    {
+      "path": "references/after-orders.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1490,
+        1490
+      ],
+      "mana": [
+        1543,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_buff_capture"
+    },
+    {
+      "path": "references/field-restored.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        1543,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_buff_capture"
+    }
+  ],
+  "belt_only_references": [
+    {
+      "path": "references/belt-after-north-11.png",
+      "canvas_box": [
+        1070,
+        885,
+        1340,
+        1120
+      ],
+      "column_counts": [
+        3,
+        4,
+        4,
+        4
+      ],
+      "provenance": "2026-10-05: actual town belt after one supervised north encounter potion use; no HUD in this crop"
+    }
+  ]
+}

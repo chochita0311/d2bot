@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+import threading
+from dataclasses import dataclass, field
 
 from diablo2.common.config import CharacterActions
 
@@ -19,9 +20,18 @@ MOVEMENT_INTENT_REPOSITION = "reposition"
 @dataclass
 class MovementExecutionState:
     movement_key_held: bool = False
+    stopped: bool = False
+    lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
 
 
 def apply_movement_intent(session, actions: CharacterActions, state: MovementExecutionState, intent: str) -> str:
+    with state.lock:
+        if state.stopped:
+            return "with movement stopped."
+        return _apply_movement_intent(session, actions, state, intent)
+
+
+def _apply_movement_intent(session, actions: CharacterActions, state: MovementExecutionState, intent: str) -> str:
     movement_key = actions.movement_skill_key
     if not movement_key:
         raise RuntimeError("Movement intent requires movement_skill_key.")
@@ -29,8 +39,12 @@ def apply_movement_intent(session, actions: CharacterActions, state: MovementExe
     mode = _resolve_movement_mode(actions, intent)
     if mode == MOVEMENT_MODE_HOLD:
         if not state.movement_key_held:
-            session._hold_key_down(movement_key)
             state.movement_key_held = True
+            try:
+                session._hold_key_down(movement_key)
+            except Exception:
+                release_movement_intent(session, actions, state, stop=True)
+                raise
         return f"with movement_skill_key '{movement_key}' still held."
 
     if state.movement_key_held:
@@ -40,11 +54,13 @@ def apply_movement_intent(session, actions: CharacterActions, state: MovementExe
     return f"and cast movement_skill_key '{movement_key}'."
 
 
-def release_movement_intent(session, actions: CharacterActions, state: MovementExecutionState) -> None:
-    movement_key = actions.movement_skill_key
-    if movement_key and state.movement_key_held:
-        session._hold_key_up(movement_key)
-        state.movement_key_held = False
+def release_movement_intent(session, actions: CharacterActions, state: MovementExecutionState, *, stop: bool = False) -> None:
+    with state.lock:
+        state.stopped = state.stopped or stop
+        movement_key = actions.movement_skill_key
+        if movement_key and state.movement_key_held:
+            session._hold_key_up(movement_key)
+            state.movement_key_held = False
 
 
 def _resolve_movement_mode(actions: CharacterActions, intent: str) -> str:

@@ -85,6 +85,13 @@
       "progression_mode": "standard",
       "ruleset_family": "resurrection",
       "preferred_run_profile": "summoner",
+      "character_class": "sorceress",
+      "casting": {
+        "rule_set_id": "d2r-normal-teleport-reference-v1",
+        "skill_id": "teleport",
+        "form": "normal",
+        "fcr": 105
+      },
       "actions": {
         "movement_skill_key": "f2",
         "primary_attack_skill_key": "f4",
@@ -101,18 +108,36 @@
           "a",
           "a",
           "s",
-          "d",
           "f1",
+          "d",
           "w"
         ],
         "attack_pattern": "single_skill",
         "engagement_style": "ranged_kite",
         "buff_action_pause_seconds": {
-          "a": 0.1,
-          "s": 0.1,
-          "d": 0.1,
-          "f1": 0.1
+          "w": 0.4,
+          "a": 0.4,
+          "s": 0.4,
+          "d": 0.4,
+          "f1": 0.4
         }
+      },
+      "survival": {
+        "life_potion_below": 0.5,
+        "mana_potion_below": 0.1,
+        "potion_kind": "purple_potion",
+        "replenish_at_or_below": 6,
+        "exit_on_empty": true,
+        "belt_toggle_key": "`",
+        "belt_columns": [
+          {"column": 1, "key": "1", "kind": "purple_potion", "capacity": 4, "target_count": 4},
+          {"column": 2, "key": "2", "kind": "purple_potion", "capacity": 4, "target_count": 4},
+          {"column": 3, "key": "3", "kind": "purple_potion", "capacity": 4, "target_count": 4},
+          {"column": 4, "key": "4", "kind": "town_portal_scroll", "capacity": 4, "target_count": null}
+        ],
+        "buffs": [
+          {"name": "battle_orders", "key": "s", "duration_seconds": 150, "renew_before_seconds": 10}
+        ]
       }
     }
   }

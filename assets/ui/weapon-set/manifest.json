@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "layout_id": "remastered-ko-window-1922x1140",
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "regions": [
+    [
+      1264,
+      240,
+      1374,
+      271
+    ],
+    [
+      1643,
+      240,
+      1753,
+      271
+    ]
+  ],
+  "templates": {
+    "1": "active-1.png",
+    "2": "active-2.png"
+  },
+  "maximum_distance": 0.06,
+  "minimum_margin": 0.025
+}

@@ -61,6 +61,8 @@ Use for survival thresholds.
 
 These are model defaults when a field is absent; seeded profile values can override them. The current north-route stage does not execute a full hunting, loot, or life-management engine, so these settings are not evidence of active survival handling.
 
+The new input-free [character survival contract](../characters/characters.md#survival) uses each character's `survival` policy directly. It does not fall back to this run-level `life` section or enable live care in the north route. These older fields remain available for compatibility; future consumers must choose an explicit owner rather than silently mixing the two policies.
+
 ## Example
 
 Use `run_profiles.summoner` when testing the Summoner flow.

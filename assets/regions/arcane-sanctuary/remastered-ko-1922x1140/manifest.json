@@ -1,0 +1,464 @@
+{
+  "schema": 1,
+  "region_id": "arcane-sanctuary",
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "revision": "north-observation-2026-10-05-v1",
+  "terrain": {
+    "floor_bgr": [
+      [
+        59,
+        64,
+        68
+      ],
+      [
+        67,
+        65,
+        65
+      ],
+      [
+        107,
+        108,
+        109
+      ],
+      [
+        111,
+        109,
+        109
+      ],
+      [
+        139,
+        144,
+        147
+      ]
+    ],
+    "void_bgr": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        8,
+        8,
+        8
+      ],
+      [
+        11,
+        11,
+        11
+      ],
+      [
+        18,
+        18,
+        18
+      ]
+    ],
+    "floor_lab_distance": 18,
+    "void_lab_distance": 16,
+    "provenance": "floor palette reused from routes/common/arcane_palette.py; gray125 omitted from void due floor overlap",
+    "meaning": "appearance only; gray walls/statues are not traversable-floor proof"
+  },
+  "templates": [
+    {
+      "id": "ghoul-alive",
+      "kind": "ghoul-lord",
+      "category": "monster",
+      "appearance": "alive",
+      "path": "ghoul-alive.png",
+      "threshold": 0.9,
+      "ground_offset": [
+        88,
+        137
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 175,
+        "source_sha256": "d5c7cd08dc73785730e5ca83d7e869281ae0bf87facd6112c9a25d5286043633",
+        "seconds_from_record_start": 88.406,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          612,
+          623,
+          731,
+          774
+        ]
+      },
+      "limit": "same-scene appearance candidate; not instance identity or life confirmation"
+    },
+    {
+      "id": "hell-clan-alive",
+      "kind": "hell-clan",
+      "category": "monster",
+      "appearance": "alive",
+      "path": "hell-clan-alive.png",
+      "threshold": 0.9,
+      "ground_offset": [
+        74,
+        109
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 175,
+        "source_sha256": "d5c7cd08dc73785730e5ca83d7e869281ae0bf87facd6112c9a25d5286043633",
+        "seconds_from_record_start": 88.406,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          1218,
+          316,
+          1345,
+          450
+        ]
+      },
+      "limit": "same-scene appearance candidate; not instance identity or life confirmation"
+    },
+    {
+      "id": "ghoul-corpse",
+      "kind": "ghoul-lord",
+      "category": "monster",
+      "appearance": "corpse",
+      "path": "ghoul-corpse.png",
+      "threshold": 0.9,
+      "ground_offset": [
+        90,
+        73
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 280,
+        "source_sha256": "6c9fd438a5165afac668ea326676cad3c7602c83c1f1ae684612ddc4610ac0e5",
+        "seconds_from_record_start": 141.371,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          1206,
+          446,
+          1377,
+          550
+        ]
+      },
+      "limit": "same-scene appearance candidate; not instance identity or life confirmation"
+    },
+    {
+      "id": "hell-clan-corpses",
+      "kind": "hell-clan",
+      "category": "monster-group",
+      "appearance": "corpse",
+      "path": "hell-clan-corpses.png",
+      "threshold": 0.9,
+      "ground_offset": null,
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 220,
+        "source_sha256": "90e2f17cdca25e03c07e544cc1e52f10783b4040102f39b340951172cb255d7c",
+        "seconds_from_record_start": 111.124,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          1037,
+          418,
+          1247,
+          550
+        ]
+      },
+      "limit": "same-scene appearance candidate; not instance identity or life confirmation"
+    },
+    {
+      "id": "fire-resist-shrine",
+      "kind": "fire-resist-shrine",
+      "category": "landmark",
+      "appearance": "landmark",
+      "path": "fire-resist-shrine.png",
+      "threshold": 0.9,
+      "ground_offset": [
+        53,
+        211
+      ],
+      "provenance": {
+        "episode": "second",
+        "source_sequence": 220,
+        "source_sha256": "3e6d242405191a517be1877c1838d4792cbd009b1fdc8082ca9c20bb57398019",
+        "seconds_from_record_start": 111.026,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          725,
+          305,
+          837,
+          528
+        ]
+      },
+      "limit": "same-scene appearance candidate; not instance identity or life confirmation"
+    }
+  ],
+  "cases": [
+    {
+      "id": "alive",
+      "path": "scene-alive.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [
+        "ghoul-alive",
+        "hell-clan-alive"
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 175,
+        "source_sha256": "d5c7cd08dc73785730e5ca83d7e869281ae0bf87facd6112c9a25d5286043633",
+        "seconds_from_record_start": 88.406,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "alive-followup",
+      "path": "scene-alive-followup.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 176,
+        "source_sha256": "1406b6e3364930e2fc09f3acbcfde9efe5919062c6e177bb609673b5fd96a135",
+        "seconds_from_record_start": 88.91,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "corpses",
+      "path": "scene-corpses.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [
+        "hell-clan-corpses"
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 220,
+        "source_sha256": "90e2f17cdca25e03c07e544cc1e52f10783b4040102f39b340951172cb255d7c",
+        "seconds_from_record_start": 111.124,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "corpses-followup",
+      "path": "scene-corpses-followup.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 230,
+        "source_sha256": "964517339300a140a046f038f2f38e74a327134c9ca24400023e68431333c274",
+        "seconds_from_record_start": 116.162,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "corpse-ground",
+      "path": "scene-corpse-ground.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [
+        "ghoul-corpse"
+      ],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 280,
+        "source_sha256": "6c9fd438a5165afac668ea326676cad3c7602c83c1f1ae684612ddc4610ac0e5",
+        "seconds_from_record_start": 141.371,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "terrain",
+      "path": "scene-terrain.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "flat-bridge",
+      "expected_candidates": [],
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 150,
+        "source_sha256": "c12ff176128b43f97d15db2aba9402afcfbc22c5a240e2acbaba6f619c09c80c",
+        "seconds_from_record_start": 75.761,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "stairs",
+      "path": "scene-stairs.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "stair-bridge",
+      "expected_candidates": [],
+      "provenance": {
+        "episode": "second",
+        "source_sequence": 60,
+        "source_sha256": "46b7b24c2831684feb409deeee109a29db7b5f89718b35763e6c2d122bd5445f",
+        "seconds_from_record_start": 30.305,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    },
+    {
+      "id": "shrine",
+      "path": "scene-shrine.png",
+      "viewport": [
+        120,
+        180,
+        1720,
+        890
+      ],
+      "layout": "stair-bridge",
+      "expected_candidates": [
+        "fire-resist-shrine"
+      ],
+      "provenance": {
+        "episode": "second",
+        "source_sequence": 220,
+        "source_sha256": "3e6d242405191a517be1877c1838d4792cbd009b1fdc8082ca9c20bb57398019",
+        "seconds_from_record_start": 111.026,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          120,
+          180,
+          1720,
+          890
+        ]
+      }
+    }
+  ],
+  "labels": [
+    {
+      "path": "ghoul-name-ko.png",
+      "reviewed_text": "구울 군주",
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 160,
+        "source_sha256": "39caa8adcf7a45f7176906ea9c856e9719db3ae9b9ad7bc5f409f540605323fe",
+        "seconds_from_record_start": 80.823,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          879,
+          74,
+          1043,
+          165
+        ]
+      }
+    },
+    {
+      "path": "hell-clan-name-ko.png",
+      "reviewed_text": "지옥혈족원",
+      "provenance": {
+        "episode": "third",
+        "source_sequence": 175,
+        "source_sha256": "d5c7cd08dc73785730e5ca83d7e869281ae0bf87facd6112c9a25d5286043633",
+        "seconds_from_record_start": 88.406,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          875,
+          73,
+          1049,
+          167
+        ]
+      }
+    },
+    {
+      "path": "shrine-name-ko.png",
+      "reviewed_text": "화염 저항의 신단",
+      "provenance": {
+        "episode": "second",
+        "source_sequence": 220,
+        "source_sha256": "3e6d242405191a517be1877c1838d4792cbd009b1fdc8082ca9c20bb57398019",
+        "seconds_from_record_start": 111.026,
+        "source_encoding": "JPEG quality 88, no rescaling",
+        "box": [
+          675,
+          232,
+          881,
+          261
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "human-supervised; no autonomous movement/combat",
+    "two retained north layout appearances; no classifier",
+    "same-room replay/calibration is not independent-room accuracy",
+    "no per-instance death association from corpse group",
+    "other poses/lighting/effects/regions/languages/capture sizes unsupported"
+  ]
+}

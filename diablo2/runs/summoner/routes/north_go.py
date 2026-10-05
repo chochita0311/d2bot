@@ -356,6 +356,8 @@ def run_arcane_north_go(session, capture) -> None:
             raise RuntimeError("stopped by user interference")
         latest_frame = snapshot.latest_frame
         if latest_frame is None or latest_frame.sequence_id == control["last_frame_id"]:
+            if latest_frame is None or snapshot.sampled_at - latest_frame.captured_at > ARCANE_FAST_STEER_LIMIT_MS / 1000.0:
+                release_movement_intent(session, actions, movement_state)
             return None
         control["last_frame_id"] = latest_frame.sequence_id
 
@@ -391,71 +393,9 @@ def run_arcane_north_go(session, capture) -> None:
         allow_side_family_switch = fast_steer_fresh if control["route_family"] in {"west", "east"} else fast_switch_fresh
         slow_fresh = slow_age_ms is not None and slow_age_ms <= ARCANE_SLOW_STALE_LIMIT_MS
 
-        if not fast_steer_fresh:
-            fallback_candidate = _resolve_arcane_direction_candidate(control["last_direction_key"])
-            cursor_ratio = control["last_direction_ratio"]
-            direction_key = fallback_candidate.key
-            direction_label = fallback_candidate.label
-            direction_family = control["route_family"]
-            direction_score = 0.0
-            north_open = 0.0
-            target_ref = _TargetRef(latest_frame.target)
-            hover_blocker_kind = slow_payload["hover_blocker_kind"] if slow_payload is not None and slow_fresh else None
-            if hover_blocker_kind is not None:
-                release_movement_intent(session, actions, movement_state)
-                session._sleep_range(*ARCANE_HOVER_RELEASE_SETTLE)
-            final_ratio = _steer_arcane_movement(
-                session,
-                target_ref,
-                latest_frame.frame,
-                cursor_ratio,
-                0,
-                hover_blocker_kind=hover_blocker_kind,
-                direction_family=direction_family,
-            )
-            movement_was_held = movement_state.movement_key_held
-            movement_intent = MOVEMENT_INTENT_TRAVEL
-            action_phrase = apply_movement_intent(session, actions, movement_state, movement_intent)
-            key_state_changed = movement_was_held != movement_state.movement_key_held
-            control["north_steps"] += 1
-            control["last_direction_key"] = direction_key
-            control["last_direction_ratio"] = final_ratio
-            control["last_turn_reason"] = "stale-fast-hold"
-            if key_state_changed:
-                control["last_key_state_change_step"] = control["north_steps"]
-            side_pause_note = _apply_arcane_side_reposition_pause(session, control, direction_family)
-            session.events.put(
-                session.event_class(
-                    "info",
-                    f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change=None, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}{side_pause_note} (stale-fast hold)",
-                    payload={
-                        "step": control["north_steps"],
-                        "status": "stale_fast_hold",
-                        "family": direction_family,
-                        "choice": direction_key,
-                        "turn_reason": control["last_turn_reason"],
-                        "frame_age_ms": frame_age_ms,
-                        "fast_age_ms": fast_age_ms,
-                        "slow_age_ms": slow_age_ms,
-                        "fast_sequence_gap": fast_sequence_gap,
-                        "fast_proc_ms": fast_proc_ms,
-                        "key_state_changed": key_state_changed,
-                        "movement_key_held": movement_state.movement_key_held,
-                    },
-                    priority=2,
-                )
-            )
-            session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
-            return {
-                "status": "stale_fast_hold",
-                "frame_age_ms": frame_age_ms,
-                "fast_age_ms": fast_age_ms,
-                "slow_age_ms": slow_age_ms,
-                "fast_sequence_gap": fast_sequence_gap,
-                "direction_key": direction_key,
-                "final_ratio": final_ratio,
-            }
-
+        if not fast_steer_fresh or not slow_fresh or frame_age_ms > ARCANE_FAST_STEER_LIMIT_MS:
+            release_movement_intent(session, actions, movement_state)
+            return {"status": "stale_vision_released", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
         if slow_payload is not None and slow_fresh and slow_payload["end"] is not None:
             control["stop_status"] = "end"
             session.events.put(session.event_class("info", "Arcane North Test: detected Arcane goal center; stopping north run here."))
@@ -463,6 +403,7 @@ def run_arcane_north_go(session, capture) -> None:
             return {"status": "end", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if slow_payload is not None and slow_fresh and slow_payload["monster_hit"] is not None:
+            release_movement_intent(session, actions, movement_state)
             if now - control["last_monster_log_at"] >= 0.35:
                 session.events.put(
                     session.event_class("info", f"Arcane North Test: monster detected during run -> {slow_payload['monster_hit']}.")
@@ -472,6 +413,7 @@ def run_arcane_north_go(session, capture) -> None:
             return {"status": "pause_monster", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if slow_payload is not None and slow_fresh and slow_payload["loot_label"] is not None:
+            release_movement_intent(session, actions, movement_state)
             if now - control["last_loot_log_at"] >= 0.35:
                 session.events.put(
                     session.event_class(
@@ -483,6 +425,7 @@ def run_arcane_north_go(session, capture) -> None:
             return {"status": "pause_loot", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
         if now < control["pause_until"]:
+            release_movement_intent(session, actions, movement_state)
             return {"status": "cooldown", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
         frame_change = fast_payload.get("progress_change") if fast_payload is not None else None
         if frame_change is not None and fast_payload.get("progress_trend") is not None:
@@ -612,8 +555,11 @@ def run_arcane_north_go(session, capture) -> None:
         while not session._stop_event.wait(0.05):
             pass
     finally:
-        runtime.stop()
-        release_movement_intent(session, actions, movement_state)
+        session._stop_event.set()
+        try:
+            release_movement_intent(session, actions, movement_state, stop=True)
+        finally:
+            runtime.stop()
 
     session._north_go_last_outcome = {
         "status": str(control["stop_status"]),

@@ -10,6 +10,8 @@ The separately approved [town room loop](town-room-loop.md) has finite create→
 
 Describe the observed Summoner Run as a payload-first target spec, and distinguish it from the narrower executable stages below.
 
+The owner's confirmed normal loop is room creation → Arcane Sanctuary → wings at 2, 4, 8, then 10 o'clock → kill the encountered Summoner → collect any key and approved loot → return to the central Arcane waypoint → Act 1 town → exit → repeat. Finding the Summoner ends further wing search, so a run may search one to four wings. Belt inspection must finish with verified closure before movement. Existing executable stages below do not yet complete this loop.
+
 ## Payload boundary
 
 The target payload covers the body of the run:
@@ -28,6 +30,8 @@ Reusable wrapper shape:
 Room creation and exit already exist in `diablo2/actions/run_lifecycle.py`. The Summoner orchestrator currently attaches room creation before its staged payload; complete payload handling and the normal post-run wrapper are still unfinished.
 
 ## Observed payload timeline
+
+This is a historical observation. Its journal/red-portal/Canyon return differs from the newly confirmed central-waypoint return above.
 
 - `8s-10s`: Act 1 town spawn
 - `9s-10s`: tap `ALT` once to enable item labels
@@ -196,6 +200,16 @@ Right now the orchestrated flow is:
 
 Reaching the route goal is not evidence that the Summoner was killed or that the key decision is complete. Combat, survival care, journal/portal interaction, and complete post-run handling remain target behavior.
 
+[FEAT-0003](../plans/feature/feat-0003-character-survival-state.md) adds the shared character policy and input-free buff/belt state contract. Flash's configured entry sequence follows the latest owner instruction; policy fields are documented in [characters.md](../../config/characters/characters.md#survival). The current staged run has not yet connected live HUD/belt observations or the new recovery, field-only rebuff and depletion-exit requests to its input executor.
+
+[HUD/belt observation](survival-observation.md) now reads same-frame current/max pairs and expanded slots in a separate input-free CLI for the reviewed native window layout. It passed bounded town screen checks, including one empty slot and a closed belt. It supplies no field/clear-surroundings or buff confirmation and has not changed the staged run's controls.
+
+[FEAT-0006](../plans/feature/feat-0006-field-buff-confirmation.md) adds shared ordered buff confirmation and positive belt-closure gating. One supervised Arcane central-waypoint sequence supplied buffed HUD references and returned through the central waypoint to Act 1. The current safety/effect evidence producer is the supervisor; this is not an autonomous route or staged-executor integration. [Field-buff guidance](field-buffs.md) owns the consumer contract.
+
+[FEAT-0007](../plans/feature/feat-0007-arcane-north-encounters.md) adds input-free shared region candidates, floor/void patch evidence, explicit personal radius and positive linked life-state contracts. Supervised north encounters supplied Ghoul Lord/Hell Clan alive/corpse and shrine-negative assets, plus one mana-triggered potion recovery. [Encounter guidance](encounter-observation.md) owns the APIs and limits. Pose/HUD misses and expired buffs during supervised return prevent treating this as completed live safety or automatic combat; [the run](../plans/run/run-20261005-05-arcane-north-encounters.md) returned to spec for real-time supervision/integration.
+
+[FEAT-0004](../plans/feature/feat-0004-class-casting-rules.md) adds shared class/skill reference lookup with individual FCR configuration. Flash's Sorceress FCR 105 selects 8 reference frames. [Common field control](field-control.md) now consumes that lookup with producer-confirmed arrival delays for adaptive aim timing. The current north-route executor still uses its existing movement controls; automatic arrival/readiness producers and staged route integration remain open in [the current run](../plans/run/run-20261005-06-field-control-loop.md).
+
 ## Waypoint Entry Maintenance
 
 The entry flow lives in [arcane_entry.py](../../diablo2/runs/summoner/routes/arcane_entry.py). Keep the minimap visible for marker search; its waypoint marker supplies direction guidance. The interaction target is the real waypoint object in the world view.
@@ -259,6 +273,8 @@ The current implementation focus remains:
 - postpone full hunting/looting interruption recovery until after basic route completion is reliable
 
 ## Remaining implementation targets
+
+[공통 필드 제어](field-control.md)는 후속 승인 범위에서 단일 F2/F4 소유자, 최신 화면/버프 시한 해제, 포션 확인·잔량 재관찰과 연속 프로필 버프 실행기를 구현했다. 기존 북쪽 경로에서는 stale/적/아이템/쿨다운/정지 반환 때 유지 키를 해제하도록 수정했다. 자동 안전/개체 사망/획득을 생산하는 코드와 GUI 경로 소비자는 연결 전이다. [현재 실행 기록](../plans/run/run-20261005-06-field-control-loop.md)이 공통 계약 검증과 짧은 감독 입력의 증거·한계를 소유한다.
 
 - validate route completion on screenshots, recordings, and supervised runs
 - add survival/combat/loot arbitration with interruption-safe route recovery

@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import json
 import threading
+import time
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from queue import Empty, Queue
 
 import numpy as np
 
+from diablo2.actions.recording import RecordingSession, prune_recording_artifacts
 from diablo2.actions.run_lifecycle import RunLifecycleSession
+from diablo2.common.async_log import AsyncSegmentedLogger
 from diablo2.common.capture import ScreenCapture
 from diablo2.common.config import BotConfig
 from diablo2.runs.base import RunDefinition, RunPayloadState, RunPort
@@ -21,12 +26,13 @@ from diablo2.runs.summoner.routes.common.arcane_common import (
     resolve_arcane_character_actions,
     run_arcane_pre_run_buffs,
     scan_arcane_monsters,
+    verify_arcane_hub_ready,
 )
 from diablo2.runs.summoner.routes.arcane_entry import PORT as ARCANE_ENTRY, run_arcane_entry
 from diablo2.runs.summoner.routes.east_go import ROUTE_SEGMENT as EAST_GO
 from diablo2.runs.summoner.routes.east_return import ROUTE_SEGMENT as EAST_RETURN
 from diablo2.runs.summoner.routes.north_go import ROUTE_SEGMENT as NORTH_GO, run_arcane_north_go
-from diablo2.runs.summoner.routes.north_return import ROUTE_SEGMENT as NORTH_RETURN
+from diablo2.runs.summoner.routes.north_return import ROUTE_SEGMENT as NORTH_RETURN, run_arcane_north_reset
 from diablo2.runs.summoner.runtime.runtime_helpers import (
     aim_relative_ratio,
     apply_offset,
@@ -53,6 +59,8 @@ SUMMONER_PROFILE_ID = "summoner"
 class SummonerEvent:
     level: str
     message: str
+    payload: dict[str, object] | None = None
+    priority: int = 1
 
 
 @dataclass
@@ -72,6 +80,32 @@ class SummonerRunContext:
     @property
     def profile(self):
         return self.definition.profile
+
+
+@dataclass
+class NorthGoAttemptResult:
+    run_id: str
+    attempt_index: int
+    status: str
+    recording_path: str | None = None
+    kept_recording: bool = False
+    analysis_path: str | None = None
+
+
+class MirroredEventQueue:
+    def __init__(self, backing_queue: Queue, mirror_fn):
+        self._backing_queue = backing_queue
+        self._mirror_fn = mirror_fn
+
+    def put(self, event) -> None:
+        self._backing_queue.put(event)
+        self._mirror_fn(event)
+
+    def get_nowait(self):
+        return self._backing_queue.get_nowait()
+
+    def empty(self) -> bool:
+        return self._backing_queue.empty()
 
 
 class SummonerRunOrchestrator:
@@ -125,7 +159,10 @@ class SummonerRunOrchestrator:
 
     def __init__(self, config: BotConfig):
         self.config = config
-        self.events: Queue[SummonerEvent] = Queue()
+        self._event_queue: Queue[SummonerEvent] = Queue()
+        self._logger = AsyncSegmentedLogger(self.config.logging, base_name="north-go-tuning")
+        self._logger.start()
+        self.events = MirroredEventQueue(self._event_queue, self._mirror_event)
         self._thread: threading.Thread | None = None
         self._lock = threading.Lock()
         self._is_running = False
@@ -134,6 +171,7 @@ class SummonerRunOrchestrator:
         self._last_pointer: tuple[int, int] | None = None
         self._current_scout_anchor = (0.5, 0.5)
         self._last_detection_route = "direct"
+        self._north_go_last_outcome: dict[str, object] = {"status": "not_started"}
 
         self._act1_map_templates = [self._load_image(path) for path in self._resolve_act1_map_template_paths()]
         self._act1_waypoint_template = self._load_image(self._resolve_act1_waypoint_template_path())
@@ -161,9 +199,13 @@ class SummonerRunOrchestrator:
             self._thread.start()
         self.events.put(
             self.event_class(
-                "info", f"Summoner run started for stage make_room -> arcane_entry -> enable_labels -> buff_before_run -> north_go (run {run_number})."
+                "info",
+                f"Summoner run started for stage make_room -> arcane_entry -> enable_labels -> buff_before_run -> north_go (run {run_number}).",
             )
         )
+
+    def close(self) -> None:
+        self._logger.stop()
 
     def stop(self) -> None:
         self._stop_event.set()
@@ -228,29 +270,189 @@ class SummonerRunOrchestrator:
         self.events.put(self.event_class("info", "Summoner: buff_before_run stage completed."))
 
     def run_north_go(self, capture: ScreenCapture) -> None:
+        self._north_go_last_outcome = {"status": "running"}
         run_arcane_north_go(self, capture)
 
-    def start_north_go_test(self) -> None:
+    def start_north_go_test(self, repeat_count: int | None = None, difficulty: str = "hell") -> None:
         with self._lock:
             if self._is_running:
                 raise RuntimeError("Summoner run is already running.")
             self._stop_event.clear()
-            self._thread = threading.Thread(target=self._run_north_go_test, daemon=True)
+            resolved_repeat_count = repeat_count if repeat_count is not None else max(1, int(self.config.north_go_tuning.rerun_count))
+            self._thread = threading.Thread(
+                target=self._run_north_go_test,
+                args=(resolved_repeat_count, difficulty),
+                daemon=True,
+            )
             self._is_running = True
             self._thread.start()
-        self.events.put(self.event_class("info", "Arcane North Test started from GUI button."))
+        self.events.put(
+            self.event_class(
+                "info",
+                f"Arcane North Test started from GUI button with {resolved_repeat_count} attempt(s) on {difficulty}.",
+                payload={"rerun_count": resolved_repeat_count, "difficulty": difficulty},
+                priority=0,
+            )
+        )
 
-    def _run_north_go_test(self) -> None:
+    def _run_north_go_test(self, repeat_count: int, difficulty: str) -> None:
         try:
-            capture = ScreenCapture(self.config.capture)
-            focus_game_window(self, capture)
-            self.run_north_go(capture)
+            run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.events.put(
+                self.event_class(
+                    "info",
+                    f"Arcane North Test: tuning run {run_id} started for {repeat_count} attempt(s).",
+                    payload={"run_id": run_id, "rerun_count": repeat_count, "difficulty": difficulty},
+                    priority=0,
+                )
+            )
+            for attempt_index in range(1, repeat_count + 1):
+                if self._stop_event.is_set():
+                    break
+                self._run_single_north_go_attempt(run_id, attempt_index, repeat_count, difficulty)
         except Exception as exc:  # pragma: no cover
             self.events.put(self.event_class("error", f"Arcane North Test failed: {exc}"))
         finally:
             with self._lock:
                 self._thread = None
                 self._is_running = False
+
+    def _run_single_north_go_attempt(self, run_id: str, attempt_index: int, total_attempts: int, difficulty: str) -> None:
+        self._stop_event.clear()
+        self.events.put(
+            self.event_class(
+                "info",
+                f"Arcane North Test: attempt {attempt_index}/{total_attempts} starting.",
+                payload={"run_id": run_id, "attempt_index": attempt_index, "total_attempts": total_attempts, "phase": "attempt_start"},
+                priority=0,
+            )
+        )
+        self.make_room(run_number=attempt_index)
+        capture = ScreenCapture(self.config.capture)
+        focus_game_window(self, capture)
+        self.enter_arcane(capture)
+        self.enable_labels()
+        self.buff_before_run()
+        verify_arcane_hub_ready(self, capture, "north")
+
+        recording_session: RecordingSession | None = None
+        recording_path: Path | None = None
+        if self.config.north_go_tuning.auto_record_runs:
+            recording_path = self._build_north_go_recording_path(run_id, attempt_index)
+            recording_session = RecordingSession(self.config.capture, recordings_dir=self.config.recording.directory)
+            recording_session.start(recording_path)
+            self.events.put(
+                self.event_class(
+                    "info",
+                    f"Arcane North Test: recording attempt {attempt_index} to {recording_path.name}.",
+                    payload={"run_id": run_id, "attempt_index": attempt_index, "recording_path": str(recording_path)},
+                    priority=0,
+                )
+            )
+
+        attempt_status = "unknown"
+        try:
+            self.run_north_go(capture)
+            attempt_status = str(self._north_go_last_outcome.get("status", "stopped"))
+        except Exception:
+            attempt_status = "failed"
+            self._north_go_last_outcome = {"status": "failed"}
+        finally:
+            if recording_session is not None:
+                recording_session.stop()
+
+        analysis_path = self._write_north_go_attempt_summary(run_id, attempt_index, attempt_status, recording_path)
+        keep_recording = self._should_keep_recording(attempt_index, attempt_status)
+        if recording_path is not None and not keep_recording:
+            prune_recording_artifacts(recording_path, [])
+        self.events.put(
+            self.event_class(
+                "info",
+                f"Arcane North Test: attempt {attempt_index}/{total_attempts} finished with status={attempt_status}, keep_recording={keep_recording}.",
+                payload={
+                    "run_id": run_id,
+                    "attempt_index": attempt_index,
+                    "status": attempt_status,
+                    "recording_path": None if recording_path is None or not keep_recording else str(recording_path),
+                    "analysis_path": str(analysis_path),
+                    "kept_recording": keep_recording,
+                    "phase": "attempt_complete",
+                },
+                priority=0,
+            )
+        )
+        if attempt_status == "failed":
+            raise RuntimeError(f"Arcane North Test attempt {attempt_index} failed.")
+        if attempt_index < total_attempts:
+            self._stop_event.clear()
+            run_arcane_north_reset(self, capture, attempt_index)
+            self._stop_event.clear()
+
+    def _run_north_reset(self, capture: ScreenCapture, run_number: int) -> None:
+        lifecycle = RunLifecycleSession(self.config.capture)
+        self._active_lifecycle = lifecycle
+        self.events.put(
+            self.event_class(
+                "info",
+                f"Arcane North Test: reset phase starting after attempt {run_number}.",
+                payload={"phase": "reset_start", "run_number": run_number},
+                priority=0,
+            )
+        )
+        try:
+            lifecycle._focus_game_window(capture)
+            lifecycle.exit_room(capture, run_number)
+            self._drain_lifecycle_events(lifecycle)
+            self.events.put(
+                self.event_class(
+                    "info",
+                    f"Arcane North Test: reset phase completed after attempt {run_number}; character select is ready.",
+                    payload={"phase": "reset_complete", "run_number": run_number},
+                    priority=0,
+                )
+            )
+        finally:
+            self._drain_lifecycle_events(lifecycle)
+            self._active_lifecycle = None
+
+    def _build_north_go_recording_path(self, run_id: str, attempt_index: int) -> Path:
+        recordings_dir = Path(self.config.recording.directory)
+        recordings_dir.mkdir(parents=True, exist_ok=True)
+        return recordings_dir / f"north-go-{run_id}-attempt-{attempt_index:02d}.avi"
+
+    def _write_north_go_attempt_summary(
+        self,
+        run_id: str,
+        attempt_index: int,
+        attempt_status: str,
+        recording_path: Path | None,
+    ) -> Path:
+        recordings_dir = Path(self.config.recording.directory)
+        recordings_dir.mkdir(parents=True, exist_ok=True)
+        summary_path = recordings_dir / f"north-go-{run_id}-attempt-{attempt_index:02d}.summary.json"
+        summary = {
+            "run_id": run_id,
+            "attempt_index": attempt_index,
+            "status": attempt_status,
+            "recording_path": None if recording_path is None else str(recording_path),
+            "recording_exists": False if recording_path is None else recording_path.exists(),
+            "outcome": self._north_go_last_outcome,
+            "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        return summary_path
+
+    def _should_keep_recording(self, attempt_index: int, attempt_status: str) -> bool:
+        if attempt_status not in {"end", "end_latest_frame"} and self.config.recording.keep_failed_runs:
+            return True
+        if self.config.recording.keep_successful_runs:
+            return True
+        return attempt_index <= max(0, int(self.config.north_go_tuning.keep_reference_runs))
+
+    def _mirror_event(self, event: SummonerEvent) -> None:
+        payload = getattr(event, "payload", None)
+        priority = int(getattr(event, "priority", 1))
+        self._logger.log(event.level, event.message, payload=payload, priority=priority, source="summoner")
 
     def _drain_lifecycle_events(self, lifecycle: RunLifecycleSession) -> None:
         while True:

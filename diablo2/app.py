@@ -3,12 +3,14 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from queue import Empty
 from pathlib import Path
 
 from diablo2.common.capture import list_windows
 from diablo2.core.bot import DiabloBot
 from diablo2.common.config import load_config
 from diablo2.ui.gui import run_gui
+from diablo2.actions.run_lifecycle import RunLifecycleSession
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -27,6 +29,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--cli",
         action="store_true",
         help="Run the existing OpenCV preview loop instead of the desktop GUI",
+    )
+    parser.add_argument("--town-loop", type=int, choices=(1, 2, 3), help="Live bounded town round trip, 1-3 rooms; F10 stops")
+    parser.add_argument("--difficulty", choices=("normal", "nightmare", "hell"), default="hell", help="Town-loop room difficulty")
+    parser.add_argument(
+        "--town-destination",
+        choices=("town", "arcane"),
+        default="town",
+        help="Arcane requires separately reviewed private arrival calibration",
     )
     return parser
 
@@ -49,6 +59,24 @@ def main() -> int:
         for window in list_windows():
             _safe_print(f"{window.title} | left={window.left} top={window.top} " f"width={window.width} height={window.height}")
         return 0
+
+    if args.town_loop is not None:
+        config = load_config(Path(args.config))
+        config.capture.window_title = "Diablo II: Resurrected"
+        config.capture.window_title_mode = "exact"
+        config.capture.capture_backend = "window"
+        session = RunLifecycleSession(config.capture)
+        session.start(args.town_loop, args.difficulty, town_loop=True, destination=args.town_destination)
+        try:
+            while session.is_running or not session.events.empty():
+                try:
+                    event = session.events.get(timeout=0.2)
+                except Empty:
+                    continue
+                _safe_print(f"{event.level}: {event.message}")
+        except KeyboardInterrupt:
+            session.stop()
+        return 0 if session.last_result == "passed" else 2
 
     if not args.cli:
         return run_gui(args.config)

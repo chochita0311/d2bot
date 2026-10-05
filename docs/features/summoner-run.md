@@ -2,6 +2,10 @@
 
 The target payload describes the full run. Executable coverage is listed under Current staged implementation.
 
+The [Summoner experiment plan](summoner-experiment-plan.md) maps the new draft PRDs for room repetition, Flash survival/buffs, all four wings, nearby-enemy combat, shared loot/identification, and town maintenance. Those PRDs own the proposed completion boundary; this reference retains the existing observed timeline and implementation coverage. No draft is authorization to run the game.
+
+The separately approved [town room loop](town-room-loop.md) has finite create→Act 2 town→Act 1→exit→recreate behavior. It does not invoke the Summoner combat payload; its own run record distinguishes that runtime evidence from the staged payload below.
+
 ## Goal
 
 Describe the observed Summoner Run as a payload-first target spec, and distinguish it from the narrower executable stages below.

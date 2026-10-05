@@ -264,6 +264,14 @@ def prepare_arcane_hub_start(session, capture, wing_key: str) -> None:
     release_movement_intent(session, actions, movement_state)
 
 
+def verify_arcane_hub_ready(session, capture, wing_key: str) -> None:
+    frame = capture.grab().frame
+    hub_match = session._locate_template(frame, session._arcane_hub_center_template, ARCANE_HUB_CENTER_TEMPLATE_THRESHOLD)
+    if hub_match is None:
+        raise RuntimeError(f"Arcane {wing_key}_go reset verification failed: hub center is not visible.")
+    session.events.put(session.event_class("info", f"Summoner: verified Arcane hub state before {wing_key}_go rerun."))
+
+
 # 캐릭터 설정에 들어 있는 pre-run buff 순서를 재생한다.
 # 현재 선택된 캐릭터 액션 설정을 기준으로 동작한다.
 def run_arcane_pre_run_buffs(session) -> None:
@@ -433,4 +441,3 @@ def execute_configured_action(session, token: str) -> None:
         session._sleep_range(*session.ACTION_SLEEP)
         return
     session._press_key(normalized)
-

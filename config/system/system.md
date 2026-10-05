@@ -35,6 +35,10 @@ GUI play actions send input directly and do not use `dry_run` or the CLI pause/s
 
 North-go retention also keeps the first `north_go_tuning.keep_reference_runs` attempts. Other raw attempt videos are removed; summary JSON files are retained. These flags do not prune ordinary manual GUI recordings.
 
+These settings describe runtime retention. Development-session close uses the separate [development cleanup rule](../../docs/project/developer-guide.md#evidence-handling): promote required recognition assets, summarize results, then remove unnecessary development recordings, logs, frames, and temporary files. Runtime keep flags do not require indefinite storage of development artifacts.
+
+The [real-time/recording PRD](../../docs/plans/prd/prd-0008-realtime-runtime-and-recording-retention.md) proposes shared count/byte/age/free-space limits and isolated writes for long runs. These settings currently do not impose a total quota on town-loop evidence directories. The proposed limits are not implemented configuration fields yet.
+
 ## logging
 
 Asynchronous file logging currently mirrors Summoner/north-go events. These settings do not replace the CLI logging configuration.

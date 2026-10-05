@@ -11,7 +11,6 @@ from diablo2.actions.loot_pickup import LootPickupSession
 from diablo2.common.color_palette import palette_distance_map_bgr, palette_match_ratio
 from diablo2.common.movement import (
     MOVEMENT_INTENT_TRAVEL,
-    MOVEMENT_INTENT_REPOSITION,
     MovementExecutionState,
     apply_movement_intent,
     release_movement_intent,
@@ -77,7 +76,10 @@ ARCANE_SLOW_STALE_LIMIT_MS = 1800
 ARCANE_DIRECTION_PATCH_RADIUS = 35
 
 # center -> candidate 직선 경로 위에서 볼 샘플 지점 비율.
-ARCANE_DIRECTION_PATH_SAMPLES = (0.75, 0.95,)
+ARCANE_DIRECTION_PATH_SAMPLES = (
+    0.75,
+    0.95,
+)
 
 # fast 판단용 축소 맵 비율.
 # 작을수록 빠르지만 구조를 너무 잃지 않는 선으로 잡는다.
@@ -139,6 +141,9 @@ ARCANE_STEER_SAMPLE_KEEP_MARGIN = 0.06
 # steer target이 캐릭터 중심 근처 안쪽 원에 들어오지 않도록 막는 최소 중심 거리.
 # 중심 (0.5, 0.5) 기준 실제 거리이며, 안쪽이면 같은 방향으로 이 경계까지 밀어낸다.
 ARCANE_MIN_STEER_CENTER_DISTANCE = 0.235
+ARCANE_NORTH_REOPEN_CONFIRM_STEPS = 2
+ARCANE_NORTH_REOPEN_CONFIRM_OPEN = 0.38
+
 
 @dataclass(frozen=True)
 class ArcaneDirectionCandidate:
@@ -296,6 +301,11 @@ def run_arcane_north_go(session, capture) -> None:
         "route_family": "north",
         "side_stuck_steps": 0,
         "side_reposition_steps": 0,
+        "north_reopen_steps": 0,
+        "last_turn_reason": "start",
+        "last_family_switch_step": 0,
+        "last_key_state_change_step": 0,
+        "stop_status": "stopped",
     }
     movement_state = MovementExecutionState()
 
@@ -351,6 +361,7 @@ def run_arcane_north_go(session, capture) -> None:
 
         latest_end = detect_arcane_end(session, latest_frame.frame)
         if latest_end is not None:
+            control["stop_status"] = "end_latest_frame"
             session.events.put(
                 session.event_class("info", "Arcane North Test: detected Arcane goal center on latest frame; stopping north run here.")
             )
@@ -402,16 +413,36 @@ def run_arcane_north_go(session, capture) -> None:
                 hover_blocker_kind=hover_blocker_kind,
                 direction_family=direction_family,
             )
-            movement_intent = MOVEMENT_INTENT_TRAVEL if direction_family == "north" else MOVEMENT_INTENT_REPOSITION
+            movement_was_held = movement_state.movement_key_held
+            movement_intent = MOVEMENT_INTENT_TRAVEL
             action_phrase = apply_movement_intent(session, actions, movement_state, movement_intent)
+            key_state_changed = movement_was_held != movement_state.movement_key_held
             control["north_steps"] += 1
             control["last_direction_key"] = direction_key
             control["last_direction_ratio"] = final_ratio
+            control["last_turn_reason"] = "stale-fast-hold"
+            if key_state_changed:
+                control["last_key_state_change_step"] = control["north_steps"]
             side_pause_note = _apply_arcane_side_reposition_pause(session, control, direction_family)
             session.events.put(
                 session.event_class(
                     "info",
                     f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change=None, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}{side_pause_note} (stale-fast hold)",
+                    payload={
+                        "step": control["north_steps"],
+                        "status": "stale_fast_hold",
+                        "family": direction_family,
+                        "choice": direction_key,
+                        "turn_reason": control["last_turn_reason"],
+                        "frame_age_ms": frame_age_ms,
+                        "fast_age_ms": fast_age_ms,
+                        "slow_age_ms": slow_age_ms,
+                        "fast_sequence_gap": fast_sequence_gap,
+                        "fast_proc_ms": fast_proc_ms,
+                        "key_state_changed": key_state_changed,
+                        "movement_key_held": movement_state.movement_key_held,
+                    },
+                    priority=2,
                 )
             )
             session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
@@ -426,9 +457,8 @@ def run_arcane_north_go(session, capture) -> None:
             }
 
         if slow_payload is not None and slow_fresh and slow_payload["end"] is not None:
-            session.events.put(
-                session.event_class("info", "Arcane North Test: detected Arcane goal center; stopping north run here.")
-            )
+            control["stop_status"] = "end"
+            session.events.put(session.event_class("info", "Arcane North Test: detected Arcane goal center; stopping north run here."))
             session.request_stop()
             return {"status": "end", "frame_age_ms": frame_age_ms, "fast_age_ms": fast_age_ms, "slow_age_ms": slow_age_ms}
 
@@ -477,6 +507,16 @@ def run_arcane_north_go(session, capture) -> None:
             side_stuck_break,
         )
         previous_route_family = control["route_family"]
+        direction_choice, turn_reason = _stabilize_arcane_turn_choice(
+            direction_votes,
+            direction_choice,
+            previous_route_family,
+            control["last_direction_key"],
+            float(family_signals.get("north", 0.0)),
+            control,
+            fast_switch_fresh,
+            side_stuck_break,
+        )
         direction_key = direction_choice["key"]
         direction_label = direction_choice["label"]
         direction_family = direction_choice["family"]
@@ -499,20 +539,48 @@ def run_arcane_north_go(session, capture) -> None:
             fast_reacquire=quick_reopen_steer,
             direction_family=direction_family,
         )
-        movement_intent = MOVEMENT_INTENT_TRAVEL if direction_family == "north" else MOVEMENT_INTENT_REPOSITION
+        movement_was_held = movement_state.movement_key_held
+        movement_intent = MOVEMENT_INTENT_TRAVEL
         action_phrase = apply_movement_intent(session, actions, movement_state, movement_intent)
+        key_state_changed = movement_was_held != movement_state.movement_key_held
         control["north_steps"] += 1
         control["last_direction_key"] = direction_key
         control["last_direction_ratio"] = final_ratio
+        control["last_turn_reason"] = turn_reason
         if direction_family != control["route_family"]:
             control["route_family"] = direction_family
+            control["last_family_switch_step"] = control["north_steps"]
         if direction_family not in {"west", "east"} or direction_family != previous_route_family:
             control["side_stuck_steps"] = 0
+        if key_state_changed:
+            control["last_key_state_change_step"] = control["north_steps"]
         side_pause_note = _apply_arcane_side_reposition_pause(session, control, direction_family)
         session.events.put(
             session.event_class(
                 "info",
-                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, side_stuck_steps={control['side_stuck_steps']}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio} {action_phrase}{side_pause_note}",
+                f"Arcane North Test: step {control['north_steps']}, family={direction_family}, choice={direction_label}, vote={direction_score:.3f}, north_open={north_open:.3f}, frame_change={frame_change}, side_stuck_steps={control['side_stuck_steps']}, frame_age={frame_age_ms}ms, fast_age={fast_age_ms}ms, slow_age={slow_age_ms}ms, fast_gap={fast_sequence_gap}, fast_proc={fast_proc_ms}ms, base_ratio={cursor_ratio}, final_ratio={final_ratio}, turn_reason={turn_reason} {action_phrase}{side_pause_note}",
+                payload={
+                    "step": control["north_steps"],
+                    "status": "move",
+                    "family": direction_family,
+                    "choice": direction_key,
+                    "turn_reason": turn_reason,
+                    "north_open": north_open,
+                    "west_open": float(family_signals.get("west", 0.0)),
+                    "east_open": float(family_signals.get("east", 0.0)),
+                    "frame_change": frame_change,
+                    "side_stuck_steps": control["side_stuck_steps"],
+                    "frame_age_ms": frame_age_ms,
+                    "fast_age_ms": fast_age_ms,
+                    "slow_age_ms": slow_age_ms,
+                    "fast_sequence_gap": fast_sequence_gap,
+                    "fast_proc_ms": fast_proc_ms,
+                    "key_state_changed": key_state_changed,
+                    "movement_key_held": movement_state.movement_key_held,
+                    "last_family_switch_step": control["last_family_switch_step"],
+                    "last_key_state_change_step": control["last_key_state_change_step"],
+                },
+                priority=2,
             )
         )
         session._sleep_range(*ARCANE_DECISION_STEP_SETTLE)
@@ -547,6 +615,15 @@ def run_arcane_north_go(session, capture) -> None:
         runtime.stop()
         release_movement_intent(session, actions, movement_state)
 
+    session._north_go_last_outcome = {
+        "status": str(control["stop_status"]),
+        "steps": int(control["north_steps"]),
+        "route_family": str(control["route_family"]),
+        "last_direction_key": str(control["last_direction_key"]),
+        "last_turn_reason": str(control["last_turn_reason"]),
+        "last_family_switch_step": int(control["last_family_switch_step"]),
+        "last_key_state_change_step": int(control["last_key_state_change_step"]),
+    }
     session.events.put(session.event_class("info", "Arcane North Test: stopped."))
 
 
@@ -815,6 +892,57 @@ def _choose_arcane_side_family_vote(
     return best_vote
 
 
+def _stabilize_arcane_turn_choice(
+    votes: list[dict[str, object]],
+    direction_choice: dict[str, object],
+    previous_route_family: str,
+    previous_key: str,
+    north_open: float,
+    control: dict[str, object],
+    fast_switch_fresh: bool,
+    side_stuck_break: bool,
+) -> tuple[dict[str, object], str]:
+    if side_stuck_break and previous_route_family in {"west", "east"} and direction_choice["family"] in {"west", "east"}:
+        control["north_reopen_steps"] = 0
+        return direction_choice, "reverse-side-break"
+    if previous_route_family in {"west", "east"} and direction_choice["family"] == "north":
+        if fast_switch_fresh and north_open >= ARCANE_NORTH_REOPEN_CONFIRM_OPEN:
+            control["north_reopen_steps"] = int(control["north_reopen_steps"]) + 1
+        else:
+            control["north_reopen_steps"] = 0
+        if int(control["north_reopen_steps"]) < ARCANE_NORTH_REOPEN_CONFIRM_STEPS:
+            side_choice = _resolve_arcane_family_preference(votes, previous_route_family, previous_key)
+            if side_choice is not None:
+                return side_choice, "stay-side-hold"
+        control["north_reopen_steps"] = 0
+        return direction_choice, "turn-to-north"
+    if previous_route_family == "north" and direction_choice["family"] == "north":
+        control["north_reopen_steps"] = 0
+        return direction_choice, "stay-north"
+    if previous_route_family in {"west", "east"} and direction_choice["family"] == previous_route_family:
+        control["north_reopen_steps"] = 0
+        return direction_choice, "stay-side-hold"
+    control["north_reopen_steps"] = 0
+    return direction_choice, "switch-family"
+
+
+def _resolve_arcane_family_preference(
+    votes: list[dict[str, object]],
+    family: str,
+    previous_key: str,
+) -> dict[str, object] | None:
+    family_votes = [vote for vote in votes if str(vote.get("family")) == family]
+    if not family_votes:
+        return None
+    best_vote = max(family_votes, key=lambda vote: float(vote["score"]))
+    previous_vote = next((vote for vote in family_votes if str(vote.get("key")) == previous_key), None)
+    if previous_vote is not None:
+        score_margin = float(best_vote["score"]) - float(previous_vote["score"])
+        if score_margin <= ARCANE_VOTE_KEEP_MARGIN:
+            return previous_vote
+    return best_vote
+
+
 # center에서 candidate까지 가는 경로 중간 샘플을 모아 openness를 계산한다.
 # 급한 bend가 있어도 중간 ray 샘플에서 구조를 읽도록 만든다.
 def _score_arcane_direction_path(
@@ -847,9 +975,7 @@ def _score_arcane_direction_path(
     openness = floor_ratio - (star_void_ratio * 0.85)
     best_sample_openness = max(score for score, _, _ in sample_scores)
     eligible_samples = [
-        (t, sample_ratio)
-        for score, t, sample_ratio in sample_scores
-        if score >= (best_sample_openness - ARCANE_STEER_SAMPLE_KEEP_MARGIN)
+        (t, sample_ratio) for score, t, sample_ratio in sample_scores if score >= (best_sample_openness - ARCANE_STEER_SAMPLE_KEEP_MARGIN)
     ]
     if not eligible_samples:
         steer_ratio = candidate_ratio

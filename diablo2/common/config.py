@@ -22,7 +22,31 @@ class CaptureConfig:
 class RecordingConfig:
     enabled: bool = False
     output_path: str = "recordings/session.avi"
+    directory: str = "recordings"
     codec: str = "XVID"
+    keep_failed_runs: bool = True
+    keep_successful_runs: bool = False
+
+
+@dataclass
+class LoggingConfig:
+    directory: str = "logs"
+    max_segment_size_mb: int = 10
+    retained_segments: int = 5
+    flush_interval_seconds: float = 0.5
+    queue_max_size: int = 5000
+
+
+@dataclass
+class GuiConfig:
+    visible_log_lines: int = 300
+
+
+@dataclass
+class NorthGoTuningConfig:
+    rerun_count: int = 1
+    auto_record_runs: bool = True
+    keep_reference_runs: int = 1
 
 
 @dataclass
@@ -134,6 +158,9 @@ class BotConfig:
     log_level: str = "INFO"
     capture: CaptureConfig = field(default_factory=CaptureConfig)
     recording: RecordingConfig = field(default_factory=RecordingConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
+    gui: GuiConfig = field(default_factory=GuiConfig)
+    north_go_tuning: NorthGoTuningConfig = field(default_factory=NorthGoTuningConfig)
     hotkeys: HotkeyConfig = field(default_factory=HotkeyConfig)
     shared_loot: SharedLootProfile = field(default_factory=SharedLootProfile)
     characters: dict[str, CharacterProfile] = field(default_factory=dict)
@@ -299,6 +326,9 @@ def load_config(path: str | Path) -> BotConfig:
 
     capture = CaptureConfig(**raw.get("capture", {}))
     recording = RecordingConfig(**raw.get("recording", {}))
+    logging = LoggingConfig(**raw.get("logging", {}))
+    gui = GuiConfig(**raw.get("gui", {}))
+    north_go_tuning = NorthGoTuningConfig(**raw.get("north_go_tuning", {}))
     hotkeys = HotkeyConfig(**raw.get("hotkeys", {}))
     shared_loot = _build_shared_loot_profile(raw.get("shared_loot", {}))
     characters = {
@@ -325,6 +355,9 @@ def load_config(path: str | Path) -> BotConfig:
         log_level=raw.get("log_level", "INFO"),
         capture=capture,
         recording=recording,
+        logging=logging,
+        gui=gui,
+        north_go_tuning=north_go_tuning,
         hotkeys=hotkeys,
         shared_loot=shared_loot,
         characters=characters,

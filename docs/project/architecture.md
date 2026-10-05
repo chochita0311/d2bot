@@ -20,6 +20,26 @@ The CLI controller owns configurable dry-run, pause, and stop behavior. GUI acti
 
 The sections below describe product requirements and future extensions unless explicitly marked as current.
 
+## Future real-time observation and recording
+
+The [runtime and recording PRD](../plans/prd/prd-0008-realtime-runtime-and-recording-retention.md) owns the proposed boundary for fast screen changes and long runs. This is a future requirement, not the current town loop's behavior.
+
+```text
+capture -> latest valid frame -> vision -> decision / single input owner
+     |                                      |
+     +-> bounded recording admission <------+ compact events
+                    |
+              encode / writer -> closed segments -> retention worker
+
+safety / stop -> input owner (does not wait for writer flush)
+```
+
+Control consumes the latest valid observation; recording has bounded count/byte capacity and may sample or drop replaceable diagnostics with visible counters. Frame ownership must prevent a delayed writer from using a recycled image. Vision results carry the frame and run/movement generation they observed so late results cannot authorize input after teleportation. State/input ownership remains explicit even with multiple workers.
+
+Encoding, JSON formatting, file writes, rotation, directory scans, deletion, and shutdown drain belong outside the control path. Queue saturation must not fall back to synchronous producer writes. Storage health is distinct from capture/survival health: diagnostic loss is reported, emergency input stays available, and evidence-dependent continuation is gated at a verified safe boundary. Separate workers still require latency/CPU/memory measurements.
+
+The north runtime already separates capture/fast/slow/decision workers; its logger rotates bounded segments but has a synchronous high-priority overflow fallback. Town-loop evidence and PNG writes are synchronous. These are reuse candidates with unresolved gaps, not proof that this target is implemented. Retention will cover active segment bounds, total bytes/count/age, failed runs, free-space margins, and orphaned sessions; required assets are protected. [Development cleanup](developer-guide.md#evidence-handling) separately removes unneeded development data at session close.
+
 ## Product direction
 
 The app should operate through normal Windows GUI interaction only:

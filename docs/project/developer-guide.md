@@ -50,7 +50,11 @@ Check that the executable and pip belong to the intended environment. A failing 
 
 Feature references own reusable operating and tuning guidance. Plans/runs and their evaluator reports own execution decisions and validation evidence. Keep the current approved boundary and actual evidence coverage in those canonical artifacts.
 
-For visual automation changes, retain the recordings and logs needed to explain a recognition, movement, or state-transition decision. The GUI log is a bounded live view; enabled file logging provides durable diagnostics. Mark recordings that must survive retention pruning and avoid removing evidence while another session uses it. See [system settings](../../config/system/system.md) for logging and recording retention, and the feature reference for the states that need observation.
+During active development, keep only the recordings, logs, and intermediate frames needed for the current diagnosis or verification in a bounded session directory. The GUI log is a bounded live view; [system settings](../../config/system/system.md) describe runtime logging and recording retention.
+
+The owner confirmed the development cleanup rule on `2026-10-05`: cleanup happens when the development session ends, not immediately when a test finishes. Before cleanup, promote the frames/templates actually needed by the program into the appropriate `assets/` owner, then update and verify their consumers. Keep private captures under `assets/private/`. Use names that identify feature, state, layout variant, language, and capture size where relevant, for example `town-loop-act1-waypoint-tent-ko-1267x753.png`; avoid generic names such as `frame1.png` or `test.png`.
+
+At session close, stop task-owned writers and remove development logs, recordings, redundant/intermediate frames, scratch files, and other generated diagnostics that the program does not need. Summarize test results and limits in the owning run/evaluation documents before deleting raw diagnostics. Update asset manifests and documentation so retained outputs do not depend on removed session paths. A failed run or an old evaluation reference does not require indefinite retention of its raw data. Preserve required runtime assets, user-owned source/configuration, and active files; verify ownership and exact workspace paths before deletion. This session-close rule supersedes earlier development instructions to retain complete recordings or baseline datasets indefinitely.
 
 ## Documentation
 

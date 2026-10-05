@@ -13,6 +13,7 @@ __pycache__/
 # Local recordings and private captures
 recordings/
 assets/private/
+logs/
 
 # Local configuration overrides
 config.local.json

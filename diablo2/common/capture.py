@@ -120,6 +120,9 @@ class ScreenCapture:
 
         return FramePacket(frame=frame, timestamp=time.time())
 
+    def close(self) -> None:
+        self._sct.close()
+
 
 class SessionRecorder:
     def __init__(self, config: RecordingConfig, frame_size: tuple[int, int]):

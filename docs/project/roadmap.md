@@ -12,6 +12,8 @@ This document holds the current build order, open questions, and near-term upgra
 
 These pieces do not yet form complete farming or shared survival/interruption handling. Current stage boundaries are documented in [summoner-run.md](../features/summoner-run.md).
 
+The [Summoner completion experiment plan](../features/summoner-experiment-plan.md) defines the broader draft scope for online softcore Resurrection Flash. The approved bounded supervised [town room loop](../features/town-room-loop.md) has completed basic creation, Act 2 town visit, Act 1 return, exit, and recreation checks; its [run record](../plans/run/run-20261004-02-supervised-town-room-loop.md) owns observed results, session cleanup, and remaining obstacle/NPC/interruption verification. Survival/buffs, Arcane entry, four-wing recovery, nearby-enemy combat, shared loot and maintenance, and complete runs remain separate stages. The package refactor remains unapproved.
+
 ## Remaining build order
 
 ### Phase 1: Safe foundation
@@ -20,6 +22,7 @@ These pieces do not yet form complete farming or shared survival/interruption ha
 - extend CLI dry-run and pause/stop behavior to every live action path
 - resolve Summoner/North Go hotkey registration and difficulty propagation
 - validate existing logs, recording retention, and user-interruption handling
+- define and validate [real-time/recording isolation and bounded retention](../plans/prd/prd-0008-realtime-runtime-and-recording-retention.md) before teleport-heavy or long-run expansion; the current town loop remains unchanged
 - extend existing character-select screen detection to character-row scanning
 
 ### Phase 2: Vision and OCR

@@ -75,13 +75,15 @@ class D2BotControlPanel:
         self.backend_var = tk.StringVar(value=self.config.capture.capture_backend)
         self.character_var = tk.StringVar()
         self.repeat_count_var = tk.StringVar()
+        self.town_loop_var = tk.BooleanVar(value=False)
         self.difficulty_var = tk.StringVar(value="hell")
         self.status_var = tk.StringVar(value="Idle")
         self.output_var = tk.StringVar(value="No recording yet")
         self.window_list_var = tk.StringVar()
         self._character_display_to_key: dict[str, str] = {}
+        self._visible_log_trim_notice = "Older GUI messages were trimmed; full logs remain saved under ./logs/."
 
-        self.recording_session = RecordingSession(self.config.capture)
+        self.recording_session = RecordingSession(self.config.capture, self.config.recording.directory)
         self.lifecycle_session = RunLifecycleSession(self.config.capture)
         self.gem_session = GemSummingSession(self.config.capture)
         self.loot_session = LootPickupSession(self.config)
@@ -248,8 +250,9 @@ class D2BotControlPanel:
         self.arcane_north_button = ttk.Button(play_panel, text="North Go Test", command=self.start_arcane_north_test)
         self.arcane_north_button.grid(row=6, column=0, sticky="ew", pady=(8, 0))
 
-        spacer = ttk.Frame(play_panel, height=18)
-        spacer.grid(row=7, column=0, sticky="ew")
+        ttk.Checkbutton(play_panel, text="Live town loop (1–3 runs)", variable=self.town_loop_var).grid(
+            row=7, column=0, sticky="w", pady=(8, 0)
+        )
 
         self.loot_button = ttk.Button(play_panel, text="Item Looting", command=self.start_loot_pickup)
         self.loot_button.grid(row=8, column=0, sticky="ew")
@@ -359,6 +362,7 @@ class D2BotControlPanel:
         selected_character = self._character_display_to_key.get(self.character_var.get().strip())
         apply_character_selection(self.config, selected_character)
         self.recording_session.capture_config = self.config.capture
+        self.recording_session.recordings_dir = Path(self.config.recording.directory)
         self.lifecycle_session.capture_config = self.config.capture
         self.gem_session.capture_config = self.config.capture
         self.loot_session.update_config(self.config)
@@ -390,7 +394,7 @@ class D2BotControlPanel:
         self._apply_runtime_config()
         try:
             repeat_count = self._parse_repeat_count()
-            self.lifecycle_session.start(repeat_count, self.difficulty_var.get().strip())
+            self.lifecycle_session.start(repeat_count, self.difficulty_var.get().strip(), town_loop=self.town_loop_var.get())
         except Exception as exc:
             messagebox.showerror("Run Lifecycle Error", str(exc))
             self._append_log("error", str(exc))
@@ -442,7 +446,8 @@ class D2BotControlPanel:
         self._preserve_current_geometry()
         self._apply_runtime_config()
         try:
-            self.summoner_session.start_north_go_test()
+            repeat_count = self._parse_repeat_count()
+            self.summoner_session.start_north_go_test(repeat_count=repeat_count, difficulty=self.difficulty_var.get().strip())
         except Exception as exc:
             messagebox.showerror("North Go Test Error", str(exc))
             self._append_log("error", str(exc))
@@ -515,8 +520,19 @@ class D2BotControlPanel:
         self._preserve_current_geometry()
         self.log_text.configure(state="normal")
         self.log_text.insert("end", f"[{level.upper()}] {message}\n")
+        self._trim_visible_log_history()
         self.log_text.see("end")
         self.log_text.configure(state="disabled")
+
+    def _trim_visible_log_history(self) -> None:
+        visible_lines = max(50, int(self.config.gui.visible_log_lines))
+        line_count = int(self.log_text.index("end-1c").split(".")[0])
+        if line_count <= visible_lines:
+            return
+        excess_lines = line_count - visible_lines
+        trim_lines = max(1, excess_lines)
+        self.log_text.delete("1.0", f"{trim_lines + 1}.0")
+        self.log_text.insert("1.0", f"[INFO] {self._visible_log_trim_notice}\n")
 
     def _refresh_action_controls(self) -> None:
         action_running = (
@@ -528,6 +544,7 @@ class D2BotControlPanel:
         if action_running:
             self.lifecycle_button.state(["disabled"])
             self.loot_button.state(["disabled"])
+            self.arcane_north_button.state(["disabled"])
             self.key_button.state(["disabled"])
             self.gem_button.state(["disabled"])
             self.stop_action_button.state(["!disabled"])
@@ -540,7 +557,7 @@ class D2BotControlPanel:
         self.stop_action_button.state(["disabled"])
         if self.recording_session.is_running:
             self.status_var.set("Recording")
-        else:
+        elif self.status_var.get() != "Error":
             self.status_var.set("Idle")
 
     def _poll_events(self) -> None:
@@ -583,6 +600,7 @@ class D2BotControlPanel:
             self.loot_session.stop()
         if self.summoner_session.is_running:
             self.summoner_session.stop()
+        self.summoner_session.close()
         self.root.destroy()
 
     def run(self) -> int:

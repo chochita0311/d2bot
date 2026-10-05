@@ -65,6 +65,7 @@ Select the matching `Character` config before starting an action. This selects s
 | `North Go Test` | Starts the same entry sequence and tests the north route, with optional repeated attempts and recordings. A blank `Repeat Count` uses the configured count, initially 1. |
 | `Item Looting` | Matches configured ground-item templates and clicks visible labels. |
 | `Start Room Lifecycle` | Creates and exits rooms from character select using `Difficulty`. A blank `Repeat Count` repeats until stopped. |
+| `Live town loop (1–3 runs)` | Enable before `Start Room Lifecycle` to create a room, visit Act 2 town, return to Act 1, and exit; requires 1–3 repeats. See [town loop](docs/features/town-room-loop.md). |
 
 Play controls send live mouse and keyboard input independently of the CLI `dry_run` setting. Use `Stop Action` to stop an action. `F10` is wired for Gem Summing, Item Looting, and standalone Room Lifecycle; Summoner and North Go currently rely on the stop button. The Summoner/North Go room-entry code currently uses Hell regardless of the GUI difficulty selection.
 

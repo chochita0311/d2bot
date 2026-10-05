@@ -41,12 +41,12 @@ class RecordingSession:
     def output_path(self) -> Path | None:
         return self._output_path
 
-    def start(self) -> Path:
+    def start(self, output_path: str | Path | None = None) -> Path:
         with self._lock:
             if self._is_running:
                 raise RuntimeError("Recording is already running.")
             self._stop_event.clear()
-            self._output_path = self._build_output_path()
+            self._output_path = Path(output_path) if output_path is not None else self._build_output_path()
             self._thread = threading.Thread(target=self._run, daemon=True)
             self._is_running = True
             self._thread.start()
@@ -83,6 +83,7 @@ class RecordingSession:
             recording_config = RecordingConfig(
                 enabled=True,
                 output_path=str(self._output_path),
+                directory=str(self.recordings_dir),
                 codec="XVID",
             )
             recorder = SessionRecorder(recording_config, (width, height))
@@ -103,3 +104,24 @@ class RecordingSession:
                 recorder.close()
             with self._lock:
                 self._is_running = False
+
+
+def prune_recording_artifacts(raw_video_path: str | Path | None, artifacts: list[str | Path] | None = None) -> None:
+    candidates: list[Path] = []
+    if raw_video_path is not None:
+        candidates.append(Path(raw_video_path))
+    for artifact in artifacts or ():
+        candidates.append(Path(artifact))
+    for candidate in candidates:
+        try:
+            if candidate.is_dir():
+                for child in sorted(candidate.rglob("*"), reverse=True):
+                    if child.is_file():
+                        child.unlink()
+                    elif child.is_dir():
+                        child.rmdir()
+                candidate.rmdir()
+            elif candidate.exists():
+                candidate.unlink()
+        except OSError:
+            continue

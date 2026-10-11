@@ -115,23 +115,37 @@ class AdaptiveTeleportCadence:
 class HeldFieldInput:
     """한 backend의 유지 입력을 소유하고 해제 실패도 잊지 않는다."""
 
-    def __init__(self, backend, movement_key: str, attack_key: str):
+    def __init__(self, backend, movement_key: str, attack_key: str, *, clock=None, repeat_seconds=None, aim_settle_seconds=0):
         if (
             any(not isinstance(key, str) or not key.strip() for key in (movement_key, attack_key))
             or movement_key.lower() == attack_key.lower()
         ):
             raise ValueError("distinct movement and attack keys required")
         self.backend = backend
+        self.clock = clock
+        if repeat_seconds is not None and _number(repeat_seconds, "held key repeat interval") <= 0:
+            raise ValueError("positive held key repeat interval required")
+        self.repeat_seconds, self.pressed_at = repeat_seconds, None
+        self.aim_settle_seconds = _number(aim_settle_seconds, "held aim settling interval")
+        self.pointer, self.aimed_at = None, float("-inf")
+        self.pending_key, self.cast_pointer = None, None
         self.keys = (movement_key.lower(), attack_key.lower())
+        self.dispatches = {key: 0 for key in self.keys}
+        self.last_dispatch_at = None
         self.held: set[str] = set()
         self.deadline: float | None = None
         self.closed = False
         self.fault: Exception | None = None
         self._lock = threading.RLock()
 
-    def release(self) -> None:
+    def release(self, *, preserve_aim=False) -> None:
         with self._lock:
             self.deadline = None
+            self.pressed_at = None
+            # lease 만료는 키를 해제한다. 같은 조준의 재승인은 실제 포인터를 재확인할 수 있을 때만 허용한다.
+            if not preserve_aim or not callable(getattr(self.backend, "pointer_matches", None)):
+                self.pointer, self.aimed_at = None, float("-inf")
+            self.pending_key = None
             errors = []
             for key in tuple(self.held):
                 try:
@@ -149,6 +163,36 @@ class HeldFieldInput:
             self.closed = True
             self.release()
 
+    def snapshot(self):
+        with self._lock:
+            return dict(
+                held=tuple(sorted(self.held)),
+                pending=self.pending_key,
+                dispatches=dict(self.dispatches),
+                last_dispatch_at=self.last_dispatch_at,
+                cast_pointer=self.cast_pointer,
+                pointer=self.pointer,
+            )
+
+    def renew_lease(self, key, pointer, deadline, now):
+        """현재 유지 중인 같은 조준만 새 관찰로 연장한다. 해제된 키를 다시 누르지 않는다."""
+        with self._lock:
+            if self.closed or self.held != {key} or self.pointer != pointer or self.deadline is None:
+                return False
+            if now >= self.deadline or now >= deadline:
+                self.release(preserve_aim=True)
+                return False
+            matches = getattr(self.backend, "pointer_matches", None)
+            if not callable(matches) or not matches(pointer):
+                self.release()
+                return False
+            checked = self.clock() if self.clock is not None else now
+            if checked >= self.deadline or checked >= deadline:
+                self.release(preserve_aim=True)
+                return False
+            self.deadline = deadline
+            return True
+
     def apply(self, directive: FieldDirective, now: float) -> None:
         with self._lock:
             if self.closed:
@@ -164,15 +208,24 @@ class HeldFieldInput:
                 if directive.deadline is None or now >= directive.deadline:
                     self.release()
                     return
-                if self.held != {desired}:
+                if self.held and self.held != {desired}:
                     self.release()
-                if directive.aim is not None:
+                matches = getattr(self.backend, "pointer_matches", None)
+                if self.pointer is not None and callable(matches) and not matches(self.pointer):
+                    self.release()
+                    if directive.aim is None:
+                        return
+                if directive.aim is not None and directive.aim != self.pointer:
                     self.backend.move(*directive.aim)
-                if desired not in self.held:
-                    # 일부 입력 후 예외가 나도 finally에서 keyUp을 시도한다.
-                    self.held.add(desired)
-                    self.backend.key_down(desired)
+                    self.pointer = directive.aim
+                    self.aimed_at = self.clock() if self.clock is not None else now
+                # 포인터 이동 중 원본 화면의 유효 시간이 끝났으면 새 유지 입력을 시작하지 않는다.
+                if self.clock is not None and self.clock() >= directive.deadline:
+                    self.release()
+                    return
+                self.pending_key = desired
                 self.deadline = directive.deadline
+                self._press_if_ready(now)
             except Exception as exc:
                 self.closed = True
                 self.fault = exc
@@ -181,10 +234,45 @@ class HeldFieldInput:
                 finally:
                     raise
 
+    def _press_if_ready(self, now):
+        desired = self.pending_key
+        repeated = self.repeat_seconds is not None and self.pressed_at is not None and now - self.pressed_at >= self.repeat_seconds
+        if desired is not None and now - self.aimed_at >= self.aim_settle_seconds and (desired not in self.held or repeated):
+            matches = getattr(self.backend, "pointer_matches", None)
+            if self.pointer is not None and callable(matches) and not matches(self.pointer):
+                self.release()
+                return
+            if self.clock is not None and self.deadline is not None and self.clock() >= self.deadline:
+                self.release(preserve_aim=True)
+                return
+            self.held.add(desired)
+            self.backend.key_down(desired)
+            self.pressed_at = self.clock() if self.clock is not None else now
+            self.dispatches[desired] += 1
+            self.last_dispatch_at = self.pressed_at
+            self.cast_pointer = self.pointer
+
+    def service(self, now):
+        """새 화면이 승인한 짧은 lease 안에서만 분석 루프와 독립적으로 반복 입력을 처리한다."""
+        with self._lock:
+            if self.closed or self.deadline is None:
+                return
+            if now >= self.deadline:
+                self.release(preserve_aim=True)
+                return
+            try:
+                self._press_if_ready(now)
+            except Exception as exc:
+                self.closed, self.fault = True, exc
+                try:
+                    self.release()
+                finally:
+                    raise
+
     def expire(self, now: float) -> bool:
         with self._lock:
             if self.deadline is not None and now >= self.deadline:
-                self.release()
+                self.release(preserve_aim=True)
                 return True
             return False
 
@@ -192,6 +280,7 @@ class HeldFieldInput:
 class DryFieldInput:
     def __init__(self):
         self.events = deque(maxlen=1000)
+        self.pointer = None
 
     def key_down(self, key):
         self.events.append(("down", key))
@@ -203,7 +292,11 @@ class DryFieldInput:
         self.events.append(("press", key))
 
     def move(self, x, y):
+        self.pointer = (x, y)
         self.events.append(("move", x, y))
+
+    def pointer_matches(self, point):
+        return self.pointer == point
 
 
 class FieldControlLoop:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import cv2 as cv
@@ -52,11 +52,12 @@ class ResourceReading:
     maximum: int | None = None
     reason: str = "unverified"
     score: float | None = None
+    lower_bound: float | None = None
 
     @property
     def ratio(self) -> float | None:
         if self.current is None or self.maximum is None:
-            return None
+            return self.lower_bound
         return self.current / self.maximum
 
     @classmethod
@@ -108,15 +109,18 @@ class HudReading:
         return contents
 
     def safety_observation(self, stamp: ObservationStamp) -> SafetyObservation:
-        # 최대값은 같은 프레임에서 읽는다. 버프나 장비 변경 전 값을 재사용하지 않는다.
+        # 같은 프레임의 숫자 비율 또는 명시적으로 허용한 높은 구체 채움 하한이다.
+        # 버프/장비 변경 전 최대값을 재사용하거나 구체에서 숫자를 만들어내지 않는다.
         return SafetyObservation(stamp, self.life.ratio, self.mana.ratio, location="unknown", monsters_clear=None)
 
 
 class SurvivalHudObserver:
     """검토한 HUD 배치의 후보 관찰만 반환하며 게임 입력과 효과 확인을 하지 않는다."""
 
-    def __init__(self, asset_directory: str | Path = DEFAULT_ASSETS):
+    def __init__(self, asset_directory: str | Path = DEFAULT_ASSETS, *, allow_high_orb_fallback=False, allow_partial_orb_fallback=False):
         self.asset_directory = Path(asset_directory).resolve()
+        self.allow_high_orb_fallback = allow_high_orb_fallback
+        self.allow_partial_orb_fallback = allow_partial_orb_fallback
         self.manifest = json.loads((self.asset_directory / "manifest.json").read_text(encoding="utf-8"))
         if type(self.manifest["schema_version"]) is not int or self.manifest["schema_version"] != 1:
             raise ValueError("Unsupported survival vision schema")
@@ -154,6 +158,14 @@ class SurvivalHudObserver:
         self.glyphs = {key: self._load_image(value, gray=True) for key, value in self.manifest["glyphs"].items()}
         if set(self.glyphs) != set("0123456789/") or any(image.shape != (32, 40) for image in self.glyphs.values()):
             raise ValueError("Complete normalized digit/slash atlas required")
+        variants = self.manifest.get("glyph_variants", {})
+        if not set(variants).issubset(self.glyphs):
+            raise ValueError("glyph variants require an existing numeral")
+        self.glyph_variants = {
+            key: (image,) + tuple(self._load_image(name, gray=True) for name in variants.get(key, [])) for key, image in self.glyphs.items()
+        }
+        if any(image.shape != (32, 40) for images in self.glyph_variants.values() for image in images):
+            raise ValueError("Normalized glyph variant dimensions required")
         self.belt_anchor = self._load_image(self.manifest["belt"]["anchor_template"])
         self.closed_anchor = self._load_image(self.manifest["belt"]["closed_anchor_template"])
         self.items = {kind: tuple(self._load_image(name) for name in names) for kind, names in self.manifest["belt"]["items"].items()}
@@ -170,6 +182,27 @@ class SurvivalHudObserver:
             search = self._box_shape(resource["label_search_box"])
             if any(image.shape != label for image in self.label_variants[key]) or search[0] < label[0] or search[1] < label[1]:
                 raise ValueError("Label dimensions must match the reference box")
+        for enabled, name in ((allow_high_orb_fallback, "high_orb_bound"), (allow_partial_orb_fallback, "partial_orb_bound")):
+            if not enabled:
+                continue
+            orb = self.manifest.get(name)
+            if orb is None or set(orb["resources"]) != {"life", "mana"}:
+                raise ValueError("Reviewed orb bounds required")
+            for resource in orb["resources"].values():
+                self._box_shape(resource["box"])
+                if type(resource["channel"]) is not int or resource["channel"] not in (0, 2):
+                    raise ValueError("Reviewed liquid channel required")
+            for key in ("minimum_ratio", "minimum_row_coverage"):
+                if (
+                    isinstance(orb[key], bool)
+                    or not isinstance(orb[key], (int, float))
+                    or not math.isfinite(orb[key])
+                    or not 0 < orb[key] <= 1
+                ):
+                    raise ValueError("Positive orb ratio bound required")
+            for key in ("minimum_value", "channel_margin"):
+                if type(orb[key]) is not int or not 0 < orb[key] < 255:
+                    raise ValueError("Positive orb color limit required")
         if self.belt_anchor.shape[:2] != self._box_shape(belt["anchor_box"]):
             raise ValueError("Belt anchor dimensions must match its box")
         if self.closed_anchor.shape[:2] != self._box_shape(belt["closed_anchor_box"]):
@@ -208,6 +241,12 @@ class SurvivalHudObserver:
     def _read_number(self, image: np.ndarray) -> ResourceReading:
         settings = self.manifest["matching"]
         mask = text_mask(image)
+        # 숫자와 6px 이상 떨어진 crop 가장자리의 1열/3픽셀 잡음만 제외한다.
+        # 숫자 내부 조각이나 더 큰 미확인 문자는 지우지 않는다.
+        for edge, neighbor in ((0, slice(1, 7)), (-1, slice(-7, -1))):
+            occupied = np.flatnonzero(mask[:, edge])
+            if 0 < len(occupied) <= 3 and occupied[-1] - occupied[0] < 3 and not mask[:, neighbor].any():
+                mask[:, edge] = 0
         columns = np.flatnonzero(mask.any(axis=0))
         breaks = np.flatnonzero(np.diff(columns) > settings["number_max_gap"] + 1)
         if len(breaks):
@@ -215,19 +254,55 @@ class SurvivalHudObserver:
         parts = glyph_parts(mask)
         if not 3 <= len(parts) <= 15:
             return ResourceReading(reason="number_unreadable")
-        output = []
-        scores = []
+        matches = []
         for part in parts:
             if part.shape[0] < settings["minimum_glyph_height"]:
                 return ResourceReading(reason="number_unreadable")
-            glyph = normalize_glyph(part)
-            candidates = sorted(((mask_score(glyph, template), key) for key, template in self.glyphs.items()), reverse=True)
-            score, character = candidates[0]
-            if score < settings["glyph_score"] or score - candidates[1][0] < settings["glyph_margin"]:
+            matches.append(self._glyph_match(part))
+        invalid = [
+            index
+            for index, (score, _, margin) in enumerate(matches)
+            if score < settings["glyph_score"] or margin < settings["glyph_margin"]
+        ]
+        if len(invalid) == 1:
+            index = invalid[0]
+            runs = [
+                run
+                for run in np.split(np.flatnonzero(mask.any(axis=0)), np.where(np.diff(np.flatnonzero(mask.any(axis=0))) > 1)[0] + 1)
+                if len(run)
+            ]
+            # 숫자는 고치지 않는다. 양옆이 숫자이며 넓은 공백으로 분리된 구분자만 검토한다.
+            if (
+                0 < index < len(parts) - 1
+                and all(character.isdigit() for at, (_, character, _) in enumerate(matches) if at != index)
+                and runs[index][0] - runs[index - 1][-1] - 1 >= 6
+                and runs[index + 1][0] - runs[index][-1] - 1 >= 6
+            ):
+                part, recovered = parts[index], []
+                for top in range(3):
+                    for left in range(2):
+                        for bottom in range(3):
+                            for right in range(2):
+                                trimmed = part[top : part.shape[0] - bottom, left : part.shape[1] - right]
+                                if trimmed.shape[0] < settings["minimum_glyph_height"] or not trimmed.size or not trimmed.any():
+                                    continue
+                                score, character, margin = self._glyph_match(trimmed)
+                                if character == "/" and score >= settings["glyph_score"] and margin >= settings["glyph_margin"]:
+                                    recovered.append((score, character, margin))
+                if recovered:
+                    matches[index] = max(recovered)
+        for score, _, margin in matches:
+            if score < settings["glyph_score"] or margin < settings["glyph_margin"]:
                 return ResourceReading(reason="glyph_ambiguous", score=score)
-            output.append(character)
-            scores.append(score)
-        return ResourceReading.from_text("".join(output), min(scores))
+        return ResourceReading.from_text("".join(character for _, character, _ in matches), min(score for score, _, _ in matches))
+
+    def _glyph_match(self, part):
+        glyph = normalize_glyph(part)
+        candidates = sorted(
+            ((max(mask_score(glyph, template) for template in templates), key) for key, templates in self.glyph_variants.items()),
+            reverse=True,
+        )
+        return candidates[0][0], candidates[0][1], candidates[0][0] - candidates[1][0]
 
     def _resource_box(self, frame: np.ndarray, key: str):
         resource = self.manifest["resources"][key]
@@ -245,7 +320,14 @@ class SurvivalHudObserver:
             candidates.append((score, x, y, template.shape))
         score, x, y, shape = max(candidates)
         if score < self.manifest["matching"]["label_score"]:
-            return None
+            # 글자와 바로 인접한 검은 외곽선은 유지하고 더 먼 밝은 지형은 비교에서 제외한다.
+            support = cv.getStructuringElement(cv.MORPH_CROSS, (3, 3))
+            outlined = max(
+                mask_score(mask[y : y + shape[0], x : x + shape[1]].astype(np.uint8) & cv.dilate(template, support), template)
+                for template in self.label_variants[key]
+            )
+            if outlined < self.manifest["matching"]["label_score"]:
+                return None
         # 숫자 길이에 따라 문구가 이동하므로 같은 프레임의 문구 끝에서 읽는다.
         gap = resource["number_box"][0] - resource["label_box"][2]
         left, top = search[0] + x + shape[1] + gap, search[1] + y
@@ -257,6 +339,51 @@ class SurvivalHudObserver:
             return 1.0
         return float(np.abs(image.astype(np.float32) - template.astype(np.float32)).mean() / 255)
 
+    def _orb_fallback(self, frame, key, reading):
+        if reading.ratio is not None or reading.reason == "number_out_of_range":
+            return reading
+        for enabled, name in (
+            (self.allow_high_orb_fallback, "high_orb_bound"),
+            (self.allow_partial_orb_fallback, "partial_orb_bound"),
+        ):
+            if not enabled:
+                continue
+            settings = self.manifest[name]
+            resource = settings["resources"][key]
+            pixels = self._crop(frame, resource["box"]).astype(np.int16)
+            channel = resource["channel"]
+            liquid = (pixels[:, :, channel] >= settings["minimum_value"]) & (
+                pixels[:, :, channel] - np.max(np.delete(pixels, channel, axis=2), axis=2) >= settings["channel_margin"]
+            )
+            # 검토한 내부 띠의 모든 행이 액체색일 때만 해당 비율의 하한을 제공한다.
+            # 가림/독/낮은 채움은0%로 추정하지 않으며 실제 수치는 만들지 않는다.
+            if np.all(liquid.mean(axis=1) >= settings["minimum_row_coverage"]):
+                return replace(
+                    reading,
+                    reason=reading.reason + ";orb_" + ("high_bound" if name == "high_orb_bound" else "partial_bound"),
+                    lower_bound=settings["minimum_ratio"],
+                )
+        return reading
+
+    def _slot_reading(self, frame, row, column):
+        belt, settings = self.manifest["belt"], self.manifest["matching"]
+        left = belt["origin"][0] + (column - 1) * belt["step"][0]
+        top = belt["origin"][1] + (row - 1) * belt["step"][1]
+        image = self._crop(frame, (left, top, left + belt["slot_size"][0], top + belt["slot_size"][1]))
+        candidates = sorted(
+            (min(self._distance(image, template) for template in templates), kind) for kind, templates in self.items.items()
+        )
+        distance, kind = candidates[0]
+        if distance > settings["item_distance"] or candidates[1][0] - distance < settings["item_margin"]:
+            kind = None
+        return SlotReading(row, column, kind, distance)
+
+    def closed_belt_slots(self, frame, reading):
+        """현재 닫힌 벨트의 보이는 맨 아래4칸만 읽는다. 전체 잔량을 만들지 않는다."""
+        if reading.belt_visibility != "closed" or frame.shape != (self.frame_size[1], self.frame_size[0], 3):
+            return ()
+        return tuple(self._slot_reading(frame, 4, column) for column in range(1, 5))
+
     def observe(self, frame: np.ndarray) -> HudReading:
         unknown = ResourceReading(reason="hud_unverified")
         unavailable = HudReading(self.layout_id, self.revision, unknown, unknown, "unverified")
@@ -266,10 +393,12 @@ class SurvivalHudObserver:
             return HudReading(self.layout_id, self.revision, ResourceReading(reason="layout_unsupported"), unknown, "unverified")
         settings = self.manifest["matching"]
         boxes = {key: self._resource_box(frame, key) for key in self.manifest["resources"]}
-        if any(box is None for box in boxes.values()):
+        if all(box is None for box in boxes.values()):
             return unavailable
-        life = self._read_number(self._crop(frame, boxes["life"]))
-        mana = self._read_number(self._crop(frame, boxes["mana"]))
+        # 한 문구가 가려져도 같은 화면의 다른 자원 관찰까지 지우지 않는다.
+        life = unknown if boxes["life"] is None else self._read_number(self._crop(frame, boxes["life"]))
+        mana = unknown if boxes["mana"] is None else self._read_number(self._crop(frame, boxes["mana"]))
+        life, mana = self._orb_fallback(frame, "life", life), self._orb_fallback(frame, "mana", mana)
         belt = self.manifest["belt"]
         closed = self._distance(self._crop(frame, belt["closed_anchor_box"]), self.closed_anchor) <= settings["closed_anchor_distance"]
         if self._distance(self._crop(frame, belt["anchor_box"]), self.belt_anchor) > settings["belt_anchor_distance"]:
@@ -278,18 +407,6 @@ class SurvivalHudObserver:
             )
         if closed:
             return HudReading(self.layout_id, self.revision, life, mana, "visibility_ambiguous")
-        slots = []
-        for row in range(4):
-            for column in range(4):
-                left = belt["origin"][0] + column * belt["step"][0]
-                top = belt["origin"][1] + row * belt["step"][1]
-                image = self._crop(frame, (left, top, left + belt["slot_size"][0], top + belt["slot_size"][1]))
-                candidates = sorted(
-                    (min(self._distance(image, template) for template in templates), kind) for kind, templates in self.items.items()
-                )
-                distance, kind = candidates[0]
-                if distance > settings["item_distance"] or candidates[1][0] - distance < settings["item_margin"]:
-                    kind = None
-                slots.append(SlotReading(row + 1, column + 1, kind, distance))
+        slots = [self._slot_reading(frame, row, column) for row in range(1, 5) for column in range(1, 5)]
         status = "read" if all(slot.kind is not None for slot in slots) else "slot_unverified"
         return HudReading(self.layout_id, self.revision, life, mana, status, tuple(slots), "expanded")

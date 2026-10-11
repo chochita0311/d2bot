@@ -4,7 +4,7 @@ This document owns gem-combining behavior and maintenance guidance. The implemen
 
 ## Starting State And Completion
 
-Open the supported gem stash and Horadric Cube before starting. The action requires the stash reference and cube transmute button to remain detectable. It uses real mouse/keyboard input; `Stop Action` and `F10` stop the session.
+Open the supported gem stash tab and Horadric Cube before starting. The action requires the generic stash header and cube transmute button to remain detectable. The header establishes stash presence, not the selected tab or its contents; the supported gem-tab layout is still a user precondition. It uses real mouse/keyboard input; `Stop Action` and `F10` stop the session.
 
 The planner combines non-perfect stacks toward fewer than ten gems per tier. Perfect gems are retained. A slot that fails cube/result verification is blocked for the rest of that session. Completion means no eligible plan remains; the final message alone does not prove that blocked slots are below the target count. Review warnings and the remaining stash state.
 
@@ -31,10 +31,11 @@ Warnings about zero or two occupied cells require inspecting transfer timing, le
 
 ## Assets And Recognition Maintenance
 
-- The stash reference is [stash_open_gems_focused.png](../../assets/stash/stash_open_gems_focused.png).
+- The shared [stash header](../../assets/ui/stash/templates/header-ko-576x74.png) excludes personal tab names and contents. It preserves the full logical576×757 panel origin and .82 match threshold, rejecting captures without full panel bounds.
+- The shared [digit atlas](../../assets/ui/gem-count-digits/manifest.json) preserves all420 normalized12×14 glyph samples and original variant/bank/digit/sample order byte-for-byte. Personal stock counts and the full stash source are excluded from runtime assets; the unused private original was removed during session cleanup. The GUI constructs without it.
 - [Gem icon assets](../../assets/items/gems/icons/) should contain the icon without text labels or neighboring-slot noise. Check extraction per family; emerald and skull shapes may need different crop bounds.
 - Compare stash-slot and cube-result crops separately before changing icon thresholds. Weak skull matches or high-tier result mismatches need captured evidence, not a blanket threshold reduction.
 - Expand digit references with real count crops, especially ambiguous `1`, `7`, `8`, and two-digit transitions. Include brightness and hover states when they affect matching.
-- Inspect [cube assets](../../assets/items/horadric_cube/) and settled frames when occupancy disagrees with the screen.
+- Inspect [cube assets](../../assets/items/horadric-cube) and settled frames when occupancy disagrees with the screen.
 
 For tuning, capture the source count, transfer, transmute result, tracked update, and resync in one recording/log sequence. Preserve state validation when reducing movement or settle delays. Evidence ownership and retention are described in the [developer guide](../project/developer-guide.md#evidence-handling).

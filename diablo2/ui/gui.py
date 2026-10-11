@@ -3,6 +3,7 @@
 import ctypes
 import os
 import sys
+import threading
 from pathlib import Path
 
 
@@ -45,7 +46,7 @@ from diablo2.actions.gem_summing import GemActionEvent, GemSummingSession
 from diablo2.actions.loot_pickup import LootEvent, LootPickupSession
 from diablo2.actions.recording import RecorderEvent, RecordingSession
 from diablo2.actions.run_lifecycle import LifecycleEvent, RunLifecycleSession
-from diablo2.runs.summoner import SummonerEvent, build_summoner_orchestrator, resolve_summoner_run
+from diablo2.runs.summoner.gui_session import SummonerEvent, SummonerGuiSession
 
 
 #
@@ -56,9 +57,9 @@ from diablo2.runs.summoner import SummonerEvent, build_summoner_orchestrator, re
 #
 class D2BotControlPanel:
     DEFAULT_WINDOW_WIDTH = 1120
-    DEFAULT_WINDOW_HEIGHT = 760
+    DEFAULT_WINDOW_HEIGHT = 820
     MIN_WINDOW_WIDTH = 1020
-    MIN_WINDOW_HEIGHT = 700
+    MIN_WINDOW_HEIGHT = 800
     CONTROL_PANEL_TITLE = "Diablo2 Helper"
     PREFERRED_GAME_PATTERNS = ("diablo ii: resurrected", "diablo ii", "resurrected", "diablo2")
 
@@ -81,19 +82,22 @@ class D2BotControlPanel:
         self.output_var = tk.StringVar(value="No recording yet")
         self.window_list_var = tk.StringVar()
         self._character_display_to_key: dict[str, str] = {}
-        self._visible_log_trim_notice = "Older GUI messages were trimmed; full logs remain saved under ./logs/."
+        self._visible_log_trim_notice = "Older GUI messages were trimmed from this live view."
 
         self.recording_session = RecordingSession(self.config.capture, self.config.recording.directory)
         self.lifecycle_session = RunLifecycleSession(self.config.capture)
         self.gem_session = GemSummingSession(self.config.capture)
         self.loot_session = LootPickupSession(self.config)
-        self.summoner_session = build_summoner_orchestrator(self.config)
+        self.summoner_session = SummonerGuiSession(self.config)
+        self._closing = False
+        self._recording_cleanup: threading.Thread | None = None
 
         self._build_ui()
         self._refresh_character_options()
         self._pin_window_geometry()
         self._refresh_windows(select_current=True)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+        self.root.bind("<F10>", lambda event: self.stop_current_action())
         self.root.after(250, self._poll_events)
 
     # 위젯 트리가 만들어진 뒤 원하는 시작 창 크기를 한 번 더 고정한다.
@@ -141,14 +145,14 @@ class D2BotControlPanel:
         self.window_title_box.bind("<<ComboboxSelected>>", self._use_selected_window)
 
         ttk.Label(header, text="Capture Backend").grid(row=0, column=2, sticky="w")
-        backend_box = ttk.Combobox(
+        self.backend_box = ttk.Combobox(
             header,
             textvariable=self.backend_var,
             state="readonly",
             values=("auto", "window", "screen"),
             width=10,
         )
-        backend_box.grid(row=0, column=3, sticky="w", padx=(8, 0))
+        self.backend_box.grid(row=0, column=3, sticky="w", padx=(8, 0))
 
         recording_actions = ttk.Frame(self.root, padding=(16, 0, 16, 12))
         recording_actions.grid(row=1, column=0, sticky="ew")
@@ -247,8 +251,9 @@ class D2BotControlPanel:
         self.key_button = ttk.Button(play_panel, text="Summoner Run", command=self.start_key_of_hate)
         self.key_button.grid(row=5, column=0, sticky="ew", pady=(8, 0))
 
-        self.arcane_north_button = ttk.Button(play_panel, text="North Go Test", command=self.start_arcane_north_test)
-        self.arcane_north_button.grid(row=6, column=0, sticky="ew", pady=(8, 0))
+        ttk.Label(play_panel, text="1–5 fresh north attempts (blank = 1).\nSelect the matching character in the game.").grid(
+            row=6, column=0, sticky="w", pady=(6, 0)
+        )
 
         ttk.Checkbutton(play_panel, text="Live town loop (1–3 runs)", variable=self.town_loop_var).grid(
             row=7, column=0, sticky="w", pady=(8, 0)
@@ -299,7 +304,10 @@ class D2BotControlPanel:
         value = self.repeat_count_var.get().strip()
         if not value:
             return None
-        return int(value)
+        try:
+            return int(value)
+        except ValueError as exc:
+            raise ValueError("Repeat Count must be a whole number.") from exc
 
     def _refresh_windows(self, select_current: bool = False) -> None:
         windows = list_windows()
@@ -345,6 +353,8 @@ class D2BotControlPanel:
         self.character_var.set(active_profile.display_name or active_key)
 
     def _use_selected_character(self, event: object | None = None) -> None:
+        if self._actions_running():
+            return
         display = self.character_var.get().strip()
         if not display:
             return
@@ -370,14 +380,16 @@ class D2BotControlPanel:
 
     def start_recording(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
+        if not self._actions_running():
+            self._apply_runtime_config()
         try:
             output_path = self.recording_session.start()
         except Exception as exc:
             messagebox.showerror("Recording Error", str(exc))
             self._append_log("error", str(exc))
             return
-        self.status_var.set("Recording")
+        if not self._actions_running():
+            self.status_var.set("Recording")
         self.output_var.set(str(output_path))
         self.record_button.state(["disabled"])
         self.stop_button.state(["!disabled"])
@@ -391,8 +403,9 @@ class D2BotControlPanel:
 
     def start_run_lifecycle(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
         try:
+            self._ensure_action_available()
+            self._apply_runtime_config()
             repeat_count = self._parse_repeat_count()
             self.lifecycle_session.start(repeat_count, self.difficulty_var.get().strip(), town_loop=self.town_loop_var.get())
         except Exception as exc:
@@ -400,103 +413,64 @@ class D2BotControlPanel:
             self._append_log("error", str(exc))
             return
         self.status_var.set("Run Lifecycle")
-        self.lifecycle_button.state(["disabled"])
-        self.loot_button.state(["disabled"])
-        self.arcane_north_button.state(["disabled"])
-        self.key_button.state(["disabled"])
-        self.gem_button.state(["disabled"])
-        self.stop_action_button.state(["!disabled"])
+        self._refresh_action_controls()
 
     def start_loot_pickup(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
         try:
+            self._ensure_action_available()
+            self._apply_runtime_config()
             self.loot_session.start()
         except Exception as exc:
             messagebox.showerror("Item Looting Error", str(exc))
             self._append_log("error", str(exc))
             return
         self.status_var.set("Item Looting")
-        self.lifecycle_button.state(["disabled"])
-        self.loot_button.state(["disabled"])
-        self.arcane_north_button.state(["disabled"])
-        self.key_button.state(["disabled"])
-        self.gem_button.state(["disabled"])
-        self.stop_action_button.state(["!disabled"])
+        self._refresh_action_controls()
 
     def start_key_of_hate(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
         try:
-            resolve_summoner_run(self.config)
-            self.summoner_session.start(run_number=1)
+            self._ensure_action_available()
+            self._apply_runtime_config()
+            output = self.summoner_session.start(
+                repeat_count=self._parse_repeat_count(),
+                difficulty=self.difficulty_var.get().strip(),
+                character_key=self._character_display_to_key.get(self.character_var.get().strip()),
+            )
         except Exception as exc:
             messagebox.showerror("Summoner Run Error", str(exc))
             self._append_log("error", str(exc))
             return
         self.status_var.set("Summoner Run")
-        self.lifecycle_button.state(["disabled"])
-        self.loot_button.state(["disabled"])
-        self.arcane_north_button.state(["disabled"])
-        self.key_button.state(["disabled"])
-        self.gem_button.state(["disabled"])
-        self.stop_action_button.state(["!disabled"])
-
-    def start_arcane_north_test(self) -> None:
-        self._preserve_current_geometry()
-        self._apply_runtime_config()
-        try:
-            repeat_count = self._parse_repeat_count()
-            self.summoner_session.start_north_go_test(repeat_count=repeat_count, difficulty=self.difficulty_var.get().strip())
-        except Exception as exc:
-            messagebox.showerror("North Go Test Error", str(exc))
-            self._append_log("error", str(exc))
-            return
-        self.status_var.set("North Go Test")
-        self.lifecycle_button.state(["disabled"])
-        self.loot_button.state(["disabled"])
-        self.arcane_north_button.state(["disabled"])
-        self.key_button.state(["disabled"])
-        self.gem_button.state(["disabled"])
-        self.stop_action_button.state(["!disabled"])
+        self.output_var.set(str(output))
+        self._refresh_action_controls()
 
     def start_gem_summing(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
         try:
+            self._ensure_action_available()
+            self._apply_runtime_config()
             self.gem_session.start()
         except Exception as exc:
             messagebox.showerror("Gem Summing Error", str(exc))
             self._append_log("error", str(exc))
             return
         self.status_var.set("Gem Summing")
-        self.lifecycle_button.state(["disabled"])
-        self.loot_button.state(["disabled"])
-        self.key_button.state(["disabled"])
-        self.gem_button.state(["disabled"])
-        self.stop_action_button.state(["!disabled"])
+        self._refresh_action_controls()
 
     def stop_current_action(self) -> None:
         self._preserve_current_geometry()
-        if self.lifecycle_session.is_running:
-            self.lifecycle_session.stop()
-        if self.gem_session.is_running:
-            self.gem_session.stop()
-        if self.loot_session.is_running:
-            self.loot_session.stop()
-        if self.summoner_session.is_running:
-            self.summoner_session.stop()
-        self.status_var.set("Idle")
-        self.lifecycle_button.state(["!disabled"])
-        self.loot_button.state(["!disabled"])
-        self.arcane_north_button.state(["!disabled"])
-        self.key_button.state(["!disabled"])
-        self.gem_button.state(["!disabled"])
-        self.stop_action_button.state(["disabled"])
+        for session in self._action_sessions():
+            if session.is_running:
+                session.request_stop()
+        self.status_var.set("Stopping" if self._actions_running() else "Stopped")
+        self._refresh_action_controls()
 
     def capture_snapshot(self) -> None:
         self._preserve_current_geometry()
-        self._apply_runtime_config()
+        if not self._actions_running():
+            self._apply_runtime_config()
         snapshots_dir = Path("assets") / "private"
         snapshots_dir.mkdir(parents=True, exist_ok=True)
         snapshot_path = snapshots_dir / "gui_snapshot.png"
@@ -534,30 +508,34 @@ class D2BotControlPanel:
         self.log_text.delete("1.0", f"{trim_lines + 1}.0")
         self.log_text.insert("1.0", f"[INFO] {self._visible_log_trim_notice}\n")
 
+    def _action_sessions(self) -> tuple:
+        return self.lifecycle_session, self.gem_session, self.loot_session, self.summoner_session
+
+    def _actions_running(self) -> bool:
+        return any(session.is_running for session in self._action_sessions())
+
+    def _ensure_action_available(self) -> None:
+        if self._closing:
+            raise RuntimeError("The control panel is closing.")
+        if self._actions_running():
+            raise RuntimeError("Another game action is active. Stop it and wait for it to finish before starting a new action.")
+
     def _refresh_action_controls(self) -> None:
-        action_running = (
-            self.lifecycle_session.is_running
-            or self.gem_session.is_running
-            or self.loot_session.is_running
-            or self.summoner_session.is_running
-        )
-        if action_running:
-            self.lifecycle_button.state(["disabled"])
-            self.loot_button.state(["disabled"])
-            self.arcane_north_button.state(["disabled"])
-            self.key_button.state(["disabled"])
-            self.gem_button.state(["disabled"])
-            self.stop_action_button.state(["!disabled"])
+        action_running = self._actions_running()
+        for button in (self.lifecycle_button, self.loot_button, self.key_button, self.gem_button):
+            button.state(["disabled"] if action_running or self._closing else ["!disabled"])
+        self.stop_action_button.state(["!disabled"] if action_running and not self._closing else ["disabled"])
+        for box in (self.character_box, self.window_title_box, self.backend_box):
+            box.configure(state="disabled" if action_running or self._closing else "readonly")
+        if action_running or self._closing:
             return
-        self.lifecycle_button.state(["!disabled"])
-        self.loot_button.state(["!disabled"])
-        self.arcane_north_button.state(["!disabled"])
-        self.key_button.state(["!disabled"])
-        self.gem_button.state(["!disabled"])
-        self.stop_action_button.state(["disabled"])
+        if self.status_var.get() == "Stopping":
+            self.status_var.set("Stopped")
+        if self.status_var.get() in ("Error", "Incomplete", "Summoner complete", "Stopped"):
+            return
         if self.recording_session.is_running:
             self.status_var.set("Recording")
-        elif self.status_var.get() != "Error":
+        else:
             self.status_var.set("Idle")
 
     def _poll_events(self) -> None:
@@ -586,22 +564,41 @@ class D2BotControlPanel:
             self._append_log(event.level, event.message)
             if event.level == "error":
                 self.status_var.set("Error")
+            if event.payload:
+                status = event.payload.get("status")
+                run_status = {
+                    "running": "Summoner Run",
+                    "complete": "Summoner complete",
+                    "incomplete": "Incomplete",
+                    "failed": "Error",
+                    "stopped": "Stopped",
+                }
+                if status in run_status and not (status == "running" and self.status_var.get() == "Stopping"):
+                    self.status_var.set(run_status[status])
+                if event.payload.get("output"):
+                    self.output_var.set(str(event.payload["output"]))
         self._refresh_action_controls()
+        if self._closing and not self._actions_running() and not self.recording_session.is_running:
+            if self._recording_cleanup is None or not self._recording_cleanup.is_alive():
+                self.root.destroy()
+                return
         self.root.after(250, self._poll_events)
 
     def _on_close(self) -> None:
+        if self._closing:
+            return
+        self._closing = True
+        for session in self._action_sessions():
+            session.request_stop()
+        self.status_var.set("Stopping")
+        self._refresh_action_controls()
+        self.record_button.state(["disabled"])
+        self.stop_button.state(["disabled"])
         if self.recording_session.is_running:
-            self.recording_session.stop()
-        if self.lifecycle_session.is_running:
-            self.lifecycle_session.stop()
-        if self.gem_session.is_running:
-            self.gem_session.stop()
-        if self.loot_session.is_running:
-            self.loot_session.stop()
-        if self.summoner_session.is_running:
-            self.summoner_session.stop()
-        self.summoner_session.close()
-        self.root.destroy()
+            self._recording_cleanup = threading.Thread(target=self.recording_session.stop, name="gui-recording-stop", daemon=True)
+            self._recording_cleanup.start()
+        elif not self._actions_running():
+            self.root.destroy()
 
     def run(self) -> int:
         self._pin_window_geometry()

@@ -9,6 +9,7 @@ from diablo2.common.survival import (
     CharacterSurvivalPolicy,
     CharacterSurvivalState,
     ObservationStamp,
+    PotionPickupPolicy,
     SafetyObservation,
     TimedBuffPolicy,
 )
@@ -25,10 +26,12 @@ class SurvivalPolicyTests(unittest.TestCase):
     def test_actual_config_uses_latest_sequence_and_character_owned_values(self):
         config = load_config(ROOT / "config")
         flash = config.characters["flash"]
-        self.assertEqual(flash.actions.pre_run_buff_order, ["w", "a", "a", "s", "f1", "d", "w"])
+        self.assertEqual(flash.actions.pre_run_buff_order, ["w", "a", "a", "s", "d", "f1", "w"])
         self.assertEqual((flash.survival.life_potion_below, flash.survival.mana_potion_below), (0.5, 0.1))
         self.assertEqual(flash.survival.belt_toggle_key, "`")
         self.assertEqual(flash.survival.buffs[0], TimedBuffPolicy("battle_orders", "s", 150, 10))
+        self.assertEqual(flash.survival.potion_pickup, PotionPickupPolicy("full_rejuvenation_potion", "rejuvenation_potion", 6))
+        self.assertEqual(flash.survival.belt_columns[3].target_count, 4)
         self.assertIsNone(config.characters["abyss_knight"].survival)
         self.assertIsNone(config.characters["constantin"].survival)
         apply_character_selection(config, "flash")
@@ -196,12 +199,65 @@ class SurvivalStateTests(unittest.TestCase):
         self.assertEqual(self.decide(now=2).deficits, ())
 
     def test_null_scroll_target_uses_initial_observed_amount(self):
-        state = CharacterSurvivalState("flash", "room-1", self.policy)
+        policy = replace(
+            self.policy, belt_columns=self.policy.belt_columns[:3] + (replace(self.policy.belt_columns[3], target_count=None),)
+        )
+        state = CharacterSurvivalState("flash", "room-1", policy)
         state.observe_belt(self.stamp(1, 0), self.belt(12, scrolls=2))
         state.confirm_buff(self.stamp(2, 0), "battle_orders", "field", True)
         state.confirm_resource_change(self.stamp(3, 1), 4, "town_portal_scroll", -1)
         self.assertEqual(self.decide(state=state).deficits, ((4, 1),))
         self.assertEqual(state.potions_remaining, 12)
+
+    def test_flash_scroll_target_is_four_even_when_first_observation_is_lower(self):
+        self.state.observe_belt(self.stamp(3, 1), self.belt(12, scrolls=2))
+        self.assertEqual(self.decide().deficits, ((4, 2),))
+
+    def test_potion_pickup_types_follow_current_count_and_exit_priority(self):
+        sequence = 3
+        for count, expected in (
+            (12, ()),
+            (7, ("full_rejuvenation_potion",)),
+            (6, ("full_rejuvenation_potion", "rejuvenation_potion")),
+            (7, ("full_rejuvenation_potion",)),
+            (6, ("full_rejuvenation_potion", "rejuvenation_potion")),
+            (0, ()),
+        ):
+            with self.subTest(count=count, sequence=sequence):
+                self.state.observe_belt(self.stamp(sequence, sequence), self.belt(count))
+                self.assertEqual(self.state.potion_pickup_kinds(sequence, max_belt_age_seconds=1), expected)
+                sequence += 1
+
+    def test_potion_pickup_never_uses_unknown_stale_or_future_belt(self):
+        self.state.observe_belt(self.stamp(3, 10), self.belt(6))
+        for now in (9, 12):
+            self.assertEqual(self.state.potion_pickup_kinds(now, max_belt_age_seconds=1), ())
+        self.state.invalidate_belt(self.stamp(4, 11))
+        self.assertEqual(self.state.potion_pickup_kinds(11, max_belt_age_seconds=1), ())
+        fresh_room = CharacterSurvivalState("flash", "new-room", self.policy)
+        self.assertEqual(fresh_room.potion_pickup_kinds(11, max_belt_age_seconds=1), ())
+        with self.assertRaises(ValueError):
+            self.state.potion_pickup_kinds(11, max_belt_age_seconds=0)
+
+    def test_other_character_pickup_policy_does_not_inherit_flash_types(self):
+        policy = replace(self.policy, potion_pickup=PotionPickupPolicy("other_recovery"))
+        other = CharacterSurvivalState("other", "room-1", policy)
+        other.observe_belt(self.stamp(1, 1, character="other"), self.belt(6))
+        self.assertEqual(other.potion_pickup_kinds(1, max_belt_age_seconds=1), ("other_recovery",))
+        unconfigured = CharacterSurvivalState("other", "room-1", replace(policy, potion_pickup=None))
+        unconfigured.observe_belt(self.stamp(1, 1, character="other"), self.belt(6))
+        self.assertEqual(unconfigured.potion_pickup_kinds(1, max_belt_age_seconds=1), ())
+
+    def test_pickup_policy_rejects_incomplete_duplicate_or_invalid_fallback(self):
+        for values in (("full", "small", None), ("full", None, 6), ("full", "full", 6), ("", None, None), ("full", "small", True)):
+            with self.assertRaises(ValueError):
+                PotionPickupPolicy(*values)
+        with self.assertRaises(ValueError):
+            replace(self.policy, potion_pickup=PotionPickupPolicy("full", "small", 13))
+        raw = json.loads((ROOT / "config/characters/characters.json").read_text(encoding="utf-8"))["characters"]["flash"]["survival"]
+        raw["potion_pickup"]["unexpected"] = True
+        with self.assertRaises(ValueError):
+            CharacterSurvivalPolicy.from_dict(raw)
 
     def test_count_conflicts_and_wrong_item_kinds_require_new_observation(self):
         self.assertFalse(self.state.confirm_resource_change(self.stamp(3, 1), 1, "purple_potion", 1))

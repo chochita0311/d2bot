@@ -108,8 +108,8 @@
           "a",
           "a",
           "s",
-          "f1",
           "d",
+          "f1",
           "w"
         ],
         "attack_pattern": "single_skill",
@@ -126,6 +126,11 @@
         "life_potion_below": 0.5,
         "mana_potion_below": 0.1,
         "potion_kind": "purple_potion",
+        "potion_pickup": {
+          "preferred_kind": "full_rejuvenation_potion",
+          "fallback_kind": "rejuvenation_potion",
+          "fallback_at_or_below": 6
+        },
         "replenish_at_or_below": 6,
         "exit_on_empty": true,
         "belt_toggle_key": "`",
@@ -133,7 +138,7 @@
           {"column": 1, "key": "1", "kind": "purple_potion", "capacity": 4, "target_count": 4},
           {"column": 2, "key": "2", "kind": "purple_potion", "capacity": 4, "target_count": 4},
           {"column": 3, "key": "3", "kind": "purple_potion", "capacity": 4, "target_count": 4},
-          {"column": 4, "key": "4", "kind": "town_portal_scroll", "capacity": 4, "target_count": null}
+          {"column": 4, "key": "4", "kind": "town_portal_scroll", "capacity": 4, "target_count": 4}
         ],
         "buffs": [
           {"name": "battle_orders", "key": "s", "duration_seconds": 150, "renew_before_seconds": 10}

@@ -3,10 +3,9 @@ from __future__ import annotations
 from diablo2.common.color_palette import Palette
 
 
-# Arcane 바닥/우주 계열 팔레트는 현재 프로젝트 에셋에서 추출했다.
-# - assets/map/act2/arcane_sanctuary/floor.png
-# - assets/map/act2/arcane_sanctuary/star.png
-# - assets/map/act2/arcane_sanctuary/north_way.png
+# 기존 floor/star/north-way 이미지에서 추출한 보정 팔레트 값은 유지한다.
+# 원본 이미지는 폐기된 고정 경로와 함께 제거했다. 현재 지역 보정 기준:
+# assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json
 # OpenCV 입력과 바로 맞추기 위해 BGR 순서를 그대로 사용한다.
 
 ARCANE_FLOOR_GRAY_PALETTE_BGR: Palette = (

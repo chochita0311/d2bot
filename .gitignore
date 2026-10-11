@@ -11,6 +11,7 @@ __pycache__/
 *.pyc
 
 # Local recordings and private captures
+.tmp/
 recordings/
 assets/private/
 logs/

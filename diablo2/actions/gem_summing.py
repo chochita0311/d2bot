@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import math
 import random
 import threading
@@ -45,24 +46,19 @@ class GemSummingSession:
     LEVEL_NAMES = ["chipped", "flawed", "normal", "flawless", "perfect"]
     STOP_HOTKEY = "f10"
 
-    REFERENCE_COUNTS = [
-        [23, 18, 8, 12, 15, 21, 8],
-        [27, 47, 24, 38, 7, 37, 26],
-        [23, 27, 11, 21, 5, 19, 14],
-        [7, 18, 10, 16, 8, 12, 12],
-        [19, 17, 48, 10, 11, 15, 11],
-    ]
-
-    STASH_TEMPLATE_PATH = Path("assets/stash/stash_open_gems_focused.png")
-    CUBE_BUTTON_TEMPLATE_PATH = Path("assets/items/horadric_cube/horadric_cube_button.png")
-    CUBE_BUTTON_HOVER_TEMPLATE_PATH = Path("assets/items/horadric_cube/horadric_cube_button_when_hover.png")
+    STASH_HEADER_TEMPLATE_PATH = Path("assets/ui/stash/templates/header-ko-576x74.png")
+    STASH_PANEL_SIZE = (576, 757)
+    DIGIT_ATLAS_PATH = Path("assets/ui/gem-count-digits/atlas.png")
+    DIGIT_ATLAS_MANIFEST_PATH = Path("assets/ui/gem-count-digits/manifest.json")
+    CUBE_BUTTON_TEMPLATE_PATH = Path("assets/ui/horadric-cube/templates/transmute-button.png")
+    CUBE_BUTTON_HOVER_TEMPLATE_PATH = Path("assets/ui/horadric-cube/templates/transmute-button-hover-ko.png")
     GEM_ICON_DIR = Path("assets/items/gems/icons")
 
     MATCH_THRESHOLD = 0.82
     BUTTON_MATCH_THRESHOLD = 0.78
     USER_INTERRUPT_DISTANCE = 80
 
-    # Geometry inside the stash reference image.
+    # 수량 판독과 클릭은 원본 크기 패널 좌표를 그대로 사용한다.
     SLOT_START_X = 82
     SLOT_START_Y = 117
     SLOT_STEP_X = 61
@@ -125,11 +121,11 @@ class GemSummingSession:
         self._last_pointer: tuple[int, int] | None = None
         self._blocked_slots: set[tuple[int, int]] = set()
 
-        self._stash_template = self._load_image(self.STASH_TEMPLATE_PATH)
+        self._stash_header_template = self._load_image(self.STASH_HEADER_TEMPLATE_PATH)
         self._cube_button_template = self._load_image(self.CUBE_BUTTON_TEMPLATE_PATH)
         self._cube_button_hover_template = self._load_image(self.CUBE_BUTTON_HOVER_TEMPLATE_PATH)
         self._gem_icon_templates = self._load_gem_icon_templates()
-        self._ones_templates, self._tens_templates, self._blank_left_templates = self._build_digit_templates(self._stash_template)
+        self._ones_templates, self._tens_templates, self._blank_left_templates = self._load_digit_templates()
 
     @property
     def is_running(self) -> bool:
@@ -139,7 +135,7 @@ class GemSummingSession:
     def scan_counts(self) -> list[list[int]]:
         capture = ScreenCapture(self.capture_config)
         packet = capture.grab()
-        stash_match = self._locate_template(packet.frame, self._stash_template, self.MATCH_THRESHOLD)
+        stash_match = self._locate_stash_panel(packet.frame)
         if stash_match is None:
             raise RuntimeError("Could not find the opened gem stash panel. Open stash + cube, then try again.")
         return self._read_consensus_counts(capture, stash_match)
@@ -192,7 +188,7 @@ class GemSummingSession:
 
             initial_packet = capture.grab()
             target = capture.target
-            stash_match = self._locate_template(initial_packet.frame, self._stash_template, self.MATCH_THRESHOLD)
+            stash_match = self._locate_stash_panel(initial_packet.frame)
             if stash_match is None:
                 raise RuntimeError(
                     "Could not find the opened gem stash panel in the starting screen. Open stash + cube first, then start again."
@@ -222,7 +218,7 @@ class GemSummingSession:
                 self._park_cursor(capture, stash_match)
                 self._sleep_range(*self.UI_SETTLE_SLEEP)
                 current_packet = capture.grab()
-                stash_match = self._locate_template(current_packet.frame, self._stash_template, self.MATCH_THRESHOLD)
+                stash_match = self._locate_stash_panel(current_packet.frame)
                 if stash_match is None:
                     raise RuntimeError("Lost the opened gem stash panel during gem summing.")
                 cube_button_match = self._locate_best_template(
@@ -324,39 +320,45 @@ class GemSummingSession:
         for gem_name in self.GEM_NAMES:
             level_templates: list[np.ndarray] = []
             for level_name in self.LEVEL_NAMES:
-                path = self.GEM_ICON_DIR / f"{level_name}_{gem_name}.png"
+                path = self.GEM_ICON_DIR / f"{level_name}-{gem_name}.png"
                 level_templates.append(self._load_image(path))
             templates[gem_name] = level_templates
         return templates
 
-    def _build_digit_templates(
+    def _load_digit_templates(
         self,
-        reference_image: np.ndarray,
     ) -> tuple[dict[str, dict[str, list[np.ndarray]]], dict[str, dict[str, list[np.ndarray]]], dict[str, list[np.ndarray]]]:
-        ones_templates: dict[str, dict[str, list[np.ndarray]]] = {}
-        tens_templates: dict[str, dict[str, list[np.ndarray]]] = {}
-        blank_left_templates: dict[str, list[np.ndarray]] = {}
-
-        for variant_name, _ in self.PREPROCESS_VARIANTS:
-            ones_templates[variant_name] = {}
-            tens_templates[variant_name] = {}
-            blank_left_templates[variant_name] = []
-
-        for row in range(5):
-            for col in range(7):
-                count = str(self.REFERENCE_COUNTS[row][col])
-                crop = self._count_crop(reference_image, row, col)
-                processed_variants = self._preprocess_count_crop(crop)
-                for variant_name, processed in processed_variants.items():
-                    ones_templates[variant_name].setdefault(count[-1], []).append(
-                        self._normalize_digit(processed[:, self.RIGHT_DIGIT_START :])
-                    )
-                    left_crop = self._normalize_digit(processed[:, : self.LEFT_DIGIT_WIDTH])
-                    if len(count) == 2:
-                        tens_templates[variant_name].setdefault(count[0], []).append(left_crop)
-                    else:
-                        blank_left_templates[variant_name].append(left_crop)
-
+        manifest = json.loads(self.DIGIT_ATLAS_MANIFEST_PATH.read_text(encoding="utf-8"))
+        variants = [name for name, _ in self.PREPROCESS_VARIANTS]
+        if (
+            manifest.get("schema") != 1
+            or manifest.get("tile_size") != [12, 14]
+            or manifest.get("preprocess_variants") != [list(variant) for variant in self.PREPROCESS_VARIANTS]
+        ):
+            raise RuntimeError("Gem digit atlas manifest does not match the configured recognition contract.")
+        atlas = cv.cvtColor(self._load_image(self.DIGIT_ATLAS_PATH), cv.COLOR_BGR2GRAY)
+        ones_templates = {variant: {} for variant in variants}
+        tens_templates = {variant: {} for variant in variants}
+        blank_left_templates = {variant: [] for variant in variants}
+        for entry in manifest["entries"]:
+            variant, bank, digit = entry["variant"], entry["bank"], entry["digit"]
+            if variant not in variants or bank not in ("ones", "tens", "blank"):
+                raise RuntimeError("Gem digit atlas contains an unknown recognition bank.")
+            x, y, width, height = entry["box"]
+            if width != 12 or height != 14 or x < 0 or y < 0 or x + width > atlas.shape[1] or y + height > atlas.shape[0]:
+                raise RuntimeError("Gem digit atlas contains an invalid glyph box.")
+            glyph = atlas[y : y + height, x : x + width].copy()
+            if bank == "blank":
+                if digit is not None:
+                    raise RuntimeError("Gem digit atlas blank glyph must not have a digit label.")
+                blank_left_templates[variant].append(glyph)
+            else:
+                if not isinstance(digit, str) or len(digit) != 1 or digit not in "0123456789":
+                    raise RuntimeError("Gem digit atlas contains an invalid digit label.")
+                templates = ones_templates if bank == "ones" else tens_templates
+                templates[variant].setdefault(digit, []).append(glyph)
+        if any(not ones_templates[variant] or not tens_templates[variant] or not blank_left_templates[variant] for variant in variants):
+            raise RuntimeError("Gem digit atlas is missing a required recognition bank.")
         return ones_templates, tens_templates, blank_left_templates
 
     def _read_consensus_counts(
@@ -507,6 +509,19 @@ class GemSummingSession:
         if max_value < threshold:
             return None
         return MatchResult(top_left=max_loc, width=template.shape[1], height=template.shape[0], score=float(max_value))
+
+    def _locate_stash_panel(self, frame: np.ndarray) -> MatchResult | None:
+        # 공개 제목 영역만 찾되 슬롯/큐브 좌표는 기존 패널 원점과 크기를 유지한다.
+        width, height = self.STASH_PANEL_SIZE
+        if frame.shape[1] < width or frame.shape[0] < height:
+            return None
+        header = self._locate_template(frame, self._stash_header_template, self.MATCH_THRESHOLD)
+        if header is None:
+            return None
+        x, y = header.top_left
+        if x + width > frame.shape[1] or y + height > frame.shape[0]:
+            return None
+        return MatchResult(top_left=header.top_left, width=width, height=height, score=header.score)
 
     def _extract_region(self, frame: np.ndarray, match: MatchResult) -> np.ndarray:
         x, y = match.top_left

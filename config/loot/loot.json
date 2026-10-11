@@ -14,18 +14,18 @@
     "fixed_items": [
       {
         "label": "key of hate",
-        "ground_template": "assets/items/keys/key_of_hate_on_the_ground.png",
-        "inventory_template": "assets/items/keys/key_of_hate_in_inventory.png",
+        "ground_template": "assets/items/keys/key-of-hate-on-the-ground.png",
+        "inventory_template": "assets/items/keys/key-of-hate-inventory-icon.png",
         "threshold": 0.8
       },
       {
         "label": "rune",
-        "ground_template": "assets/items/runes/rune_on_the_ground.png",
+        "ground_template": "assets/items/runes/rune-on-the-ground.png",
         "threshold": 0.8
       },
       {
         "label": "amethyst",
-        "ground_template": "assets/items/gems/amethyst_on_the_ground.png",
+        "ground_template": "assets/items/gems/amethyst-on-the-ground.png",
         "threshold": 0.8
       }
     ]

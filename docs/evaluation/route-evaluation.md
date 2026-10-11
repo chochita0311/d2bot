@@ -1,6 +1,6 @@
 # Evaluation Standard
 
-Use these checks when revising route logic, real-time steering, or fast/slow vision behavior so recordings can be compared consistently across the project.
+The metric names and fast/slow thresholds below describe the removed north-stage executor and remain historical tuning guidance. Current Summoner runs use the [main navigation contract](../features/arcane-navigation.md) and [integration run](../plans/run/run-20261009-07-summoner-live-integration.md); inspect their actual timing fields and current goal/return evidence rather than expecting these old log fields. The general success checks still apply.
 
 ## Primary Success Checks
 

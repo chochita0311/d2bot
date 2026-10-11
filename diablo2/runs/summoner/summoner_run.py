@@ -1,52 +1,12 @@
 from __future__ import annotations
 
-import json
-import threading
-import time
 from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from queue import Empty, Queue
 
-import numpy as np
-
-from diablo2.actions.recording import RecordingSession, prune_recording_artifacts
-from diablo2.actions.run_lifecycle import RunLifecycleSession
-from diablo2.common.async_log import AsyncSegmentedLogger
-from diablo2.common.capture import ScreenCapture
 from diablo2.common.config import BotConfig
-from diablo2.runs.base import RunDefinition, RunPayloadState, RunPort
-from diablo2.runs.summoner.routes.common.arcane_common import (
-    build_initial_arcane_belief_state,
-    commit_arcane_wing,
-    ensure_arcane_item_labels,
-    load_arcane_assets,
-    load_arcane_monster_templates,
-    log_arcane_state,
-    resolve_arcane_character_actions,
-    run_arcane_pre_run_buffs,
-    scan_arcane_monsters,
-    verify_arcane_hub_ready,
-)
-from diablo2.runs.summoner.routes.arcane_entry import PORT as ARCANE_ENTRY, run_arcane_entry
+from diablo2.runs.base import RunDefinition, RunPayloadState, RunPort, RunRouteSegment
+from diablo2.runs.summoner.gui_session import SummonerEvent, SummonerGuiSession
 from diablo2.runs.summoner.routes.east_go import ROUTE_SEGMENT as EAST_GO
 from diablo2.runs.summoner.routes.east_return import ROUTE_SEGMENT as EAST_RETURN
-from diablo2.runs.summoner.routes.north_go import ROUTE_SEGMENT as NORTH_GO, run_arcane_north_go
-from diablo2.runs.summoner.routes.north_return import ROUTE_SEGMENT as NORTH_RETURN, run_arcane_north_reset
-from diablo2.runs.summoner.runtime.runtime_helpers import (
-    aim_relative_ratio,
-    apply_offset,
-    center_right_anchor,
-    check_for_user_interrupt,
-    focus_game_window,
-    hold_key_down,
-    hold_key_up,
-    load_image,
-    load_optional_image,
-    locate_template,
-    press_key,
-    sleep_range,
-)
 from diablo2.runs.summoner.routes.south_go import ROUTE_SEGMENT as SOUTH_GO
 from diablo2.runs.summoner.routes.south_return import ROUTE_SEGMENT as SOUTH_RETURN
 from diablo2.runs.summoner.routes.west_go import ROUTE_SEGMENT as WEST_GO
@@ -54,22 +14,8 @@ from diablo2.runs.summoner.routes.west_return import ROUTE_SEGMENT as WEST_RETUR
 
 SUMMONER_PROFILE_ID = "summoner"
 
-
-@dataclass
-class SummonerEvent:
-    level: str
-    message: str
-    payload: dict[str, object] | None = None
-    priority: int = 1
-
-
-@dataclass
-class SummonerMatchResult:
-    top_left: tuple[int, int]
-    width: int
-    height: int
-    score: float
-    source_index: int | None = None
+# 기존 공개 import는 최신 GUI 세션으로 연결한다.
+SummonerRunOrchestrator = SummonerGuiSession
 
 
 @dataclass
@@ -82,510 +28,64 @@ class SummonerRunContext:
         return self.definition.profile
 
 
-@dataclass
-class NorthGoAttemptResult:
-    run_id: str
-    attempt_index: int
-    status: str
-    recording_path: str | None = None
-    kept_recording: bool = False
-    analysis_path: str | None = None
-
-
-class MirroredEventQueue:
-    def __init__(self, backing_queue: Queue, mirror_fn):
-        self._backing_queue = backing_queue
-        self._mirror_fn = mirror_fn
-
-    def put(self, event) -> None:
-        self._backing_queue.put(event)
-        self._mirror_fn(event)
-
-    def get_nowait(self):
-        return self._backing_queue.get_nowait()
-
-    def empty(self) -> bool:
-        return self._backing_queue.empty()
-
-
-class SummonerRunOrchestrator:
-    STOP_HOTKEY = "f10"
-    event_class = SummonerEvent
-    match_result_class = SummonerMatchResult
-
-    ACT1_MAP_TEMPLATE_PATHS = (
-        Path("assets/waypoint/act1/act1_자매단_야영지_on_map_1.png"),
-        Path("assets/waypoint/act1/act1_자매단_야영지_on_map_2.png"),
-    )
-    ACT1_WAYPOINT_TEMPLATE_PATH = Path("assets/waypoint/act1/act1_자매단_야영지.png")
-    ACT1_WAYPOINT_HOVER_TEMPLATE_PATH = Path("assets/waypoint/act1/act1_자매단_야영지_when_hover.png")
-    ACT1_LIST_TEMPLATE_PATH = Path("assets/waypoint/act1/act1_list_when_left_click.png")
-    ACT1_LIST_PANEL_TEMPLATE_PATH = Path("assets/waypoint/act1/act1_list.png")
-    ACT2_LIST_PANEL_TEMPLATE_PATH = Path("assets/waypoint/act2/act2_list.png")
-
-    MAP_THRESHOLD = 0.5
-    WAYPOINT_THRESHOLD = 0.74
-    WAYPOINT_HOVER_THRESHOLD = 0.74
-    LIST_THRESHOLD = 0.93
-    LIST_PANEL_THRESHOLD = 0.88
-
-    USER_INTERRUPT_DISTANCE = 80
-    TARGET_JITTER = 3
-    MOVE_STEPS = (1, 2)
-    MOVE_SLEEP = (0.005, 0.015)
-    CLICK_SETTLE = (0.01, 0.03)
-    ACTION_SLEEP = (0.01, 0.03)
-    FOCUS_SLEEP = (0.12, 0.2)
-
-    MINIMAP_SLEEP = (0.05, 0.12)
-    SCOUT_MOVE_SETTLE = (0.01, 0.02)
-    SCOUT_HOLD_SETTLE = (0.01, 0.02)
-    SCOUT_UP_SETTLE = (0.28, 0.32)
-    SCOUT_RIGHT_SETTLE = (0.28, 0.32)
-    HOVER_WAIT_SECONDS = 2.4
-    WAYPOINT_LIST_WAIT_SECONDS = 1.2
-    MAP_SCAN_TIMEOUT = 2.2
-    WAYPOINT_SCAN_TIMEOUT = 1.0
-    OPEN_ATTEMPTS = 4
-    ACT2_TAB_RATIO = (136 / 444, 18 / 599)
-    MINIMAP_SCOUT_POINTS = ((0.66, 0.44), (0.74, 0.42), (0.80, 0.40))
-    WORLD_SCOUT_ANCHOR_OFFSET = (0.14, 0.0)
-    WORLD_SCOUT_UP_HOLD_POINT = (0.0, -0.18)
-    WORLD_SCOUT_DOWN_HOLD_POINT = (0.0, 0.24)
-    WORLD_SCOUT_UP_HOLD_SECONDS = (0.75, 0.80)
-    WORLD_SCOUT_DOWN_HOLD_SECONDS = (1.60, 1.70)
-    WORLD_SCOUT_RIGHT_HOLD_POINT = (0.20, 0.0)
-    WORLD_SCOUT_RIGHT_HOLD_SECONDS = (0.25, 0.35)
-
-    def __init__(self, config: BotConfig):
-        self.config = config
-        self._event_queue: Queue[SummonerEvent] = Queue()
-        self._logger = AsyncSegmentedLogger(self.config.logging, base_name="north-go-tuning")
-        self._logger.start()
-        self.events = MirroredEventQueue(self._event_queue, self._mirror_event)
-        self._thread: threading.Thread | None = None
-        self._lock = threading.Lock()
-        self._is_running = False
-        self._stop_event = threading.Event()
-        self._active_lifecycle: RunLifecycleSession | None = None
-        self._last_pointer: tuple[int, int] | None = None
-        self._current_scout_anchor = (0.5, 0.5)
-        self._last_detection_route = "direct"
-        self._north_go_last_outcome: dict[str, object] = {"status": "not_started"}
-
-        self._act1_map_templates = [self._load_image(path) for path in self._resolve_act1_map_template_paths()]
-        self._act1_waypoint_template = self._load_image(self._resolve_act1_waypoint_template_path())
-        self._act1_waypoint_hover_template = self._load_image(self._resolve_act1_waypoint_hover_template_path())
-        self._act1_list_template = self._load_image(self.ACT1_LIST_TEMPLATE_PATH)
-        self._act1_list_panel_template = self._load_image(self.ACT1_LIST_PANEL_TEMPLATE_PATH)
-        self._act2_list_panel_template = self._load_image(self.ACT2_LIST_PANEL_TEMPLATE_PATH)
-        load_arcane_assets(self)
-
-    def update_config(self, config: BotConfig) -> None:
-        self.config = config
-
-    @property
-    def is_running(self) -> bool:
-        with self._lock:
-            return self._is_running
-
-    def start(self, run_number: int = 1) -> None:
-        with self._lock:
-            if self._is_running:
-                raise RuntimeError("Summoner run is already running.")
-            self._stop_event.clear()
-            self._thread = threading.Thread(target=self._run, args=(run_number,), daemon=True)
-            self._is_running = True
-            self._thread.start()
-        self.events.put(
-            self.event_class(
-                "info",
-                f"Summoner run started for stage make_room -> arcane_entry -> enable_labels -> buff_before_run -> north_go (run {run_number}).",
-            )
-        )
-
-    def close(self) -> None:
-        self._logger.stop()
-
-    def stop(self) -> None:
-        self._stop_event.set()
-        active_lifecycle = self._active_lifecycle
-        if active_lifecycle is not None:
-            active_lifecycle.request_stop()
-        thread = self._thread
-        if thread is not None:
-            thread.join(timeout=3.0)
-        with self._lock:
-            self._thread = None
-            self._is_running = False
-        self.events.put(self.event_class("info", "Summoner run stopped."))
-
-    def _run(self, run_number: int) -> None:
-        try:
-            self.run_current_stage(run_number)
-        except Exception as exc:  # pragma: no cover
-            self.events.put(self.event_class("error", f"Summoner run failed: {exc}"))
-        finally:
-            with self._lock:
-                self._thread = None
-                self._is_running = False
-
-    def request_stop(self) -> None:
-        self._stop_event.set()
-
-    def run_current_stage(self, run_number: int = 1) -> None:
-        self.make_room(run_number=run_number)
-        capture = ScreenCapture(self.config.capture)
-        focus_game_window(self, capture)
-        self.enter_arcane(capture)
-        self.enable_labels()
-        self.buff_before_run()
-        self.run_north_go(capture)
-
-    def make_room(self, run_number: int = 1) -> None:
-        lifecycle = RunLifecycleSession(self.config.capture)
-        self._active_lifecycle = lifecycle
-        capture = ScreenCapture(self.config.capture)
-        self.events.put(self.event_class("info", f"Summoner: make_room starting for run {run_number}."))
-        try:
-            lifecycle._focus_game_window(capture)
-            self._drain_lifecycle_events(lifecycle)
-            lifecycle.create_room(capture, run_number)
-            self._drain_lifecycle_events(lifecycle)
-            self.events.put(self.event_class("info", f"Summoner: make_room completed for run {run_number}."))
-        finally:
-            self._drain_lifecycle_events(lifecycle)
-            self._active_lifecycle = None
-
-    def enter_arcane(self, capture: ScreenCapture) -> None:
-        run_arcane_entry(self, capture)
-        self.events.put(self.event_class("info", "Summoner: arcane_entry completed."))
-
-    def enable_labels(self) -> None:
-        ensure_arcane_item_labels(self)
-        self.events.put(self.event_class("info", "Summoner: enable_labels stage completed."))
-
-    def buff_before_run(self) -> None:
-        run_arcane_pre_run_buffs(self)
-        self.events.put(self.event_class("info", "Summoner: buff_before_run stage completed."))
-
-    def run_north_go(self, capture: ScreenCapture) -> None:
-        self._north_go_last_outcome = {"status": "running"}
-        run_arcane_north_go(self, capture)
-
-    def start_north_go_test(self, repeat_count: int | None = None, difficulty: str = "hell") -> None:
-        with self._lock:
-            if self._is_running:
-                raise RuntimeError("Summoner run is already running.")
-            self._stop_event.clear()
-            resolved_repeat_count = repeat_count if repeat_count is not None else max(1, int(self.config.north_go_tuning.rerun_count))
-            self._thread = threading.Thread(
-                target=self._run_north_go_test,
-                args=(resolved_repeat_count, difficulty),
-                daemon=True,
-            )
-            self._is_running = True
-            self._thread.start()
-        self.events.put(
-            self.event_class(
-                "info",
-                f"Arcane North Test started from GUI button with {resolved_repeat_count} attempt(s) on {difficulty}.",
-                payload={"rerun_count": resolved_repeat_count, "difficulty": difficulty},
-                priority=0,
-            )
-        )
-
-    def _run_north_go_test(self, repeat_count: int, difficulty: str) -> None:
-        try:
-            run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.events.put(
-                self.event_class(
-                    "info",
-                    f"Arcane North Test: tuning run {run_id} started for {repeat_count} attempt(s).",
-                    payload={"run_id": run_id, "rerun_count": repeat_count, "difficulty": difficulty},
-                    priority=0,
-                )
-            )
-            for attempt_index in range(1, repeat_count + 1):
-                if self._stop_event.is_set():
-                    break
-                self._run_single_north_go_attempt(run_id, attempt_index, repeat_count, difficulty)
-        except Exception as exc:  # pragma: no cover
-            self.events.put(self.event_class("error", f"Arcane North Test failed: {exc}"))
-        finally:
-            with self._lock:
-                self._thread = None
-                self._is_running = False
-
-    def _run_single_north_go_attempt(self, run_id: str, attempt_index: int, total_attempts: int, difficulty: str) -> None:
-        self._stop_event.clear()
-        self.events.put(
-            self.event_class(
-                "info",
-                f"Arcane North Test: attempt {attempt_index}/{total_attempts} starting.",
-                payload={"run_id": run_id, "attempt_index": attempt_index, "total_attempts": total_attempts, "phase": "attempt_start"},
-                priority=0,
-            )
-        )
-        self.make_room(run_number=attempt_index)
-        capture = ScreenCapture(self.config.capture)
-        focus_game_window(self, capture)
-        self.enter_arcane(capture)
-        self.enable_labels()
-        self.buff_before_run()
-        verify_arcane_hub_ready(self, capture, "north")
-
-        recording_session: RecordingSession | None = None
-        recording_path: Path | None = None
-        if self.config.north_go_tuning.auto_record_runs:
-            recording_path = self._build_north_go_recording_path(run_id, attempt_index)
-            recording_session = RecordingSession(self.config.capture, recordings_dir=self.config.recording.directory)
-            recording_session.start(recording_path)
-            self.events.put(
-                self.event_class(
-                    "info",
-                    f"Arcane North Test: recording attempt {attempt_index} to {recording_path.name}.",
-                    payload={"run_id": run_id, "attempt_index": attempt_index, "recording_path": str(recording_path)},
-                    priority=0,
-                )
-            )
-
-        attempt_status = "unknown"
-        try:
-            self.run_north_go(capture)
-            attempt_status = str(self._north_go_last_outcome.get("status", "stopped"))
-        except Exception:
-            attempt_status = "failed"
-            self._north_go_last_outcome = {"status": "failed"}
-        finally:
-            if recording_session is not None:
-                recording_session.stop()
-
-        analysis_path = self._write_north_go_attempt_summary(run_id, attempt_index, attempt_status, recording_path)
-        keep_recording = self._should_keep_recording(attempt_index, attempt_status)
-        if recording_path is not None and not keep_recording:
-            prune_recording_artifacts(recording_path, [])
-        self.events.put(
-            self.event_class(
-                "info",
-                f"Arcane North Test: attempt {attempt_index}/{total_attempts} finished with status={attempt_status}, keep_recording={keep_recording}.",
-                payload={
-                    "run_id": run_id,
-                    "attempt_index": attempt_index,
-                    "status": attempt_status,
-                    "recording_path": None if recording_path is None or not keep_recording else str(recording_path),
-                    "analysis_path": str(analysis_path),
-                    "kept_recording": keep_recording,
-                    "phase": "attempt_complete",
-                },
-                priority=0,
-            )
-        )
-        if attempt_status == "failed":
-            raise RuntimeError(f"Arcane North Test attempt {attempt_index} failed.")
-        if attempt_index < total_attempts:
-            self._stop_event.clear()
-            run_arcane_north_reset(self, capture, attempt_index)
-            self._stop_event.clear()
-
-    def _run_north_reset(self, capture: ScreenCapture, run_number: int) -> None:
-        lifecycle = RunLifecycleSession(self.config.capture)
-        self._active_lifecycle = lifecycle
-        self.events.put(
-            self.event_class(
-                "info",
-                f"Arcane North Test: reset phase starting after attempt {run_number}.",
-                payload={"phase": "reset_start", "run_number": run_number},
-                priority=0,
-            )
-        )
-        try:
-            lifecycle._focus_game_window(capture)
-            lifecycle.exit_room(capture, run_number)
-            self._drain_lifecycle_events(lifecycle)
-            self.events.put(
-                self.event_class(
-                    "info",
-                    f"Arcane North Test: reset phase completed after attempt {run_number}; character select is ready.",
-                    payload={"phase": "reset_complete", "run_number": run_number},
-                    priority=0,
-                )
-            )
-        finally:
-            self._drain_lifecycle_events(lifecycle)
-            self._active_lifecycle = None
-
-    def _build_north_go_recording_path(self, run_id: str, attempt_index: int) -> Path:
-        recordings_dir = Path(self.config.recording.directory)
-        recordings_dir.mkdir(parents=True, exist_ok=True)
-        return recordings_dir / f"north-go-{run_id}-attempt-{attempt_index:02d}.avi"
-
-    def _write_north_go_attempt_summary(
-        self,
-        run_id: str,
-        attempt_index: int,
-        attempt_status: str,
-        recording_path: Path | None,
-    ) -> Path:
-        recordings_dir = Path(self.config.recording.directory)
-        recordings_dir.mkdir(parents=True, exist_ok=True)
-        summary_path = recordings_dir / f"north-go-{run_id}-attempt-{attempt_index:02d}.summary.json"
-        summary = {
-            "run_id": run_id,
-            "attempt_index": attempt_index,
-            "status": attempt_status,
-            "recording_path": None if recording_path is None else str(recording_path),
-            "recording_exists": False if recording_path is None else recording_path.exists(),
-            "outcome": self._north_go_last_outcome,
-            "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
-        }
-        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-        return summary_path
-
-    def _should_keep_recording(self, attempt_index: int, attempt_status: str) -> bool:
-        if attempt_status not in {"end", "end_latest_frame"} and self.config.recording.keep_failed_runs:
-            return True
-        if self.config.recording.keep_successful_runs:
-            return True
-        return attempt_index <= max(0, int(self.config.north_go_tuning.keep_reference_runs))
-
-    def _mirror_event(self, event: SummonerEvent) -> None:
-        payload = getattr(event, "payload", None)
-        priority = int(getattr(event, "priority", 1))
-        self._logger.log(event.level, event.message, payload=payload, priority=priority, source="summoner")
-
-    def _drain_lifecycle_events(self, lifecycle: RunLifecycleSession) -> None:
-        while True:
-            try:
-                event = lifecycle.events.get_nowait()
-            except Empty:
-                break
-            self.events.put(self.event_class(event.level, event.message))
-
-    def _resolve_single_asset(self, directory: str, suffix: str) -> Path:
-        base = Path(directory)
-        matches = sorted(base.glob(suffix))
-        if not matches:
-            raise RuntimeError(f"Required asset is missing under {base.as_posix()} matching {suffix}.")
-        return matches[0]
-
-    def _resolve_act1_map_template_paths(self) -> tuple[Path, Path]:
-        base = Path("assets/waypoint/act1")
-        first = self._resolve_single_asset(base.as_posix(), "*_on_map_1.png")
-        second = self._resolve_single_asset(base.as_posix(), "*_on_map_2.png")
-        return first, second
-
-    def _resolve_act1_waypoint_template_path(self) -> Path:
-        base = Path("assets/waypoint/act1")
-        candidates = [
-            path
-            for path in sorted(base.glob("*.png"))
-            if "on_map" not in path.name and "when_hover" not in path.name and "list" not in path.name
-        ]
-        if not candidates:
-            raise RuntimeError("Required Act 1 waypoint template is missing.")
-        return candidates[0]
-
-    def _resolve_act1_waypoint_hover_template_path(self) -> Path:
-        base = Path("assets/waypoint/act1")
-        candidates = sorted(base.glob("*_when_hover.png"))
-        if not candidates:
-            raise RuntimeError("Required Act 1 waypoint hover template is missing.")
-        return candidates[0]
-
-    def _load_image(self, path: Path) -> np.ndarray:
-        return load_image(path)
-
-    def _load_optional_image(self, path: Path, label: str) -> np.ndarray | None:
-        return load_optional_image(self, path, label)
-
-    def _locate_template(self, frame: np.ndarray, template: np.ndarray, threshold: float):
-        return locate_template(self, frame, template, threshold)
-
-    def _sleep_range(self, low: float, high: float) -> None:
-        sleep_range(self, low, high)
-
-    def _press_key(self, key: str) -> None:
-        press_key(self, key)
-
-    def _hold_key_down(self, key: str) -> None:
-        hold_key_down(self, key)
-
-    def _hold_key_up(self, key: str) -> None:
-        hold_key_up(self, key)
-
-    def _aim_relative_ratio(self, capture, ratio_x: float, ratio_y: float, apply_jitter: bool = True) -> None:
-        aim_relative_ratio(self, capture, ratio_x, ratio_y, apply_jitter)
-
-    def _apply_offset(self, point: tuple[float, float], offset: tuple[float, float]) -> tuple[float, float]:
-        return apply_offset(point, offset)
-
-    def _center_right_anchor(self) -> tuple[float, float]:
-        return center_right_anchor(self)
-
-    def _check_for_user_interrupt(self) -> bool:
-        return check_for_user_interrupt(self)
-
-    def _resolve_arcane_character_actions(self):
-        return resolve_arcane_character_actions(self)
-
-    def _build_initial_arcane_belief_state(self):
-        return build_initial_arcane_belief_state()
-
-    def _commit_arcane_wing(self, state, wing) -> None:
-        commit_arcane_wing(state, wing)
-
-    def _log_arcane_state(self, state) -> None:
-        log_arcane_state(self, state)
-
-    def _scan_arcane_monsters(self, frame: np.ndarray) -> str | None:
-        if self._arcane_monster_templates is None:
-            self._arcane_monster_templates = load_arcane_monster_templates(self)
-        return scan_arcane_monsters(self, frame)
-
-
 SUMMONER_PAYLOAD_STATES: tuple[RunPayloadState, ...] = (
     RunPayloadState(
         key="room_created",
-        description="The room is created and the character can act.",
-        success_signal="Town is loaded and input is available.",
-        next_action="Enter the payload organizer.",
+        description="The room is created with the character already selected by the user.",
+        success_signal="Town is observed and input is available.",
+        next_action="Enter the Arcane Sanctuary through the town waypoint.",
     ),
     RunPayloadState(
         key="payload_started",
-        description="The payload organizer has attached its threaded runtime for the active route piece.",
-        success_signal="Capture, fast vision, slow vision, and decision loops are running.",
-        next_action="Replay buffs and activate the selected route piece.",
+        description="The current main_run engine observes the hub and prepares the configured character.",
+        success_signal="Hub and automap are observed; the user supplies the main-weapon precondition and the balanced buff sequence is dispatched. "
+        "Buff effects remain not_independently_verified.",
+        next_action="Activate the north route.",
     ),
     RunPayloadState(
         key="route_piece_active",
-        description="A route piece such as north go owns movement while hunting and looting may interrupt.",
-        success_signal="The current route piece continues making progress.",
-        next_action="Keep deferring to route, hunting, loot, or escape based on the active run state.",
+        description="Continuous north movement yields to observed combat, hazards, and buff renewal.",
+        success_signal="Observed route progress remains valid.",
+        next_action="Continue until a terminal, encounter, interruption, or navigation limit.",
     ),
     RunPayloadState(
         key="summoner_encountered",
-        description="The Summoner encounter or escape condition is confirmed.",
-        success_signal="Boss or danger evidence is strong enough to change intent.",
-        next_action="Switch to hunt, loot, or escape planning as needed.",
+        description="Observed Summoner-platform evidence enters the encounter controller.",
+        success_signal="The encounter result is recorded separately from route progress.",
+        next_action="Complete the encounter and loot observation or report an incomplete attempt.",
     ),
     RunPayloadState(
         key="payload_complete",
-        description="The run payload is complete and ready to detach runtime threads.",
-        success_signal="No more route, combat, or loot work is pending.",
-        next_action="Detach runtime threads and hand off to exit-room logic.",
+        description="The north attempt is ready to return through the central waypoint.",
+        success_signal="The room completion observations are satisfied.",
+        next_action="Return to Act 1 and save/exit.",
     ),
     RunPayloadState(
         key="room_exit_complete",
-        description="The room exit wrapper has finished.",
-        success_signal="The run is back at a safe handoff point.",
-        next_action="Prepare the next run if scheduled.",
+        description="The character selection screen is observed after exiting through Act 1.",
+        success_signal="The latest runtime reports north_room_closed.",
+        next_action="Start the next requested fresh north attempt, up to five in total.",
     ),
 )
 
 SUMMONER_ROUTE_SEGMENTS = (
-    NORTH_GO,
-    NORTH_RETURN,
+    RunRouteSegment(
+        key="north_go",
+        label="north way go",
+        direction="go",
+        status="ready",
+        notes=(
+            "Implemented by main_run and continuous_navigation; fresh north attempts are bounded from one to five.",
+            "Ready describes the executable route; live acceptance remains separate from code availability.",
+        ),
+    ),
+    RunRouteSegment(
+        key="north_return",
+        label="north way return",
+        direction="return",
+        status="ready",
+        notes=("The latest main_run returns through the central waypoint to Act 1 and verifies character select.",),
+    ),
     EAST_GO,
     EAST_RETURN,
     SOUTH_GO,
@@ -595,53 +95,32 @@ SUMMONER_ROUTE_SEGMENTS = (
 )
 
 SUMMONER_SHARED_PORTS: tuple[RunPort, ...] = (
+    RunPort("make_room", "wrapper", "Create a fresh room for the selected character and difficulty.", status="ready"),
+    RunPort("arcane_entry", "payload", "Observe town travel and Arcane Sanctuary waypoint arrival.", status="ready"),
     RunPort(
-        key="make_room",
-        kind="wrapper",
-        description="Reusable room-creation wrapper that runs before the payload organizer.",
+        "buff_before_run",
+        "payload",
+        "Dispatch the balanced initial buff sequence and automatically renew it through the current runtime.",
         status="ready",
-    ),
-    ARCANE_ENTRY,
-    RunPort(
-        key="buff_before_run",
-        kind="payload",
-        description="Reusable pre-run buff piece invoked when the payload starts.",
-        status="ready",
+        notes=("The main-weapon state is a user precondition; buff effects remain not_independently_verified.",),
     ),
     RunPort(
-        key="hunting",
-        kind="payload",
-        description="Combat decision piece that can temporarily preempt route movement.",
-        status="planned",
+        "hunting",
+        "payload",
+        "Handle observed nearby monsters and the Summoner encounter.",
+        status="partial",
+        notes=("An encounter controller exists; completed encounter and boss-death acceptance remain unverified.",),
     ),
     RunPort(
-        key="looting",
-        kind="payload",
-        description="Loot decision piece that can temporarily preempt route movement.",
-        status="planned",
+        "looting",
+        "payload",
+        "Record encounter loot observations and outcomes.",
+        status="partial",
+        notes=("Loot observation and conditional pickup are implemented; completed pickup acceptance remains unverified.",),
     ),
-    RunPort(
-        key="escape_plan",
-        kind="payload",
-        description="Encounter or danger escape piece, including Summoner-specific bail-out logic.",
-        status="planned",
-    ),
-    RunPort(
-        key="exit_room",
-        kind="wrapper",
-        description="Reusable room-exit wrapper that runs after the payload organizer detaches runtime threads.",
-        status="planned",
-    ),
-    RunPort(
-        key="threaded_payload_runtime",
-        kind="runtime",
-        description="Attach capture, fast vision, slow vision, and decision threads only during payload execution, then detach them at payload end.",
-        status="ready",
-        notes=(
-            "The current north_go test is the first user of this runtime.",
-            "Future run organizers like diablo should reuse the same runtime contract.",
-        ),
-    ),
+    RunPort("escape_plan", "payload", "Yield or leave on observed danger and interruption.", status="ready"),
+    RunPort("exit_room", "wrapper", "Return through Act 1 and observe character select.", status="ready"),
+    RunPort("continuous_runtime", "runtime", "Run current main_run navigation in a cancellable GUI worker.", status="ready"),
 )
 
 
@@ -656,9 +135,10 @@ def build_summoner_definition(config: BotConfig) -> RunDefinition:
         route_segments=SUMMONER_ROUTE_SEGMENTS,
         shared_ports=SUMMONER_SHARED_PORTS,
         metadata={
-            "organizer": "runs/summoner/summoner_run.py",
-            "route_owner": "individual route files under runs/summoner",
-            "current_stage": "make_room -> arcane_entry -> enable_labels -> buff_before_run",
+            "organizer": "runs/summoner/main_run.py",
+            "gui_adapter": "runs/summoner/gui_session.py",
+            "route_owner": "runs/summoner/continuous_navigation.py",
+            "current_stage": "fresh room -> Arcane hub -> automatic north attempt -> Act 1 -> character select",
         },
     )
 

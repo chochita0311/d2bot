@@ -1,27 +1,55 @@
 {
   "schema_version": 1,
   "layout_id": "remastered-ko-window-1922x1140",
-  "revision": "screen-reference-2026-10-05-v4",
+  "revision": "screen-reference-2026-10-10-v11",
+  "high_orb_bound": {
+    "minimum_ratio": 0.9,
+    "minimum_value": 40,
+    "channel_margin": 20,
+    "minimum_row_coverage": 0.85,
+    "resources": {
+      "life": {
+        "box": [
+          450,
+          966,
+          486,
+          1104
+        ],
+        "channel": 2
+      },
+      "mana": {
+        "box": [
+          1436,
+          966,
+          1472,
+          1104
+        ],
+        "channel": 0
+      }
+    },
+    "note": "Same-frame high-fill lower bound only; partial, empty, poisoned or obscured liquid remains unknown. Opt-in main pilot fallback; numeric values are never fabricated."
+  },
   "negative_references": [
     {
       "path": "references/town-mana-obscured.png",
-      "canvas_box": [250, 880, 1650, 1127],
-      "life": [985, 985],
-      "human_mana": [1075, 1075],
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "human_mana": [
+        1075,
+        1075
+      ],
       "expected_mana_reason": "glyph_ambiguous",
       "evidence": "actual_town_capture",
       "sha256": "588d76e96b9a15b86fdd87d0426a4824eb6e9483c953995c3c5876adaace8333",
       "note": "background light overlaps numeric separator; not a glyph training template"
-    },
-    {
-      "path": "references/field-mana-obscured.png",
-      "canvas_box": [250, 880, 1650, 1127],
-      "life": [1580, 1580],
-      "human_mana": [1530, 1543],
-      "expected_mana_reason": "glyph_ambiguous",
-      "evidence": "actual_supervised_field_teleport_capture",
-      "sha256": "fe0a06fa096fb625a39e6d22879c9c0cb9f5ec96cb101c88ae0b748925035e7f",
-      "note": "unknown mana caused the held travel probe to release; not a glyph training template"
     }
   ],
   "frame_size": [
@@ -91,7 +119,7 @@
   "matching": {
     "label_score": 0.9,
     "minimum_glyph_height": 10,
-    "number_max_gap": 12,
+    "number_max_gap": 13,
     "glyph_score": 0.72,
     "glyph_margin": 0.08,
     "belt_anchor_distance": 0.06,
@@ -147,9 +175,20 @@
   "references": [
     {
       "path": "references/field-nova-mana.png",
-      "canvas_box": [250, 880, 1650, 1127],
-      "life": [1580, 1580],
-      "mana": [1457, 1543],
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        1457,
+        1543
+      ],
       "counts": null,
       "evidence": "actual_supervised_field_held_nova_capture",
       "sha256": "955eab9d9ee15ba3c7d3073388b27b8b699344b3271a559edbf079e11739e3d0"
@@ -339,6 +378,152 @@
       ],
       "counts": null,
       "evidence": "actual_supervised_field_buff_capture"
+    },
+    {
+      "path": "references/field-buff-mana-6-step-01.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        895,
+        895
+      ],
+      "mana": [
+        1064,
+        1075
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_main_buff_capture",
+      "sha256": "c7f3f2946bf90ef088c5e94f44fa6e7571c844b904599688d47a8b0cb079e27a"
+    },
+    {
+      "path": "references/field-buff-mana-6-step-03.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1490,
+        1490
+      ],
+      "mana": [
+        1536,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_main_buff_capture",
+      "sha256": "da2f455bec32d1c5022b1286b2e090cddf3ccab66b1aa22830342b45227ef5f8"
+    },
+    {
+      "path": "references/field-mana-obscured.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        1530,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_field_teleport_capture",
+      "sha256": "fe0a06fa096fb625a39e6d22879c9c0cb9f5ec96cb101c88ae0b748925035e7f",
+      "prior_classification": "v4 glyph_ambiguous; v5 replay identifies unsupported HUD4 glyph, now read using independently reviewed main buff HUD4; no score thresholds lowered"
+    },
+    {
+      "path": "references/field-north-life-slash.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        1543,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_main_north_capture",
+      "sha256": "3636fe43037d369d6ed52b2a4c60c9ac6422a92046a9d7f72535ef6984f7ded7",
+      "note": "Human reviewed same-frame current/max; slash raster variant only, matching thresholds unchanged."
+    },
+    {
+      "path": "references/field-north-background.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        1543,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_supervised_main_north_background_capture",
+      "sha256": "80d58354a940b46b0b606386ddf26344f139a0606ed0ddd4e6ee779bf3c7f836",
+      "source_sha256": "7cf62388ab1394b71946b433efa15521dd022843b19cf5b872e0f318acf110c1",
+      "note": "Human reviewed same-frame values. Full-rectangle life label and slash bbox were contaminated by bright terrain. Cross-outline label support and spaced-separator edge-noise recovery; matching thresholds unchanged."
+    },
+    {
+      "path": "references/field-return-mana-2.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1576,
+        1580
+      ],
+      "mana": [
+        1221,
+        1543
+      ],
+      "belt_visibility": "closed",
+      "evidence": "actual_supervised_main_capture",
+      "sha256": "648a17e4f93c18e720da36a7bf988a93cfa146be26a97d105b11514dc9bbff7d",
+      "counts": null,
+      "note": "Reviewed actual HUD 1221/1543; two identical 2 glyphs and 13px pre-slash gap. Values are replay expectations, never resource thresholds."
+    },
+    {
+      "path": "references/field-mana-leading-edge-speck.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1578,
+        1580
+      ],
+      "mana": [
+        1289,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_main176_hud_edge_speck",
+      "sha256": "e9c90434e3b76be3cbc81cd69a8dee37bc7a57babccb02d84d8bd72cd4f9ea67"
     }
   ],
   "belt_only_references": [
@@ -357,6 +542,119 @@
         4
       ],
       "provenance": "2026-10-05: actual town belt after one supervised north encounter potion use; no HUD in this crop"
+    }
+  ],
+  "glyph_variants": {
+    "6": [
+      "glyphs/6-hud.png"
+    ],
+    "4": [
+      "glyphs/4-hud.png"
+    ],
+    "/": [
+      "glyphs/slash-hud.png"
+    ],
+    "2": [
+      "glyphs/2-hud.png"
+    ]
+  },
+  "orb_fallback_references": [
+    {
+      "path": "references/field-north-aim-life-obscured.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "human_life": [
+        1580,
+        1580
+      ],
+      "human_mana": [
+        1543,
+        1543
+      ],
+      "expected_life_lower_bound": 0.9,
+      "evidence": "actual_supervised_main_capture",
+      "sha256": "72a0486acd83c8c0123d82492fe92ca862056afe99050d1e4d6492fa17c3b395"
+    },
+    {
+      "path": "references/field-north-landing-life-obscured.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "human_life": [
+        1580,
+        1580
+      ],
+      "human_mana": [
+        1543,
+        1543
+      ],
+      "expected_life_lower_bound": 0.9,
+      "evidence": "actual_supervised_main_capture",
+      "sha256": "507a6952f60b35f7ea2380623e057fb5b83c46bfd76254c3b746e00d44a331dc"
+    }
+  ],
+  "partial_orb_bound": {
+    "minimum_ratio": 0.6,
+    "minimum_value": 40,
+    "channel_margin": 20,
+    "minimum_row_coverage": 0.85,
+    "resources": {
+      "life": {
+        "box": [
+          450,
+          1010,
+          486,
+          1104
+        ],
+        "channel": 2
+      },
+      "mana": {
+        "box": [
+          1436,
+          1010,
+          1472,
+          1104
+        ],
+        "channel": 0
+      }
+    },
+    "note": "Opt-in conservative 60% lower bound from current liquid occupying every row of the reviewed lower interior band; no numeric current/max and no inferred zero. Readable numeric low/out-of-range evidence is never overridden."
+  },
+  "partial_orb_references": [
+    {
+      "path": "references/field-mana-fire-background.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "human_life": [
+        1580,
+        1580
+      ],
+      "human_mana": [
+        1333,
+        1543
+      ],
+      "expected_mana_lower_bound": 0.6,
+      "expected_numeric_mana_reason": "number_unreadable",
+      "evidence": "actual_main189_north_combat_hud",
+      "sha256": "de89351434ed49d774b417f9a00c7e9a81942cd0318a4323e558782fdb39435d",
+      "source": {
+        "historical_filename": "north-junction-main189-ko-1922x1140.png",
+        "source_sha256": "65e3cf175afb9097815d9531a327a66f2287b1341d48e9b8ac3afb6360aca37c",
+        "source_image_retained": false,
+        "source_retention_summary": "Primary-approved unused development capture of broad junction with simultaneous ghoul/clan/fire/lightning effects; not a duplicate or equivalent of main144.",
+        "sha256": "65e3cf175afb9097815d9531a327a66f2287b1341d48e9b8ac3afb6360aca37c"
+      }
     }
   ]
 }

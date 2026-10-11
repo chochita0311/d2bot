@@ -46,7 +46,7 @@ class BuffingTests(unittest.TestCase):
             self.assertEqual(directive.action, "input_request")
             tokens.append(directive.token)
             self.assertTrue(transaction.acknowledge_step(index, self.stamp(index * 2 + 2, index + 1.1), True))
-        self.assertEqual(tokens, ["w", "a", "a", "s", "f1", "d", "w"])
+        self.assertEqual(tokens, ["w", "a", "a", "s", "d", "f1", "w"])
         return transaction
 
     def test_dispatch_alone_cannot_confirm_effects(self):
@@ -84,8 +84,8 @@ class BuffingTests(unittest.TestCase):
 
     def test_profile_buff_executor_runs_continuously_and_keeps_effect_confirmation_separate(self):
         result, transaction, sent, gaps = self.executor_case()
-        self.assertEqual(sent, ["w", "a", "a", "s", "f1", "d", "w"])
-        self.assertEqual(gaps, [0.5, 0.1, 0.1, 0.2, 0.3, 0.4, 0.5])
+        self.assertEqual(sent, ["w", "a", "a", "s", "d", "f1", "w"])
+        self.assertEqual(gaps, [0.5, 0.1, 0.1, 0.2, 0.4, 0.3, 0.5])
         self.assertEqual(result.action, "await_confirmation")
         self.assertEqual(transaction.phase, "await_effect")
         self.assertIsNone(self.state.next_buff_renewal_at)

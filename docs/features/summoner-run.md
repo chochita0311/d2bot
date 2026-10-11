@@ -1,282 +1,55 @@
-﻿# Summoner Run Spec
+# Summoner Run
 
-The target payload describes the full run. Executable coverage is listed under Current staged implementation.
+현재 GUI는 최신 화면 관찰 기반 북쪽 개발 실행을 사용한다. 방 만들기→Act 1→Act 2 비전의 성역→자동 버프→북쪽 탐색→빈 끝 확인 시 중앙 실물 WP 복귀→Act 1→저장 종료→다음 방을 연결한다. 서모너 발판에서는 제한 접근·노바·드롭 검사를 실행하지만 실제 사망과 열쇠 획득의 긍정 확인은 미완료라 그 방을 정상 완료로 세지 않는다.
 
-The [Summoner experiment plan](summoner-experiment-plan.md) maps the new draft PRDs for room repetition, Flash survival/buffs, all four wings, nearby-enemy combat, shared loot/identification, and town maintenance. Those PRDs own the proposed completion boundary; this reference retains the existing observed timeline and implementation coverage. No draft is authorization to run the game.
+현재 우선순위는 새 방 북쪽 왕복 5회 묶음을 안정시킨 뒤 동→남→서를 붙이는 것이다. 서모너를 찾으면 남은 날개 탐색을 끝내고 처치·허용 아이템 회수·중앙 복귀를 목표로 한다. 최종 기준은 공포의 영역을 포함한 감독 30방 중 27방 이상 정상 마감이다. 부분 경로 성공을 합쳐 완주로 세지 않으며 현재 새 방 완전 왕복 0/5·수용 0방이다. [통합 run](../plans/run/run-20261009-07-summoner-live-integration.md)이 사실·실패·다음 세션 작업을 소유한다.
 
-The separately approved [town room loop](town-room-loop.md) has finite create→Act 2 town→Act 1→exit→recreate behavior. It does not invoke the Summoner combat payload; its own run record distinguishes that runtime evidence from the staged payload below.
+## GUI 실행
 
-## Goal
+프로젝트 루트에서 `python main.py`를 실행한다. 게임 창·캡처 방식을 선택하고 실제 게임 캐릭터와 같은 `Character`, `Difficulty`, `Repeat Count`를 지정한 뒤 `Summoner Run`을 누른다. 횟수는 1–5이며 빈 값은 1이다. 프로필 선택은 게임의 실제 캐릭터 선택을 바꾸지 않는다.
 
-Describe the observed Summoner Run as a payload-first target spec, and distinguish it from the narrower executable stages below.
+시작 조건은 캐릭터 선택 화면, 실제 캐릭터 사전 선택, 메인 무기 세트, ALT 표시/숨기기 토글 방식이다. 검토 배치는 리마스터 한국어 1922×1140 window 캡처다. 다른 언어·UI 크기·그래픽·모든 클래스의 전투 관찰은 미검증이다. 생존 정책·클래스/FCR·키 배정은 선택한 캐릭터 설정을 사용한다.
 
-The owner's confirmed normal loop is room creation → Arcane Sanctuary → wings at 2, 4, 8, then 10 o'clock → kill the encountered Summoner → collect any key and approved loot → return to the central Arcane waypoint → Act 1 town → exit → repeat. Finding the Summoner ends further wing search, so a run may search one to four wings. Belt inspection must finish with verified closure before movement. Existing executable stages below do not yet complete this loop.
+`Stop Action` 또는 F10으로 중단한다. 필드 F8도 현재 중단이며 재개 기능이 아니다. GUI는 worker 이벤트를 받고 동시에 다른 게임 입력 작업을 시작하지 않는다. 창 닫기는 중단 요청 후 정리를 기다린다. GUI는 live 입력이며 CLI `dry_run`과 별개다.
 
-## Payload boundary
-
-The target payload covers the body of the run:
-
-- start after the room is already created and the character can act in town
-- finish when the target work is done and the character is back in a safe handoff state
-- keep reusable room creation and room exit outside this module
-
-Reusable wrapper shape:
-
-- create room via `run_lifecycle.create_room(...)`
-- execute the Summoner payload
-- exit room via `run_lifecycle.exit_room(...)`
-- repeat until the run budget is exhausted
-
-Room creation and exit already exist in `diablo2/actions/run_lifecycle.py`. The Summoner orchestrator currently attaches room creation before its staged payload; complete payload handling and the normal post-run wrapper are still unfinished.
-
-## Observed payload timeline
-
-This is a historical observation. Its journal/red-portal/Canyon return differs from the newly confirmed central-waypoint return above.
-
-- `8s-10s`: Act 1 town spawn
-- `9s-10s`: tap `ALT` once to enable item labels
-- `10s-13s`: move to waypoint and open it
-- `13s-15s`: switch to Act 2 and click `비전의 성역`
-- `15s-16s`: loading
-- `16s-70s`: hunt one Arcane Sanctuary wing
-- `70s-78s`: kill `소환사`
-- `76s-81s`: loot scan, no `key of hate` seen in this run
-- `80s-84s`: click `호라존의 일지`
-- `84s-86s`: use red portal
-- `85s-86s`: Canyon arrival
-- `93s-105s`: Act 1 town again, post-run handling visible
-
-## Payload states
-
-### 1. `act1_town_loaded`
-
-Expected evidence:
-
-- town spawn is complete
-- life and mana orbs are visible
-- movement and input are available
-
-Success action:
-
-- prepare the run body from an in-game starting state
-
-### 2. `labels_enabled`
-
-Expected evidence:
-
-- dropped item labels remain visible without holding `ALT`
-
-Success action:
-
-- move toward the waypoint
-
-### 3. `waypoint_open`
-
-Expected evidence:
-
-- waypoint menu is visible
-- Act tabs are available
-
-Success action:
-
-- switch to Act 2 and click `비전의 성역`
-
-### 4. `arcane_loaded`
-
-Expected evidence:
-
-- Arcane Sanctuary area name or recognizable geometry is visible
-
-Success action:
-
-- commit to one wing and start the live coordinator loop
-
-### 5. `wing_search_started`
-
-Expected evidence:
-
-- route progress continues along one wing
-- combat happens only when blockers or threats force it
-
-Success action:
-
-- continue coordinator decisions until the Summoner platform is found
-
-### 6. `summoner_detected`
-
-Expected evidence:
-
-- `소환사` / Summoner platform is visible
-- boss identity or platform geometry is confidently confirmed
-
-Success action:
-
-- kill the target safely
-
-### 7. `summoner_killed`
-
-Expected evidence:
-
-- target is dead
-- post-kill drops are visible
-
-Success action:
-
-- run the loot decision pass
-
-### 8. `loot_scan_complete`
-
-Expected evidence:
-
-- visible drops have been kept or ignored
-- `key of hate` decision is complete
-
-Success action:
-
-- if the journal is available, click `호라존의 일지`
-
-### 9. `journal_clicked`
-
-Expected evidence:
-
-- journal interaction succeeded
-- red portal is available
-
-Success action:
-
-- enter the portal
-
-### 10. `canyon_loaded`
-
-Expected evidence:
-
-- Canyon / portal destination is loaded
-
-Success action:
-
-- return to town and settle into a safe post-run handoff state
-
-### 11. `post_run_complete`
-
-Expected evidence:
-
-- no target actions are pending
-- the payload is ready for the reusable room-exit wrapper
-
-Success action:
-
-- hand off to room-exit logic when that wrapper is attached
-
-## Coordinator behavior inside the payload
-
-Inside `wing_search_started` through `loot_scan_complete`, the payload should behave like one coordinator loop following the [shared priority order](run-coordination.md#priority-order).
-
-Do not split the middle of the run into isolated scripts that compete with each other.
-
-## Profile resolution
-
-The Summoner payload should resolve its own profile id, `summoner`, directly from `run_profiles`.
-
-That keeps the run catalog reusable while still letting the Summoner payload pull together:
-
-- hunting rules
-- loot rules
-- life rules
-- run-specific completion rules
+보고서는 `recordings/summoner/evidence/gui-<시각>-<고유값>/report.json`과 각 방의 `report.json`이다. 미완료 경로나 처치 미확인에서는 생존 감시·허용된 근접 방어를 유지하며 새 방을 생성하지 않는다. 인계/포커스 상실은 입력을 해제한다. 실제 저자원/지속 HUD 미확인은 회복 소비 또는 안전 종료를 시도하고 사람 확인 대상으로 남긴다.
 
 ## Current staged implementation
 
-The current executable Summoner run stage is intentionally narrower than the full payload timeline above.
+실행 경로는 `main.py`→GUI→`SummonerGuiSession`→`main_run.run`→`run_once`다. 예전 `north_go.py`·`north_return.py`와 `North Go Test` 버튼은 제거했다. CLI도 같은 실행기를 사용한다.
 
-Right now the orchestrated flow is:
+```powershell
+.\.venv\Scripts\python.exe main.py --summoner-run --live --continuous-north --field-seconds 60 --north-segments 4 --north-cycles 1
+```
 
-1. `make_room`
-2. `arcane_entry`
-3. `enable_labels`
-4. `buff_before_run`
-5. `north_go`
+`--live` 생략 시 게임 입력을 보내지 않는다. 정상 GUI는 새 방에서 시작한다. 기존 방의 ALT 상태를 화면만으로 확정할 수 없어 상태 근거 없는 자동 재개는 거부한다. 과거 감독 JSON 재개 예시는 [이전 참고](summoner-run-legacy.md)에 보존했으며 현재 GUI 절차가 아니다.
 
-`Summoner Run` executes this sequence once. `North Go Test` repeats the entry/route sequence, optionally records attempts, writes outcome summaries, and exits to character select between attempts. Its retention settings are documented in [system.md](../../config/system/system.md).
+| 기능 | 동작과 한계 |
+| --- | --- |
+| 방/마을 | 선택 난이도·현재 메뉴/지역/WP 확인. 지옥 Act 2 시작은 악몽→지옥으로 Act 1 초기화를 시도하며 준비 방은 완료 수에서 제외한다. 정비 세부 동작은 사용자 요청으로 보류했고 사망 복구는 미구현이다. |
+| 이동 | F2 유지·넓은 조준·현재 바닥/배경 대응·유한 경로 기억. 오래된 화면, 호버, 포커스/중단, 자원과 버프 시한이 입력을 제한한다. NPC 호버는 마을에만 적용한다. |
+| 끝/복귀 | 독립 현재 부위와 실제 정지로 끝을 확인한다. 중앙 100px 근접·정지 뒤 Act 1/선택 화면을 확인해야 다음 방으로 간다. |
+| 전투 | 근접 F4 기본 ON, CLI `--no-combat`으로 분리 가능. 종료/미검출은 처치·전체 clear 증거가 아니다. 먼 적 접근·원위치 복귀 방어는 남아 있다. |
+| 드롭 | 실제 노바 전송 후 검사·클릭. 금화 제외, 클릭/후보 소실은 획득 확정이 아니다. |
 
-Reaching the route goal is not evidence that the Summoner was killed or that the key decision is complete. Combat, survival care, journal/portal interaction, and complete post-run handling remain target behavior.
+## 자동 버프와 생존
 
-[FEAT-0003](../plans/feature/feat-0003-character-survival-state.md) adds the shared character policy and input-free buff/belt state contract. Flash's configured entry sequence follows the latest owner instruction; policy fields are documented in [characters.md](../../config/characters/characters.md#survival). The current staged run has not yet connected live HUD/belt observations or the new recovery, field-only rebuff and depletion-exit requests to its input executor.
+Flash 순서는 `w→a→a→s→d→F1→w`이며 d는 에너지 쉴드, F1은 냉기 갑옷이다. 매 방 메인 무기 시작은 사용자 전제다. W 균형으로 시작 세트 복귀를 관리하며 부분 시전 뒤 자동 W 복구를 추측하지 않는다. 인벤토리 I와 캐릭터별 I/II 탭 확인은 없다.
 
-[HUD/belt observation](survival-observation.md) now reads same-frame current/max pairs and expanded slots in a separate input-free CLI for the reviewed native window layout. It passed bounded town screen checks, including one empty slot and a closed belt. It supplies no field/clear-surroundings or buff confirmation and has not changed the staged run's controls.
+초기 1초의 확인 가능한 생명력·마나 비율 변화 5%p 이내, 닫힌 벨트·패널·포커스·현재 근접 적 후보를 확인하고 각 키 전 재관찰한다. 먼 적만으로 버프를 금지하지 않는다. 후보 미검출은 모든 적 부재 증명이 아니며 보고서도 범위를 명시한다. 생존 판단은 현재 화면의 current/max 비율 또는 검증한 구체 하한을 사용하며 레벨·장비별 고정 수치를 쓰지 않는다.
 
-[FEAT-0006](../plans/feature/feat-0006-field-buff-confirmation.md) adds shared ordered buff confirmation and positive belt-closure gating. One supervised Arcane central-waypoint sequence supplied buffed HUD references and returned through the central waypoint to Act 1. The current safety/effect evidence producer is the supervisor; this is not an autonomous route or staged-executor integration. [Field-buff guidance](field-buffs.md) owns the consumer contract.
+타이머는 실제 해당 키 요청의 단조 시각부터 계산한다. Flash는 전투 지시 150초−여유 10초, 즉 실제 S 요청+140초다. 도래하면 이동/공격 해제→새 안전 관찰→전체 순서→새 관찰 뒤 같은 경로 객체를 이어간다. 대기 중에도 갱신하며 `field_safety`/`initial_effect` 감독 JSON을 기다리지 않는다. 완료 전송은 `dispatched_unconfirmed`, 전체 효과는 `not_independently_verified`다. 제때 140초 자동 실게임 갱신은 아직 재검증하지 않았다. [버프 계약](field-buffs.md)이 확인 API와 실행 정책의 차이를 소유한다.
 
-[FEAT-0007](../plans/feature/feat-0007-arcane-north-encounters.md) adds input-free shared region candidates, floor/void patch evidence, explicit personal radius and positive linked life-state contracts. Supervised north encounters supplied Ghoul Lord/Hell Clan alive/corpse and shrine-negative assets, plus one mana-triggered potion recovery. [Encounter guidance](encounter-observation.md) owns the APIs and limits. Pose/HUD misses and expired buffs during supervised return prevent treating this as completed live safety or automatic combat; [the run](../plans/run/run-20261005-05-arcane-north-encounters.md) returned to spec for real-time supervision/integration.
+## 조건부 ALT
 
-[FEAT-0004](../plans/feature/feat-0004-class-casting-rules.md) adds shared class/skill reference lookup with individual FCR configuration. Flash's Sorceress FCR 105 selects 8 reference frames. [Common field control](field-control.md) now consumes that lookup with producer-confirmed arrival delays for adaptive aim timing. The current north-route executor still uses its existing movement controls; automatic arrival/readiness producers and staged route integration remain open in [the current run](../plans/run/run-20261005-06-field-control-loop.md).
+2026-10-11 사용자 결정으로 항상 ON 기본값을 교체했다. 새 방 기본 OFF→이동 OFF→실제 노바 전송 종료 후 ON→드롭 검사·제한 클릭→OFF→새 화면 재관찰 순서다. 전투 OFF에서 타이머만으로 ALT를 토글하지 않는다. 전송 기록과 실제 표시·획득을 구분한다.
 
-## Waypoint Entry Maintenance
+현재 설정의 증오의 열쇠·허용 룬·자수정 라벨만 검사한다. 작은 활력은 현재 확인 잔량 6개 이하일 때만 허용하는 정책이나 포션 라벨 자산이 없어 실제 포션 줍기는 미지원이다. scan 상한은 1.2초/12프레임/2클릭이다. 각 클릭 전 새 HUD·포커스·패널·같은 후보·커서를 검사한다. 중단/포커스 상실로 OFF 복구 입력을 보낼 수 없으면 unknown으로 두고 이동을 막는다. 클릭은 `click_unconfirmed`이며 획득 검증은 후속 작업이다.
 
-The entry flow lives in [arcane_entry.py](../../diablo2/runs/summoner/routes/arcane_entry.py). Keep the minimap visible for marker search; its waypoint marker supplies direction guidance. The interaction target is the real waypoint object in the world view.
+## 지도와 자산
 
-The search moves toward the town center-right anchor, then checks upward, downward, and rightward holds while watching for the waypoint. Release held movement when detection succeeds. Keep waypoint reacquisition from the current frame in the approach/click path, and review fallback coordinates after movement to prevent stale targets.
+정상 main은 자동지도 ON을 지역 제목으로 확인하고 이동 중 토글하지 않는다. 바닥·배경 대응이 조향을 맡는다. 투명도 47은 고정 운영값이 아니며 크기·위치·투명도 변화에 견디는 지도 선 해석/추적은 미구현이다.
 
-After opening the waypoint list, detect each panel and use panel-relative ratios for the Act 2 tab and Arcane Sanctuary entry. Fixed screen pixels make these clicks fragile across window layouts.
+지형/상자/룬/적은 `assets/regions/arcane-sanctuary/`, 소서리스 표식은 `assets/character/sorceress/`, HUD·자동지도·마을 UI는 `assets/ui/`, 카메라 배치는 `assets/ui/layouts/`가 소유한다. 타일 variation·계단·텔레포터 유형은 해석 참고이며 고정 경로 정답이 아니다. 개인 정보가 없는 재생용 전체화면도 공용 references로 둔다. 현재 소비자가 없는 개인 원본 이미지는 세션 정리에서 제거했으며 개인 보고서/바인딩 메타데이터는 ignored 로컬 이력이다. [assets 입구](../../assets/README.md)가 분류·명명·보존 기준을 소유한다.
 
-`North Go Test` owns repeated attempts and reset/entry sequencing. Diagnose route outcomes using the matching attempt recording and enabled file logs; the GUI log is a rolling view. Check the starting state between attempts before tuning direction changes. Storage and rerun controls are owned by [system settings](../../config/system/system.md); steering constants and frame freshness are owned by [route maintenance](../../diablo2/runs/summoner/routes/docs/north_go.md).
-
-## Current route runtime and planner direction
-
-The north route already uses this worker structure:
-
-- capture thread updates the latest frame continuously
-- fast vision thread extracts lightweight navigation and progress signals
-- slow vision thread extracts landmark, template, and heavier recognition signals
-- decision thread selects and sends route movement
-
-Monster and configured loot detections currently delay movement decisions. They do not execute combat, pickup, or life care inside the route. The intended next step is for the decision worker to arbitrate those concerns using the [shared coordinator priority](run-coordination.md#priority-order).
-
-In this model:
-
-- route files like `north_go.py` should eventually become movement-intent providers
-- the planner should decide whether movement is allowed on each tick
-- the same planner model should later be reusable across Summoner, Diablo, and other runs
-
-## Current route-control limitation
-
-For the current implementation stage, the immediate focus is only reaching the route goal reliably.
-
-The current `north_go` controller uses floor/direction signals and local correction to reach the north end. Detection pauses exist, but combat/loot detours and full route recovery remain incomplete. Detailed tuning guidance lives beside the route in [north_go.md](../../diablo2/runs/summoner/routes/docs/north_go.md). Use the [route evaluation standard](../evaluation/route-evaluation.md) to compare steering behavior and recordings.
-
-## Future interruption note
-
-Later, when hunting and looting are allowed to interrupt route movement, the current route-stage logic will not be sufficient by itself.
-
-Example future situation:
-
-- moving toward `2 o'clock`
-- route is interrupted by combat or wanted loot
-- character temporarily turns backward or moves off the route
-- after the interruption, route movement should resume and continue toward the goal
-
-The current route controller does not establish a reliable rejoin after that case; detection delays alone do not provide detour ownership or recovery.
-
-That means later we will need pause/resume-safe route control with concepts like:
-
-- route active vs route paused
-- interruption reason tracking
-- temporary local detour ownership by combat or loot logic
-- route re-acquire / route rejoin step before continuing staged movement
-- path-stage advance disabled while route ownership is not active
-
-For now, this is intentionally out of scope.
-
-The current implementation focus remains:
-
-- reach the goal first
-- keep the route stable under uninterrupted movement
-- postpone full hunting/looting interruption recovery until after basic route completion is reliable
-
-## Remaining implementation targets
-
-[공통 필드 제어](field-control.md)는 후속 승인 범위에서 단일 F2/F4 소유자, 최신 화면/버프 시한 해제, 포션 확인·잔량 재관찰과 연속 프로필 버프 실행기를 구현했다. 기존 북쪽 경로에서는 stale/적/아이템/쿨다운/정지 반환 때 유지 키를 해제하도록 수정했다. 자동 안전/개체 사망/획득을 생산하는 코드와 GUI 경로 소비자는 연결 전이다. [현재 실행 기록](../plans/run/run-20261005-06-field-control-loop.md)이 공통 계약 검증과 짧은 감독 입력의 증거·한계를 소유한다.
-
-- validate route completion on screenshots, recordings, and supervised runs
-- add survival/combat/loot arbitration with interruption-safe route recovery
-- implement the remaining payload states, then attach normal post-run exit and repeat handling
-- unify live action dry-run, pause/stop, and difficulty handling; current scope is documented in [system.md](../../config/system/system.md)
+[과거 설계·실행 참고](summoner-run-legacy.md)는 교체 전 상태와 timeline을 보존한다. 다음 개발은 이 문서와 최신 통합 run을 기준으로 시작한다.

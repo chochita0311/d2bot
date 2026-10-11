@@ -126,9 +126,9 @@ These define per-character behavior like:
 - potion thresholds
 - preferred inventory assumptions
 
-## Practical interpretation for the current screenshot
+## Source evidence and the next proposed stage
 
-The [repository's character-select reference capture](../../assets/character/select/character_selection_current.png) shows the right-side list used for this proposed row-based detection. It is design evidence, not proof that automatic row classification or selection is implemented.
+The original right-side character-list screenshot informed this proposed row-based detection; it contained personal names and was removed during the `2026-10-11` session cleanup. The shared [character-select marker catalog](../../assets/ui/character-select/README.md) retains generic ladder and Resurrection marker examples. Those crops do not preserve full row geometry, establish calibrated row detection, or demonstrate automatic character identity selection. The classification and selection requirements above remain proposed behavior; source review is not implementation evidence.
 
 That means the next stage should be:
 

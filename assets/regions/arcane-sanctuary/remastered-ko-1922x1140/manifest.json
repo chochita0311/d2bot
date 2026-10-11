@@ -67,7 +67,7 @@
       "kind": "ghoul-lord",
       "category": "monster",
       "appearance": "alive",
-      "path": "ghoul-alive.png",
+      "path": "templates/encounters/ghoul-alive.png",
       "threshold": 0.9,
       "ground_offset": [
         88,
@@ -93,7 +93,7 @@
       "kind": "hell-clan",
       "category": "monster",
       "appearance": "alive",
-      "path": "hell-clan-alive.png",
+      "path": "templates/encounters/hell-clan-alive.png",
       "threshold": 0.9,
       "ground_offset": [
         74,
@@ -119,7 +119,7 @@
       "kind": "ghoul-lord",
       "category": "monster",
       "appearance": "corpse",
-      "path": "ghoul-corpse.png",
+      "path": "templates/encounters/ghoul-corpse.png",
       "threshold": 0.9,
       "ground_offset": [
         90,
@@ -145,7 +145,7 @@
       "kind": "hell-clan",
       "category": "monster-group",
       "appearance": "corpse",
-      "path": "hell-clan-corpses.png",
+      "path": "templates/encounters/hell-clan-corpses.png",
       "threshold": 0.9,
       "ground_offset": null,
       "provenance": {
@@ -168,7 +168,7 @@
       "kind": "fire-resist-shrine",
       "category": "landmark",
       "appearance": "landmark",
-      "path": "fire-resist-shrine.png",
+      "path": "templates/encounters/fire-resist-shrine.png",
       "threshold": 0.9,
       "ground_offset": [
         53,
@@ -193,7 +193,7 @@
   "cases": [
     {
       "id": "alive",
-      "path": "scene-alive.png",
+      "path": "references/encounters/alive.png",
       "viewport": [
         120,
         180,
@@ -221,7 +221,7 @@
     },
     {
       "id": "alive-followup",
-      "path": "scene-alive-followup.png",
+      "path": "references/encounters/alive-followup.png",
       "viewport": [
         120,
         180,
@@ -246,7 +246,7 @@
     },
     {
       "id": "corpses",
-      "path": "scene-corpses.png",
+      "path": "references/encounters/corpses.png",
       "viewport": [
         120,
         180,
@@ -273,7 +273,7 @@
     },
     {
       "id": "corpses-followup",
-      "path": "scene-corpses-followup.png",
+      "path": "references/encounters/corpses-followup.png",
       "viewport": [
         120,
         180,
@@ -298,7 +298,7 @@
     },
     {
       "id": "corpse-ground",
-      "path": "scene-corpse-ground.png",
+      "path": "references/encounters/corpse-ground.png",
       "viewport": [
         120,
         180,
@@ -325,7 +325,7 @@
     },
     {
       "id": "terrain",
-      "path": "scene-terrain.png",
+      "path": "references/navigation/terrain.png",
       "viewport": [
         120,
         180,
@@ -350,7 +350,7 @@
     },
     {
       "id": "stairs",
-      "path": "scene-stairs.png",
+      "path": "references/navigation/stairs.png",
       "viewport": [
         120,
         180,
@@ -375,7 +375,7 @@
     },
     {
       "id": "shrine",
-      "path": "scene-shrine.png",
+      "path": "references/encounters/shrine.png",
       "viewport": [
         120,
         180,
@@ -403,7 +403,7 @@
   ],
   "labels": [
     {
-      "path": "ghoul-name-ko.png",
+      "path": "templates/encounters/ghoul-name.png",
       "reviewed_text": "구울 군주",
       "provenance": {
         "episode": "third",
@@ -420,7 +420,7 @@
       }
     },
     {
-      "path": "hell-clan-name-ko.png",
+      "path": "templates/encounters/hell-clan-name.png",
       "reviewed_text": "지옥혈족원",
       "provenance": {
         "episode": "third",
@@ -437,7 +437,7 @@
       }
     },
     {
-      "path": "shrine-name-ko.png",
+      "path": "templates/encounters/shrine-name.png",
       "reviewed_text": "화염 저항의 신단",
       "provenance": {
         "episode": "second",
@@ -460,5 +460,580 @@
     "same-room replay/calibration is not independent-room accuracy",
     "no per-instance death association from corpse group",
     "other poses/lighting/effects/regions/languages/capture sizes unsupported"
+  ],
+  "source_provenance": [
+    {
+      "path": "templates/objective/journal.png",
+      "historical_filename": "horazon_journal.png",
+      "sha256": "b3b0378f9fa2e6d9b88359b0fa7e145bb890f6a724b15f126a2d154f8fcd8164"
+    },
+    {
+      "path": "references/navigation/teleporter-body.png",
+      "historical_filename": "teleporter.png",
+      "sha256": "d5bb2b79a05d5895f5d99b22e4c42726827ac120fe475c1b371f32ae9abb3c86"
+    },
+    {
+      "path": "templates/hover/teleporter-hover-ko.png",
+      "historical_filename": "teleporter_when_hover.png",
+      "sha256": "ed3ba8128c98ad096a06b7c25b07dd960679e0e4cb07a1e08d5965b25a1a5e31"
+    },
+    {
+      "path": "templates/hover/chest-name-ko.png",
+      "historical_filename": "chest_when_hover.png",
+      "sha256": "bf24fc7015c17225bd04cf1917a28c1cbd3948fdc0d7d0001b9cba3371cf9bb7"
+    },
+    {
+      "path": "templates/hover/small-coffin-hover-ko.png",
+      "historical_filename": "small_coffin_when_hover.png",
+      "sha256": "44a9e7c697d213149c22cfa5a189d9cf1479d5d4aaef1a636af8e71b47ea7e23"
+    },
+    {
+      "path": "references/hover/locked-chest-hover-ko.png",
+      "historical_filename": "small_locked_chest_when_hover.png",
+      "sha256": "cd840e7f70159c9b1760065b7864499ac11715cf48a48108b2db5603c16d8e27"
+    },
+    {
+      "path": "references/encounters/specter.webp",
+      "historical_filename": "specter.png",
+      "sha256": "f19960082f2ef1bbf5f5dc1d460e7891951f3de40e96ec01bf882596641457bb"
+    },
+    {
+      "path": "references/encounters/lightning-spire-lit.png",
+      "historical_filename": "lightning_spire.png",
+      "sha256": "8ffc88b4c4ab6bf257471f0f072d8cf61aa1445132153431315403261162d76a"
+    },
+    {
+      "path": "references/encounters/lightning-spire-unlit.png",
+      "historical_filename": "lightning_spire_without_light.png",
+      "sha256": "89fb7ac2adb0f88e1c948fcbd5785cdd2f32266a0e97c13927e84a7488e14e56"
+    },
+    {
+      "path": "references/navigation/automap-node-negative.png",
+      "historical_filename": "automap-node-negative.png",
+      "sha256": "00cebaa6389657f33f615a786aef664e9306977877b4f2ec9e1cd3f52660c2ee"
+    },
+    {
+      "path": "references/navigation/automap-world-floor-positive.png",
+      "historical_filename": "automap-world-floor-positive.png",
+      "sha256": "c21308b836143c82f43a9b3c45c02b049b866c73fdef73e9c7d4d32cb1ce200b"
+    },
+    {
+      "path": "templates/encounters/fire-resist-shrine.png",
+      "historical_filename": "fire-resist-shrine.png",
+      "sha256": "b1ce073a24bc67370db81e7feb81d792b4ee1f3eebb8e41aa9eb349284c0a46b"
+    },
+    {
+      "path": "templates/encounters/ghoul-alive.png",
+      "historical_filename": "ghoul-alive.png",
+      "sha256": "e3169372198b1af461ac78a6a4a135b81f864cf23f81f0bbb277590421740333"
+    },
+    {
+      "path": "templates/encounters/ghoul-corpse.png",
+      "historical_filename": "ghoul-corpse.png",
+      "sha256": "8cfd5ea8273a1c9543e1689e7ba5fc0242c93632cd19ac2d475f3113f5b0a2eb"
+    },
+    {
+      "path": "templates/encounters/ghoul-name.png",
+      "historical_filename": "ghoul-name-ko.png",
+      "sha256": "79be547e9df73bacd1107a28e11a727b4d7e691f78fa7b610be30368082ccec8"
+    },
+    {
+      "path": "templates/encounters/hell-clan-alive.png",
+      "historical_filename": "hell-clan-alive.png",
+      "sha256": "2960f8486c5716b0f20007fbfd77aea5b8cd65af83ca0f038deed2dc6ce7b5e5"
+    },
+    {
+      "path": "templates/encounters/hell-clan-corpses.png",
+      "historical_filename": "hell-clan-corpses.png",
+      "sha256": "2c2c216620e5a08df4ab85a7fabc83cb4c5813180fecfaa0832cdc91fb02bab7"
+    },
+    {
+      "path": "templates/encounters/hell-clan-name.png",
+      "historical_filename": "hell-clan-name-ko.png",
+      "sha256": "60993d5af7b59889f36d04e7b0d5d68124bb20cc9abda0af37be359c6943772a"
+    },
+    {
+      "path": "templates/hub/floor-left-tip.png",
+      "historical_filename": "hub-floor-left-tip.png",
+      "sha256": "c07d31e357a3b58fe918d8190c28768fd9441312a7aa921e8d41d71b0e22a878"
+    },
+    {
+      "path": "templates/hub/floor-left.png",
+      "historical_filename": "hub-floor-left.png",
+      "sha256": "b7bbcaed3586b84efb8fa7812558cd0cd6a12734aeee409754c8dc4aa597f80f"
+    },
+    {
+      "path": "templates/hub/floor-lower.png",
+      "historical_filename": "hub-floor-lower.png",
+      "sha256": "2c086ec32fc486e434a3313d175b856ab363f1e178ed9d5ac0348358bdb4802b"
+    },
+    {
+      "path": "templates/hub/floor-right.png",
+      "historical_filename": "hub-floor-right.png",
+      "sha256": "b6bcca39ba7b953c5c1259c52cf0a81161e5d10266e8c1e5220698941cca5c57"
+    },
+    {
+      "path": "templates/hub/floor-upper-left.png",
+      "historical_filename": "hub-floor-upper-left.png",
+      "sha256": "ddc66b087621c17beb13e70578cfbf0b79f3432c8f424138a6e5b287ccffb4b4"
+    },
+    {
+      "path": "templates/hub/floor-upper.png",
+      "historical_filename": "hub-floor-upper.png",
+      "sha256": "2b732e1dc062afd28a77d7f87fac62d4a3997b7d2eef5ace9d494a2e910cfc74"
+    },
+    {
+      "path": "templates/navigation/shadow-landing.png",
+      "historical_filename": "navigation-shadow-landing.png",
+      "sha256": "8c2d87bca6aee31638052f8efe9a6898bc2de79470494eedc342b4c5d512ec85"
+    },
+    {
+      "path": "templates/objective/rune-circle.png",
+      "historical_filename": "objective-rune-circle.png",
+      "sha256": "4472c4cd3b93261dadf06098fd6366fc355b49ea153dcc3d81f3d1bfe3ad1a75"
+    },
+    {
+      "path": "templates/objective/rune-crescent.png",
+      "historical_filename": "objective-rune-crescent.png",
+      "sha256": "164b0aac33d9cb2098ed2803a54f3eeb1e261e3aca8c30dbf313c8439d598b7e"
+    },
+    {
+      "path": "templates/objective/rune-double-v.png",
+      "historical_filename": "objective-rune-double-v.png",
+      "sha256": "36ca5c38e43946529e640dbcbb373175b1bf410595ee4b35a847b584df402e48"
+    },
+    {
+      "path": "templates/objective/rune-ring-tail.png",
+      "historical_filename": "objective-rune-ring-tail.png",
+      "sha256": "b215c0aa051c5e15390303ccd9d7b574bd4c683fcb98925deffa2f4c12678abc"
+    },
+    {
+      "path": "templates/objective/rune-square.png",
+      "historical_filename": "objective-rune-square.png",
+      "sha256": "cac6958774dd2b72f8a0a03323b407f62d0025e919f5d0a1e255a2f53dd1b3cc"
+    },
+    {
+      "path": "templates/objective/rune-triangle.png",
+      "historical_filename": "objective-rune-triangle.png",
+      "sha256": "a471f44e206498523177de8121da983fb0390d2fedb321e64ad44a2c0f983851"
+    },
+    {
+      "path": "references/navigation/north-step-after.png",
+      "historical_filename": "20261009-north-step-after.png",
+      "sha256": "f0200b6198b572a2970869cdfb4ddeeea87d1ebe9b39db220ffff2b1833216c5"
+    },
+    {
+      "path": "references/navigation/north-step-before.png",
+      "historical_filename": "20261009-north-step-before.png",
+      "sha256": "0d22990b29f4189d8228a962aedce952cd27ae61538cdf3f01f95157033f8549"
+    },
+    {
+      "path": "references/navigation/north-step-buff-step-06.png",
+      "historical_filename": "20261009-north-step-buff-step-06.png",
+      "sha256": "098a980842e9a2ab8429a38ed34966dd47ce8e5ccaa08a9ad35f7b4cb92278e9"
+    },
+    {
+      "path": "references/hub/actor-occluded.png",
+      "historical_filename": "central-waypoint-actor-occluded-ko-1922x1140.png",
+      "sha256": "c68c36c39407108cd7a121a494da014c4132f2175132aadd1466607fbd23711b"
+    },
+    {
+      "path": "references/hub/clear-floor.png",
+      "historical_filename": "central-waypoint-clear-floor-ko-1922x1140.png",
+      "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+    },
+    {
+      "path": "references/hub/distant-effects.png",
+      "historical_filename": "central-waypoint-distant-effects-ko-1922x1140.png",
+      "sha256": "9d304a2f1a869fc5237b70b09b302c1ba1c39b2de30f6f45baee4ee85e19f671"
+    },
+    {
+      "path": "references/hub/effects.png",
+      "historical_filename": "central-waypoint-effects-main185-ko-1922x1140.png",
+      "sha256": "fe8c8f0124d384be49562258dcfcb907376cac5185ad89ba27f743e26bbb4fce"
+    },
+    {
+      "path": "references/hub/floor-occluded.png",
+      "historical_filename": "central-waypoint-floor-occluded-main156-ko-1922x1140.png",
+      "sha256": "cef19eefd52f72d59b80557e86693236b2a7d55989901c20aeb319a9b47c2d71"
+    },
+    {
+      "path": "references/hub/floor-recovered.png",
+      "historical_filename": "central-waypoint-floor-recovered-main156-ko-1922x1140.png",
+      "sha256": "3b03f7ea92d35bd995a526ccfca04952b8b308ea1c9ce433d9c5dc0679dfe87a"
+    },
+    {
+      "path": "references/hub/main.png",
+      "historical_filename": "central-waypoint-main-ko-1922x1140.png",
+      "sha256": "71a1c5660a64212606bea96f493bff1a480459c8a95ccf9ea19d3619068a99bb"
+    },
+    {
+      "path": "references/navigation/north-after-reverse.png",
+      "historical_filename": "main-north-after-reverse-ko-1922x1140.png",
+      "sha256": "34d0f8ffe708586cf9cb7692b6e5e03ae7a6a0b69b5ba23d6a25c1fdcb91bda7"
+    },
+    {
+      "path": "references/navigation/north-after-sideway.png",
+      "historical_filename": "main-north-after-sideway-ko-1922x1140.png",
+      "sha256": "c31193d63306ecb2fc817a9bce0f9d18348b546d4f2caa1998c29b3bde88a974"
+    },
+    {
+      "path": "references/navigation/north-fourth-before.png",
+      "historical_filename": "main-north-fourth-before-ko-1922x1140.png",
+      "sha256": "f3cc3a7220af45dc4b8ea9b0bac1dc6c94c993e81265a1712ac673f33bd10110"
+    },
+    {
+      "path": "references/navigation/north-fourth-hud-background.png",
+      "historical_filename": "main-north-fourth-hud-background-ko-1922x1140.png",
+      "sha256": "7cf62388ab1394b71946b433efa15521dd022843b19cf5b872e0f318acf110c1"
+    },
+    {
+      "path": "references/navigation/north-map-hidden.png",
+      "historical_filename": "main-north-map-hidden-ko-1922x1140.png",
+      "sha256": "f69187b0a0b079b6e66eb1b7fde6f8facdc40041e23619b6a690228b11da5f87"
+    },
+    {
+      "path": "references/navigation/north-map-hidden-rear.png",
+      "historical_filename": "main-north-map-hidden-rear-ko-1922x1140.png",
+      "sha256": "6027169e86d19132ab975e69aaaff5e17243a2023b8adeef0f763198e79a0bb2"
+    },
+    {
+      "path": "references/navigation/north-map-hidden-side.png",
+      "historical_filename": "main-north-map-hidden-side-ko-1922x1140.png",
+      "sha256": "3a107eba2a815a58d61e040b10aafbdde4f2752d95d52c7f8f34f82767a9164c"
+    },
+    {
+      "path": "references/navigation/north-occluded-before-reverse.png",
+      "historical_filename": "main-north-occluded-before-reverse-ko-1922x1140.png",
+      "sha256": "bd596405d984c11cb91603252530c9aca50297d3da34f1f6a1a4e18964707924"
+    },
+    {
+      "path": "references/navigation/north-occluded-bridge.png",
+      "historical_filename": "main-north-occluded-bridge-ko-1922x1140.png",
+      "sha256": "e9be9c8bd0e5669891baa93badafd713c61014a19b4df80f7a61fdc154c93cfd"
+    },
+    {
+      "path": "references/navigation/north-three-arrivals.png",
+      "historical_filename": "main-north-three-arrivals-ko-1922x1140.png",
+      "sha256": "e8102978ab5f580484fd1208baed444b6e9bcd4083ea62b89a44aaf25383c8bb"
+    },
+    {
+      "path": "references/navigation/return-stair-candles.png",
+      "historical_filename": "main-return-stair-candles-ko-1922x1140.png",
+      "sha256": "061749cf39714068355640c798682553f4719c1c52ae60718c8164f5fe885bcf"
+    },
+    {
+      "path": "references/terminal/north-dark-arched-chests.png",
+      "historical_filename": "north-dark-arched-chests-main192-ko-1922x1140.png",
+      "sha256": "7d03af29240c4fb3192de5a0f586fcdd4432a37353ddf50b6f8cfcfda5d69d7b"
+    },
+    {
+      "path": "references/terminal/north-dark-chests-gold-filigree.png",
+      "historical_filename": "north-dark-chests-gold-filigree-main208-ko-1922x1140.png",
+      "sha256": "ba317336820efe87835296869c30f635df2209556f4b4d0fbc1a469f413e4d1b"
+    },
+    {
+      "path": "references/terminal/north-dark-stone-chest-terminal.png",
+      "historical_filename": "north-dark-stone-chest-terminal-main157-ko-1922x1140.png",
+      "sha256": "b59133ffa753457f817b0fa65a53537d63bac5bff09e8f37879b02b252b8ddcd"
+    },
+    {
+      "path": "references/terminal/north-metal-chests-small-box.png",
+      "historical_filename": "north-metal-chests-small-box-main206-ko-1922x1140.png",
+      "sha256": "145df37bb2fdcd695cac902e3a40c5c3c93532ca506422d5ce0227b5094d7a60"
+    },
+    {
+      "path": "references/terminal/north-open-chest-terminal.png",
+      "historical_filename": "north-open-chest-terminal-main212-ko-1922x1140.png",
+      "sha256": "f7fcb214968f6f641407e7cc12d93a1b84d75c6edb6b15d747d93c5d2291671a"
+    },
+    {
+      "path": "references/terminal/north-stone-box-terminal.png",
+      "historical_filename": "north-stone-box-terminal-main184-ko-1922x1140.png",
+      "sha256": "9ff2649f1db3eac74f615eed8dee8871c8e9f633253736b6a609c5df2cb006a5"
+    },
+    {
+      "path": "references/terminal/north-floor-effect-relocalized.png",
+      "historical_filename": "north-terminal-floor-effect-relocalized-main210-ko-1922x1140.png",
+      "sha256": "5bfe0f1bb01140a9a7859c66ce62272d4b12e425da16053c1fc7ec225d3f62cb"
+    },
+    {
+      "path": "references/terminal/north-floor-view.png",
+      "historical_filename": "north-terminal-floor-view-main150-ko-1922x1140.png",
+      "sha256": "0f7e52aefa4a3cf76d4c8d8110456c6825464f4459d16df76c107340fcafb08a"
+    },
+    {
+      "path": "references/terminal/north-gold-labels-full.png",
+      "historical_filename": "north-terminal-gold-labels-full-main221-ko-1922x1140.png",
+      "sha256": "7eb7489973b482f28a1e57180c8ba1a598979268dbc006aceb8a47f731277ab2"
+    },
+    {
+      "path": "references/terminal/north-gold-labels.png",
+      "historical_filename": "north-terminal-gold-labels-main196-ko-1922x1140.png",
+      "sha256": "09e545719f5caea01c373e876b886e5af7696bdf9a56fffbf70cefd710d95e3b"
+    },
+    {
+      "path": "references/terminal/north-item-label-occlusion.png",
+      "historical_filename": "north-terminal-item-label-occlusion-main160-ko-1922x1140.png",
+      "sha256": "1e57d9aa7f18e85c8b756509c0a5bec676c144ea2cf545a6a561c56b9726d651"
+    },
+    {
+      "path": "references/terminal/north-landmarks.png",
+      "historical_filename": "north-terminal-landmarks-main146-ko-1922x1140.png",
+      "sha256": "86b2d6214e8470385b687bc98b3ef5556f567be416524345508bb19a3a69493d"
+    },
+    {
+      "path": "references/terminal/north-left-chest-occluded.png",
+      "historical_filename": "north-terminal-left-chest-occluded-main193-ko-1922x1140.png",
+      "sha256": "e7f4aee7266d7236510321501137b499deea5e9ea5f1c0f2619445550c4b68c5"
+    },
+    {
+      "path": "references/terminal/north-overlapping-gold-labels.png",
+      "historical_filename": "north-terminal-overlapping-gold-labels-main221-ko-1922x1140.png",
+      "sha256": "493c4ffb477055b3fa6177b6bef478abda14ea048fff8815aa695120abfbabaf"
+    },
+    {
+      "path": "references/terminal/north-three-chest-clean.png",
+      "historical_filename": "north-three-chest-clean-ko-1922x1140.png",
+      "sha256": "30c9158329a00545c5dc6b6f3d839c9eef14aac13091f3acb292dc51c60ef840"
+    },
+    {
+      "path": "references/terminal/north-three-chest-end.png",
+      "historical_filename": "north-three-chest-end-ko-1922x1140.png",
+      "sha256": "83d1a61fef1e87bf5b2e85a13c304f530906c2a505ec0ba1dfaece206034d09c"
+    },
+    {
+      "path": "references/terminal/north-three-square-chests.png",
+      "historical_filename": "north-three-square-chests-main154-ko-1922x1140.png",
+      "sha256": "09f79c6ba4d7b4dd5d0a6452dcf1f726de05f6699f93aa3ce25b098413188d6d"
+    },
+    {
+      "path": "references/terminal/north-two-chest-junction.png",
+      "historical_filename": "north-two-chest-junction-main144-ko-1922x1140.png",
+      "sha256": "47a9ba59a7e7a3a4ccb757edfb9c9b42732c91864d0496cb1c56ae9b52cba861"
+    },
+    {
+      "path": "references/navigation/stair-cap-two-descents.png",
+      "historical_filename": "stair-cap-two-descents-ko-1922x1140.png",
+      "sha256": "0f9e3dd99561bd6415e2978690eb4bb07e38dec661b59df609230928bdca5153"
+    },
+    {
+      "path": "references/navigation/stairs-hostile-effects-no-waypoint.png",
+      "historical_filename": "stairs-hostile-effects-no-waypoint-ko-1922x1140.png",
+      "sha256": "33a91a48e125f919cdd1fad67e71cb2610ad179c45961bddafba259a0a7eab7a"
+    },
+    {
+      "path": "references/summoner/platform-alive.png",
+      "historical_filename": "summoner-platform-alive-main174-ko-1922x1140.png",
+      "sha256": "12c8db8f9fbd1b7b95350bc3d8fdfa96cfcd262081e13c386961ff35a4debc44"
+    },
+    {
+      "path": "references/summoner/platform-glyph-unverified.png",
+      "historical_filename": "summoner-platform-glyph-unverified-main218-ko-1922x1140.png",
+      "sha256": "9a456b9363b678e9e561da5ca092910f3c2dd98da62b31aeb54c5d173c54516c"
+    },
+    {
+      "path": "references/summoner/platform-journal.png",
+      "historical_filename": "summoner-platform-journal-ko-1922x1140.png",
+      "sha256": "eccfffcb9634d313d024e0936cc0f255ef8e24e3308e0db22a83aa93bfa8db56"
+    },
+    {
+      "path": "references/summoner/platform-labels-combat.png",
+      "historical_filename": "summoner-platform-labels-combat-main170-ko-1922x1140.png",
+      "sha256": "3fa34ab98b6321a508f0c6ea8e8485d5f871b503b8a287460c5ac4fa9b2a203b"
+    },
+    {
+      "path": "references/summoner/platform-slot-variation-a.png",
+      "historical_filename": "summoner-platform-slot-variation-main218-a-ko-1922x1140.png",
+      "sha256": "f087820f19244a7bafbaf924a7e91abbb040bd8d52589b0713ea0846754cc82b"
+    },
+    {
+      "path": "references/summoner/platform-slot-variation-b.png",
+      "historical_filename": "summoner-platform-slot-variation-main218-b-ko-1922x1140.png",
+      "sha256": "4cf1aedcb9c181fab1fa6a7db182139b34319e1cede9977f522ac184b171dcc7"
+    },
+    {
+      "path": "references/entry/hub-reviewed-window.png",
+      "historical_filename": "town-loop-frame-arcane-hub-reviewed-window-ko-1922x1140.png",
+      "sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5"
+    },
+    {
+      "path": "references/entry/hub-second-window.png",
+      "historical_filename": "town-loop-frame-arcane-hub-second-window-ko-1922x1140.png",
+      "sha256": "837a68d3361a6d254a7f5d47135965c5bedbeb50149a7da84e2196166676a186"
+    },
+    {
+      "path": "references/encounters/alive-followup.png",
+      "historical_filename": "scene-alive-followup.png",
+      "sha256": "67314da8646740a3d24842e280b89554a4d2040e4d47f40cb190709ed9d4f325"
+    },
+    {
+      "path": "references/encounters/alive.png",
+      "historical_filename": "scene-alive.png",
+      "sha256": "878ddc7b31137c2f359347587a9c1a32a0a4749bea971a74a330f40b0aaa3fdc"
+    },
+    {
+      "path": "references/encounters/corpse-ground.png",
+      "historical_filename": "scene-corpse-ground.png",
+      "sha256": "2e81d7d301b04c5aeb61b4a81336bd4d669d12a183993a11a1f55f4b37ed0f0d"
+    },
+    {
+      "path": "references/encounters/corpses-followup.png",
+      "historical_filename": "scene-corpses-followup.png",
+      "sha256": "0ed5f761a90685a903a590407f9626a9f8aaf7cd89f29dcc2ae1bb69c3311314"
+    },
+    {
+      "path": "references/encounters/corpses.png",
+      "historical_filename": "scene-corpses.png",
+      "sha256": "67530b2c2bafb4c1919be88f8fd841299cc6bc94ce83e20100f2b587cf928313"
+    },
+    {
+      "path": "references/encounters/shrine.png",
+      "historical_filename": "scene-shrine.png",
+      "sha256": "01ec13f898d2f1e16678b791085ceac7bff1ba7a8504d12b905e9102bd181994"
+    },
+    {
+      "path": "references/navigation/stairs.png",
+      "historical_filename": "scene-stairs.png",
+      "sha256": "81b58ff966e5cffe79739663902319748a853b66bc6652e1cce4f7668f60050b"
+    },
+    {
+      "path": "references/navigation/terrain.png",
+      "historical_filename": "scene-terrain.png",
+      "sha256": "5ead239a2e5d260a9d625a36a35a82fac1b0c543f687859d56a68eca6811ffe1"
+    },
+    {
+      "path": "templates/encounters/shrine-name.png",
+      "historical_filename": "shrine-name-ko.png",
+      "sha256": "6b3ce9caf7fa37c73aa7e96015d8c772e1eb4d813e0cfd3a155f913dabde8a0e"
+    },
+    {
+      "path": "templates/navigation/stairs-descend-east.png",
+      "historical_filename": "stairs-descend-east.png",
+      "sha256": "48adaa405d910df132c0892df49e18514d4fede6fe857bb46503cfc82f2c0837"
+    },
+    {
+      "path": "templates/navigation/stairs-descend-south.png",
+      "historical_filename": "stairs-descend-south.png",
+      "sha256": "a91261f83bc400fc3f1ed9be50ce6cc69844ddce65c63919e1d44e4db82d78ff"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive.png",
+      "historical_filename": "summoner-robe-alive.png",
+      "sha256": "5c3ebe437718d155e2d5c2a282d7df04745002250967a52f6785e7761dc9ab05"
+    },
+    {
+      "path": "templates/navigation/area-title-reviewed-window.png",
+      "historical_filename": "town-loop-template-area-arcane-reviewed-window-ko-68x15.png",
+      "sha256": "c89840d5b7213b81cb8f6882430d2ff5f71fdc841f2e9fc0de33d52e5879b643"
+    },
+    {
+      "path": "templates/hub/waypoint-reviewed-window.png",
+      "historical_filename": "town-loop-template-world-arcane-waypoint-reviewed-window-ko-38x29.png",
+      "sha256": "72758d9b8d48a7adcec6dd504dc6dd66fa77b694099bdaa1d06c812e1e472462"
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-left.png",
+      "historical_filename": "terminal-dark-arched-chest-left.png",
+      "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-right.png",
+      "historical_filename": "terminal-dark-arched-chest-right.png",
+      "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-southeast-body.png",
+      "historical_filename": "terminal-dark-arched-chest-southeast-body.png",
+      "sha256": "e065444a52128c3acf827ee8899970d5fae2749ffc909b08ca40c1f8870e5db2"
+    },
+    {
+      "path": "templates/terminal/dark-closed-chest-top.png",
+      "historical_filename": "terminal-dark-closed-chest-top.png",
+      "sha256": "698cf04839184598de682c4976409960685aa9d84c748d22ef68b2f8b625e297"
+    },
+    {
+      "path": "templates/terminal/dark-open-chest-southeast-face.png",
+      "historical_filename": "terminal-dark-open-chest-southeast-face.png",
+      "sha256": "b73858946cd619a246b79c71cca2101535e3934a53000b9acb36faf28fcfb1aa"
+    },
+    {
+      "path": "templates/terminal/engraved-stone-plate.png",
+      "historical_filename": "terminal-engraved-stone-plate.png",
+      "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+    },
+    {
+      "path": "templates/terminal/gold-filigree-left-tip.png",
+      "historical_filename": "terminal-gold-filigree-left-tip.png",
+      "sha256": "e350dac882efedfd0115acb0f9503a17b092b2da9c2bb595c5a398ae9838e1b0"
+    },
+    {
+      "path": "templates/terminal/gold-floor-right-tip.png",
+      "historical_filename": "terminal-gold-floor-right-tip.png",
+      "sha256": "0317461c63ddc56201f65ce6d6407a35b34e2bd5829b299d1adbacc08ccfb0c3"
+    },
+    {
+      "path": "templates/terminal/gold-rune-floor-upper-view.png",
+      "historical_filename": "terminal-gold-rune-floor-upper-view.png",
+      "sha256": "efdfa8a4e4e74c4faaa7309c7700d1cd33afce9b3702511071667cd57196c3f9"
+    },
+    {
+      "path": "templates/terminal/gold-rune-floor.png",
+      "historical_filename": "terminal-gold-rune-floor.png",
+      "sha256": "d0efde26a7255fe4809ed838558776327919c1ee23047b1eee4c0a0fff0f1f88"
+    },
+    {
+      "path": "templates/terminal/small-stone-chest-right-edge.png",
+      "historical_filename": "terminal-small-stone-chest-right-edge.png",
+      "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+    },
+    {
+      "path": "templates/terminal/square-chest-variant.png",
+      "historical_filename": "terminal-square-chest-variant.png",
+      "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+    },
+    {
+      "path": "templates/terminal/square-chest.png",
+      "historical_filename": "terminal-square-chest.png",
+      "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+    },
+    {
+      "path": "templates/terminal/square-stone-chest-front.png",
+      "historical_filename": "terminal-square-stone-chest-front.png",
+      "sha256": "1f850ea01043b2607bc83adfd6cc7ff22d7240c2ede4db8425122c53f1a66f58"
+    },
+    {
+      "path": "templates/terminal/square-stone-chest-left.png",
+      "historical_filename": "terminal-square-stone-chest-left.png",
+      "sha256": "2efb5a0ae2239b2c6ff334accca343e48c586da8122966f5e231bad0988091e0"
+    },
+    {
+      "path": "templates/terminal/square-stone-chest-right.png",
+      "historical_filename": "terminal-square-stone-chest-right.png",
+      "sha256": "57e0534d9f68f234ffbf18a1862dc6863c2e203422535bb6422ca095f3064fcb"
+    },
+    {
+      "path": "templates/terminal/stone-chest-dark.png",
+      "historical_filename": "terminal-stone-chest-dark.png",
+      "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+    },
+    {
+      "path": "templates/terminal/stone-chest-northwest.png",
+      "historical_filename": "terminal-stone-chest-northwest.png",
+      "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+    },
+    {
+      "path": "templates/terminal/stone-chest-southeast.png",
+      "historical_filename": "terminal-stone-chest-southeast.png",
+      "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+    }
+  ],
+  "source_retention": [
+    {
+      "historical_filename": "north-junction-main189-ko-1922x1140.png",
+      "source_sha256": "65e3cf175afb9097815d9531a327a66f2287b1341d48e9b8ac3afb6360aca37c",
+      "source_image_retained": false,
+      "summary": "Primary-approved unused development capture of broad junction with simultaneous ghoul/clan/fire/lightning effects; not a duplicate or equivalent of main144."
+    }
   ]
 }

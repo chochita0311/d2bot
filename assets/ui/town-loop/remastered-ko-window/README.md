@@ -1,0 +1,7 @@
+# Shared town and menu calibration
+
+[manifest.json](manifest.json) owns the town/menu observer's 1267×753 normalized layout, reviewed native-window variants, crop/search boxes, thresholds, click offsets and source hashes. Generic Play, difficulty, HUD and Save/Exit images live in `templates/`; waypoint-panel/list crops belong to `ui/waypoint/`, and generic world labels belong to `ui/world-labels/`. World appearances and scene references live in the Rogue Encampment, Lut Gholein and Arcane region owners and are referenced relatively. `source_provenance` retains original filenames/execution identifiers after redundant filename prefixes were removed.
+
+The shared manifest contains no character-name template. Unnecessary name-bearing selection/difficulty sources were removed; source hashes and `source_image_retained=false` preserve provenance without creating a runtime dependency. Generic UI crops from those sources remain reusable. A selected game character is a user precondition; a Play-button match does not establish character identity.
+
+Baseline and native-window crops retain their original bytes, geometry and matching limits. A different language/layout needs reviewed variants. Region appearance matches do not prove arrival, clear enemies, a safe route or completed room; the planner's current-state and motion checks remain separate. [Town loop behavior and evidence](../../../../docs/features/town-room-loop.md) owns the workflow.

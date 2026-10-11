@@ -1,0 +1,4659 @@
+{
+  "schema": 1,
+  "tile_size": [
+    12,
+    14
+  ],
+  "preprocess_variants": [
+    [
+      "thr_110",
+      110
+    ],
+    [
+      "thr_120",
+      120
+    ],
+    [
+      "thr_130",
+      130
+    ],
+    [
+      "thr_140",
+      140
+    ],
+    [
+      "thr_150",
+      150
+    ],
+    [
+      "otsu",
+      null
+    ]
+  ],
+  "entries": [
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        0,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        12,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        24,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        36,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        48,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        60,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        72,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        84,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        96,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        108,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        120,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        132,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        144,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        156,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        168,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        180,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        192,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        204,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        216,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        228,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        240,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        252,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        264,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        276,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        288,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        300,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        312,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        324,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        336,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        348,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        360,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        372,
+        0,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        0,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        12,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        24,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        36,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        48,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        60,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        72,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        84,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        96,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        108,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        120,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        132,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        144,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        156,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        168,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        180,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        192,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        204,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        216,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        228,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        240,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        252,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        264,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        276,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        288,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        300,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        312,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        324,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        336,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        348,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        360,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        372,
+        14,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        0,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        12,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        24,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        36,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        48,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        60,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        72,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        84,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        96,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        108,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        120,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        132,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        144,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        156,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        168,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        180,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        192,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        204,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        216,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        228,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        240,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        252,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        264,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        276,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        288,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        300,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        312,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        324,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        336,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        348,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        360,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        372,
+        28,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        0,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        12,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        24,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        36,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        48,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        60,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        72,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        84,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        96,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        108,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        120,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        132,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        144,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        156,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        168,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        180,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        192,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        204,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        216,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        228,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        240,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        252,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        264,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        276,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        288,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        300,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        312,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        324,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        336,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        348,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        360,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        372,
+        42,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        0,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        12,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        24,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        36,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        48,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        60,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        72,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        84,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        96,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        108,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        120,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        132,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        144,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        156,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        168,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        180,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        192,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        204,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        216,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        228,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        240,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        252,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        264,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        276,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        288,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        300,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        312,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        324,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        336,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        348,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        360,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        372,
+        56,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        0,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        12,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        24,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        36,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        48,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        60,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        72,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        84,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        96,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        108,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        120,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        132,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        144,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        156,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        168,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        180,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "3",
+      "box": [
+        192,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        204,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        216,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        228,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        240,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        252,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        264,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "8",
+      "box": [
+        276,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        288,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        300,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "2",
+      "box": [
+        312,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        324,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        336,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "5",
+      "box": [
+        348,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        360,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        372,
+        70,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        0,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        12,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "1",
+      "box": [
+        24,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        36,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        48,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        60,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        72,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        84,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        96,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "7",
+      "box": [
+        108,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        120,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "4",
+      "box": [
+        132,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        144,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "6",
+      "box": [
+        156,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        168,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "9",
+      "box": [
+        180,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        192,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "ones",
+      "digit": "0",
+      "box": [
+        204,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        216,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        228,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        240,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        252,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        264,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        276,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        288,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        300,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        336,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        348,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        360,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        372,
+        84,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        0,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        12,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        24,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        36,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        48,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        60,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        72,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        84,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        96,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        108,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        120,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        132,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        144,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        156,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        168,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        180,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        192,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        204,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        216,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        228,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        240,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        252,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        264,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        276,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        288,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        300,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        336,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        348,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        360,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        372,
+        98,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        0,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        12,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        24,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        36,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        48,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        60,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        72,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        84,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        96,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        108,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        120,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        132,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        144,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        156,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        168,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        180,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        192,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        204,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        216,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        228,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        240,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        252,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        264,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        276,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        288,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        300,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        336,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        348,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        360,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        372,
+        112,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        0,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        12,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        24,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        36,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        48,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        60,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        72,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        84,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        96,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        108,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        120,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        132,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        144,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        156,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        168,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        180,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        192,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        204,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        216,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        228,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        240,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        252,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        264,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        276,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        288,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        300,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        336,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        348,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        360,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        372,
+        126,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        0,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        12,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        24,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        36,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        48,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        60,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        72,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        84,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        96,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        108,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        120,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        132,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        144,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        156,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        168,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        180,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        192,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        204,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        216,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        228,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        240,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        252,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        264,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        276,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        288,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        300,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        336,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        348,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        360,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        372,
+        140,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        0,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        12,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        24,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        36,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        48,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        60,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        72,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        84,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        96,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        108,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "2",
+      "box": [
+        120,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        132,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        144,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        156,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        168,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        180,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        192,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        204,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        216,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        228,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        240,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        252,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        264,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        276,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        288,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        300,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        312,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "1",
+      "box": [
+        324,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        336,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "4",
+      "box": [
+        348,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        360,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "tens",
+      "digit": "3",
+      "box": [
+        372,
+        154,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        0,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        12,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        24,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        36,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        48,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_110",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        60,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        72,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        84,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        96,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        108,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        120,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_120",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        132,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        144,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        156,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        168,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        180,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        192,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_130",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        204,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        216,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        228,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        240,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        252,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        264,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_140",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        276,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        288,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        300,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        312,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        324,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        336,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "thr_150",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        348,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        360,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        372,
+        168,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        0,
+        182,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        12,
+        182,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        24,
+        182,
+        12,
+        14
+      ]
+    },
+    {
+      "variant": "otsu",
+      "bank": "blank",
+      "digit": null,
+      "box": [
+        36,
+        182,
+        12,
+        14
+      ]
+    }
+  ],
+  "source_sha256": "307203bab0cc28b7fc4609e195431c0dcd0856836d884358b7d56c3994fe579e",
+  "file": "atlas.png",
+  "asset_sha256": "2a3bda6989fba2e45238cdf3f044860c12010e790bd58fe4e99760e76389496e",
+  "source_image_retained": false
+}

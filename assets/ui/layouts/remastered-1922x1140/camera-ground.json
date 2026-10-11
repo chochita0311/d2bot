@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source_report_sha256": "738ce41cebdeff639ff0c70c03efe0ead187cf0751862840db064f0aa517b225",
+  "reference": "references/camera-layout-body-ko-1922x1140.png",
+  "reference_sha256": "cf60463706c3313811dd42fe13a9bffaa79669aee9ab20d78387717041e617dc",
+  "body_observations": [
+    {
+      "at": 73675.375,
+      "point": [
+        962,
+        581
+      ],
+      "reason": "sorceress_es_and_body_shape"
+    },
+    {
+      "at": 73675.64,
+      "point": [
+        962,
+        576
+      ],
+      "reason": "sorceress_es_and_body_shape"
+    },
+    {
+      "at": 73675.734,
+      "point": [
+        959,
+        580
+      ],
+      "reason": "sorceress_es_and_body_shape"
+    }
+  ],
+  "scope": "Reviewed native full viewport camera offset from main121; reuse requires fresh layout/panels confirmation; not a current body/effect observation"
+}

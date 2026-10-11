@@ -1,0 +1,1465 @@
+{
+  "reference_size": [
+    1267,
+    753
+  ],
+  "source": "Reviewed shared UI and region sources; see template hashes and reference paths.",
+  "templates": {
+    "play": {
+      "file": "templates/play.png",
+      "crop": [
+        472,
+        665,
+        580,
+        690
+      ],
+      "search": [
+        400,
+        620,
+        850,
+        720
+      ],
+      "threshold": 0.84,
+      "variants": [
+        "templates/play-window.png"
+      ],
+      "variant_sources": [
+        {
+          "crop": [
+            474,
+            659,
+            582,
+            684
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "source_sha256": "845fc8fcbacc9c1049379fd17b761eb70a3a70c7f60c225b8766dac28de3e154",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        }
+      ],
+      "source_sha256": "7f84c6bac5ace33013db10ed4cb9f9cbae8f6579ee250575155c4b70829d2684",
+      "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+      "asset_sha256": "7f3d8545e826a36dd0ae17449b2965d5539c134de6bb9610645887fbfdd7d588",
+      "variant_asset_sha256": {
+        "templates/play-window.png": "5b40c5ee44cc40aa3b9b7e3a230921f430dba4c41631429f82d3d89cb4b7c36d"
+      },
+      "source_image_retained": false
+    },
+    "difficulty_header": {
+      "file": "templates/difficulty-header.png",
+      "crop": [
+        589,
+        278,
+        678,
+        297
+      ],
+      "search": [
+        520,
+        260,
+        740,
+        465
+      ],
+      "threshold": 0.88,
+      "variants": [
+        "templates/difficulty-header-window.png",
+        "templates/difficulty-header-reviewed-window.png",
+        "templates/difficulty-header-reviewed-extra.png",
+        "templates/difficulty-header-full-modal.png"
+      ],
+      "variant_sources": [
+        {
+          "crop": [
+            589,
+            276,
+            678,
+            295
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "source_sha256": "b362835dbe30670cd2bc2c9f92125ff8948b57a0165603671457e150a9fdce01",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            589,
+            276,
+            678,
+            295
+          ],
+          "source_sha256": "10e92a532de8bc2ac7cabf757e19ecfef57e55b277112640487fe6bd0e14035e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            589,
+            276,
+            678,
+            295
+          ],
+          "source_sha256": "9128f8ce7f4b6c92521e26ea6bc9886442888586692d7b953e2c570fd4884267",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "crop": [
+            545,
+            299,
+            725,
+            450
+          ],
+          "review": "supervised difficulty modal; full fixed frame/button appearance, no threshold reduction",
+          "source_sha256": "dd21e0b9975833acb33e4823482aaecfaed7a4f29a21a1d545f7b8491d9a386e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        }
+      ],
+      "source_sha256": "e5e02167ce0875fea11cb706983c94709ff14a9bc1420433c8d1676b4f46d247",
+      "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+      "asset_sha256": "02723f5a4cf38ca26ad3e6b38118400d1c2064a5b3192bb059c84ed860fd0792",
+      "variant_asset_sha256": {
+        "templates/difficulty-header-window.png": "20af54d87bfa2929a87b26b453338723f151e46e263f2de2588820ffc52d997b",
+        "templates/difficulty-header-reviewed-window.png": "8255dafb016ac6ddcc119a8c75b1470a816653a6c33f845656b0245bb5764fd4",
+        "templates/difficulty-header-reviewed-extra.png": "9d315370627e51413c9490f77e402d8901d3939e146e7a44d3da1f2e2d39c825",
+        "templates/difficulty-header-full-modal.png": "be0d13d824488faa2b1b9b8938b0cf217b4fe3593fde643e5e55c6bc5c0a35c9"
+      },
+      "source_image_retained": false
+    },
+    "normal": {
+      "file": "templates/difficulty-normal.png",
+      "crop": [
+        566,
+        323,
+        700,
+        346
+      ],
+      "search": [
+        545,
+        305,
+        721,
+        358
+      ],
+      "threshold": 0.86,
+      "variants": [
+        "templates/difficulty-normal-window.png",
+        "templates/difficulty-normal-reviewed-window.png",
+        "templates/difficulty-normal-reviewed-window.png",
+        "templates/difficulty-normal-full-modal.png"
+      ],
+      "variant_sources": [
+        {
+          "crop": [
+            566,
+            320,
+            700,
+            343
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "source_sha256": "b362835dbe30670cd2bc2c9f92125ff8948b57a0165603671457e150a9fdce01",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            320,
+            700,
+            343
+          ],
+          "source_sha256": "10e92a532de8bc2ac7cabf757e19ecfef57e55b277112640487fe6bd0e14035e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            320,
+            700,
+            343
+          ],
+          "source_sha256": "9128f8ce7f4b6c92521e26ea6bc9886442888586692d7b953e2c570fd4884267",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "crop": [
+            555,
+            312,
+            715,
+            353
+          ],
+          "review": "supervised difficulty modal; full fixed frame/button appearance, no threshold reduction",
+          "source_sha256": "dd21e0b9975833acb33e4823482aaecfaed7a4f29a21a1d545f7b8491d9a386e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        }
+      ],
+      "source_sha256": "e5e02167ce0875fea11cb706983c94709ff14a9bc1420433c8d1676b4f46d247",
+      "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+      "asset_sha256": "0e6f768d4f03414a13502e271bc4c45775d711038e33c491cd3dd46969b4e853",
+      "variant_asset_sha256": {
+        "templates/difficulty-normal-window.png": "e9cc2dd6abe81a2145f7b412786891f1e9eadea3743c2cc59db5313e9f752bab",
+        "templates/difficulty-normal-reviewed-window.png": "518733f99dee68122e7ee1aaa97fd701584ef67800e127d1a863081d218ce008",
+        "templates/difficulty-normal-full-modal.png": "88b5e3608ce218c2f36eec168d0c187ecf609ea3eb2e7c020c97ec2f50e2a142"
+      },
+      "source_image_retained": false
+    },
+    "nightmare": {
+      "file": "templates/difficulty-nightmare.png",
+      "crop": [
+        566,
+        367,
+        700,
+        390
+      ],
+      "search": [
+        545,
+        357,
+        721,
+        402
+      ],
+      "threshold": 0.86,
+      "variants": [
+        "templates/difficulty-nightmare-window.png",
+        "templates/difficulty-nightmare-reviewed-window.png",
+        "templates/difficulty-nightmare-reviewed-window.png",
+        "templates/difficulty-nightmare-full-modal.png"
+      ],
+      "variant_sources": [
+        {
+          "crop": [
+            566,
+            364,
+            700,
+            387
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "source_sha256": "b362835dbe30670cd2bc2c9f92125ff8948b57a0165603671457e150a9fdce01",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            364,
+            700,
+            387
+          ],
+          "source_sha256": "10e92a532de8bc2ac7cabf757e19ecfef57e55b277112640487fe6bd0e14035e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            364,
+            700,
+            387
+          ],
+          "source_sha256": "9128f8ce7f4b6c92521e26ea6bc9886442888586692d7b953e2c570fd4884267",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "crop": [
+            555,
+            357,
+            715,
+            397
+          ],
+          "review": "supervised difficulty modal; full fixed frame/button appearance, no threshold reduction",
+          "source_sha256": "dd21e0b9975833acb33e4823482aaecfaed7a4f29a21a1d545f7b8491d9a386e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        }
+      ],
+      "source_sha256": "e5e02167ce0875fea11cb706983c94709ff14a9bc1420433c8d1676b4f46d247",
+      "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+      "asset_sha256": "9c74e18a5c31106475d32afffb296754d744e53f443728cf8215cc865498b636",
+      "variant_asset_sha256": {
+        "templates/difficulty-nightmare-window.png": "e03b57f9aaea00cbf35412bc88be9f28885c5c9854d06298450b23712a34376d",
+        "templates/difficulty-nightmare-reviewed-window.png": "ce6ca2bbe1bce24371d96a0347f93fc0eb8a75b3f7935278aeb2b8f044bbf0e1",
+        "templates/difficulty-nightmare-full-modal.png": "aaa06481c47aa5482f83bcceed179472f46cfc49a4d2b82d9e83de8097558c04"
+      },
+      "source_image_retained": false
+    },
+    "hell": {
+      "file": "templates/difficulty-hell.png",
+      "crop": [
+        566,
+        411,
+        700,
+        434
+      ],
+      "search": [
+        545,
+        399,
+        721,
+        450
+      ],
+      "threshold": 0.86,
+      "variants": [
+        "templates/difficulty-hell-window.png",
+        "templates/difficulty-hell-reviewed-window.png",
+        "templates/difficulty-hell-reviewed-window.png",
+        "templates/difficulty-hell-full-modal.png"
+      ],
+      "variant_sources": [
+        {
+          "crop": [
+            566,
+            408,
+            700,
+            431
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "source_sha256": "b362835dbe30670cd2bc2c9f92125ff8948b57a0165603671457e150a9fdce01",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            408,
+            700,
+            431
+          ],
+          "source_sha256": "10e92a532de8bc2ac7cabf757e19ecfef57e55b277112640487fe6bd0e14035e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "scene": "difficulty",
+          "crop": [
+            566,
+            408,
+            700,
+            431
+          ],
+          "source_sha256": "9128f8ce7f4b6c92521e26ea6bc9886442888586692d7b953e2c570fd4884267",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        },
+        {
+          "crop": [
+            555,
+            399,
+            715,
+            441
+          ],
+          "review": "supervised difficulty modal; full fixed frame/button appearance, no threshold reduction",
+          "source_sha256": "dd21e0b9975833acb33e4823482aaecfaed7a4f29a21a1d545f7b8491d9a386e",
+          "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+          "source_image_retained": false
+        }
+      ],
+      "source_sha256": "e5e02167ce0875fea11cb706983c94709ff14a9bc1420433c8d1676b4f46d247",
+      "source_scope": "Removed personal-name/layout/stock source; runtime consumes only the retained generic UI/item crop.",
+      "asset_sha256": "bf66880dab507c4315591ee5a34e080b608d12235b89ffc37c53630b54394276",
+      "variant_asset_sha256": {
+        "templates/difficulty-hell-window.png": "72870fe3641395113c70d67aca9759b5fee6761c974542a4d855906c251e1fb7",
+        "templates/difficulty-hell-reviewed-window.png": "2bbbfc86f8185aed640f0dcdd683e49a2897a1af0cc94d72037f1e24c9224c5a",
+        "templates/difficulty-hell-full-modal.png": "9cedf220602bd7d518308c0b5e70cbf68ccce9f2c9bdbdad7a66853c0f06a1ff"
+      },
+      "source_image_retained": false
+    },
+    "hud": {
+      "file": "templates/hud.png",
+      "crop": [
+        616,
+        703,
+        650,
+        746
+      ],
+      "search": [
+        605,
+        690,
+        665,
+        750
+      ],
+      "threshold": 0.86,
+      "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/spawn-baseline.jpg",
+      "variants": [
+        "templates/hud-window.png",
+        "templates/hud-reviewed-window.png",
+        "templates/hud-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/ui/town-loop/remastered-ko-window/references/exit-menu-window.png",
+          "crop": [
+            616,
+            697,
+            650,
+            740
+          ],
+          "normalization": [
+            1267,
+            753
+          ]
+        },
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/map-reviewed-window.png",
+          "scene": "act1",
+          "crop": [
+            616,
+            697,
+            650,
+            740
+          ]
+        },
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-window.png",
+          "scene": "act2",
+          "crop": [
+            616,
+            697,
+            650,
+            740
+          ]
+        },
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/main-reviewed.png",
+          "scene": "act2",
+          "crop": [
+            616,
+            697,
+            650,
+            740
+          ]
+        }
+      ],
+      "asset_sha256": "d669ec914b3730a65c06010be04f8366853eff59d95400361278bc325fc68ebf",
+      "variant_asset_sha256": {
+        "templates/hud-window.png": "e9420c2b3912f62c22dc72f83c481e43bb67476ffb16b54561c3c94ee07ce152",
+        "templates/hud-reviewed-window.png": "bdcdf45985ef392e54048752e0a342691042762829bfe514dc8348790f03063d"
+      }
+    },
+    "area_act1": {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/templates/area-act1.png",
+      "crop": [
+        1168,
+        70,
+        1249,
+        85
+      ],
+      "search": [
+        1120,
+        64,
+        1257,
+        93
+      ],
+      "threshold": 0.79,
+      "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/map-baseline.jpg",
+      "variants": [
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/area-title-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/map-reviewed-window.png",
+          "scene": "act1",
+          "crop": [
+            1162,
+            70,
+            1243,
+            85
+          ]
+        }
+      ],
+      "asset_sha256": "69c7ec9be6e1fea9e3b30c0fc4028128674092af99afcd1759da52cc54e622e0",
+      "variant_asset_sha256": {
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/area-title-reviewed-window.png": "66fe887c981ed682d2121aa56f505d129ddb050eaa1896826cab0c13e8cdb68e"
+      }
+    },
+    "area_act2": {
+      "file": "../../../regions/lut-gholein/remastered-ko-window/templates/area-act2.png",
+      "crop": [
+        1181,
+        70,
+        1249,
+        85
+      ],
+      "search": [
+        1120,
+        64,
+        1257,
+        93
+      ],
+      "threshold": 0.79,
+      "source_frame": "../../../regions/lut-gholein/remastered-ko-window/references/town-baseline.jpg",
+      "variants": [
+        "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-window.png",
+        "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-extra.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-window.png",
+          "scene": "act2",
+          "crop": [
+            1175,
+            70,
+            1243,
+            85
+          ]
+        },
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/main-reviewed.png",
+          "scene": "act2",
+          "crop": [
+            1175,
+            70,
+            1243,
+            85
+          ]
+        }
+      ],
+      "foreground": "high_pass",
+      "asset_sha256": "7820af6d6a4b2120117da2592ebcd6375906e95e26f9f7d11302b365130a6186",
+      "variant_asset_sha256": {
+        "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-window.png": "a631c39ee724d00c31a8d665751b6b2d6ad63f433609940d475fd90b6a465440",
+        "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-extra.png": "fc74bc687230b8b4fd366aa1cb401038d293eaca6fdaab845ce0e0c12534dcfa"
+      }
+    },
+    "waypoint_header": {
+      "file": "../../waypoint/templates/waypoint-header.png",
+      "crop": [
+        230,
+        123,
+        315,
+        144
+      ],
+      "search": [
+        190,
+        110,
+        355,
+        152
+      ],
+      "threshold": 0.88,
+      "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+      "variants": [
+        "../../waypoint/templates/waypoint-header-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-window.png",
+          "scene": "waypoint1",
+          "crop": [
+            235,
+            122,
+            320,
+            143
+          ]
+        },
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-panel-window.png",
+          "scene": "waypoint2",
+          "crop": [
+            235,
+            122,
+            320,
+            143
+          ]
+        }
+      ],
+      "asset_sha256": "4a753719cb4427122da89a633c0f8de3dfcb2453733e4069f4c8e0c2d565a1de",
+      "variant_asset_sha256": {
+        "../../waypoint/templates/waypoint-header-reviewed-window.png": "db3d3c9ede918f884a21e8ea443b4de59ace304dcd8153fe878f57872c6e3944"
+      }
+    },
+    "list_act1": {
+      "file": "../../waypoint/templates/act1-list.png",
+      "crop": [
+        198,
+        240,
+        277,
+        306
+      ],
+      "search": [
+        190,
+        234,
+        290,
+        312
+      ],
+      "threshold": 0.82,
+      "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+      "variants": [
+        "../../waypoint/templates/act1-list-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-window.png",
+          "scene": "waypoint1",
+          "crop": [
+            203,
+            238,
+            282,
+            304
+          ]
+        }
+      ],
+      "asset_sha256": "bf896a50c459e937ec8cb921d634238d4cb8912567c6e127b1e408b409f5c24e",
+      "variant_asset_sha256": {
+        "../../waypoint/templates/act1-list-reviewed-window.png": "a94a7b404f15ce78920e94f873c95293a32a50caa42277858a9348c005bb18a3"
+      }
+    },
+    "list_act2": {
+      "file": "../../waypoint/templates/act2-list.png",
+      "crop": [
+        198,
+        240,
+        277,
+        306
+      ],
+      "search": [
+        190,
+        234,
+        290,
+        312
+      ],
+      "threshold": 0.82,
+      "source_frame": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+      "variants": [
+        "../../waypoint/templates/act2-list-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-panel-window.png",
+          "scene": "waypoint2",
+          "crop": [
+            203,
+            238,
+            282,
+            304
+          ]
+        }
+      ],
+      "asset_sha256": "a5b36b42a790ac5ba6a8b233b2c31907564a2efe4410baf7ca55e394ef294414",
+      "variant_asset_sha256": {
+        "../../waypoint/templates/act2-list-reviewed-window.png": "a109f594b6f1c8a354cb3ca34d404ad26343d030d62e149d0b823d907364df58"
+      }
+    },
+    "world_act1_waypoint": {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint.png",
+      "crop": [
+        1122,
+        282,
+        1211,
+        322
+      ],
+      "search": [
+        100,
+        50,
+        1256,
+        580
+      ],
+      "threshold": 0.72,
+      "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-baseline.jpg",
+      "variants": [
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-reviewed-window.png",
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-brazier.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-window.png",
+          "scene": "world_waypoint1",
+          "crop": [
+            1093,
+            363,
+            1182,
+            403
+          ]
+        },
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-reset-main.png",
+          "crop": [
+            551,
+            304,
+            584,
+            334
+          ],
+          "normalization": [
+            1267,
+            753
+          ],
+          "click_target": [
+            632,
+            331
+          ]
+        }
+      ],
+      "blue_nearby": [
+        100,
+        60
+      ],
+      "variant_click_offsets": {
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-brazier.png": [
+          81,
+          27
+        ]
+      },
+      "blue_pair": {
+        "search": [
+          30,
+          80,
+          1240,
+          580
+        ],
+        "hsv_lower": [
+          95,
+          55,
+          120
+        ],
+        "hsv_upper": [
+          135,
+          255,
+          255
+        ],
+        "minimum_area": 200,
+        "width": [
+          6,
+          55
+        ],
+        "height": [
+          25,
+          100
+        ],
+        "separation": [
+          115,
+          155
+        ],
+        "vertical_difference": 20,
+        "click_offset": [
+          0,
+          25
+        ],
+        "maximum_aspect_ratio": 1.35
+      },
+      "asset_sha256": "9d0130f7cdd02d90f818bd935f9f7b5c064707c1fed432ef83b8e15205cb8b4c",
+      "variant_asset_sha256": {
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-reviewed-window.png": "a94af499af75eebd20faf3ce86bc934bcd4b615047cbf07ef1c764696f8b3d63",
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-brazier.png": "866f1349b4819123f73dd8d64210ca06d4c630cdc6f8adbe5e7a829383be7d7b"
+      }
+    },
+    "save_exit": {
+      "file": "templates/save-exit.png",
+      "crop": [
+        550,
+        336,
+        715,
+        361
+      ],
+      "search": [
+        500,
+        310,
+        770,
+        390
+      ],
+      "threshold": 0.86,
+      "source_frame": "references/save-exit-baseline.jpg",
+      "variants": [
+        "templates/save-exit-window.png",
+        "templates/save-exit-reviewed-window.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/ui/town-loop/remastered-ko-window/references/exit-menu-window.png",
+          "crop": [
+            551,
+            333,
+            716,
+            358
+          ],
+          "normalization": [
+            1267,
+            753
+          ]
+        },
+        {
+          "file": "assets/ui/town-loop/remastered-ko-window/references/save-exit-window.png",
+          "scene": "exit",
+          "crop": [
+            551,
+            333,
+            716,
+            358
+          ]
+        }
+      ],
+      "asset_sha256": "200f1955f73480ff376774bc22669486ca6f221102dc5c77779c1f1762913d92",
+      "variant_asset_sha256": {
+        "templates/save-exit-window.png": "eb35e9c348ec6960c36d705014492f5f68046e917574933a5d51df79194dc627",
+        "templates/save-exit-reviewed-window.png": "f854b5e5c63fa971ff6b25e0eef6802e117d8b1d1075c9f5d865b8d7ec2803a4"
+      }
+    },
+    "npc_cancel": {
+      "file": "../../world-labels/npc-cancel.png",
+      "search": [
+        200,
+        90,
+        1050,
+        520
+      ],
+      "threshold": 0.9,
+      "source_frame": "references/npc-dialogue-window.png",
+      "asset_sha256": "9d33c2faa6a6f690284c67237dc7ecf1595ab4ff6f498d3358cdccdd5788e770"
+    },
+    "layout_tent": {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/templates/layout-tent.png",
+      "search": [
+        730,
+        60,
+        1210,
+        420
+      ],
+      "threshold": 0.82,
+      "asset_sha256": "1f4d80756afb80c3cb1404eb61d439012fc71f2d3c50e91cafd31c9fec1ccb50"
+    },
+    "world_act2_waypoint": {
+      "file": "../../../regions/lut-gholein/remastered-ko-window/templates/waypoint.png",
+      "search": [
+        450,
+        90,
+        1050,
+        420
+      ],
+      "click_offset": [
+        -28,
+        145
+      ],
+      "threshold": 0.82,
+      "source_frame": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-window.png",
+      "blue_nearby": [
+        100,
+        50
+      ],
+      "variants": [
+        "../../../regions/lut-gholein/remastered-ko-window/templates/waypoint-offset.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-offset-main-reviewed.png",
+          "crop": [
+            642,
+            349,
+            696,
+            396
+          ],
+          "review": "supervised waypoint and blue flames visible; same stone anchor and offset; thresholds unchanged"
+        }
+      ],
+      "asset_sha256": "594a5ef45dd6e61b3af3e3c200f9050255b37f8a3afc0252b3a3299a70a8c48a",
+      "variant_asset_sha256": {
+        "../../../regions/lut-gholein/remastered-ko-window/templates/waypoint-offset.png": "17fe8a093599102f9966a9925b8b12a0242ac0a6f13c7d729505223f8031d42c"
+      }
+    },
+    "area_arcane": {
+      "file": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-reviewed-window.png",
+      "crop": [
+        1178,
+        70,
+        1246,
+        85
+      ],
+      "search": [
+        1120,
+        64,
+        1257,
+        93
+      ],
+      "threshold": 0.86,
+      "source_frame": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-reviewed-window.png",
+      "normalization": [
+        1267,
+        753
+      ],
+      "source_sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
+      "review": "supervised visual observation: remastered Korean Arcane hub; input-free native capture",
+      "asset_sha256": "c89840d5b7213b81cb8f6882430d2ff5f71fdc841f2e9fc0de33d52e5879b643"
+    },
+    "world_arcane_waypoint": {
+      "file": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/waypoint-reviewed-window.png",
+      "crop": [
+        522,
+        292,
+        560,
+        321
+      ],
+      "search": [
+        350,
+        150,
+        950,
+        500
+      ],
+      "threshold": 0.86,
+      "source_frame": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-reviewed-window.png",
+      "normalization": [
+        1267,
+        753
+      ],
+      "source_sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
+      "review": "supervised visual observation: remastered Korean Arcane hub; input-free native capture",
+      "click_offset": [
+        113,
+        27
+      ],
+      "blue_nearby": [
+        140,
+        80
+      ],
+      "asset_sha256": "72758d9b8d48a7adcec6dd504dc6dd66fa77b694099bdaa1d06c812e1e472462"
+    },
+    "layout_act2_spawn": {
+      "file": "../../../regions/lut-gholein/remastered-ko-window/templates/warriv-cart-spawn.png",
+      "search": [
+        220,
+        60,
+        620,
+        360
+      ],
+      "threshold": 0.9,
+      "source_frame": "../../../regions/lut-gholein/remastered-ko-window/references/warriv-spawn-main.png",
+      "crop": [
+        280,
+        100,
+        560,
+        315
+      ],
+      "review": "supervised Act 2 room spawn with Warriv cart; enables bounded town-only scouting, never arrival",
+      "asset_sha256": "56c4493dbb269e0eb4107d62df26331f5b9354c0a9ed7201039c5cd6cb64c8ed"
+    },
+    "layout_act2_palace": {
+      "file": "../../../regions/lut-gholein/remastered-ko-window/templates/palace-approach.png",
+      "search": [
+        40,
+        40,
+        650,
+        480
+      ],
+      "threshold": 0.85,
+      "source_frame": "../../../regions/lut-gholein/remastered-ko-window/references/palace-approach-main.png",
+      "crop": [
+        200,
+        80,
+        420,
+        280
+      ],
+      "review": "supervised palace facade; local lighting scores .896-.920, retained Act2 negatives <=.625; permits one bounded northeast town approach only, never arrival",
+      "variants": [
+        "../../../regions/lut-gholein/remastered-ko-window/templates/palace-settled.png"
+      ],
+      "variant_sources": [
+        {
+          "file": "assets/regions/lut-gholein/remastered-ko-window/references/palace-settled-main.png",
+          "crop": [
+            100,
+            80,
+            360,
+            250
+          ],
+          "review": "supervised settled palace facade; latest independent main failure score .920163; Act2 negatives <=.625"
+        }
+      ],
+      "asset_sha256": "ee6d59c7dd01151f2b9c72c1cf52aed8a691f05a56d2ed4a26c33c5f61a6fef8",
+      "variant_asset_sha256": {
+        "../../../regions/lut-gholein/remastered-ko-window/templates/palace-settled.png": "a58e0a5b93da691f4832db4b4afc5d8d4a5118421749067c6d0797d056c939ae"
+      }
+    }
+  },
+  "maintenance": {
+    "updated": "2026-10-09",
+    "purpose": "Runtime templates and selected calibration/replay frames; session diagnostics are removed.",
+    "template_naming": "town-loop-template-<state/variant>-ko-<crop-size>",
+    "frame_naming": "town-loop-frame-<state/layout>-ko-<capture-size>"
+  },
+  "arcane_arrival_references": [
+    {
+      "file": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-reviewed-window.png",
+      "frame_size": [
+        1922,
+        1140
+      ],
+      "sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
+      "expected": {
+        "area_arcane": true,
+        "world_arcane_waypoint": true
+      },
+      "scope": "entry hub only; not wing-return or monster-clear evidence"
+    },
+    {
+      "file": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-second-window.png",
+      "frame_size": [
+        1922,
+        1140
+      ],
+      "sha256": "837a68d3361a6d254a7f5d47135965c5bedbeb50149a7da84e2196166676a186",
+      "expected": {
+        "area_arcane": true,
+        "world_arcane_waypoint": true
+      },
+      "scope": "entry hub only; not wing-return or monster-clear evidence"
+    }
+  ],
+  "blue_pair_negative_references": [
+    {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-16.png",
+      "frame_size": [
+        1922,
+        1140
+      ],
+      "sha256": "1491598a4291f7f8affa08962cc7df118349f743100c3e200c5e56f5b8cefaf2",
+      "scope": "reviewed cyan-chat false blue-pair regression; expected waypoint candidate absent"
+    },
+    {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-19.png",
+      "frame_size": [
+        1922,
+        1140
+      ],
+      "sha256": "8c6b808dc64efaa47aefd8b86d7880c66806e744f5869d43c358da7d6169e2bf",
+      "scope": "reviewed cyan-chat false blue-pair regression; expected waypoint candidate absent"
+    },
+    {
+      "file": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-22.png",
+      "frame_size": [
+        1922,
+        1140
+      ],
+      "sha256": "ab7e560dc24f735c2deda1b272efc7715ae5f3f855d2b28002eb9be2e13f7ead",
+      "scope": "reviewed cyan-chat false blue-pair regression; expected waypoint candidate absent"
+    }
+  ],
+  "source_provenance": [
+    {
+      "path": "../../world-labels/shrine-name-ko.png",
+      "historical_filename": "shrine_when_hover.png",
+      "sha256": "44dea34b15d142664720017b581eba62cb5a9626ba8cdfd3af598a99d5a6eb8c"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/maintenance/stash-body.png",
+      "historical_filename": "stash_in_act1_small.png",
+      "sha256": "00d7dc98846990f105fc472ce5d84420d3d469cb23695692abc306e204ea21a8"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/maintenance/stash-hover-ko.png",
+      "historical_filename": "stash_in_act1_when_hover.png",
+      "sha256": "318b7a9ae88faeb57d8259146e51ad1cd0b45adde5bf5521319984036a4fbdea"
+    },
+    {
+      "path": "references/loading-window.png",
+      "historical_filename": "loading.png",
+      "sha256": "8856e53cc4d6ca9ee7aa275333a7d7784c812814400639d86eb8b38e3f1d13aa"
+    },
+    {
+      "path": "references/exit-menu-window.png",
+      "historical_filename": "exit.png",
+      "sha256": "dd61f728e2a1b03feae87e27b3472ba92110fcadb71741faab02fa90890474f0"
+    },
+    {
+      "path": "templates/difficulty-normal-button-241x64.png",
+      "historical_filename": "normal.png",
+      "sha256": "8571d3bdeb3db7d7b0396a3dbf66460f023d90af5a7d5ec7bafb2d0b87126cfa"
+    },
+    {
+      "path": "templates/difficulty-nightmare-button-250x66.png",
+      "historical_filename": "nightmare.png",
+      "sha256": "da3f9575db3eefe37a7f50d99b21ccad276426fdad892f53ec7bf23c93e1c678"
+    },
+    {
+      "path": "templates/difficulty-hell-button-245x69.png",
+      "historical_filename": "hell.png",
+      "sha256": "5f128f1bb4ede817c229bf1c30eec4ef84469ae4be49743201f1567c9432bea8"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/main-reviewed.png",
+      "historical_filename": "town-loop-frame-act2-main-reviewed-ko-1922x1140.png",
+      "sha256": "d76f2fe293842285f0b6c2635251c8443da73011b5e128c5c00f3c53082e1c71"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/palace-approach-main.png",
+      "historical_filename": "town-loop-frame-act2-palace-approach-main-ko-1922x1140.png",
+      "sha256": "e446c7cf7629c3d1e36ff44d1a6c6a561bb35b26b183f909b2ed6550da8d93e1"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/palace-settled-main.png",
+      "historical_filename": "town-loop-frame-act2-palace-settled-main-ko-1922x1140.png",
+      "sha256": "7c11be02924c4a8d7b1c64c14a7d524c4f6691d5d544848ac4456195e653ed96"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/town-baseline.jpg",
+      "historical_filename": "town-loop-frame-act2-town-baseline-ko-1267x753.jpg",
+      "sha256": "a5d07a77c73256cce32232fd357ec6261c7685c42501fca34334b49a6cf7ddb1"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/warriv-spawn-main.png",
+      "historical_filename": "town-loop-frame-act2-warriv-spawn-main-ko-1922x1140.png",
+      "sha256": "338bf175c95d3999fac36623760bedcd444780ec85191ba4ffb32c27dbc0d455"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-offset-main-reviewed.png",
+      "historical_filename": "town-loop-frame-act2-waypoint-offset-main-reviewed-ko-1922x1140.png",
+      "sha256": "2774e1bd4cecace491311908d93692fa537ecc96cde54e5ee4fc7e878ef508fd"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-window.png",
+      "historical_filename": "town-loop-frame-act2-waypoint-window-ko-1922x1140.png",
+      "sha256": "baee2b31df53ffa345b9130c6c8b650673682f7932a7aec5a4aeeea83a067bd2"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+      "historical_filename": "town-loop-frame-waypoint-panel-act2-baseline-ko-1267x753.jpg",
+      "sha256": "dc2e9c16c52b713425511852f1868c2524028a541d82b8cbfd5cbea55db35b3c"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/references/waypoint-panel-window.png",
+      "historical_filename": "town-loop-frame-waypoint-panel-act2-window-ko-1922x1140.png",
+      "sha256": "956485e3ec802a842a93bd491e771761fd29d1240bdc539923f11f0f5315492e"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/greiz-map-hint.png",
+      "historical_filename": "town-loop-template-act2-greiz-map-hint-ko-44x19.png",
+      "sha256": "c138d53b9c8eb5d46224646d329134e434dc066a6fee0dd28b27d39c55076121"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/palace-approach.png",
+      "historical_filename": "town-loop-template-act2-palace-approach-ko-220x200.png",
+      "sha256": "ee6d59c7dd01151f2b9c72c1cf52aed8a691f05a56d2ed4a26c33c5f61a6fef8"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/palace-settled.png",
+      "historical_filename": "town-loop-template-act2-palace-settled-ko-260x170.png",
+      "sha256": "a58e0a5b93da691f4832db4b4afc5d8d4a5118421749067c6d0797d056c939ae"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/warriv-cart-spawn.png",
+      "historical_filename": "town-loop-template-act2-warriv-cart-spawn-ko-280x215.png",
+      "sha256": "56c4493dbb269e0eb4107d62df26331f5b9354c0a9ed7201039c5cd6cb64c8ed"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/area-act2.png",
+      "historical_filename": "town-loop-template-area-act2-ko-68x15.png",
+      "sha256": "7820af6d6a4b2120117da2592ebcd6375906e95e26f9f7d11302b365130a6186"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-extra.png",
+      "historical_filename": "town-loop-template-area-act2-reviewed-extra-ko-68x15.png",
+      "sha256": "fc74bc687230b8b4fd366aa1cb401038d293eaca6fdaab845ce0e0c12534dcfa"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-window.png",
+      "historical_filename": "town-loop-template-area-act2-reviewed-window-ko-68x15.png",
+      "sha256": "a631c39ee724d00c31a8d665751b6b2d6ad63f433609940d475fd90b6a465440"
+    },
+    {
+      "path": "../../waypoint/templates/act2-list.png",
+      "historical_filename": "town-loop-template-list-act2-ko-79x66.png",
+      "sha256": "a5b36b42a790ac5ba6a8b233b2c31907564a2efe4410baf7ca55e394ef294414"
+    },
+    {
+      "path": "../../waypoint/templates/act2-list-reviewed-window.png",
+      "historical_filename": "town-loop-template-list-act2-reviewed-window-ko-79x66.png",
+      "sha256": "a109f594b6f1c8a354cb3ca34d404ad26343d030d62e149d0b823d907364df58"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/waypoint.png",
+      "historical_filename": "town-loop-template-world-act2-waypoint-ko-54x47.png",
+      "sha256": "594a5ef45dd6e61b3af3e3c200f9050255b37f8a3afc0252b3a3299a70a8c48a"
+    },
+    {
+      "path": "../../../regions/lut-gholein/remastered-ko-window/templates/waypoint-offset.png",
+      "historical_filename": "town-loop-template-world-act2-waypoint-offset-ko-54x47.png",
+      "sha256": "17fe8a093599102f9966a9925b8b12a0242ac0a6f13c7d729505223f8031d42c"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-16.png",
+      "historical_filename": "town-loop-frame-act1-chat-negative-16-ko-1922x1140.png",
+      "sha256": "1491598a4291f7f8affa08962cc7df118349f743100c3e200c5e56f5b8cefaf2"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-19.png",
+      "historical_filename": "town-loop-frame-act1-chat-negative-19-ko-1922x1140.png",
+      "sha256": "8c6b808dc64efaa47aefd8b86d7880c66806e744f5869d43c358da7d6169e2bf"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/chat-negative-22.png",
+      "historical_filename": "town-loop-frame-act1-chat-negative-22-ko-1922x1140.png",
+      "sha256": "ab7e560dc24f735c2deda1b272efc7715ae5f3f855d2b28002eb9be2e13f7ead"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/map-baseline.jpg",
+      "historical_filename": "town-loop-frame-act1-map-baseline-ko-1267x753.jpg",
+      "sha256": "7dc90ed91699103730148255a4b4349b505fdafe0ff1bb631b639028328ec999"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/map-reviewed-window.png",
+      "historical_filename": "town-loop-frame-act1-map-reviewed-window-ko-1922x1140.png",
+      "sha256": "b1dd433f60dd62d3a39861421ea874fcc65b2d8f76d3099838bfb84d91448e49"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/spawn-baseline.jpg",
+      "historical_filename": "town-loop-frame-act1-spawn-baseline-ko-1267x753.jpg",
+      "sha256": "d93a8aefaa56931a3da1aac003ab4a18df2afe5f248684ea876b3634ca837f7d"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-baseline.jpg",
+      "historical_filename": "town-loop-frame-act1-waypoint-baseline-ko-1267x753.jpg",
+      "sha256": "ac0164c508fc5498b86107efc8f4d7eee3cdf188bbb7cbb9d9155fdd8a10e638"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-reset-main.png",
+      "historical_filename": "town-loop-frame-act1-waypoint-reset-main-ko-1922x1140.png",
+      "sha256": "8013f7218ac08dc84a3ddf2702e0e1fa597ef50ccd2684abb70a944c1ae9dd54"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-right-cart.png",
+      "historical_filename": "town-loop-frame-act1-waypoint-right-cart-ko-1922x1140.png",
+      "sha256": "3e290c3f10e74b2296bba1c3c67b0b3f8fca8cf09f2275a5c652e846123910c2"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-right-tent.png",
+      "historical_filename": "town-loop-frame-act1-waypoint-right-tent-ko-1922x1140.png",
+      "sha256": "b57f37c047439bec714f9693632a7d979249cad4515cabfa63fcfa85cc041d29"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-upper.png",
+      "historical_filename": "town-loop-frame-act1-waypoint-upper-ko-1922x1140.png",
+      "sha256": "503bc62651381e18a96b609e21daba5a3bfec607fea7c7db922909aa60f5a4f2"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-window.png",
+      "historical_filename": "town-loop-frame-act1-waypoint-window-ko-1922x1140.png",
+      "sha256": "09ced48088d5b667c77c5fd3ec4f4215833c1d538372cbfb27a8e24e07eddba4"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+      "historical_filename": "town-loop-frame-waypoint-panel-act1-baseline-ko-1267x753.jpg",
+      "sha256": "e3772bc988baf67d2c7aa79b2d86384b2c68a20ead63767e1e129d4904367cea"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-window.png",
+      "historical_filename": "town-loop-frame-waypoint-panel-act1-window-ko-1922x1140.png",
+      "sha256": "ae7a7ab299f68ed308779fbcbb04e62e3fd92149a41d4e00ebf9c5a1770f3368"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/area-act1.png",
+      "historical_filename": "town-loop-template-area-act1-ko-81x15.png",
+      "sha256": "69c7ec9be6e1fea9e3b30c0fc4028128674092af99afcd1759da52cc54e622e0"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/area-title-reviewed-window.png",
+      "historical_filename": "town-loop-template-area-act1-reviewed-window-ko-81x15.png",
+      "sha256": "66fe887c981ed682d2121aa56f505d129ddb050eaa1896826cab0c13e8cdb68e"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/layout-tent.png",
+      "historical_filename": "town-loop-template-layout-tent-ko-81x75.png",
+      "sha256": "1f4d80756afb80c3cb1404eb61d439012fc71f2d3c50e91cafd31c9fec1ccb50"
+    },
+    {
+      "path": "../../waypoint/templates/act1-list.png",
+      "historical_filename": "town-loop-template-list-act1-ko-79x66.png",
+      "sha256": "bf896a50c459e937ec8cb921d634238d4cb8912567c6e127b1e408b409f5c24e"
+    },
+    {
+      "path": "../../waypoint/templates/act1-list-reviewed-window.png",
+      "historical_filename": "town-loop-template-list-act1-reviewed-window-ko-79x66.png",
+      "sha256": "a94a7b404f15ce78920e94f873c95293a32a50caa42277858a9348c005bb18a3"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-brazier.png",
+      "historical_filename": "town-loop-template-world-act1-waypoint-brazier-ko-33x30.png",
+      "sha256": "866f1349b4819123f73dd8d64210ca06d4c630cdc6f8adbe5e7a829383be7d7b"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint.png",
+      "historical_filename": "town-loop-template-world-act1-waypoint-ko-89x40.png",
+      "sha256": "9d0130f7cdd02d90f818bd935f9f7b5c064707c1fed432ef83b8e15205cb8b4c"
+    },
+    {
+      "path": "../../../regions/rogue-encampment/remastered-ko-window/templates/waypoint-reviewed-window.png",
+      "historical_filename": "town-loop-template-world-act1-waypoint-reviewed-window-ko-89x40.png",
+      "sha256": "a94af499af75eebd20faf3ce86bc934bcd4b615047cbf07ef1c764696f8b3d63"
+    },
+    {
+      "path": "references/exit-menu-coordinate-grid.png",
+      "historical_filename": "exit-menu-coordinate-grid-ko-1922x1140.png",
+      "sha256": "2b08e1d302655146dcc41ca1c84fafdcd1646fc3a93e16e42b360023aaf17ab3"
+    },
+    {
+      "path": "references/npc-dialogue-window.png",
+      "historical_filename": "town-loop-frame-npc-dialogue-window-ko-1922x1140.png",
+      "sha256": "5471284e55f82c9ac37b275acecb9f8f0514b41cc529f02042a0526cb72639ac"
+    },
+    {
+      "path": "references/save-exit-baseline.jpg",
+      "historical_filename": "town-loop-frame-save-exit-baseline-ko-1267x753.jpg",
+      "sha256": "68de1c61f283243a736dc5f54de6556788e8f4979433d07789f7606f5ff862e7"
+    },
+    {
+      "path": "references/save-exit-window.png",
+      "historical_filename": "town-loop-frame-save-exit-window-ko-1922x1140.png",
+      "sha256": "44ffa57b183df9e1a95fd95976c5c0dc99153cfe2029026acf87d6302fe9459d"
+    },
+    {
+      "path": "templates/difficulty-header-full-modal.png",
+      "historical_filename": "town-loop-template-difficulty-header-full-modal-ko.png",
+      "sha256": "be0d13d824488faa2b1b9b8938b0cf217b4fe3593fde643e5e55c6bc5c0a35c9"
+    },
+    {
+      "path": "templates/difficulty-header.png",
+      "historical_filename": "town-loop-template-difficulty-header-ko-89x19.png",
+      "sha256": "02723f5a4cf38ca26ad3e6b38118400d1c2064a5b3192bb059c84ed860fd0792"
+    },
+    {
+      "path": "templates/difficulty-header-reviewed-extra.png",
+      "historical_filename": "town-loop-template-difficulty-header-reviewed-extra-ko-89x19.png",
+      "sha256": "9d315370627e51413c9490f77e402d8901d3939e146e7a44d3da1f2e2d39c825"
+    },
+    {
+      "path": "templates/difficulty-header-reviewed-window.png",
+      "historical_filename": "town-loop-template-difficulty-header-reviewed-window-ko-89x19.png",
+      "sha256": "8255dafb016ac6ddcc119a8c75b1470a816653a6c33f845656b0245bb5764fd4"
+    },
+    {
+      "path": "templates/difficulty-header-window.png",
+      "historical_filename": "town-loop-template-difficulty-header-window-ko-89x19.png",
+      "sha256": "20af54d87bfa2929a87b26b453338723f151e46e263f2de2588820ffc52d997b"
+    },
+    {
+      "path": "templates/difficulty-hell-full-modal.png",
+      "historical_filename": "town-loop-template-hell-full-modal-ko.png",
+      "sha256": "9cedf220602bd7d518308c0b5e70cbf68ccce9f2c9bdbdad7a66853c0f06a1ff"
+    },
+    {
+      "path": "templates/difficulty-hell.png",
+      "historical_filename": "town-loop-template-hell-ko-134x23.png",
+      "sha256": "bf66880dab507c4315591ee5a34e080b608d12235b89ffc37c53630b54394276"
+    },
+    {
+      "path": "templates/difficulty-hell-reviewed-window.png",
+      "historical_filename": "town-loop-template-hell-reviewed-window-ko-134x23.png",
+      "sha256": "2bbbfc86f8185aed640f0dcdd683e49a2897a1af0cc94d72037f1e24c9224c5a"
+    },
+    {
+      "path": "templates/difficulty-hell-window.png",
+      "historical_filename": "town-loop-template-hell-window-ko-134x23.png",
+      "sha256": "72870fe3641395113c70d67aca9759b5fee6761c974542a4d855906c251e1fb7"
+    },
+    {
+      "path": "templates/hud.png",
+      "historical_filename": "town-loop-template-hud-ko-34x43.png",
+      "sha256": "d669ec914b3730a65c06010be04f8366853eff59d95400361278bc325fc68ebf"
+    },
+    {
+      "path": "templates/hud-reviewed-window.png",
+      "historical_filename": "town-loop-template-hud-reviewed-window-ko-34x43.png",
+      "sha256": "bdcdf45985ef392e54048752e0a342691042762829bfe514dc8348790f03063d"
+    },
+    {
+      "path": "templates/hud-window.png",
+      "historical_filename": "town-loop-template-hud-window-ko-34x43.png",
+      "sha256": "e9420c2b3912f62c22dc72f83c481e43bb67476ffb16b54561c3c94ee07ce152"
+    },
+    {
+      "path": "templates/difficulty-nightmare-full-modal.png",
+      "historical_filename": "town-loop-template-nightmare-full-modal-ko.png",
+      "sha256": "aaa06481c47aa5482f83bcceed179472f46cfc49a4d2b82d9e83de8097558c04"
+    },
+    {
+      "path": "templates/difficulty-nightmare.png",
+      "historical_filename": "town-loop-template-nightmare-ko-134x23.png",
+      "sha256": "9c74e18a5c31106475d32afffb296754d744e53f443728cf8215cc865498b636"
+    },
+    {
+      "path": "templates/difficulty-nightmare-reviewed-window.png",
+      "historical_filename": "town-loop-template-nightmare-reviewed-window-ko-134x23.png",
+      "sha256": "ce6ca2bbe1bce24371d96a0347f93fc0eb8a75b3f7935278aeb2b8f044bbf0e1"
+    },
+    {
+      "path": "templates/difficulty-nightmare-window.png",
+      "historical_filename": "town-loop-template-nightmare-window-ko-134x23.png",
+      "sha256": "e03b57f9aaea00cbf35412bc88be9f28885c5c9854d06298450b23712a34376d"
+    },
+    {
+      "path": "templates/difficulty-normal-full-modal.png",
+      "historical_filename": "town-loop-template-normal-full-modal-ko.png",
+      "sha256": "88b5e3608ce218c2f36eec168d0c187ecf609ea3eb2e7c020c97ec2f50e2a142"
+    },
+    {
+      "path": "templates/difficulty-normal.png",
+      "historical_filename": "town-loop-template-normal-ko-134x23.png",
+      "sha256": "0e6f768d4f03414a13502e271bc4c45775d711038e33c491cd3dd46969b4e853"
+    },
+    {
+      "path": "templates/difficulty-normal-reviewed-window.png",
+      "historical_filename": "town-loop-template-normal-reviewed-window-ko-134x23.png",
+      "sha256": "518733f99dee68122e7ee1aaa97fd701584ef67800e127d1a863081d218ce008"
+    },
+    {
+      "path": "templates/difficulty-normal-window.png",
+      "historical_filename": "town-loop-template-normal-window-ko-134x23.png",
+      "sha256": "e9cc2dd6abe81a2145f7b412786891f1e9eadea3743c2cc59db5313e9f752bab"
+    },
+    {
+      "path": "../../world-labels/npc-cancel.png",
+      "historical_filename": "town-loop-template-npc-cancel-ko-27x13.png",
+      "sha256": "9d33c2faa6a6f690284c67237dc7ecf1595ab4ff6f498d3358cdccdd5788e770"
+    },
+    {
+      "path": "templates/play.png",
+      "historical_filename": "town-loop-template-play-ko-108x25.png",
+      "sha256": "7f3d8545e826a36dd0ae17449b2965d5539c134de6bb9610645887fbfdd7d588"
+    },
+    {
+      "path": "templates/play-window.png",
+      "historical_filename": "town-loop-template-play-window-ko-108x25.png",
+      "sha256": "5b40c5ee44cc40aa3b9b7e3a230921f430dba4c41631429f82d3d89cb4b7c36d"
+    },
+    {
+      "path": "templates/save-exit.png",
+      "historical_filename": "town-loop-template-save-exit-ko-165x25.png",
+      "sha256": "200f1955f73480ff376774bc22669486ca6f221102dc5c77779c1f1762913d92"
+    },
+    {
+      "path": "templates/save-exit-reviewed-window.png",
+      "historical_filename": "town-loop-template-save-exit-reviewed-window-ko-165x25.png",
+      "sha256": "f854b5e5c63fa971ff6b25e0eef6802e117d8b1d1075c9f5d865b8d7ec2803a4"
+    },
+    {
+      "path": "templates/save-exit-window.png",
+      "historical_filename": "town-loop-template-save-exit-window-ko-165x25.png",
+      "sha256": "eb35e9c348ec6960c36d705014492f5f68046e917574933a5d51df79194dc627"
+    },
+    {
+      "path": "../../waypoint/templates/waypoint-header.png",
+      "historical_filename": "town-loop-template-waypoint-header-ko-85x21.png",
+      "sha256": "4a753719cb4427122da89a633c0f8de3dfcb2453733e4069f4c8e0c2d565a1de"
+    },
+    {
+      "path": "../../waypoint/templates/waypoint-header-reviewed-window.png",
+      "historical_filename": "town-loop-template-waypoint-header-reviewed-window-ko-85x21.png",
+      "sha256": "db3d3c9ede918f884a21e8ea443b4de59ace304dcd8153fe878f57872c6e3944"
+    }
+  ]
+}

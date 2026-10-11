@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import threading
 import time
+from dataclasses import asdict
 from pathlib import Path
 
 from diablo2.common.config import CaptureConfig, load_config
@@ -13,74 +13,22 @@ from diablo2.common.field_control import FieldDirective, HeldFieldInput
 from diablo2.common.survival_vision import SurvivalHudObserver
 
 
-def validate_permit(permit, character, policy, now, *, buff=False):
-    required = ("field", "monsters_clear", "belt_closed")
-    if not buff:
-        required += ("buff_effect_verified", "equipment_restored")
-    if permit.get("character_id") != character or any(permit.get(key) is not True for key in required):
-        raise ValueError("explicit supervised field/buff/equipment/belt confirmations required")
-    at = permit.get("observed_at")
-    if type(at) not in (int, float) or not math.isfinite(at) or not 0 <= now - at <= 15:
-        raise ValueError("supervised permit is stale")
-    count = permit.get("potions_remaining")
-    if type(count) is not int or not 1 <= count <= sum(c.capacity for c in policy.belt_columns if c.kind == policy.potion_kind):
-        raise ValueError("confirmed nonempty purple belt required")
-    if not buff:
-        casts = permit.get("buff_casts", {})
-        if any(
-            type(casts.get(rule.name)) not in (int, float)
-            or not math.isfinite(casts[rule.name])
-            or not 0 <= now - casts[rule.name] < rule.duration_seconds - rule.renew_before_seconds
-            for rule in policy.buffs
-        ):
-            raise ValueError("confirmed buff already due or missing cast time")
-
-
-class RecordingInput:
-    def __init__(self, backend, clock=time.monotonic):
-        self.backend, self.clock, self.events = backend, clock, []
-
-    def _send(self, action, *args):
-        row = {"action": action, "args": args, "at": self.clock(), "wall_at": time.time(), "sent": False}
-        self.events.append(row)
-        getattr(self.backend, action)(*args)
-        row["sent"] = True
-
-    def key_down(self, key):
-        self._send("key_down", key)
-
-    def key_up(self, key):
-        self._send("key_up", key)
-
-    def press(self, key):
-        self._send("press", key)
-
-    def move(self, x, y):
-        self._send("move", x, y)
-
-
-def resource_guard(reading, policy):
-    if reading.belt_visibility != "closed" or reading.life.ratio is None or reading.mana.ratio is None:
-        return "observation_unverified"
-    if reading.life.ratio < policy.life_potion_below or reading.mana.ratio < policy.mana_potion_below:
-        return "resource_low"
-    return None
-
-
-def wait_readable_resources(capture, hud, focused, policy, stop, deadline, *, clock=time.monotonic):
-    while clock() < deadline and not stop.is_set():
-        if not focused():
-            return "focus_lost"
-        acquired = clock()
-        reading = hud.observe(capture.grab().frame)
-        if clock() - acquired >= 0.25:
-            return "screen_stale"
-        blocked = resource_guard(reading, policy)
-        if blocked != "observation_unverified":
-            return blocked
-        # 잠깐 가려진 글자는 입력 없이 새 화면을 기다린다. 이전 최대값을 재사용하지 않는다.
-        stop.wait(0.02)
-    return "observation_unverified" if not stop.is_set() else "interrupted"
+from diablo2.common.supervised_field import (
+    RecordingInput,
+    confirm_initial_probe,
+    dispatch_buffs,
+    read_probe_signals,
+    resource_guard,
+    validate_permit,
+    wait_probe_signal,
+    wait_readable_resources,
+)
+from diablo2.runs.summoner.navigation_execution import (
+    dispatch_planned_step,
+    load_arcane_step_planner,
+    observe_step_landing,
+    plan_arcane_step,
+)
 
 
 def hold_probe(capture, hud, inputs, focused, policy, action, seconds, aim, stop, *, buff_deadline, clock=time.monotonic):
@@ -152,44 +100,23 @@ def hold_probe(capture, hud, inputs, focused, policy, action, seconds, aim, stop
     return {"status": reason[0], "held_after": sorted(inputs.held), "errors": errors, "observations": rows}
 
 
-def dispatch_buffs(capture, hud, backend, focused, profile, stop):
-    # 짧은 감독 준비용이다. 전송 기록은 효과나 안전의 자동 확인이 아니다.
-    events, swapped, status = [], False, "dispatched_unconfirmed"
-    began = time.monotonic()
-    try:
-        for token in profile.actions.pre_run_buff_order:
-            if stop.is_set() or not focused() or time.monotonic() - began >= 8:
-                status = "interrupted"
+def wait_renewal_deadline(due, *, capture, hud, focused, policy, stop, clock=time.monotonic, progress=lambda remaining: None):
+    last_progress = None
+    while not stop.is_set() and clock() < due:
+        blocked = wait_readable_resources(capture, hud, focused, policy, stop, min(due, clock() + 0.75), clock=clock)
+        if blocked:
+            # 시한 직전에 관찰을 마쳤다면 다음 단계가 새 화면을 다시 확인한다.
+            if blocked == "observation_unverified" and clock() >= due:
                 break
-            blocked = wait_readable_resources(capture, hud, focused, profile.survival, stop, min(began + 8, time.monotonic() + 0.75))
-            if blocked:
-                status = blocked
-                break
-            if stop.is_set() or not focused() or time.monotonic() - began >= 8:
-                status = "interrupted_or_stale"
-                break
-            if token in ("right-click", "left-click"):
-                raise ValueError("this probe supports configured keyboard buff sequences only")
-            at = time.time()
-            backend.press(token)
-            events.append({"key": token, "cast_request_at": at})
-            if token == "w":
-                swapped = not swapped
-            stop.wait(profile.actions.buff_action_pause_seconds.get(token, 0.4))
-    finally:
-        # 성공한 장비 전환 한 번 뒤 중단됐다면 포커스가 유지될 때만 복원 전송한다.
-        if swapped and focused():
-            backend.press("w")
-            events.append({"key": "w", "purpose": "restore_after_interrupt", "cast_request_at": time.time()})
-            swapped = False
-    return {
-        "status": status,
-        "buff_dispatches": events,
-        "equipment_dispatch_balanced": not swapped,
-        "effect_verified": False,
-        "held_after": [],
-        "errors": [],
-    }
+            raise RuntimeError("renewal monitor: " + blocked)
+        remaining = max(0, due - clock())
+        bucket = int(remaining // 10)
+        if bucket != last_progress:
+            progress(remaining)
+            last_progress = bucket
+        stop.wait(min(0.02, remaining))
+    if stop.is_set():
+        raise RuntimeError("renewal monitor interrupted")
 
 
 def main(argv=None):
@@ -201,16 +128,40 @@ def main(argv=None):
     permits.add_argument("--permit", type=Path)
     permits.add_argument("--permit-stdin", action="store_true", help="Prepare capture/backend before waiting for one fresh JSON line")
     parser.add_argument("--action", choices=("travel", "combat", "buff"), required=True)
+    parser.add_argument("--buff-trace", action="store_true", help="Capture bounded per-key buff frames in memory; save after input cleanup")
+    parser.add_argument(
+        "--renew-once", action="store_true", help="Prepare one configured timer renewal; requires fresh supervised proof and safety"
+    )
     parser.add_argument("--seconds", type=float, default=0.5)
+    parser.add_argument(
+        "--step-after-buff",
+        choices=("north", "east", "south", "west"),
+        help="One experimental current-frame step after fresh supervised effect/safety proof",
+    )
     parser.add_argument("--aim", type=int, nargs=2, help="Reviewed native window point")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.buff_trace and args.action != "buff":
+        parser.error("--buff-trace requires --action buff")
+    if args.renew_once and (args.action != "buff" or not args.permit_stdin):
+        parser.error("--renew-once requires --action buff and --permit-stdin")
+    if args.step_after_buff and (
+        args.action != "buff" or not args.permit_stdin or args.character != "flash" or args.renew_once or args.seconds > 0.1
+    ):
+        parser.error("--step-after-buff requires Flash buff/stdin mode, no renewal, and at most 0.1 seconds")
     if not 0 < args.seconds <= 1.0 or (args.action != "buff" and args.aim is None):
         parser.error("hold requires aim and duration in (0,1] seconds")
     config = load_config(args.config)
     profile = config.characters[args.character]
     if profile.survival is None:
         parser.error("character survival policy required")
+    step_planner = load_arcane_step_planner() if args.step_after_buff else None
+    step_reference = None
+    if args.step_after_buff:
+        estimate = config.casting_rules.estimate(profile.ruleset_family, profile.character_class, profile.casting)
+        if estimate.action != "estimate" or estimate.frames is None:
+            parser.error("step requires configured class/FCR reference")
+        step_reference = estimate.frames / 25.0
     from diablo2.common.capture import USER32, ScreenCapture, resolve_window_from_config
     import cv2 as cv
     import keyboard
@@ -234,6 +185,9 @@ def main(argv=None):
     )
     inputs = HeldFieldInput(backend, profile.actions.movement_skill_key, profile.actions.primary_attack_skill_key)
     stop, hotkeys = threading.Event(), []
+    trace_frames = [] if args.buff_trace else None
+    renewal_trace = [] if args.buff_trace and args.renew_once else None
+    output_created = False
     report = {"status": "preparation_error", "errors": []}
     try:
         if args.permit_stdin:
@@ -249,6 +203,7 @@ def main(argv=None):
         except ValueError as exc:
             parser.error(str(exc))
         args.output.mkdir(parents=True, exist_ok=False)
+        output_created = True
         for key in (config.hotkeys.stop, config.hotkeys.pause):
             hotkeys.append(keyboard.add_hotkey(key, lambda: stop.set()))
         first = capture.grab().frame
@@ -256,7 +211,90 @@ def main(argv=None):
         # 준비 시간은 유지 시간에 넣지 않고, 준비 후 승인/효과의 시한을 다시 확인한다.
         validate_permit(permit, args.character, profile.survival, time.time(), buff=args.action == "buff")
         if args.action == "buff":
-            report = dispatch_buffs(capture, hud, backend, focused, profile, stop)
+            report = dispatch_buffs(capture, hud, backend, focused, profile, stop, trace_frames=trace_frames)
+            if args.step_after_buff and report["status"] == "dispatched_unconfirmed":
+                signals = read_probe_signals()
+                print("AWAIT_STEP_EFFECT: fresh supervised_visual effect/equipment and field safety required", flush=True)
+                proof = wait_probe_signal(
+                    signals,
+                    capture=capture,
+                    hud=hud,
+                    focused=focused,
+                    policy=profile.survival,
+                    stop=stop,
+                    deadline=time.monotonic() + 60,
+                    phase="initial_effect",
+                    accept=lambda signal: confirm_initial_probe(
+                        signal, args.character, report["buff_dispatches"][-1]["cast_request_at"], time.time()
+                    ),
+                )
+                validate_permit(proof, args.character, profile.survival, time.time(), buff=True)
+                report["initial_supervised_confirmation"] = proof
+                acquired = time.monotonic()
+                frame = capture.grab().frame
+                choice, ground_reading, view = plan_arcane_step(frame, args.step_after_buff, *step_planner, acquired)
+                blocked = resource_guard(hud.observe(frame), profile.survival)
+                if blocked:
+                    raise RuntimeError(blocked)
+                validate_permit(proof, args.character, profile.survival, time.time(), buff=True)
+                aim = (capture.target["left"] + choice.aim[0], capture.target["top"] + choice.aim[1])
+                report["path_choice"] = asdict(choice)
+                report["player_ground"] = asdict(ground_reading)
+                report["planned_frame_at"] = acquired
+                if dispatch_planned_step(backend, focused, stop, aim, profile.actions.movement_skill_key, acquired):
+                    report["navigation"] = observe_step_landing(
+                        capture, hud, focused, profile.survival, stop, frame, view, choice, *step_planner, reference_seconds=step_reference
+                    )
+                else:
+                    report["navigation"] = {"status": "dispatch_blocked"}
+                report["status"] = "step_arrival_observed" if report["navigation"]["status"] == "arrival_observed" else "step_failed"
+            if args.renew_once and report["status"] == "dispatched_unconfirmed":
+                if len(profile.survival.buffs) != 1:
+                    raise ValueError("timer probe requires one explicit timed buff rule")
+                rule = profile.survival.buffs[0]
+                cast = next(row for row in reversed(report["buff_dispatches"]) if row["key"] == rule.key)
+                due = cast["cast_request_monotonic"] + rule.duration_seconds - rule.renew_before_seconds
+                signals = read_probe_signals()
+                print("AWAIT_INITIAL_EFFECT: fresh supervised_visual confirmation required; no renewal armed", flush=True)
+                proof = wait_probe_signal(
+                    signals,
+                    capture=capture,
+                    hud=hud,
+                    focused=focused,
+                    policy=profile.survival,
+                    stop=stop,
+                    deadline=min(due, time.monotonic() + 60),
+                    phase="initial_effect",
+                    accept=lambda signal: confirm_initial_probe(
+                        signal, args.character, report["buff_dispatches"][-1]["cast_request_at"], time.time()
+                    ),
+                )
+                report["initial_supervised_confirmation"] = proof
+                report["renewal_due_monotonic"] = due
+                wait_renewal_deadline(
+                    due,
+                    capture=capture,
+                    hud=hud,
+                    focused=focused,
+                    policy=profile.survival,
+                    stop=stop,
+                    progress=lambda remaining: print("RENEWAL_TIMER: {:.3f} seconds remaining".format(remaining), flush=True),
+                )
+                print("AWAIT_RENEWAL_SAFETY: prepared executor requires one fresh permit within 10 seconds", flush=True)
+                renewal_permit = wait_probe_signal(
+                    signals,
+                    capture=capture,
+                    hud=hud,
+                    focused=focused,
+                    policy=profile.survival,
+                    stop=stop,
+                    deadline=due + 10,
+                    phase="renewal_safety",
+                    accept=lambda signal: validate_permit(signal, args.character, profile.survival, time.time(), buff=True),
+                )
+                validate_permit(renewal_permit, args.character, profile.survival, time.time(), buff=True)
+                report["renewal"] = dispatch_buffs(capture, hud, backend, focused, profile, stop, trace_frames=renewal_trace)
+                report["status"] = "renewed_unconfirmed" if report["renewal"]["status"] == "dispatched_unconfirmed" else "renewal_failed"
         else:
             remaining = min(
                 permit["buff_casts"][b.name] + b.duration_seconds - b.renew_before_seconds - time.time() for b in profile.survival.buffs
@@ -275,6 +313,11 @@ def main(argv=None):
                 buff_deadline=time.monotonic() + remaining,
             )
         cv.imwrite(str(args.output / "after.png"), capture.grab().frame)
+    except Exception as exc:
+        if not output_created:
+            raise
+        report["status"] = "probe_error"
+        report["errors"].append(str(exc))
     finally:
         stop.set()
         try:
@@ -292,11 +335,31 @@ def main(argv=None):
     report.update(
         mode="live_supervised_probe" if args.live else "dry_probe", action=args.action, seconds=args.seconds, input_events=backend.events
     )
+    if trace_frames is not None:
+        # 제어가 끝나고 눌린 입력/캡처를 정리한 뒤에만 이미지 파일을 저장한다.
+        report["buff_trace"] = []
+        for frame, metadata in trace_frames:
+            filename = "buff-step-{:02d}.png".format(metadata["index"])
+            if not cv.imwrite(str(args.output / filename), frame):
+                raise RuntimeError("Could not save buff trace frame")
+            report["buff_trace"].append(dict(metadata, frame=filename))
+    if renewal_trace is not None:
+        report["renewal_trace"] = []
+        for frame, metadata in renewal_trace:
+            filename = "renewal-step-{:02d}.png".format(metadata["index"])
+            if not cv.imwrite(str(args.output / filename), frame):
+                raise RuntimeError("Could not save renewal trace frame")
+            report["renewal_trace"].append(dict(metadata, frame=filename))
     if args.action != "buff" and not any(e["action"] == "key_down" and e["sent"] for e in backend.events):
         report["status"] = "no_input_" + report["status"]
     (args.output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False))
-    return 0 if report["status"] in ("duration_complete", "dispatched_unconfirmed") and not report["errors"] else 2
+    return (
+        0
+        if report["status"] in ("duration_complete", "dispatched_unconfirmed", "renewed_unconfirmed", "step_arrival_observed")
+        and not report["errors"]
+        else 2
+    )
 
 
 if __name__ == "__main__":

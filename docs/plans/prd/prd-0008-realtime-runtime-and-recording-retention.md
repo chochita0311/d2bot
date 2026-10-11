@@ -3,19 +3,19 @@
 ## Metadata
 
 - ID: `prd-0008`
-- Status: `draft`
+- Status: `approved` — Summoner 구현의 선행 조건 중 FEAT-0009의 단일 시계·관찰 무효화 경계를 실행한다. 전체 저장/retention과 장시간 실게임 완료는 아님.
 - Owner role: `human`
-- Created / Updated: `2026-10-05`
+- Created: `2026-10-05`; Updated: `2026-10-11`
 
 ## Request Summary
 
-텔레포트처럼 화면이 빠르게 바뀌는 런에서 저장·인코딩·로그·정리가 최신 관찰과 생존/이동 제어를 지연시키지 않도록 한다. 향후 100–200회 반복에서도 대기 데이터·메모리·디스크 사용량이 무한히 증가하지 않는 공통 기록 수명주기를 정의한다. 현재 마을 구현은 유지하며 이번 요청은 후속 설계 조건을 기록하는 범위다.
+텔레포트처럼 화면이 빠르게 바뀌는 런에서 저장·인코딩·로그·정리가 최신 관찰과 생존/이동 제어를 지연시키지 않도록 한다. 향후 100–200회 반복에서도 대기 데이터·메모리·디스크 사용량이 무한히 증가하지 않는 공통 기록 수명주기를 정의한다. `2026-10-09` 사용자가 전체 Summoner 구현·감독 검증을 지시하여 [FEAT-0009](../feature/feat-0009-runtime-observation-provenance.md)의 시각/관찰 계약부터 실행한다. 저장 상한의 실제 값과 이후 운영 확대는 해당 기능에서 확인한다.
 
 ## Source Set
 
 - Human request: 2026-10-05 실시간 동작과 저장 역할의 스레드 분리, F5 참고, 장시간 반복의 overflow 방지·retention; 앞선 세션 종료 시 개발자료 정리 지시.
 - Local reference: F5의 `docs/architecture/data-pipeline.md`, `docs/policies/latency-and-integrity.md`, `internal/application/ingest/queue.go`, `internal/application/journal/writer.go`, `internal/application/stream/pipeline.go`, `scripts/inspect-operational-log-retention`을 읽기 전용으로 확인했다. 고정 크기 admission, 단일 writer, batch, 포화·종료 처리의 원칙을 참고한다. F5의 금융 durability barrier나 기간 수치를 이 프로젝트로 복제하지 않는다. 마지막 script는 삭제 후보 조사이며 실제 삭제기가 아니다.
-- Current implementation: [마을 세션](../../../diablo2/actions/run_lifecycle.py), [실시간 worker](../../../diablo2/common/realtime.py), [비동기 로그](../../../diablo2/common/async_log.py), [녹화](../../../diablo2/actions/recording.py).
+- Current implementation: [마을 세션](../../../diablo2/actions/run_lifecycle.py), [실시간 worker](../../../diablo2/common/realtime.py), [현재 Summoner 기록/실행](../../../diablo2/runs/summoner/main_run.py), [녹화](../../../diablo2/actions/recording.py). 옛 북쪽 실행기의 유일한 소비자가 제거된 `async_log.py`는 2026-10-11 정리에서 삭제했다. GUI의 제한된 텍스트 표시와 main의 방별 증거/보고서 기록을 장시간 공통 큐·보존 한도의 완성으로 보지 않는다.
 - Owners: [아키텍처](../../project/architecture.md#future-real-time-observation-and-recording), [개발자료 정리](../../project/developer-guide.md#evidence-handling), [설정 현황](../../../config/system/system.md), [실험 계획](../../features/summoner-experiment-plan.md).
 
 ## Product Intent
@@ -57,7 +57,7 @@
 
 ## Constraints
 
-현재 북쪽 runtime은 capture/fast/slow/decision worker와 최신 프레임·최근 5개 버퍼를 갖는다. 로그는 유한 큐/rotation을 갖지만 중요 로그 포화 시 호출자 동기 쓰기 fallback이 있다. 마을 evidence 저장은 동기식이며 timing 목록을 종료까지 누적한다. 이 부분들의 존재가 본 PRD의 분리·상한 계약 충족을 의미하지 않는다.
+2026-10-05 조사 당시 옛 북쪽 runtime은 capture/fast/slow/decision worker와 최신 프레임·최근5개 버퍼를 갖췄고, 옛 async_log는 유한 큐/rotation과 중요 로그 포화 시 호출자 동기 쓰기 fallback을 사용했다. 이 실행부와 유일한 소비자가 사라진 logger는2026-10-11 제거됐으므로 현재 main의 기록 구조로 안내하지 않는다. 현재 main은 화면을 동기적으로 하나씩 처리하고 방별 증거/보고서를 남긴다. 마을 evidence 저장의 동기식 처리와 종료까지 누적하는 timing 목록도 장시간 공통 큐·보존 상한의 완성 근거가 아니다. 이 부분들의 존재가 본 PRD의 분리·상한 계약 충족을 의미하지 않는다.
 
 저장 분리만으로 CPU 경쟁·lock·메모리 복사·스케줄링 지연이 없어지지 않는다. [생존](prd-0004-summoner-survival-and-buffs.md), [탐색](prd-0005-arcane-navigation-and-recovery.md), [완전 런](prd-0006-summoner-combat-and-loot.md)의 안전/관찰 전제를 유지한다. 캡처·생존 제어 실패와 진단 누락을 같은 정책으로 처리하지 않는다.
 
@@ -83,10 +83,11 @@
 - Foundation 후보: task/활성 파일 소유권과 메모리·디스크 보존 상한 계약.
 - Product 후보: segment rotation·용량/기간 정리·종료 복구와 상태 표시.
 
-후보는 미승인이다. 실행 spec·코드·게임 부하 테스트는 별도 경계 승인 뒤 진행한다.
+첫 관찰 시각/세대 계약은 FEAT-0009로 구체화하여 실행한다. 나머지 후보는 운영값·검증 조건을 정한 기능 경계에서 진행하며, 전체 PRD의 구현 요청을 실제 100–200회 게임 실행 승인으로 확대하지 않는다.
 
 ## Continuity Notes
 
 - `2026-10-05`: 사용자 실시간 경로 분리·100/200회 retention 요구와 F5의 bounded writer 참고를 반영. 마을 기능 변경·자료 삭제·실제 게임 실행은 수행하지 않았다.
 - `2026-10-05`: 시즌 초반/고급 장비의 적응형 텔레포트 요구에 필요한 시각·행동 세대와 지연 구분을 추가했다. 이동 정책은 PRD-0005 소유이며 이번 추가는 runtime 코드나 실행 승인 변경이 아니다.
 - `2026-10-05`: 직업/스킬 공통 규칙·활성 장비/FCR 변경에도 과거 관찰을 재사용하지 않도록 조건 유효성을 보완했다. 표의 수치·개인 설정을 이 PRD에서 중복 소유하지 않는다.
+- `2026-10-09`: 사용자가 전체 Summoner 요구사항 확정·구현·감독 검증을 명시했다. 기존 북쪽 runtime과 공통 필드 제어의 시계 연결 및 늦은 인식 무효화를 FEAT-0009에서 먼저 구현한다. 저장 상한과 실게임 수용 기준의 미확정 값은 해당 기능에서 확인한다.

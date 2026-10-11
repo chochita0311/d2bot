@@ -1,0 +1,744 @@
+{
+  "schema_version": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "appearance": "reviewed_sorceress_with_energy_shield",
+  "marker": {
+    "path": "ground-marker.png",
+    "source_sha256": "4b83c4a6bb1919726f4025dfae9024dc94787159373364c33246c2a3046879f5",
+    "canvas_box": [
+      946,
+      568,
+      981,
+      590
+    ],
+    "search_box": [
+      820,
+      480,
+      1120,
+      700
+    ],
+    "anchor_offset": [
+      16,
+      10
+    ],
+    "minimum_score": 0.8,
+    "projection_status": "marker reference; physical ground projection not yet independently verified",
+    "variants": [
+      "ground-marker-central-landing.png",
+      "ground-marker-stair-candles.png"
+    ],
+    "variant_sources": [
+      {
+        "file": "references/ground-central-landing-actual-main.png",
+        "canvas_box": [
+          820,
+          380,
+          1120,
+          700
+        ],
+        "crop": [
+          946,
+          568,
+          981,
+          590
+        ],
+        "point": [
+          962,
+          578
+        ],
+        "review": "supervised reviewed sorceress after actual main teleport; ES above and cross aligned with feet; original marker score .867190 below .88, threshold unchanged",
+        "crop_sha256": "2441d514929513a9bf58128fe5c8a0d1440da3786ecc3362d88bc0589d5f8ab6",
+        "reference_sha256": "4c45ed01189e6348b71da1852655ffdae2318401268ae36ab5d9d7609ab39801"
+      },
+      {
+        "file": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/return-stair-candles.png",
+        "canvas_box": [
+          0,
+          0,
+          1922,
+          1140
+        ],
+        "crop": [
+          946,
+          570,
+          981,
+          592
+        ],
+        "point": [
+          962,
+          580
+        ],
+        "source_sha256": "061749cf39714068355640c798682553f4719c1c52ae60718c8164f5fe885bcf",
+        "review": "2026-10-10 live100: primary reviewed sorceress cyan cross aligned with feet and same-frame ES above; candle/aura blend; old marker score .750467; threshold .8 unchanged.",
+        "crop_sha256": "a91b596dbeec3c35ac5042e2d83c9557f9199afb4f14abd77a124ae4b40c1584",
+        "reference_sha256": "061749cf39714068355640c798682553f4719c1c52ae60718c8164f5fe885bcf"
+      }
+    ],
+    "tuning_review": "2026-10-09 live33: actual cyan scores .817405..913623; raw-or-Open3 ES, fill >= .30; all 14 retained positives preserved, 7 retained and 12 live pre-ES negatives rejected; no ambiguity/overflow in bounded replay",
+    "body": {
+      "box_offset": [
+        -24,
+        -120,
+        24,
+        -40
+      ],
+      "minimum_score": 0.82,
+      "templates": [
+        "templates/body/arch-occluded.png",
+        "templates/body/bridge.png",
+        "templates/body/map-hidden.png",
+        "templates/body/map-hidden-rear.png"
+      ],
+      "sha256": {
+        "templates/body/arch-occluded.png": "127e922216fa148eb078b4d215475464477b0fbc9e8a3623cc8441f75180f813",
+        "templates/body/bridge.png": "c249a0c4a3c2344b01e336b9ad0b34e7be1f1a31a6a01047f1d0372bbddc7f6b",
+        "templates/body/map-hidden.png": "4d0aed05bb257375b20fcbca7e8c6efd7af7664bfb4f5e04188baf8df8716e58",
+        "templates/body/map-hidden-rear.png": "634e9f29af42c01925af1b4d44dcd3d9a9a7ef0441e8150ab3f6602bf5fbde97"
+      },
+      "note": "Reviewed sorceress body crops at current positive cyan marker (962,578); optional identity fallback when ES is occluded, not buff-effect proof.",
+      "map_hidden_references": [
+        {
+          "path": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden.png",
+          "source_sha256": "f69187b0a0b079b6e66eb1b7fde6f8facdc40041e23619b6a690228b11da5f87",
+          "point": [
+            962,
+            578
+          ],
+          "crop": [
+            938,
+            458,
+            986,
+            538
+          ],
+          "review": "2026-10-10 root visual review of live106: actual reviewed sorceress feet/body and ES; automap hidden; same-frame body+ES fallback only, no fixed-center substitution"
+        },
+        {
+          "path": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden-rear.png",
+          "source_sha256": "6027169e86d19132ab975e69aaaff5e17243a2023b8adeef0f763198e79a0bb2",
+          "point": [
+            962,
+            578
+          ],
+          "crop": [
+            938,
+            458,
+            986,
+            538
+          ],
+          "review": "2026-10-10 root review of live108: rear-facing reviewed sorceress feet/body and ES; map hidden; aura and reflection are not separate players; physical ground projection still limited calibration"
+        }
+      ],
+      "map_hidden_shape_reference": {
+        "path": "../../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden-side.png",
+        "sha256": "3a107eba2a815a58d61e040b10aafbdde4f2752d95d52c7f8f34f82767a9164c",
+        "reviewed_ground": [
+          961,
+          580
+        ],
+        "scope": "Current ES with vertical colored body foreground; no template confidence or physical projection proof"
+      }
+    },
+    "tracking": {
+      "maximum_seconds": 1.5,
+      "maximum_gap_seconds": 0.25,
+      "maximum_displacement": 8
+    },
+    "asset_sha256": "3dcde1dece3c9d72d1810abdd94be024f9e6b6b64608b95f4e83df7f24987397",
+    "variant_asset_sha256": {
+      "ground-marker-central-landing.png": "2441d514929513a9bf58128fe5c8a0d1440da3786ecc3362d88bc0589d5f8ab6",
+      "ground-marker-stair-candles.png": "a91b596dbeec3c35ac5042e2d83c9557f9199afb4f14abd77a124ae4b40c1584"
+    }
+  },
+  "ground_references": [
+    {
+      "path": "references/buff-initial-buff-step-00.png",
+      "source_sha256": "dd22113f9f94285a0e7eedbb9d7997ac41cee3add7b0fc3cebe5271a83d34ce8",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": false,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-01.png",
+      "source_sha256": "49ca24125227c7d21839d16536a9db96067100d4d1a93585403e40cbeb781b81",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": false,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-02.png",
+      "source_sha256": "05f241740d1617d01421fbe5eacb3d4e64174aa1929d40fa9fbe0d9db9f5e6fa",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": false,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-03.png",
+      "source_sha256": "f204bddc466efcf8c2640cb7a2d908d33d6c5823a8c2d6bcf27fc5f4d39d29f0",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": false,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-04.png",
+      "source_sha256": "09420c00734cf59d3eef30d9c0407ef92047afdce97f30f73118a3b1b1a58860",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.978891134262085,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-05.png",
+      "source_sha256": "3f3d4de54888a95266acc808629a8b03a174f43980a021fd3805d8bd51d847b9",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9620713591575623,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-initial-buff-step-06.png",
+      "source_sha256": "4b83c4a6bb1919726f4025dfae9024dc94787159373364c33246c2a3046879f5",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9999999403953552,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-00.png",
+      "source_sha256": "9afc639ec66b8a7837dffa3602c45bad87dec590e025c2ccf3febde85e90ade4",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.913979172706604,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-01.png",
+      "source_sha256": "624d14e25092ad637e462bfb3ec421ecc7d26d7ccaf1ad0407b36f31be978f12",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-02.png",
+      "source_sha256": "aee5e580d0bd4933b675fd3c7bf871203261b7f036419760e72d97322ce75b53",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9225983023643494,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-03.png",
+      "source_sha256": "a6620d8bb4caf102e1e78b792d8332a40d2b211c2c6aa761fded59281113e4a9",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-04.png",
+      "source_sha256": "f76b7adf34c448728ae3a7c9b1281fd95b4060e0baeedd7c129606bf6529b76c",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9226386547088623,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-05.png",
+      "source_sha256": "fc8d1826aa2e00d7431ef244cea05a55593ff7b224fb64472f97dba575b125d3",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9124460220336914,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-buff-step-06.png",
+      "source_sha256": "359f782e656fef87464fadfd4271040f4a06852b49e65059b799e354a0852397",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9259060025215149,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-00.png",
+      "source_sha256": "6af19e9b065ac71d8466db658f57c856c321c759ae18fd2aabf0efd0ea6f5bb0",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9180021286010742,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-01.png",
+      "source_sha256": "05cccc40065e3735cbd0df7c7a0b2f1b3916797a2a76e3de370a948ed51051bb",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9175295233726501,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-02.png",
+      "source_sha256": "c4a045aebac6f925e16aee7de5381d8494bc41cd70079cc096f9342d46fb48b8",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": null,
+      "reason": "ground_unverified",
+      "score": null,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-03.png",
+      "source_sha256": "a8dcafdd9cf0d86148e818573111e6dc58250754d06afddac58785985899209a",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9200742244720459,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-04.png",
+      "source_sha256": "617c46f434140ac03df69952fb14e5b37fc11638d956d90d02180278fad1c71b",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9098938703536987,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-05.png",
+      "source_sha256": "ddaebc376fc84bd36559bbaca8b9b2ca2c9f83db766fcdd2112bb63bbc008e90",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.9073343873023987,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    },
+    {
+      "path": "references/buff-renewal-prepared-buff-step-06.png",
+      "source_sha256": "3ee90f6433ab8c6533ad8768c7e87362cb632d76dc629f989f72969816836d48",
+      "canvas_box": [
+        820,
+        380,
+        1120,
+        700
+      ],
+      "point": [
+        962,
+        578
+      ],
+      "reason": "sorceress_marker_and_es",
+      "score": 0.8970233798027039,
+      "visual_review": {
+        "source": "primary_review_of_actual_trace",
+        "marker_reference": [
+          962,
+          578
+        ],
+        "energy_shield_present": true,
+        "ground_projection_verified": false
+      }
+    }
+  ],
+  "limits": [
+    "One reviewed sorceress appearance and native layout; other equipment, poses and layouts are unverified.",
+    "Marker, body and ES candidates do not prove physical ground projection, terrain safety, enemy clearance, boss identity, equipment restoration or all buff effects.",
+    "Replay matches alone provide no live navigation approval."
+  ],
+  "source_provenance": [
+    {
+      "path": "templates/body/arch-occluded.png",
+      "historical_filename": "sorceress-body-arch-occluded-ko-48x80.png",
+      "sha256": "127e922216fa148eb078b4d215475464477b0fbc9e8a3623cc8441f75180f813"
+    },
+    {
+      "path": "templates/body/bridge.png",
+      "historical_filename": "sorceress-body-bridge-ko-48x80.png",
+      "sha256": "c249a0c4a3c2344b01e336b9ad0b34e7be1f1a31a6a01047f1d0372bbddc7f6b"
+    },
+    {
+      "path": "templates/body/map-hidden.png",
+      "historical_filename": "sorceress-body-map-hidden-ko-48x80.png",
+      "sha256": "4d0aed05bb257375b20fcbca7e8c6efd7af7664bfb4f5e04188baf8df8716e58"
+    },
+    {
+      "path": "templates/body/map-hidden-rear.png",
+      "historical_filename": "sorceress-body-map-hidden-rear-ko-48x80.png",
+      "sha256": "634e9f29af42c01925af1b4d44dcd3d9a9a7ef0441e8150ab3f6602bf5fbde97"
+    }
+  ],
+  "source_retention": [
+    {
+      "historical_filename": "after.png",
+      "source_sha256": "f8e6fc026106b23650c4d2b38700b54bcb59caa0c5795be303ff48b88b11642b",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "before.png",
+      "source_sha256": "e4e200a5f81dbbb0e251a1f4225a26d24ede059c1a4d6ccf1959b169ab859666",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-00.png",
+      "source_sha256": "dd22113f9f94285a0e7eedbb9d7997ac41cee3add7b0fc3cebe5271a83d34ce8",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-01.png",
+      "source_sha256": "49ca24125227c7d21839d16536a9db96067100d4d1a93585403e40cbeb781b81",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-02.png",
+      "source_sha256": "05f241740d1617d01421fbe5eacb3d4e64174aa1929d40fa9fbe0d9db9f5e6fa",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-03.png",
+      "source_sha256": "f204bddc466efcf8c2640cb7a2d908d33d6c5823a8c2d6bcf27fc5f4d39d29f0",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-04.png",
+      "source_sha256": "09420c00734cf59d3eef30d9c0407ef92047afdce97f30f73118a3b1b1a58860",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-05.png",
+      "source_sha256": "3f3d4de54888a95266acc808629a8b03a174f43980a021fd3805d8bd51d847b9",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    },
+    {
+      "historical_filename": "buff-step-06.png",
+      "source_sha256": "4b83c4a6bb1919726f4025dfae9024dc94787159373364c33246c2a3046879f5",
+      "source_image_retained": false,
+      "summary": "Primary-approved redundant full buff raw; 21 selected marker/ES surrounding crops retained; private timing/HUD/point report preserved with source SHA and removed-image status."
+    }
+  ]
+}

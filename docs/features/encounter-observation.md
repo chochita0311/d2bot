@@ -1,6 +1,6 @@
 # 공통 지형·몬스터 조우 관찰
 
-[FEAT-0007](../plans/feature/feat-0007-arcane-north-encounters.md)의 입력 없는 경계다. [지역 관찰기](../../diablo2/common/encounter_vision.py)는 명시한 지역 manifest의 템플릿·팔레트를 사용하고, [거리/생존 상태 계약](../../diablo2/common/encounters.py)은 현재 프레임과 호출자가 제공한 개인 정책/확인 근거만 소비한다. 기존 북쪽 자동 실행기와 연결하지 않았다.
+[FEAT-0007](../plans/feature/feat-0007-arcane-north-encounters.md)의 입력 없는 경계다. [지역 관찰기](../../diablo2/common/encounter_vision.py)는 명시한 지역 manifest의 템플릿·팔레트를 사용하고, [거리/생존 상태 계약](../../diablo2/common/encounters.py)은 현재 프레임과 호출자가 제공한 개인 정책/확인 근거만 소비한다. 당시 북쪽 자동 실행기는 제거했다. 현재 main의 `ArcaneHazardObserver`는 지역의 살아 있는 적 외형 후보를 소비하지만 아래 개체 연결/사망 확인 계약 전체가 자동 생산된다는 뜻은 아니다. [현재 실행](summoner-run.md)이 제한된 근접 방어와 남은 검증을 소유한다.
 
 ## 입력과 결과
 
@@ -20,4 +20,4 @@
 
 [17개 검증](../../tests/test_encounters.py)은 실제 crop 재생/성소 오인 방지/바닥·우주 대조와 합성 반경 경계·다중 후보·잘못된 맥락·가림·사망 연결을 구분한다. 교전 뒤 11개 벨트 crop을 기존 마을 HUD와 합성한 검증도 있어 실제 포션 소모 위치를 판독한다. 이 합성은 동시 교전 HUD/벨트 관측이 아니다.
 
-실제 교전 자료에서 기존 HUD 숫자 판독의 미확인 비율이 높았다. 감독 포션 회복은 수행했으나 무감독 감시/포션/140초 재버프/포션 보충 제어의 완료 근거는 없다. 새로운 live 진행 전 이 제어와 다중 자세/개체 연결·실제 landing 확인을 구현하고 검증해야 한다. 상세 실패·잔량·수집 범위는 [RUN-20261005-05](../plans/run/run-20261005-05-arcane-north-encounters.md)가 소유한다.
+당시 실제 교전 자료에서 기존 HUD 숫자 판독의 미확인 비율이 높았다. 감독 포션 회복은 수행했으나 무감독 감시/포션/140초 재버프/포션 보충 제어의 완료 근거는 없다. 이후 main에 HUD 보완·비상 회복·자동 갱신을 연결했지만 실제 회복 소비·제때140초 갱신·다중 자세/개체 연결·착지 검증의 남은 범위를 없애지 않는다. 당시 실패·잔량·수집 범위는 [RUN-20261005-05](../plans/run/run-20261005-05-arcane-north-encounters.md), 후속 통합 결과는 [현재 run](../plans/run/run-20261009-07-summoner-live-integration.md)이 소유한다.

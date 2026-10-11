@@ -1,0 +1,563 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-chest-clean.png",
+    "sha256": "30c9158329a00545c5dc6b6f3d839c9eef14aac13091f3acb292dc51c60ef840",
+    "review": "main121 north terminal, three distinct chest objects with item labels hidden; previous label-contaminated crops replaced"
+  },
+  "parts": [
+    {
+      "id": "stone-chest-northwest",
+      "path": "templates/terminal/stone-chest-northwest.png",
+      "crop": [
+        625,
+        210,
+        714,
+        286
+      ],
+      "threshold": 0.92,
+      "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+    },
+    {
+      "id": "stone-chest-southeast",
+      "path": "templates/terminal/stone-chest-southeast.png",
+      "crop": [
+        1200,
+        355,
+        1290,
+        431
+      ],
+      "threshold": 0.92,
+      "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+    },
+    {
+      "id": "square-chest",
+      "path": "templates/terminal/square-chest.png",
+      "crop": [
+        1225,
+        231,
+        1285,
+        282
+      ],
+      "threshold": 0.92,
+      "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+    }
+  ],
+  "limits": [
+    "Reviewed chest terminal appearances and two floor views, not all wing endings or independent-room accuracy",
+    "No Summoner or journal detector",
+    "Three spatially distinct parts and non-collinear layout required; repeated appearances cannot double-count one object; no enemy-absence inference"
+  ],
+  "alternate_layouts": [
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-dark-arched-chest-left",
+          "path": "templates/terminal/dark-arched-chest-left.png",
+          "crop": [
+            748,
+            646,
+            812,
+            696
+          ],
+          "threshold": 0.92,
+          "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+        },
+        {
+          "id": "terminal-dark-closed-chest-top",
+          "path": "templates/terminal/dark-closed-chest-top.png",
+          "crop": [
+            728,
+            462,
+            774,
+            486
+          ],
+          "threshold": 0.92,
+          "sha256": "698cf04839184598de682c4976409960685aa9d84c748d22ef68b2f8b625e297"
+        },
+        {
+          "id": "terminal-dark-open-chest-southeast-face",
+          "path": "templates/terminal/dark-open-chest-southeast-face.png",
+          "crop": [
+            758,
+            629,
+            804,
+            676
+          ],
+          "threshold": 0.92,
+          "sha256": "b73858946cd619a246b79c71cca2101535e3934a53000b9acb36faf28fcfb1aa"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-open-chest-terminal.png",
+        "sha256": "f7fcb214968f6f641407e7cc12d93a1b84d75c6edb6b15d747d93c5d2291671a",
+        "review": "main212 labels-ON terminal: closed northwest chest, separate closed upper chest top and open southeast chest face. New crops exclude labels, actors, corpses and HUD. Open and closed appearance are separate current evidence; native .92, three distinct objects and non-collinear geometry remain required."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-dark-arched-chest-left",
+          "path": "templates/terminal/dark-arched-chest-left.png",
+          "crop": [
+            748,
+            646,
+            812,
+            696
+          ],
+          "threshold": 0.92,
+          "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+        },
+        {
+          "id": "terminal-dark-arched-chest-southeast-body",
+          "path": "templates/terminal/dark-arched-chest-southeast-body.png",
+          "crop": [
+            1160,
+            600,
+            1208,
+            648
+          ],
+          "threshold": 0.92,
+          "sha256": "e065444a52128c3acf827ee8899970d5fae2749ffc909b08ca40c1f8870e5db2"
+        },
+        {
+          "id": "terminal-gold-filigree-left-tip",
+          "path": "templates/terminal/gold-filigree-left-tip.png",
+          "crop": [
+            736,
+            549,
+            846,
+            612
+          ],
+          "threshold": 0.92,
+          "sha256": "e350dac882efedfd0115acb0f9503a17b092b2da9c2bb595c5a398ae9838e1b0"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-chests-gold-filigree.png",
+        "sha256": "ba317336820efe87835296869c30f635df2209556f4b4d0fbc1a469f413e4d1b",
+        "review": "main208 north terminal with labels ON: two distinct dark arched chests and a separate gold filigree floor tip. Reuses the existing northwest chest appearance; new southeast-body and floor crops exclude HUD, labels and actors. Native .92, distinct placement and non-collinear geometry remain required."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chests-small-box.png",
+        "sha256": "145df37bb2fdcd695cac902e3a40c5c3c93532ca506422d5ce0227b5094d7a60",
+        "review": "main206 north terminal: two metal arched chests and a separate small rectangular box, with dense gold labels. Reuses three existing shared crops at unchanged native .92, distinct objects and non-collinear geometry; no new image crop or floor inference."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-gold-rune-floor",
+          "path": "templates/terminal/gold-rune-floor.png",
+          "crop": [
+            890,
+            704,
+            1108,
+            846
+          ],
+          "threshold": 0.92,
+          "sha256": "d0efde26a7255fe4809ed838558776327919c1ee23047b1eee4c0a0fff0f1f88"
+        },
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-landmarks.png",
+        "sha256": "86b2d6214e8470385b687bc98b3ef5556f567be416524345508bb19a3a69493d",
+        "review": "main146 north end: unique gold/rune floor, large chest and southeast small chest; another chest is corpse-occluded. Three independent parts, non-collinear layout and current settled player required. Two-chest junction is a negative."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-gold-rune-floor-upper-view",
+          "path": "templates/terminal/gold-rune-floor-upper-view.png",
+          "crop": [
+            976,
+            287,
+            1194,
+            429
+          ],
+          "threshold": 0.92,
+          "sha256": "efdfa8a4e4e74c4faaa7309c7700d1cd33afce9b3702511071667cd57196c3f9"
+        },
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-floor-view.png",
+        "sha256": "0f7e52aefa4a3cf76d4c8d8110456c6825464f4459d16df76c107340fcafb08a",
+        "review": "main150 same north terminal viewed higher in the viewport: gold/rune floor, distinct large chest and northwest small chest. Current three-part spatial proof required; no terminal inference from a chest pair."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-chest-left-instance",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "square-chest-right-instance",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-square-chests.png",
+        "sha256": "09f79c6ba4d7b4dd5d0a6452dcf1f726de05f6699f93aa3ce25b098413188d6d",
+        "review": "main154 end platform with two distinct instances of the existing square-chest appearance and one southeast square-chest variant. Reuses reviewed common crops; three separate non-collinear objects are required. No central waypoint braziers. Wing identity is not inferred from this terminal appearance."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        },
+        {
+          "id": "stone-chest-dark",
+          "path": "templates/terminal/stone-chest-dark.png",
+          "crop": [
+            1387,
+            652,
+            1426,
+            690
+          ],
+          "threshold": 0.92,
+          "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-stone-chest-terminal.png",
+        "sha256": "b59133ffa753457f817b0fa65a53537d63bac5bff09e8f37879b02b252b8ddcd",
+        "review": "main157 terminal has two bright arched chests and a dark arched chest. Existing bright crops are reused; the dark front-body crop excludes variable lid illumination and the corpse above it. Three separate non-collinear objects remain required. No wing identity or room completion is inferred."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-stone-chest-left",
+          "path": "templates/terminal/square-stone-chest-left.png",
+          "crop": [
+            391,
+            449,
+            445,
+            477
+          ],
+          "threshold": 0.92,
+          "sha256": "2efb5a0ae2239b2c6ff334accca343e48c586da8122966f5e231bad0988091e0"
+        },
+        {
+          "id": "square-stone-chest-right",
+          "path": "templates/terminal/square-stone-chest-right.png",
+          "crop": [
+            975,
+            452,
+            1012,
+            483
+          ],
+          "threshold": 0.92,
+          "sha256": "57e0534d9f68f234ffbf18a1862dc6863c2e203422535bb6422ca095f3064fcb"
+        },
+        {
+          "id": "square-stone-chest-front",
+          "path": "templates/terminal/square-stone-chest-front.png",
+          "crop": [
+            959,
+            610,
+            1009,
+            640
+          ],
+          "threshold": 0.92,
+          "sha256": "1f850ea01043b2607bc83adfd6cc7ff22d7240c2ede4db8425122c53f1a66f58"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-stone-box-terminal.png",
+        "sha256": "9ff2649f1db3eac74f615eed8dee8871c8e9f633253736b6a609c5df2cb006a5",
+        "review": "main184 north end with three distinct square stone boxes, labels ON. Texture crops exclude labels, player, mercenary and corpses; threshold and three-object spatial gates unchanged."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-dark-arched-chest-left",
+          "path": "templates/terminal/dark-arched-chest-left.png",
+          "crop": [
+            748,
+            646,
+            812,
+            696
+          ],
+          "threshold": 0.92,
+          "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "terminal-small-stone-chest-right-edge",
+          "path": "templates/terminal/small-stone-chest-right-edge.png",
+          "crop": [
+            1366,
+            810,
+            1390,
+            851
+          ],
+          "threshold": 0.92,
+          "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-chests.png",
+        "sha256": "7d03af29240c4fb3192de5a0f586fcdd4432a37353ddf50b6f8cfcfda5d69d7b",
+        "review": "main192 north chest terminal with labels ON: two distinct dark arched chests and one small front stone box. Crops exclude gold labels, HUD, player and mercenary; native .92 and three-object non-collinear spatial gates remain. Chest open/closed state is not inferred."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-engraved-stone-plate",
+          "path": "templates/terminal/engraved-stone-plate.png",
+          "crop": [
+            1065,
+            660,
+            1111,
+            700
+          ],
+          "threshold": 0.92,
+          "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "terminal-small-stone-chest-right-edge",
+          "path": "templates/terminal/small-stone-chest-right-edge.png",
+          "crop": [
+            1366,
+            810,
+            1390,
+            851
+          ],
+          "threshold": 0.92,
+          "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-chests.png",
+        "sha256": "7d03af29240c4fb3192de5a0f586fcdd4432a37353ddf50b6f8cfcfda5d69d7b",
+        "review": "main192 distinct engraved plate on the gold terminal floor plus dark arched right chest and small front box. Crops exclude labels/actors/HUD; three independent non-collinear current parts required. Alternative remains usable when mercenary or hover title occludes the left chest; no inference from the two chests alone."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-gold-floor-right-tip",
+          "path": "templates/terminal/gold-floor-right-tip.png",
+          "crop": [
+            1190,
+            704,
+            1238,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "0317461c63ddc56201f65ce6d6407a35b34e2bd5829b299d1adbacc08ccfb0c3"
+        },
+        {
+          "id": "dark-arched-upper-instance",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "dark-arched-front-instance",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gold-labels.png",
+        "sha256": "09e545719f5caea01c373e876b886e5af7696bdf9a56fffbf70cefd710d95e3b",
+        "review": "main196 terminal with dense gold labels and corpses: clean gold floor tip and two separate dark arched chests. Reuses existing chest crop twice; three independent non-collinear current objects required, .92 native score unchanged. Crops exclude labels, corpses, actors and HUD."
+      }
+    }
+  ]
+}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+import ctypes
 
 try:
     import keyboard
@@ -12,6 +13,24 @@ try:
     import pydirectinput
 except ImportError:  # pragma: no cover
     pydirectinput = None
+
+
+def _virtual_pointer_move(x, y):
+    # moveTo는 주 모니터 크기로 정규화한다. 다른 모니터/음수 원점도
+    # 마을 입력과 같은 가상 데스크톱 좌표로 전송해야 실제 조준점과 일치한다.
+    user32 = ctypes.windll.user32
+    left, top = user32.GetSystemMetrics(76), user32.GetSystemMetrics(77)
+    width, height = user32.GetSystemMetrics(78), user32.GetSystemMetrics(79)
+    if width <= 1 or height <= 1 or not left <= x < left + width or not top <= y < top + height:
+        raise ValueError("field aim outside virtual desktop")
+    dx, dy = round((x - left) * 65535 / (width - 1)), round((y - top) * 65535 / (height - 1))
+    extra = ctypes.c_ulong(0)
+    payload = pydirectinput.Input_I()
+    payload.mi = pydirectinput.MouseInput(dx, dy, 0, 0x0001 | 0x8000 | 0x4000, 0, ctypes.pointer(extra))
+    event = pydirectinput.Input(ctypes.c_ulong(0), payload)
+    if pydirectinput.SendInput(1, ctypes.pointer(event), ctypes.sizeof(event)) != 1:
+        raise RuntimeError("field pointer movement was not dispatched")
+    return (left, top, width, height)
 
 
 class BotController:
@@ -66,6 +85,7 @@ class ControllerFieldInput:
 
     def __init__(self, controller: BotController, *, focused, bounds):
         self.controller, self.focused, self.bounds = controller, focused, bounds
+        self.pointer_evidence = None
 
     def _guard(self):
         if self.controller.stop_requested or self.controller.paused or not self.focused():
@@ -80,6 +100,13 @@ class ControllerFieldInput:
         else:
             if pydirectinput.keyDown(key, _pause=False) is not True:
                 raise RuntimeError("field key down was not dispatched")
+
+    def pointer_matches(self, point):
+        self._guard()
+        if self.controller.dry_run:
+            return True
+        actual = tuple(pydirectinput.position())
+        return max(abs(a - b) for a, b in zip(actual, point)) <= 3
 
     def key_up(self, key):
         if self.controller.dry_run:
@@ -98,9 +125,28 @@ class ControllerFieldInput:
             try:
                 if pydirectinput.keyDown(key, _pause=False) is not True:
                     raise RuntimeError("field press was not dispatched")
-                time.sleep(0.02)
+                # 단일 눌림을50ms 유지한다. 전송 성공과 실제 시전/착지는 별도 확인한다.
+                # 재시전은 하지 않으며 중단/포커스 변화 중에도finally에서 해제한다.
+                time.sleep(0.05)
             finally:
                 self.key_up(key)
+
+    def click(self):
+        self._guard()
+        if self.controller.dry_run:
+            self.controller.log.info("Dry-run field loot click")
+            return
+        left, top, right, bottom = self.bounds()
+        x, y = pydirectinput.position()
+        if not left <= x < right or not top <= y < bottom:
+            raise ValueError("field click outside current game window")
+        try:
+            if pydirectinput.mouseDown(_pause=False) is not True:
+                raise RuntimeError("field mouse down was not dispatched")
+            time.sleep(0.05)
+        finally:
+            if pydirectinput.mouseUp(_pause=False) is not True:
+                raise RuntimeError("field mouse release was not dispatched")
 
     def move(self, x, y):
         self._guard()
@@ -110,4 +156,17 @@ class ControllerFieldInput:
         if self.controller.dry_run:
             self.controller.log.info("Dry-run field aim: %s %s", x, y)
         else:
-            pydirectinput.moveTo(x, y, _pause=False)
+            self.pointer_evidence = None
+            desktop = _virtual_pointer_move(x, y)
+            started = time.monotonic()
+            # 전송 완료만으로 조준 성공을 만들지 않는다. 재전송 없이 짧게 확인한다.
+            while True:
+                self._guard()
+                actual = tuple(pydirectinput.position())
+                elapsed = time.monotonic() - started
+                if max(abs(actual[0] - x), abs(actual[1] - y)) <= 3:
+                    self.pointer_evidence = dict(requested=(x, y), observed=actual, desktop=desktop, settle_seconds=elapsed)
+                    return
+                if elapsed >= 0.08:
+                    raise RuntimeError("field pointer mapping mismatch: requested {}, observed {}".format((x, y), actual))
+                time.sleep(0.005)

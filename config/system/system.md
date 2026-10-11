@@ -9,11 +9,11 @@ Defaults below come from the config loader when a field is absent; values in JSO
 - `overlay` (default `true`): shows the OpenCV preview overlay in CLI mode.
 - `log_level` (default `INFO`): sets standard CLI logging verbosity.
 
-GUI play actions send input directly and do not use `dry_run` or the CLI pause/stop settings. `Stop Action` stops GUI sessions. `F10` is registered by Gem Summing, Item Looting, and standalone Room Lifecycle; the current Summoner/North Go orchestrator does not register it. Shared dry-run and pause/stop coverage remains development work.
+GUI play actions send input directly and do not use `dry_run` or the CLI pause/stop settings. `Stop Action` and `F10` stop Summoner, Gem Summing, Item Looting and Room Lifecycle. Summoner's field F8 currently requests stop rather than resumable pause. Shared dry-run and resumable pause coverage remains development work.
 
 ## capture
 
-- `fps` (default `8`): sampling rate for CLI capture and recording. The north-route runtime has separate timing constants.
+- `fps` (default `8`): sampling rate for CLI capture and recording. The Summoner runtime has separate timing constants.
 - `monitor_index` (default `1`): monitor number used when neither a window nor a region is configured.
 - `preview_scale` (loader default `0.75`, current JSON `0.7`): CLI preview scale.
 - `region` (default `null`): screen rectangle with `left`, `top`, `width`, and `height`; used when no window title is set.
@@ -28,40 +28,22 @@ GUI play actions send input directly and do not use `dry_run` or the CLI pause/s
 | --- | --- | --- |
 | `enabled` | `false` | Automatic recording in the older CLI flow. |
 | `output_path` | `recordings/session.avi` | CLI recording path. |
-| `directory` | `recordings` | GUI recordings and north-go attempt recordings/summaries. |
+| `directory` | `recordings` | Manual GUI recordings. Summoner evidence uses the separate directory described below. |
 | `codec` | `XVID` | CLI codec; GUI `RecordingSession` currently uses XVID directly. |
-| `keep_failed_runs` | `true` | Keeps north-go recordings when status is neither `end` nor `end_latest_frame`, including stopped attempts. |
-| `keep_successful_runs` | `false` | When true, keeps every north-go attempt recording. |
 
-North-go retention also keeps the first `north_go_tuning.keep_reference_runs` attempts. Other raw attempt videos are removed; summary JSON files are retained. These flags do not prune ordinary manual GUI recordings.
+Current Summoner evidence uses `recordings/summoner/evidence/gui-<timestamp>-<unique-id>/` with per-room reports and event JSONL. The removed North Go runner's retention flags are no longer loaded settings; their former defaults and behavior remain in the [historical run reference](../../docs/features/summoner-run-legacy.md#removed-runner-settings).
 
-These settings describe runtime retention. Development-session close uses the separate [development cleanup rule](../../docs/project/developer-guide.md#evidence-handling): promote required recognition assets, summarize results, then remove unnecessary development recordings, logs, frames, and temporary files. Runtime keep flags do not require indefinite storage of development artifacts.
+Development-session close follows the [development cleanup rule](../../docs/project/developer-guide.md#evidence-handling): promote required recognition assets, summarize results, then remove unnecessary development recordings, logs, frames, and temporary files. Recording settings do not require indefinite storage of development artifacts.
 
 The [real-time/recording PRD](../../docs/plans/prd/prd-0008-realtime-runtime-and-recording-retention.md) proposes shared count/byte/age/free-space limits and isolated writes for long runs. These settings currently do not impose a total quota on town-loop evidence directories. The proposed limits are not implemented configuration fields yet.
-
-## logging
-
-Asynchronous file logging currently mirrors Summoner/north-go events. These settings do not replace the CLI logging configuration.
-
-| Field | Default | Behavior |
-| --- | --- | --- |
-| `directory` | `logs` | Destination for `north-go-tuning.log` and rotated segments. |
-| `max_segment_size_mb` | `10` | Rotation threshold in MiB, clamped to at least 1. |
-| `retained_segments` | `5` | Number of rotated segments retained in addition to the active log, clamped to at least 1. |
-| `flush_interval_seconds` | `0.5` | Periodic flush interval, clamped to at least 0.1 seconds. |
-| `queue_max_size` | `5000` | Pending record capacity, clamped to at least 100. When the queue is full, low-priority records can be dropped and priority 0 records are written synchronously instead. |
 
 ## gui
 
 - `visible_log_lines` (default `300`): caps the desktop log display, clamped to at least 50 lines. It does not set file-log retention.
 
-## north_go_tuning
+The GUI keeps bounded live text. Summoner's durable reports and event JSONL belong to its evidence directory; generic CLI messages use standard logging controlled by `log_level`. The obsolete asynchronous file logger and `north_go_tuning` settings were removed with their unused runner. They do not configure the current GUI.
 
-- `rerun_count` (default `1`): attempt count when the North Go Test repeat field is blank, clamped to at least 1. An explicit GUI count overrides it.
-- `auto_record_runs` (default `true`): records each north-route attempt after room entry and buffs.
-- `keep_reference_runs` (default `1`): keeps recordings for the first N attempts per test invocation, clamped to at least 0.
-
-The GUI's blank repeat field has different behavior for Room Lifecycle: it repeats until stopped. Room Lifecycle applies the selected difficulty; current Summoner/North Go room creation still uses its default Hell difficulty.
+Summoner applies the selected difficulty and accepts 1–5 fresh north attempts, blank = 1. Room Lifecycle also applies difficulty, but its blank repeat field repeats until stopped. The optional live town loop remains limited to 1–3. See [Summoner behavior](../../docs/features/summoner-run.md) for preconditions, automatic buffs, conditional ALT and incomplete-result handling.
 
 ## hotkeys
 

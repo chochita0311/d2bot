@@ -3,10 +3,10 @@
 ## Metadata
 
 - ID: `prd-0005`
-- Status: `approved` — 직업별 시전 조회 FEAT-0004와 후속 FEAT-0008의 공통 도착 적응 제어. 네 방향 경로/복구 완주는 미완료다.
+- Status: `approved` — 전체 Summoner 구현·감독 검증 목표. 직업별 시전 조회 FEAT-0004와 후속 FEAT-0008의 공통 도착 적응 제어는 구현했고 네 방향 경로/복구 완주는 미완료다.
 - Owner role: `human`
 - Created: `2026-10-04`
-- Updated: `2026-10-05`
+- Updated: `2026-10-11`
 
 ## Request Summary
 
@@ -14,6 +14,9 @@ Act 1 마을의 웨이포인트를 찾아 아케인 생츄어리에 진입하고
 
 ## Source Set
 
+- Human update: `2026-10-09` 고정 tick보다 현재 통로/직사각형 갈림·합류/굴곡 인지, 텔레포트 뒤 늦은 화면과 조향 문제, 기존 자산의 비판적 재사용, 북→동→남→서 자동 연결을 요구했다. NPC 호버는 마을 전용이다. [FEAT-0013](../feature/feat-0013-arcane-perceptual-navigation.md)의 입력 없는 탐색/실행 연결과 보관 자료 재생을 구현했고 이후 GUI를 최신 main에 연결했다. 실제 계단/끝/중앙의 제한된 개발 관찰은 있으나 새 자동 안전/버프/조건부ALT 통합 뒤의 새 방 완전 왕복은0/5이며 네 방향 완주는 미완료다. 최신 구현·관찰 한계는 [통합 run Attempt15](../run/run-20261009-07-summoner-live-integration.md#attempt15-세션-마감-정리와-다음-gui-실행-인계)가 소유한다.
+
+- Human update: `2026-10-09` 전체 요구사항 확정·구현·감독 검증을 승인했다. [FEAT-0009](../feature/feat-0009-runtime-observation-provenance.md)는 시각/세대 계약을 구현했다. [FEAT-0010](../feature/feat-0010-summoner-cycle-contract.md)은 확정한 2/4/8/10시 순서와 중앙 귀환/정상 마감 확인을 입력 없이 연결한다. 실제 네 방향 이동/도착 생산자·안전 종료는 후속 검증이다.
 - 현재 후속 경계: [FEAT-0008](../feature/feat-0008-field-control-loop.md)은 직업/FCR 참고값과 확인된 도착 지연을 소비하는 공통 조준 간격/시간 상한을 구현했다. [실행 기록](../run/run-20261005-06-field-control-loop.md)의 짧은 중앙 F2 이동은 네 방향 경로·다른 장비 속도·실제 landing 판독 검증이 아니다.
 
 - Human request: 2026-10-04의 Act 1 시작·마감, 마을 배치 변화, 10/8/4/2시 방향, 텔레포트 후 인식·막힘 문제.
@@ -21,7 +24,7 @@ Act 1 마을의 웨이포인트를 찾아 아케인 생츄어리에 진입하고
 - Human clarification: 시전 규칙의 공통화 기준은 Flash 같은 프로필 이름이 아니라 소서리스·팔라딘 등 직업별 FCR 구간이다. [직업·스킬별 조사 자료](../../research/class-cast-rate-reference.md)가 출처와 예외/버전 한계를 소유한다.
 - Golden sources: 현재 그래픽 모드의 중앙/각 날개/종착점/텔레포트 전후 자료. 이번에는 기존 에셋만 일부 확인했다.
 - Supporting docs: [서모너 현황](../../features/summoner-run.md), [북쪽 경로 관리](../../../diablo2/runs/summoner/routes/docs/north_go.md), [경로 관찰 기준](../../evaluation/route-evaluation.md).
-- Current implementation references: [진입](../../../diablo2/runs/summoner/routes/arcane_entry.py), [북쪽](../../../diablo2/runs/summoner/routes/north_go.py), [공통 경로 신호](../../../diablo2/runs/summoner/routes/common/arcane_common.py), [경로 폴더](../../../diablo2/runs/summoner/routes/).
+- Current implementation references: [마을/성역 진입](../../../diablo2/actions/run_lifecycle.py), [통합 실행](../../../diablo2/runs/summoner/main_run.py), [연속 이동](../../../diablo2/runs/summoner/continuous_navigation.py), [현재 지형 관찰](../../../diablo2/runs/summoner/terrain_patterns.py). 이전 `routes/arcane_entry.py`, `north_go.py`, `arcane_common.py`는 2026-10-11 정리에서 제거했다. 기존 경로 튜닝 설명은 위 역사적 북쪽 문서에 남아 있으며 현재 입력 계약이 아니다.
 - Reuse candidates: [공통 이동 입력](../../../diablo2/common/movement.py)의 캐릭터별 hold/press 처리와 [실시간 관찰](../../../diablo2/common/realtime.py)의 프레임 시각·sequence. 현재 선택 캐릭터 입력과 최신 관찰은 재사용하되 시전별 이동 확인·속도 적응의 완료 근거로 보지 않는다.
 - 자료/게임 근거: [실험 계획](../../features/summoner-experiment-plan.md), [조사 자료](../../research/summoner-key-drop-reference.md).
 
@@ -64,7 +67,7 @@ Act 1 마을의 웨이포인트를 찾아 아케인 생츄어리에 진입하고
 - 게임 메모리/맵 시드/내부 좌표에서 지도를 얻는 것.
 - 북쪽 경로를 좌표만 회전해 나머지 세 방향이 검증됐다고 간주하는 것.
 - 필드 생존이 검증되지 않은 상태에서 이동 속도나 텔레포트 거리 최적화.
-- 모든 Act 마을의 자동 길찾기, 다른 던전의 경로 구현/완주 검증, 이번 초안의 경로 코드 변경.
+- 모든 Act 마을의 자동 길찾기, 다른 던전의 경로 구현/완주 검증. 정비 layer의 공통화와 Act 1 절차는 PRD-0007 소유다.
 - 장비별 시전 프레임 표나 안전 대기 수치의 추측 확정, 실제 게임의 시전 속도 한계를 제거한다는 보장.
 
 ## Uncertainty
@@ -84,7 +87,7 @@ Act 1 마을의 웨이포인트를 찾아 아케인 생츄어리에 진입하고
 
 - [PRD-0003](prd-0003-summoner-room-lifecycle.md)의 관찰/중단과 [PRD-0004](prd-0004-summoner-survival-and-buffs.md)의 안전·버프가 필드 실험의 전제다.
 - 기존 이미지에는 그래픽 모드와 해상도가 섞여 있다. 파일명이 종착점을 나타내더라도 현재 화면에서 인식된다고 가정하지 않는다.
-- 현재 북쪽 경로는 고정 대기·hold/press와 프레임 나이/영상 변화 신호를 사용한다. 각 텔레포트 입력을 실제 위치 변화에 연결하는 시전 확인이나 시전 속도 적응은 아직 없다. 영상 변화가 작다는 사실만으로 느린 시전과 실제 막힘을 구분할 수 없다.
+- 2026-10-05 조사 당시 옛 북쪽 경로는 고정 대기·hold/press와 프레임 나이/영상 변화 신호를 사용했고 시전별 위치 변화 확인·속도 적응이 없었다. 현재 main은 연속F2·최신 화면 임대·배경 이동 대응·국소 경로 기억을 사용한다. 이 구현과 제한된 실측이 모든 시전의 성공 판독이나 다른 장비 속도에 대한 적응 검증을 뜻하지 않는다. 영상 변화가 작다는 사실만으로 느린 시전과 실제 막힘을 구분할 수 없다.
 - 빠른/느린 비전 결과의 나이와 관찰 이후의 이동을 고려한다. 텔레포트 전 좌표나 늦게 완료된 인식을 새 위치의 클릭 근거로 쓰지 않는다.
 - 빠른 텔레포트 실험은 [PRD-0008](prd-0008-realtime-runtime-and-recording-retention.md)의 최신 프레임·세대 검증과 기록/제어 분리 경계를 함께 충족해야 한다. 저장자의 지연이나 포화가 재관찰·비상 입력을 막지 않아야 한다.
 - 현재 창의 입력 영역 안에서만 행동하고, 메뉴/HUD/공백을 통로로 오인한 이동을 실패로 기록한다.
@@ -118,7 +121,7 @@ Act 1 마을의 웨이포인트를 찾아 아케인 생츄어리에 진입하고
 - Product 후보: 네 날개 탐색과 보스 단상 확인.
 - Product 후보: 전투/줍기 후 경로 재합류.
 
-첫 승인 기능은 [FEAT-0004 직업별 시전 조회](../feature/feat-0004-class-casting-rules.md)다. 그 밖의 후보는 미승인이며 패키지 리팩터와 묶지 않는다. 공개 표 기반 예상·기존 config 호환·미설정/미지원 처리만 먼저 검증하고 실제 적응/이동에는 필요한 관측·안전 조건을 별도로 해소한다.
+첫 승인 기능은 [FEAT-0004 직업별 시전 조회](../feature/feat-0004-class-casting-rules.md)였다. 이후 전체 요구사항/구현/감독 검증과 FEAT-0013의 네 방향 목표를 사용자가 승인했다. 기존 한정된 검증을 실제 적응/이동의 완료로 확대하지 않으며 필요한 관측·안전 조건을 해소한 범위에서 실행한다. 별도 패키지 리팩터는 이 승인과 묶지 않는다.
 
 ## Continuity Notes
 

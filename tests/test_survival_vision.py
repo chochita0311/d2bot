@@ -22,6 +22,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SurvivalVisionTests(unittest.TestCase):
+    def test_isolated_crop_edge_speck_preserves_actual_pair_and_internal_noise_stays_unknown(self):
+        source = DEFAULT_ASSETS / "references/field-mana-leading-edge-speck.png"
+        image = cv.imread(str(source))
+        self.assertIsNotNone(image)
+        reading = self.observer.observe(self.reference("field-mana-leading-edge-speck"))
+        self.assertEqual((1578, 1580, 1289, 1543), (reading.life.current, reading.life.maximum, reading.mana.current, reading.mana.maximum))
+        number = image[35:60, 1170:1380].copy()
+        self.assertEqual((1289, 1543), (self.observer._read_number(number).current, self.observer._read_number(number).maximum))
+        for altered in ("large_edge", "interior"):
+            changed = number.copy()
+            changed[16:19, 0] = 0
+            if altered == "large_edge":
+                changed[10:19, 0] = 255
+            else:
+                changed[16:19, 7] = 255
+            self.assertIsNone(self.observer._read_number(changed).ratio)
+
     def setUp(self):
         self.observer = SurvivalHudObserver()
         self.policy = load_config(ROOT / "config").characters["flash"].survival
@@ -42,6 +59,15 @@ class SurvivalVisionTests(unittest.TestCase):
             self.assertTrue(state.observe_belt(stamp, contents))
         return state.decide(reading.safety_observation(stamp), 10, max_observation_age_seconds=1, max_belt_age_seconds=1)
 
+    def test_current_closed_belt_reads_visible_items_without_inventing_full_counts(self):
+        frame = self.reference("closed")
+        reading = self.observer.observe(frame)
+        slots = self.observer.closed_belt_slots(frame, reading)
+        self.assertEqual(["purple_potion"] * 3 + ["town_portal_scroll"], [slot.kind for slot in slots])
+        self.assertTrue(all(slot.row == 4 for slot in slots))
+        self.assertIsNone(reading.belt_contents(self.policy))
+        self.assertEqual((), self.observer.closed_belt_slots(frame, replace(reading, belt_visibility="unknown")))
+
     def paint_number(self, frame, key, value):
         box = self.observer.manifest["resources"][key]["number_box"]
         left, top, right, bottom = box
@@ -56,7 +82,8 @@ class SurvivalVisionTests(unittest.TestCase):
                 mask = glyph_parts(text_mask(self.observer._crop(self.reference("expanded"), source_box)))[3] * 255
                 height, width = mask.shape
             elif character == "4":
-                original = cv.imread(str(ROOT / "assets/character/play/status.png"))[863:895, 1415:1535]
+                original = cv.imread(str(DEFAULT_ASSETS / "references/number-four-source.png"))
+                self.assertIsNotNone(original)
                 mask = glyph_parts(text_mask(original))[0] * 255
                 height, width = mask.shape
             else:
@@ -91,6 +118,61 @@ class SurvivalVisionTests(unittest.TestCase):
         self.assertEqual(reading.belt_visibility, "closed")
         self.assertIsNone(reading.belt_contents(self.policy))
 
+    def test_actual_travel_read_is_recovered_by_independent_hud_four(self):
+        import hashlib
+
+        row = next(row for row in self.observer.manifest["references"] if row["path"] == "references/field-mana-obscured.png")
+        path = self.observer.asset_directory / row["path"]
+        self.assertEqual(row["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        reading = self.observer.observe(self.reference("field-mana-obscured"))
+        self.assertEqual((1530, 1543), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual(1530 / 1543, reading.mana.ratio)
+
+    def test_reviewed_native_hud_six_reads_without_changing_rejection_thresholds(self):
+        import hashlib
+
+        references = [row for row in self.observer.manifest["references"] if row["evidence"] == "actual_supervised_main_buff_capture"]
+        self.assertEqual(2, len(references))
+        for row in references:
+            path = self.observer.asset_directory / row["path"]
+            self.assertEqual(row["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+            frame = np.zeros((1140, 1922, 3), np.uint8)
+            left, top, right, bottom = row["canvas_box"]
+            frame[top:bottom, left:right] = cv.imread(str(path))
+            reading = self.observer.observe(frame)
+            self.assertEqual(tuple(row["life"]), (reading.life.current, reading.life.maximum))
+            self.assertEqual(tuple(row["mana"]), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual(0.72, self.observer.manifest["matching"]["glyph_score"])
+        self.assertEqual(0.08, self.observer.manifest["matching"]["glyph_margin"])
+
+    def test_reviewed_north_separator_reads_same_frame_numbers(self):
+        import hashlib
+
+        row = next(row for row in self.observer.manifest["references"] if row["path"] == "references/field-north-life-slash.png")
+        path = self.observer.asset_directory / row["path"]
+        self.assertEqual(row["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        reading = self.observer.observe(self.reference("field-north-life-slash"))
+        self.assertEqual(tuple(row["life"]), (reading.life.current, reading.life.maximum))
+        self.assertEqual(tuple(row["mana"]), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual(0.72, self.observer.manifest["matching"]["glyph_score"])
+        self.assertEqual(0.08, self.observer.manifest["matching"]["glyph_margin"])
+
+    def test_actual_bright_bridge_background_recovers_label_and_spaced_separator(self):
+        import hashlib
+
+        row = next(row for row in self.observer.manifest["references"] if row["path"] == "references/field-north-background.png")
+        self.assertEqual(row["sha256"], hashlib.sha256((self.observer.asset_directory / row["path"]).read_bytes()).hexdigest())
+        frame = self.reference("field-north-background")
+        reading = self.observer.observe(frame)
+        self.assertEqual(tuple(row["life"]), (reading.life.current, reading.life.maximum))
+        self.assertEqual(tuple(row["mana"]), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual("closed", reading.belt_visibility)
+        self.assertEqual(0.9, self.observer.manifest["matching"]["label_score"])
+        self.assertEqual(0.72, self.observer.manifest["matching"]["glyph_score"])
+        self.assertEqual(0.08, self.observer.manifest["matching"]["glyph_margin"])
+        frame[915:940, 502:514] = 0
+        self.assertIsNone(self.observer.observe(frame).life.ratio)
+
     def test_actual_captured_references_have_reviewed_numbers_and_counts(self):
         for name, expected in (("expanded", [4, 4, 4, 4]), ("eleven", [3, 4, 4, 4]), ("restored", [4, 4, 4, 4])):
             with self.subTest(name=name):
@@ -107,6 +189,98 @@ class SurvivalVisionTests(unittest.TestCase):
         self.assertEqual((reading.life.ratio, reading.mana.ratio), (1, 1))
         self.assertIsNone(reading.belt_contents(self.policy))
         self.assertEqual(self.decision(reading).reason, "belt_unknown")
+
+    def test_actual_return_mana_two_glyph_uses_current_dynamic_maximum(self):
+        reading = self.observer.observe(self.reference("field-return-mana-2"))
+        self.assertEqual((1576, 1580), (reading.life.current, reading.life.maximum))
+        self.assertEqual((1221, 1543), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual(1221 / 1543, reading.mana.ratio)
+        self.assertIsNone(reading.mana.lower_bound)
+
+    def test_reviewed_full_orb_fallback_preserves_unknown_numbers_and_dynamic_ratio(self):
+        import hashlib
+
+        bounded = SurvivalHudObserver(allow_high_orb_fallback=True)
+        for row in self.observer.manifest["orb_fallback_references"]:
+            path = DEFAULT_ASSETS / row["path"]
+            self.assertEqual(row["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+            frame = np.zeros((1140, 1922, 3), np.uint8)
+            left, top, right, bottom = row["canvas_box"]
+            frame[top:bottom, left:right] = cv.imread(str(path))
+            raw, reading = self.observer.observe(frame), bounded.observe(frame)
+            self.assertIsNone(raw.life.ratio)
+            self.assertIsNone(reading.life.current)
+            self.assertIsNone(reading.life.maximum)
+            self.assertEqual(row["expected_life_lower_bound"], reading.life.lower_bound)
+            self.assertEqual(reading.life.lower_bound, reading.life.ratio)
+            self.assertIn("orb_high_bound", reading.life.reason)
+            self.assertEqual(tuple(row["human_mana"]), (reading.mana.current, reading.mana.maximum))
+
+    def test_orb_fallback_never_overrides_readable_low_or_invalid_numeric_maximum(self):
+        bounded = SurvivalHudObserver(allow_high_orb_fallback=True)
+        for text, expected in (("984/1970", 984 / 1970), ("985/0", None)):
+            frame = self.reference("expanded")
+            self.paint_number(frame, "life", text)
+            reading = bounded.observe(frame)
+            self.assertEqual(expected, reading.life.ratio)
+            self.assertIsNone(reading.life.lower_bound)
+
+    def test_partial_orb_bound_handles_actual_fire_obscured_digits_without_inventing_values(self):
+        bounded = SurvivalHudObserver(allow_high_orb_fallback=True, allow_partial_orb_fallback=True)
+        for row in bounded.manifest["partial_orb_references"]:
+            frame = np.zeros((1140, 1922, 3), np.uint8)
+            left, top, right, bottom = row["canvas_box"]
+            frame[top:bottom, left:right] = cv.imread(str(bounded.asset_directory / row["path"]))
+            numeric = self.observer.observe(frame)
+            self.assertEqual(row["expected_numeric_mana_reason"], numeric.mana.reason)
+            reading = bounded.observe(frame)
+            self.assertIsNone(reading.mana.current)
+            self.assertIsNone(reading.mana.maximum)
+            self.assertEqual(row["expected_mana_lower_bound"], reading.mana.ratio)
+            self.assertIn("orb_partial_bound", reading.mana.reason)
+            self.assertEqual(tuple(row["human_life"]), (reading.life.current, reading.life.maximum))
+
+    def test_partial_bound_requires_every_liquid_row_and_never_overrides_numeric_danger(self):
+        bounded = SurvivalHudObserver(allow_partial_orb_fallback=True)
+        box = bounded.manifest["partial_orb_bound"]["resources"]["life"]["box"]
+        left, top, right, bottom = box
+        for variant in ("empty", "low", "poisoned", "obscured"):
+            frame = self.reference("expanded")
+            x0, y0, x1, y1 = bounded.manifest["resources"]["life"]["number_box"]
+            frame[y0:y1, x0:x1] = 0
+            if variant == "empty":
+                frame[top:bottom, left:right] = 0
+            elif variant == "low":
+                frame[top : top + 30, left:right] = 0
+            elif variant == "poisoned":
+                frame[top:bottom, left:right] = (0, 140, 0)
+            else:
+                frame[top + 40 : top + 50, left:right] = 255
+            self.assertIsNone(bounded.observe(frame).life.ratio, variant)
+        for text, expected in (("984/1970", 984 / 1970), ("985/0", None)):
+            frame = self.reference("expanded")
+            self.paint_number(frame, "life", text)
+            reading = bounded.observe(frame)
+            self.assertEqual(expected, reading.life.ratio)
+            self.assertIsNone(reading.life.lower_bound)
+
+    def test_missing_partial_poisoned_or_obscured_orb_does_not_become_zero_or_high_fill(self):
+        bounded = SurvivalHudObserver(allow_high_orb_fallback=True)
+        for variant in ("empty", "partial", "poisoned", "obscured"):
+            frame = self.reference("expanded")
+            left, top, right, bottom = self.observer.manifest["resources"]["life"]["number_box"]
+            frame[top:bottom, left:right] = 0
+            left, top, right, bottom = self.observer.manifest["high_orb_bound"]["resources"]["life"]["box"]
+            if variant == "empty":
+                frame[top:bottom, left:right] = 0
+            elif variant == "partial":
+                frame[top : top + 30, left:right] = 0
+            elif variant == "poisoned":
+                frame[top:bottom, left:right] = (0, 140, 0)
+            else:
+                frame[top + 60 : top + 70, left:right] = 255
+            self.assertIsNone(bounded.observe(frame).life.ratio, variant)
+        self.assertIsNone(bounded.observe(np.zeros((753, 1267, 3), np.uint8)).life.ratio)
 
     def test_wrong_layout_and_non_hud_screen_hold_without_fake_zero(self):
         for frame in (np.zeros((1140, 1922, 3), dtype=np.uint8), np.zeros((753, 1267, 3), dtype=np.uint8)):
@@ -129,6 +303,15 @@ class SurvivalVisionTests(unittest.TestCase):
         reading = self.observer.observe(frame)
         self.assertEqual(reading.belt_status, "slot_unverified")
         self.assertIsNone(reading.belt_contents(self.policy))
+
+    def test_one_occluded_label_keeps_other_same_frame_resource_but_blocks_travel(self):
+        frame = self.reference("expanded")
+        left, top, right, bottom = self.observer.manifest["resources"]["life"]["label_search_box"]
+        frame[top:bottom, left:right] = 0
+        reading = self.observer.observe(frame)
+        self.assertIsNone(reading.life.ratio)
+        self.assertEqual((1075, 1075), (reading.mana.current, reading.mana.maximum))
+        self.assertEqual("hud_unknown", self.decision(reading).reason)
 
     def test_number_parser_rejects_bad_ranges_and_malformed_pairs(self):
         for value in ("1/0", "100/99", "1", "1//2", "-1/2", "1.5/2", "01/2", "1/02", "x/2"):

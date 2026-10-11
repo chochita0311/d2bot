@@ -190,6 +190,162 @@ class BuffSequenceExecutor:
         return BuffDirective("await_confirmation", "sequence_dispatched")
 
 
+@dataclass(frozen=True)
+class BuffRenewalLimits:
+    sequence_seconds: float
+    confirmation_seconds: float
+    safety_wait_seconds: float
+
+    def __post_init__(self):
+        for name in self.__dataclass_fields__:
+            if _number(getattr(self, name), name) == 0:
+                raise ValueError(f"{name} must be positive")
+
+
+class AutomaticBuffRenewal:
+    """같은 필드 actor에서 새 관찰마다 진행하여 키 간격이 감시를 막지 않게 한다."""
+
+    def __init__(self, state, actions, limits: BuffRenewalLimits, *, screen_age, belt_age, next_stamp, clock):
+        BuffSequence(state, actions.pre_run_buff_order)
+        if not isinstance(limits, BuffRenewalLimits) or not callable(next_stamp) or not callable(clock):
+            raise ValueError("explicit renewal limits and shared-clock stamp producer required")
+        self.state, self.actions, self.limits, self.next_stamp = state, actions, limits, next_stamp
+        self.clock = clock
+        self.screen_age, self.belt_age = _number(screen_age, "screen_age"), _number(belt_age, "belt_age")
+        if not self.screen_age or not self.belt_age:
+            raise ValueError("positive observation ages required")
+        self.pauses = {key: _number(value, "buff pause") for key, value in actions.buff_action_pause_seconds.items()}
+        self.sequence: BuffSequence | None = None
+        self.review_reason: str | None = None
+        self.requested_at: float | None = None
+        self.started_at: float | None = None
+        self.confirmation_at: float | None = None
+        self.next_step_at = 0.0
+        self.last_stamp: ObservationStamp | None = None
+        self.last_now: float | None = None
+
+    @property
+    def pending(self):
+        return self.requested_at is not None
+
+    def cancel(self, reason):
+        if self.sequence is not None:
+            self.sequence.cancel()
+        self.review_reason = self.review_reason or reason
+        return BuffDirective("hold", self.review_reason)
+
+    def interrupt(self, reason):
+        if self.pending:
+            self.cancel(reason)
+
+    def tick(self, now):
+        now = _number(now, "now")
+        if self.last_now is not None and now < self.last_now:
+            return self.cancel("buff_clock_regressed")
+        self.last_now = now
+        if self.review_reason is not None:
+            return BuffDirective("hold", self.review_reason)
+        due = self.state.next_buff_renewal_at
+        if not self.pending and due is not None and now >= due:
+            self.requested_at = due
+        if not self.pending:
+            return None
+        if self.last_stamp is None or not 0 <= now - self.last_stamp.observed_at <= self.screen_age:
+            return self.cancel("buff_observation_stale")
+        if self.started_at is None:
+            if now >= self.requested_at + self.limits.safety_wait_seconds:
+                return self.cancel("buff_safety_timeout")
+        elif self.confirmation_at is None:
+            if now >= self.started_at + self.limits.sequence_seconds:
+                return self.cancel("buff_sequence_timeout")
+        elif now >= self.confirmation_at + self.limits.confirmation_seconds:
+            return self.cancel("buff_confirmation_timeout")
+        return BuffDirective("hold", "buff_observation_required")
+
+    def observe(self, scene, now, *, send_token, interrupted, confirmation=None):
+        # 이전 관찰의 감시 시한을 새 프레임 도착으로 되살리지 않는다.
+        self.tick(now)
+        if self.review_reason is not None:
+            return BuffDirective("hold", self.review_reason)
+        safety, stamp = scene.safety, scene.safety.stamp
+        valid = (
+            stamp.character_id == self.state.character_id
+            and stamp.room_id == self.state.room_id
+            and 0 <= now - stamp.observed_at <= self.screen_age
+            and (
+                self.last_stamp is None or (stamp.sequence > self.last_stamp.sequence and stamp.observed_at >= self.last_stamp.observed_at)
+            )
+        )
+        if not valid:
+            return self.cancel("buff_screen_invalid") if self.pending else None
+        if (
+            self.sequence is not None
+            and self.sequence._last is not None
+            and (stamp.sequence <= self.sequence._last.sequence or stamp.observed_at < self.sequence._last.observed_at)
+        ):
+            # press 도중 큐에 들어온 프레임은 다음 단계나 확인에 쓰지 않는다.
+            return BuffDirective("hold", "buff_frame_precedes_dispatch")
+        self.last_stamp = stamp
+        decision = self.state.decide(safety, now, max_observation_age_seconds=self.screen_age, max_belt_age_seconds=self.belt_age)
+        if not self.pending:
+            if decision.action != "buff" and decision.reason not in ("buff_unsafe", "buff_requires_field"):
+                return None
+            self.requested_at = now
+        if interrupted():
+            return self.cancel("buff_interrupted")
+        if decision.action in ("use_potion", "exit"):
+            self.cancel("buff_preempted_" + decision.reason)
+            return BuffDirective(decision.action, decision.reason)
+        safe = (
+            safety.location == "field"
+            and safety.monsters_clear is True
+            and scene.belt_closed is True
+            and decision.action in ("buff", "continue", "replenish")
+        )
+        if not safe:
+            if self.started_at is not None:
+                return self.cancel("buff_safety_lost")
+            return BuffDirective("hold", "buff_waiting_for_safe_field")
+        if self.sequence is None:
+            self.sequence = BuffSequence(self.state, self.actions.pre_run_buff_order)
+            self.started_at = now
+        sequence = self.sequence
+        if sequence._guard(safety, now, self.screen_age, self.belt_age) is not None:
+            return self.cancel("buff_screen_precedes_dispatch")
+        if now < self.next_step_at:
+            return BuffDirective("hold", "buff_gap")
+        if sequence.phase == "await_effect":
+            if confirmation is None:
+                return BuffDirective("hold", "buff_effect_unconfirmed")
+            names = [rule.name for rule in self.state.policy.buffs if rule.name not in sequence._confirmed]
+            if not all(
+                sequence.confirm_effect(name, confirmation, safety, now, screen_age=self.screen_age, belt_age=self.belt_age)
+                for name in names
+            ):
+                return self.cancel("buff_confirmation_rejected")
+            self.sequence = None
+            self.requested_at = self.started_at = self.confirmation_at = None
+            return BuffDirective("complete", "buff_confirmed")
+        directive = sequence.next_step(safety, now, screen_age=self.screen_age, belt_age=self.belt_age)
+        if directive.action != "input_request" or interrupted():
+            return self.cancel("buff_dispatch_blocked")
+        try:
+            succeeded = send_token(directive.token) is not False
+            acknowledged_at = self.next_stamp()
+            if not now <= acknowledged_at.observed_at <= self.clock():
+                return self.cancel("buff_dispatch_stamp_invalid")
+            acknowledged = sequence.acknowledge_step(directive.index, acknowledged_at, succeeded)
+        except Exception:
+            self.cancel("buff_input_error")
+            raise
+        if not acknowledged:
+            return self.cancel("buff_dispatch_unconfirmed")
+        self.next_step_at = acknowledged_at.observed_at + self.pauses.get(directive.token, 0.4)
+        if sequence.phase == "await_effect":
+            self.confirmation_at = acknowledged_at.observed_at
+        return BuffDirective("hold", "buff_sequence_running")
+
+
 class BeltInspection:
     """잔량 관찰과 닫힘의 긍정 증거를 분리해 펼친 벨트의 이동을 막는다."""
 

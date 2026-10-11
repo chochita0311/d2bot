@@ -1,6 +1,8 @@
-# `north_go` 현재 동작 설명
+# 삭제한 north_go 실행기의 역사적 참고
 
-이 문서는 [north_go.py](../north_go.py)의 현재 동작을 기준으로 정리한 문서입니다.
+2026-10-11 north_go.py와 north_return.py 실행 코드를 삭제했다. 아래 내용은 교체 전 구현과 튜닝의 참고 이력이며 현재 실행 지침이 아니다. 최신 실행은 [Summoner Run](../../../../../docs/features/summoner-run.md), 실제 증거는 [통합 run](../../../../../docs/plans/run/run-20261009-07-summoner-live-integration.md)이 소유한다.
+
+같은 날 후속 assets 정리에서 호출되지 않는 `arcane_common`의 옛 북쪽 전용 loader·hub/end/monster helper와 관련 이미지를 제거했다. 세션 마감 검토에서 남아 있던 옛 `routes/arcane_entry.py`·`runtime/runtime_helpers.py`·`arcane_common.py`도 현재 호출자가 없어 삭제했다. 최신 `--arcane-entry`는 `RunLifecycleSession`의 현재 마을/성역 경로를 사용한다. 아래 helper 이름·자산 경로는 당시 구현을 설명하는 역사적 표기다.
 
 이 라우트에서 쓰는 시계 방향 표기는 아래와 같습니다.
 
@@ -12,12 +14,12 @@
 
 ## 1. 시작 단계
 
-진입점은 [run_arcane_north_go()](../north_go.py)입니다.
+진입점은 run_arcane_north_go() (삭제한 north_go.py)입니다.
 
 시작할 때 하는 일은 아래와 같습니다.
 
 1. 캐릭터에 이동 스킬이 설정되어 있는지 확인합니다.
-2. [prepare_arcane_hub_start()](../common/arcane_common.py)로 Arcane hub 기준점을 맞춥니다.
+2. 당시 `prepare_arcane_hub_start()`로 Arcane hub 기준점을 맞춥니다.
 3. hub focus ratio를 읽어서 이번 루프의 zero point로 저장합니다.
 4. 이전 방향, 이전 ratio, 현재 family 같은 제어 상태를 초기화합니다.
 5. `RealtimeVisionRuntime`를 시작하고 fast vision, slow vision, decision 콜백을 연결합니다.
@@ -36,6 +38,8 @@
 
 capture 스레드는 최신 프레임을 계속 공급하고, fast/slow/decision이 그 프레임을 서로 다른 용도로 사용합니다.
 
+runtime의 `captured_at`, `produced_at`, `sampled_at`는 같은 단조 시계이며 `captured_at`는 캡처 시작 직전 시각입니다. 원본 일반 시각은 기록용 `wall_captured_at`으로만 분리합니다. 창 영역 변경 또는 `invalidate_observations()` 호출은 관찰 세대를 증가시키고 이전 비전/판단 publication과 북쪽 재사용 캐시를 무효화합니다. 최근 프레임은 5개까지만 유지하며 관찰 없음 결과는 이전 channel 결과를 지웁니다. [FEAT-0009](../../../../../docs/plans/feature/feat-0009-runtime-observation-provenance.md)가 이 계약을 소유합니다. 이 변경은 프레임 변화량을 실제 도착·안전·처치로 확정하거나 공통 필드 제어를 자동 활성화하지 않습니다.
+
 ## 3. Fast Vision 단계
 
 `_fast_vision()`은 방향 선택을 위한 고주파 계산 단계입니다.
@@ -50,7 +54,7 @@ capture 스레드는 최신 프레임을 계속 공급하고, fast/slow/decision
 
 ### 3-1. fast_maps
 
-[_build_arcane_fast_maps()](../north_go.py)는 현재 프레임을 축소해서 아래 두 mask를 만듭니다.
+_build_arcane_fast_maps() (삭제한 north_go.py)는 현재 프레임을 축소해서 아래 두 mask를 만듭니다.
 
 - `floor_mask`
 - `star_mask`
@@ -59,7 +63,7 @@ capture 스레드는 최신 프레임을 계속 공급하고, fast/slow/decision
 
 ### 3-2. direction candidate vote
 
-[_score_arcane_direction_candidates()](../north_go.py)는 모든 candidate를 점수화합니다.
+_score_arcane_direction_candidates() (삭제한 north_go.py)는 모든 candidate를 점수화합니다.
 
 candidate family 구성은 아래와 같습니다.
 
@@ -86,10 +90,10 @@ candidate family 구성은 아래와 같습니다.
 
 관련 함수:
 
-- [_score_arcane_north_open_signal()](../north_go.py)
-- [_score_arcane_west_open_signal()](../north_go.py)
-- [_score_arcane_east_open_signal()](../north_go.py)
-- [_score_arcane_family_signals()](../north_go.py)
+- _score_arcane_north_open_signal() (삭제한 north_go.py)
+- _score_arcane_west_open_signal() (삭제한 north_go.py)
+- _score_arcane_east_open_signal() (삭제한 north_go.py)
+- _score_arcane_family_signals() (삭제한 north_go.py)
 
 동작 방식:
 
@@ -102,7 +106,7 @@ candidate family 구성은 아래와 같습니다.
 
 ## 5. 방향 선택 규칙
 
-후보 선택 함수는 [_choose_arcane_direction()](../north_go.py)이고, 실제 전환은 `_stabilize_arcane_turn_choice()`를 거칩니다.
+후보 선택 함수는 _choose_arcane_direction() (삭제한 north_go.py)이고, 실제 전환은 `_stabilize_arcane_turn_choice()`를 거칩니다.
 
 현재 선택 순서는 아래와 같습니다.
 
@@ -113,7 +117,7 @@ candidate family 구성은 아래와 같습니다.
 
 side에서 north로 전환할 때는 `north_open >= 0.38`인 fresh 판단 2회를 확인합니다. 횟수가 부족하고 기존 side 후보를 유지할 수 있으면 전환을 보류합니다.
 
-side family 비교는 [_choose_arcane_side_family_vote()](../north_go.py)에서 처리합니다.
+side family 비교는 _choose_arcane_side_family_vote() (삭제한 north_go.py)에서 처리합니다.
 
 현재 중요한 hysteresis 상수는 아래와 같습니다.
 
@@ -149,8 +153,7 @@ slow payload는 fresh할 때만 decision 단계에서 신뢰합니다.
 
 terminal 감지는 이제 `north_go.py` 내부 전용 로직이 아니라 Arcane 공통 helper로 옮겨져 있습니다.
 
-위치는 [arcane_common.py](../common/arcane_common.py) 안의
-[detect_arcane_end()](../common/arcane_common.py) 입니다.
+당시 위치는 `arcane_common.py` 안의 `detect_arcane_end()`입니다.
 
 현재 end 감지 기준:
 
@@ -169,7 +172,7 @@ terminal 감지는 이제 `north_go.py` 내부 전용 로직이 아니라 Arcane
 
 ## 8. 멈춤 조건
 
-`north_go`는 [_decision()](../north_go.py) 안에서 아래 조건이 만족되면 멈춥니다.
+`north_go`는 _decision() (삭제한 north_go.py) 안에서 아래 조건이 만족되면 멈춥니다.
 
 1. latest frame에서 `detect_arcane_end()`가 성공하면 즉시 멈추고 `end_latest_frame` 상태를 반환합니다.
 2. 그 외에는 fresh한 slow payload의 `end`가 `None`이 아닐 때 멈추고 `end` 상태를 반환합니다.
@@ -182,7 +185,7 @@ terminal 감지는 이제 `north_go.py` 내부 전용 로직이 아니라 Arcane
 
 ## 9. Steering 단계
 
-최종 candidate가 정해진 뒤에는 [_steer_arcane_movement()](../north_go.py)가 실제 커서 위치를 결정합니다.
+최종 candidate가 정해진 뒤에는 _steer_arcane_movement() (삭제한 north_go.py)가 실제 커서 위치를 결정합니다.
 
 현재 하는 일은 아래와 같습니다.
 
@@ -227,7 +230,7 @@ fast vision이 너무 오래되면 새 방향 결정을 하지 않습니다.
 
 ## 13. 응답성 튜닝
 
-현재 [north_go.py](../north_go.py)의 응답성 관련 값은 다음과 같습니다.
+현재 north_go.py (삭제한 north_go.py)의 응답성 관련 값은 다음과 같습니다.
 
 - `ARCANE_RUNTIME_CAPTURE_FPS = 30.0`
 - `ARCANE_RUNTIME_FAST_INTERVAL = 0.002`

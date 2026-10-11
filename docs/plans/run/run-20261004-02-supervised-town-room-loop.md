@@ -64,7 +64,7 @@ GUI의 `Live town loop (1–3 runs)`와 CLI `main.py --town-loop 1 --difficulty 
 
 3회 시도는 timing 465개/입력 지연 유효 표본 41개, 최종 1회는 164개/14개다. null을 제외하고 p95는 선형 보간했다. 관찰 간격은 입력·PNG 저장 비용도 포함한다. 3회 시도 최대 간격은 657.86ms로 중앙값이 지연 상한을 의미하지 않는다. 긴 캡처 지연·키 입력 기본 대기는 후속 측정 대상이다.
 
-당시 실화면 `20261004-town-loop/frames/raw/runtime-19-npc-dialogue.png`에서 취소 템플릿 점수 0.989, 홀드 해제 후 Esc 계획을 재생 검증했다. 이 경로는 세션 종료에 제거한 역사적 출처이며, 선별 사본은 `assets/private/town-loop/frames/town-loop-frame-npc-dialogue-window-ko-1922x1140.png`에 보존했다. 같은 대화의 직접 Esc 해제도 관찰했다. 자동 이동 중 자연스럽게 열린 NPC 대화를 닫고 루프 끝까지 가는 통합 사례는 성공 세션에 없었다.
+당시 실화면 `20261004-town-loop/frames/raw/runtime-19-npc-dialogue.png`에서 취소 템플릿 점수 0.989, 홀드 해제 후 Esc 계획을 재생 검증했다. 이 경로는 세션 종료에 제거한 역사적 출처이며, 선별 사본은 당시 private owner에 보존했고2026-10-11 공용 `assets/ui/town-loop/remastered-ko-window/references/town-loop-frame-npc-dialogue-window-ko-1922x1140.png`로 바이트를 보존해 옮겼다. 같은 대화의 직접 Esc 해제도 관찰했다. 자동 이동 중 자연스럽게 열린 NPC 대화를 닫고 루프 끝까지 가는 통합 사례는 성공 세션에 없었다.
 
 회귀 테스트 16개와 변경 Python 여섯 파일의 compile/Black 검사를 수행했다. 기존 room-only/Summoner의 기본 호출·난이도 전달은 소스 검토했고 전투 런은 실행하지 않았다. 확인한 마을 화면에서 HP 985/985, MP 1075/1075, 용병 생존이었으며 자동 생존 제어의 증거는 아니다.
 

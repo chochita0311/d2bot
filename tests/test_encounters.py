@@ -159,6 +159,14 @@ class RegionReplayTests(unittest.TestCase):
         )
         return cv.imread(str(ASSETS / case["path"])), scene, case
 
+    def test_parallel_template_scan_preserves_native_candidates_and_scores(self):
+        for name in ("alive", "corpses", "shrine"):
+            with self.subTest(name=name):
+                frame, scene, _ = self.replay(name)
+                sequential = self.observer.scan(frame, scene, now=10, max_age=1, limit_per_template=2)
+                parallel = self.observer.scan(frame, scene, now=10, max_age=1, limit_per_template=2, workers=2)
+                self.assertEqual(sequential, parallel)
+
     def scan(self, name):
         frame, scene, _ = self.replay(name)
         return self.observer.scan(frame, scene, now=10, max_age=1, limit_per_template=3)
@@ -217,7 +225,7 @@ class RegionReplayTests(unittest.TestCase):
     def test_synthetic_repeated_sprite_is_not_reduced_to_one_name(self):
         _, scene, _ = self.replay("alive")
         pixels = np.zeros((710, 1600, 3), np.uint8)
-        sprite = cv.imread(str(ASSETS / "hell-clan-alive.png"))
+        sprite = cv.imread(str(ASSETS / "templates/encounters/hell-clan-alive.png"))
         for x, y in [(100, 100), (700, 400)]:
             pixels[y : y + sprite.shape[0], x : x + sprite.shape[1]] = sprite
         hits = self.observer.scan(pixels, scene, now=10, max_age=1, limit_per_template=3)

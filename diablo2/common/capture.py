@@ -98,6 +98,13 @@ class ScreenCapture:
     def target(self) -> dict[str, int]:
         return self._target
 
+    def current_target(self) -> dict[str, int]:
+        """입력 직전에 실제 창 경계를 확인하며 캡처된 프레임의 원점은 바꾸지 않는다."""
+        if self.config.window_title:
+            window = self._resolve_window()
+            return {"left": window.left, "top": window.top, "width": window.width, "height": window.height}
+        return dict(self._target)
+
     def grab(self) -> FramePacket:
         if self.config.window_title and self.config.follow_window:
             self._window = self._resolve_window()

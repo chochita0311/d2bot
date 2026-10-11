@@ -1,0 +1,123 @@
+{
+  "mode": "input_free_calibration",
+  "revision": "north-candidate-calibration-2026-10-10-v3",
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "anchor": [
+    961,
+    620
+  ],
+  "anchor_provenance": "alive-case human ground point in docs/features/encounter-observation.md; other poses unverified",
+  "wing": "north",
+  "path": {
+    "cell_pixels": 8,
+    "floor_fraction": 0.5,
+    "seed_radius": 180,
+    "maximum_step": 240,
+    "turn_degrees": 35,
+    "revisit_radius": 90,
+    "minimum_component_cells": 64
+  },
+  "motion": {
+    "minimum_matches": 12,
+    "minimum_inlier_ratio": 0.65,
+    "maximum_error": 3,
+    "scale": 0.5
+  },
+  "teleport": {
+    "maximum_distance": 800,
+    "preferred_distance": 240,
+    "clearance_pixels": 32
+  },
+  "automap_overlay": {
+    "neutral_pixel_fraction": 0.25
+  },
+  "teleport_provenance": "2026-10-10 main140: current reviewed stairs template matched .97042 with landing [347,416], 636.49px from current ground [962,580]. Previous 600px candidate bound excluded this actual wide landing and left a 176px portal-side detour. Increase the development candidate bound to800 within the current viewport; actual landing remains subject to current-template, hover, freshness and measured movement checks. This is not a calibrated game ability range.",
+  "automap_overlay_provenance": "2026-10-10 main135 ON diagnosis: equal BGR pixels occupy .35-.37 of reviewed map-node patches versus .06 of the world-floor patch. Reject neutral coverage >=.25 per existing sample; exclude neutral pixels from ORB. Semi-transparent map on colored world surfaces and unreviewed gray floors remain limits. Reviewed remastered layout only, not general floor or map semantics.",
+  "terrain": {
+    "floor_bgr": [
+      [
+        91,
+        88,
+        88
+      ],
+      [
+        107,
+        108,
+        109
+      ],
+      [
+        111,
+        109,
+        109
+      ],
+      [
+        139,
+        144,
+        147
+      ]
+    ],
+    "void_bgr": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        8,
+        8,
+        8
+      ],
+      [
+        11,
+        11,
+        11
+      ],
+      [
+        18,
+        18,
+        18
+      ]
+    ],
+    "floor_lab_distance": 18,
+    "void_lab_distance": 16
+  },
+  "terrain_provenance": "region light-floor subset plus reviewed shaded upper landing median BGR91,88,88 in main67 native box [1230,150,1450,190]; Lab18 and void16 unchanged; darker wall colors59/67 remain excluded",
+  "limits": [
+    "candidate-only; path/terrain/teleport are consumed by supervised main via load_arcane_step_planner; this is not validated production navigation",
+    "fixed anchor sourced only for alive case; other scene poses are diagnostic surrogates",
+    "stairs and occluded floors remain unresolved",
+    "no enemy-clear, terminal, hub-arrival or buff-effect confirmation"
+  ],
+  "terrain_references": [
+    {
+      "path": "templates/navigation/shadow-landing.png",
+      "sha256": "8c2d87bca6aee31638052f8efe9a6898bc2de79470494eedc342b4c5d512ec85",
+      "source_frame_sha256": "551426e06d20726bd921193fa8eedd2b2f67ecb511dac1e12e52b25471de90f8",
+      "source_frame_size": [
+        1922,
+        1140
+      ],
+      "source_box": [
+        1060,
+        80,
+        1580,
+        360
+      ],
+      "sample_box": [
+        170,
+        70,
+        390,
+        110
+      ],
+      "sample_bgr": [
+        91,
+        88,
+        88
+      ],
+      "meaning": "reviewed shaded floor appearance; not physical floor or safety proof"
+    }
+  ]
+}

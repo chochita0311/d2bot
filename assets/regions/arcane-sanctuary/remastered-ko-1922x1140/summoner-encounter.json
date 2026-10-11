@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive.png",
+    "sha256": "12c8db8f9fbd1b7b95350bc3d8fdfa96cfcd262081e13c386961ff35a4debc44"
+  },
+  "parts": [
+    {
+      "id": "summoner-robe",
+      "path": "templates/encounters/summoner-robe-alive.png",
+      "crop": [
+        1441,
+        653,
+        1471,
+        715
+      ],
+      "sha256": "5c3ebe437718d155e2d5c2a282d7df04745002250967a52f6785e7761dc9ab05",
+      "threshold": 0.92,
+      "ground_offset": [
+        15,
+        81
+      ]
+    }
+  ],
+  "limits": [
+    "Reviewed blue-and-gold robe appearance on the rune platform, not a standalone identity or life-state proof",
+    "Native current-frame appearance supports bounded approach/Nova only; missing appearance never confirms death"
+  ]
+}

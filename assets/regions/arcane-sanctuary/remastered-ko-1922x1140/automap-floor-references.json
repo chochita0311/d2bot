@@ -1,0 +1,40 @@
+{
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source_sha256": "dcbb887b918badb9b8b5b2141ef8b5c525e25929a8816ca6a08ef93b8f7cc8a3",
+  "review": "2026-10-10 main135 shared terrain/map crops; no character, HUD, identity or equipment. Positive actual floor versus negative map node on void; reviewed layout only.",
+  "references": [
+    {
+      "path": "references/navigation/automap-node-negative.png",
+      "box": [
+        1330,
+        385,
+        1450,
+        445
+      ],
+      "point": [
+        1388,
+        411
+      ],
+      "expected_floor": false,
+      "sha256": "00cebaa6389657f33f615a786aef664e9306977877b4f2ec9e1cd3f52660c2ee"
+    },
+    {
+      "path": "references/navigation/automap-world-floor-positive.png",
+      "box": [
+        1440,
+        550,
+        1530,
+        630
+      ],
+      "point": [
+        1480,
+        600
+      ],
+      "expected_floor": true,
+      "sha256": "c21308b836143c82f43a9b3c45c02b049b866c73fdef73e9c7d4d32cb1ce200b"
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "approach_ground": [
+    740,
+    560
+  ],
+  "glyph_slot_centers": [
+    [
+      385,
+      401
+    ],
+    [
+      531,
+      355.5
+    ],
+    [
+      673,
+      262.5
+    ],
+    [
+      788,
+      265
+    ],
+    [
+      930.5,
+      342.5
+    ],
+    [
+      1074.5,
+      411.5
+    ]
+  ],
+  "layout_references": [
+    {
+      "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-slot-variation-a.png",
+      "sha256": "f087820f19244a7bafbaf924a7e91abbb040bd8d52589b0713ea0846754cc82b",
+      "platform_observed": true,
+      "glyph_count": 4,
+      "approach_ground": [
+        971,
+        783.25
+      ]
+    },
+    {
+      "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-slot-variation-b.png",
+      "sha256": "4cf1aedcb9c181fab1fa6a7db182139b34319e1cede9977f522ac184b171dcc7",
+      "platform_observed": true,
+      "glyph_count": 5,
+      "approach_ground": [
+        1461,
+        548.5
+      ]
+    },
+    {
+      "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-glyph-unverified.png",
+      "sha256": "9a456b9363b678e9e561da5ca092910f3c2dd98da62b31aeb54c5d173c54516c",
+      "platform_observed": false
+    }
+  ],
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-journal.png",
+    "sha256": "eccfffcb9634d313d024e0936cc0f255ef8e24e3308e0db22a83aa93bfa8db56",
+    "review": "Reviewed bright glyph cores within blue halos; four distinct shapes and relative placement, including main170 combat/labels variation. No HUD, character, labels, or private text in public masks."
+  },
+  "parts": [
+    {
+      "id": "square",
+      "path": "templates/objective/rune-square.png",
+      "crop": [
+        350,
+        364,
+        420,
+        438
+      ],
+      "sha256": "cac6958774dd2b72f8a0a03323b407f62d0025e919f5d0a1e255a2f53dd1b3cc"
+    },
+    {
+      "id": "crescent",
+      "path": "templates/objective/rune-crescent.png",
+      "crop": [
+        499,
+        329,
+        563,
+        382
+      ],
+      "sha256": "164b0aac33d9cb2098ed2803a54f3eeb1e261e3aca8c30dbf313c8439d598b7e"
+    },
+    {
+      "id": "circle",
+      "path": "templates/objective/rune-circle.png",
+      "crop": [
+        640,
+        230,
+        706,
+        295
+      ],
+      "sha256": "4472c4cd3b93261dadf06098fd6366fc355b49ea153dcc3d81f3d1bfe3ad1a75"
+    },
+    {
+      "id": "double-v",
+      "path": "templates/objective/rune-double-v.png",
+      "crop": [
+        750,
+        217,
+        826,
+        313
+      ],
+      "sha256": "36ca5c38e43946529e640dbcbb373175b1bf410595ee4b35a847b584df402e48"
+    },
+    {
+      "id": "triangle",
+      "path": "templates/objective/rune-triangle.png",
+      "crop": [
+        896,
+        304,
+        965,
+        381
+      ],
+      "sha256": "a471f44e206498523177de8121da983fb0390d2fedb321e64ad44a2c0f983851"
+    },
+    {
+      "id": "ring-tail",
+      "path": "templates/objective/rune-ring-tail.png",
+      "crop": [
+        1045,
+        375,
+        1104,
+        448
+      ],
+      "sha256": "b215c0aa051c5e15390303ccd9d7b574bd4c683fcb98925deffa2f4c12678abc"
+    }
+  ],
+  "limits": [
+    "Platform presence only; no journal interaction, Summoner identity, death, or loot inference",
+    "At least four distinct glyph shapes assigned one-to-one to reviewed slots; shape identity does not fix slot identity",
+    "Maximum-support current layout and a unique translation cluster required; no hidden glyph reconstruction",
+    "Reviewed remastered native layout; alternate graphics or glyph layouts remain unsupported"
+  ],
+  "match_threshold": 0.68,
+  "slot_layout_tolerance_pixels": 24
+}

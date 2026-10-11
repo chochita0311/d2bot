@@ -1,10 +1,14 @@
 # Field Control
 
-공통 [제어기](../../diablo2/common/field_control.py)는 캐릭터 설정의 키로 F2 이동 유지→F2 해제/F4 공격 유지→F4 해제/전리품 확인→F2 이동 재개를 제공하는 재사용 API다. 기본은 dry-run이며 실제 입력에는 backend와 검증한 관찰 생산자를 명시적으로 연결해야 한다. [runtime](../../diablo2/common/field_runtime.py)은 관찰 한 개만 보관하고 독립적으로 입력 시한을 감시한다. 새 제어기는 기존 북쪽 GUI 시험에 자동 활성화되어 있지 않다.
+공통 [제어기](../../diablo2/common/field_control.py)는 캐릭터 설정의 키로 F2 이동 유지→F2 해제/F4 공격 유지→F4 해제/전리품 확인→F2 이동 재개를 제공하는 재사용 API다. 기본은 dry-run이며 실제 입력에는 backend와 검증한 관찰 생산자를 명시적으로 연결해야 한다. [runtime](../../diablo2/common/field_runtime.py)은 관찰 한 개만 보관하고 독립적으로 입력 시한을 감시한다. 현재 Summoner GUI는 최신 main의 `HeldFieldInput`·watchdog·화면 생산자·자동 버프·조건부ALT를 연결한다. 아래 전체 `FieldRuntime` 주입 API와 별도 실행 경로이며 [현재 안내](summoner-run.md)가 동작/미완료 경계를 소유한다.
 
 ## Use And Ownership
 
 `create_field_control(config, character_id, room_id, limits)`는 기본으로 입력을 보내지 않는 `DryFieldInput`을 사용한다. live 사용에는 명시적인 backend, 현재 게임 포커스 함수, 창 경계 함수, 관찰 생산자와 같은 시계의 확인된 생존 상태가 필요하다. [ControllerFieldInput](../../diablo2/common/controller.py)은 표준 키보드/마우스 입력에 연결하고, `BotController.attach_field_control(loop)`는 기존 pause/stop 콜백의 키 해제를 연결한다. backend는 key_down/key_up/press/move를 짧게 실행해야 한다.
+
+필드 조준은 가상 데스크톱 원점·전체 크기로 `SendInput`을 정규화한다. 창 안 좌표를 확인한 뒤 한 번 전송하고, 현재 포커스/중단을 계속 확인하며 최대80ms 안에 실제 커서가 요청점3px 이내인지 읽는다. 지속 불일치는 재전송 없이 오류이며 새 유지 입력을 승인하지 않는다. 감독 main의 `input_events[].pointer_evidence`는 요청/실제 좌표·데스크톱 범위·대기 시간을 기록한다. 커서 일치는 시전이나 착지 확인이 아니다.
+
+자동 버프 소비자가 필요한 실행은 `create_field_runtime(..., buff_limits=..., next_stamp=...)`를 사용한다. 같은 생존 상태·시계·관찰 유효 시간을 공유하는 `AutomaticBuffRenewal`을 연결하며 기본 backend는 동일하게 dry-run이다. `publish`/`publish_hud`의 선택적 `buff_confirmation`은 해당 scene과 같은 stamp여야 한다. 별도 검증한 현재 안전·효과 생산자는 계속 필요하다. [자동 갱신 계약](../plans/spec/spec-0011-automatic-buff-renewal.md)과 [증거](../plans/run/run-20261009-05-automatic-buff-renewal.md)를 따른다.
 
 `FieldObservation`의 적 근접/정리·위치·도착 가능·도착 완료·전리품 확인은 생산자가 검증해 제공해야 한다. [지역 후보](encounter-observation.md)를 이 값으로 자동 승격하지 않는다. `enemy=clear`는 현재 `monsters_clear=True`와 함께여야 하며 보이는/미확인 적은 안전한 버프 장소로 들어갈 수 없다. 마나/생명력은 [같은 프레임의 현재/최대값](survival-observation.md)을 사용한다.
 
@@ -12,15 +16,19 @@
 
 ## Timing And Confirmation
 
+전체 FieldRuntime의 외부 경로 API는 `navigation_allowed(stamp)`와 `dispatch_navigation(stamp, aim=..., cast=...)`다. 최신 공통 판단이 travel의 `destination_unconfirmed`일 때만 허용하고 생존/버프/전투/전리품/포커스/중단/기한을 같은 actor lock 안에서 재검사한다. 유지 키 해제 뒤 한 번 press하며 실제 backend에는 독립 watchdog이 필요하다. [아케인 단일 시전 API](arcane-navigation.md)는 capture/HUD/발판/배경을 이 경계에 연결한다. 현재 GUI는 별도 연속 main 경로를 사용한다.
+
 runtime의 기본 시계는 `time.monotonic`이다. 모든 상태/관찰 시각도 같은 시계여야 한다. 기존 `FramePacket.timestamp`의 wall-clock 시각을 그대로 혼합하지 않는다. 재생은 명시적으로 주입한 상대 시계를 사용한다. 시계가 역행하면 키를 해제하고 해당 제어기를 종료한다.
 
-키 유지의 시한은 최신 관찰 시각+screen_age, 최단 버프 갱신 시각, 전투/도착 상한 중 빠른 값이다. Flash의 확인된 Orders 시각+140초(지속150초−갱신 여유10초)에 새 화면이 없어도 키가 해제된다. 그 뒤 안전한 필드/버프 효과/원래 장비 확인에는 [별도 버프 트랜잭션](field-buffs.md)이 필요하다. 제어기가 `buff`를 반환하는 것만으로 시계를 갱신하지 않는다.
+키 유지의 시한은 최신 관찰 시각+screen_age, 최단 버프 갱신 시각, 전투/도착 상한 중 빠른 값이다. Flash의 확인된 Orders 시각+140초(지속150초−갱신 여유10초)에 새 화면이 없어도 키가 해제된다. 자동 소비자가 연결되면 새 안전 관찰에서 [버프 트랜잭션](field-buffs.md)을 진행하고 각 키 사이에도 감시한다. 소비자가 없으면 기존처럼 요청과 해제까지만 수행한다. 제어기가 `buff`를 반환하거나 전체 키를 보내는 것만으로 시계를 갱신하지 않는다.
+
+`HeldFieldInput.renew_lease`는 이미 유지 중인 동일 키/조준의 실제 포인터가 일치하고 이전·새 시한이 모두 유효할 때만 시한을 갱신한다. 해제된 키를 누르거나 만료 간격을 연결하지 않는다. 최신 화면과 경로/적/호버 검증의 소유자는 호출자다. 연속 Summoner main은 같은 새 화면의 기존 조준 검사를 배경 대응·경로 기억보다 먼저 소비하되 acquired+250ms 상한을 유지한다. [최신 통합 run](../plans/run/run-20261009-07-summoner-live-integration.md)이 지연 모사 회귀와 실게임 재검증 상태를 소유한다.
 
 포션 요청은 기존 유지 키를 놓고 1회만 전송한다. 같은 열의 확인된 소비를 `acknowledge_potion`으로 전달한 뒤 최신 회복 상태를 다시 읽는다. 확인이 없거나 실패하면 재전송 없이 hold한다. `reconcile_belt`는 요청 이후 최신 펼친 벨트의 절대 잔량으로 대기를 해소하며 소비량을 다시 차감하지 않는다. 모호한 슬롯은 잔량을 무효화하고 입력을 재전송하지 않는다. 확인된 0개는 화면 지연 중에도 `exit` 요청을 유지한다. 이 요청에는 Esc 메뉴/게임 종료 실행 및 확인을 담당하는 room lifecycle 소비자가 필요하다; 요청을 실제 종료로 기록하지 않는다.
 
 `runtime.publish_hud(reading, scene)`는 같은 프레임의 현재/최대값과 벨트 표시를 공통 관찰에 연결한다. 호출자가 scene과 HUD의 동일 프레임을 보장해야 한다. field/clear/적/도착 정보는 별도로 검증한 생산자 값이며 HUD가 만들어 주지 않는다. 펼친 벨트는 소비 시점에도 최신일 때만 잔량을 갱신하고 이동은 닫힘을 다시 확인할 때까지 보류한다.
 
-Flash <=6개 보충 모드는 목표12개까지 유지한다. 먼 적 접근에는 새 `hunt_aim`과 도달 가능 확인이 필요하며, 처치만으로 포션 잔량이 증가하지 않는다. 전투 후 정리 확인→전리품 확인을 거친 뒤에만 이동한다. 적이 멀어지거나 사라진 것은 정리 확인이 아니다.
+Flash는 현재 보라 포션 잔량이6개 이하일 때만 작은 활력을 허용하고7개 이상이면 중단한다. 대량 활력 우선·총12개 목표는 유지한다. 먼 적 접근에는 새 `hunt_aim`과 도달 가능 확인이 필요하며, 처치만으로 포션 잔량이 증가하지 않는다. 전투 후 정리 확인→전리품 확인을 거친 뒤에만 이동한다. 적이 멀어지거나 사라진 것은 정리 확인이 아니다.
 
 텔레포트는 [직업별 참고값](../../config/game-rules/casting.md)의 프레임을 25Hz 논리 시간으로 환산한 하한과 확인된 도착 지연의 이동 평균을 사용한다. 화면 렌더 FPS/실제 시전 프레임을 측정했다고 주장하지 않는다. 도착 확인이 없으면 조준 변경으로 상한을 연장하지 않고 멈춘다.
 

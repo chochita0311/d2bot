@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+    "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0",
+    "review": "Reviewed main124 central floor; actor above circle, two blue braziers and separate floor ornaments"
+  },
+  "parts": [
+    {
+      "id": "left",
+      "path": "templates/hub/floor-left.png",
+      "crop": [
+        800,
+        665,
+        884,
+        708
+      ],
+      "offset": [
+        -161,
+        -11
+      ],
+      "threshold": 0.8,
+      "sha256": "b7bbcaed3586b84efb8fa7812558cd0cd6a12734aeee409754c8dc4aa597f80f",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+        "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+      }
+    },
+    {
+      "id": "right",
+      "path": "templates/hub/floor-right.png",
+      "crop": [
+        1040,
+        657,
+        1123,
+        702
+      ],
+      "offset": [
+        79,
+        -19
+      ],
+      "threshold": 0.8,
+      "sha256": "b6bcca39ba7b953c5c1259c52cf0a81161e5d10266e8c1e5220698941cca5c57",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+        "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+      }
+    },
+    {
+      "id": "lower",
+      "path": "templates/hub/floor-lower.png",
+      "crop": [
+        890,
+        721,
+        1035,
+        765
+      ],
+      "offset": [
+        -71,
+        45
+      ],
+      "threshold": 0.8,
+      "sha256": "2c086ec32fc486e434a3313d175b856ab363f1e178ed9d5ac0348358bdb4802b",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+        "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+      }
+    },
+    {
+      "id": "upper",
+      "path": "templates/hub/floor-upper.png",
+      "crop": [
+        485,
+        744,
+        533,
+        770
+      ],
+      "offset": [
+        -15,
+        -76
+      ],
+      "threshold": 0.8,
+      "sha256": "2b732e1dc062afd28a77d7f87fac62d4a3997b7d2eef5ace9d494a2e910cfc74",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/distant-effects.png",
+        "sha256": "9d304a2f1a869fc5237b70b09b302c1ba1c39b2de30f6f45baee4ee85e19f671"
+      }
+    },
+    {
+      "id": "upper-left",
+      "path": "templates/hub/floor-upper-left.png",
+      "crop": [
+        800,
+        600,
+        870,
+        645
+      ],
+      "offset": [
+        -161,
+        -76
+      ],
+      "threshold": 0.8,
+      "sha256": "ddc66b087621c17beb13e70578cfbf0b79f3432c8f424138a6e5b287ccffb4b4",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+        "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+      }
+    },
+    {
+      "id": "left-tip",
+      "path": "templates/hub/floor-left-tip.png",
+      "crop": [
+        831,
+        565,
+        883,
+        600
+      ],
+      "offset": [
+        -216,
+        -10
+      ],
+      "threshold": 0.8,
+      "sha256": "c07d31e357a3b58fe918d8190c28768fd9441312a7aa921e8d41d71b0e22a878",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/effects.png",
+        "sha256": "fe8c8f0124d384be49562258dcfcb907376cac5185ad89ba27f743e26bbb4fce"
+      }
+    }
+  ],
+  "blue_pair": {
+    "hsv_lower": [
+      95,
+      90,
+      140
+    ],
+    "hsv_upper": [
+      135,
+      255,
+      255
+    ],
+    "minimum_area": 45,
+    "width": [
+      8,
+      65
+    ],
+    "height": [
+      10,
+      80
+    ],
+    "separation": [
+      80,
+      115
+    ],
+    "vertical_difference": 14,
+    "ground_offset": [
+      0,
+      50
+    ],
+    "local_radius": 18
+  },
+  "minimum_parts": 2,
+  "location_tolerance": 8,
+  "limits": [
+    "Native remastered layout only",
+    "Two blue braziers plus two independent floor ornaments required",
+    "Current proximity and post-release settling checked by movement engine",
+    "Merged animated blue effects may use two current floor ornaments and blue pixels in two distinct expected brazier patches; no past match scores"
+  ],
+  "floor_seed_id": "right"
+}

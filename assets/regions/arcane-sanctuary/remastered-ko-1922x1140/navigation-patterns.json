@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "patterns": [
+    {
+      "id": "stairs-descend-east",
+      "path": "templates/navigation/stairs-descend-east.png",
+      "landing_offset": [
+        68,
+        34
+      ],
+      "threshold": 0.93,
+      "source_box": [
+        1210,
+        812,
+        1330,
+        872
+      ],
+      "source_point": [
+        1278,
+        846
+      ],
+      "sha256": "48adaa405d910df132c0892df49e18514d4fede6fe857bb46503cfc82f2c0837",
+      "source_sha256": "0f9e3dd99561bd6415e2978690eb4bb07e38dec661b59df609230928bdca5153",
+      "meaning": "reviewed visible stair tread appearance; actual teleport landing remains independently observed"
+    },
+    {
+      "id": "stairs-descend-south",
+      "path": "templates/navigation/stairs-descend-south.png",
+      "landing_offset": [
+        58,
+        51
+      ],
+      "threshold": 0.93,
+      "source_box": [
+        675,
+        748,
+        800,
+        826
+      ],
+      "source_point": [
+        733,
+        799
+      ],
+      "sha256": "a91261f83bc400fc3f1ed9be50ce6cc69844ddce65c63919e1d44e4db82d78ff",
+      "source_sha256": "0f9e3dd99561bd6415e2978690eb4bb07e38dec661b59df609230928bdca5153",
+      "meaning": "reviewed visible stair tread appearance; actual teleport landing remains independently observed"
+    }
+  ],
+  "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stair-cap-two-descents.png",
+  "limits": [
+    "two reviewed descending staircase appearances only",
+    "not a complete Arcane layout classifier",
+    "matching appearance supplies candidate landing, not safety or physical reachability",
+    "no fixed screen-coordinate route"
+  ]
+}

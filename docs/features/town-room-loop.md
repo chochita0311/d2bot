@@ -1,10 +1,10 @@
 # 마을 방 반복
 
-Flash 온라인 캐릭터 선택에서 방을 만들고 Act 1 웨이포인트→Act 2 마을→Act 1→저장 종료를 진행한다. 현재 승인 범위와 실험 결과는 [FEAT-0002](../plans/feature/feat-0002-supervised-town-room-loop.md) 및 [실행 기록](../plans/run/run-20261004-02-supervised-town-room-loop.md)이 소유한다. 전체 서모너 전투·생존·전리품 처리는 별도 개발 단계다.
+온라인 캐릭터 선택에서 방을 만들고 Act 1 웨이포인트→Act 2 마을→Act 1→저장 종료를 진행한다. 기존 실게임 증거는 Flash로 검증한 범위이며 [FEAT-0002](../plans/feature/feat-0002-supervised-town-room-loop.md) 및 [실행 기록](../plans/run/run-20261004-02-supervised-town-room-loop.md)이 소유한다. 전체 서모너 전투·생존·전리품 처리는 별도 개발 단계다.
 
 ## 실행
 
-게임 창에서 Flash를 선택하고 GUI의 `Live town loop (1–3 runs)`를 켠 뒤 Repeat Count를 1–3으로 지정하고 `Start Room Lifecycle`을 누른다. `Difficulty`가 적용된다. 이 옵션이 꺼진 기존 방 생성/종료 모드는 마을 방문을 하지 않으며 빈 반복 횟수를 허용한다.
+게임 창에서 사용할 실제 캐릭터를 미리 선택하고 GUI의 `Live town loop (1–3 runs)`를 켠 뒤 Repeat Count를 1–3으로 지정하고 `Start Room Lifecycle`을 누른다. `Difficulty`가 적용된다. 이 옵션이 꺼진 방 생성/종료 모드는 마을 방문을 하지 않으며 빈 반복 횟수를 허용한다.
 
 같은 세션을 CLI에서도 실행할 수 있다. 프로젝트 루트에서 실행한다. 이 명령은 실제 게임 입력을 전송한다.
 
@@ -13,6 +13,14 @@ Flash 온라인 캐릭터 선택에서 방을 만들고 Act 1 웨이포인트→
 ```
 
 CLI는 정확한 `Diablo II: Resurrected` 창과 window 캡처를 사용한다. GUI에서는 해당 게임 창을 선택한다. F10, Stop Action, CLI Ctrl+C로 중단한다. 완료하면 캐릭터 선택 화면에 남는다. 다른 초기 상태에서 무조건 Play/이동을 시도하지 않는다.
+
+2026-10-11부터 공용 Play 버튼과 닫힌 난이도 선택창을 확인하며 이름 템플릿은 소비하지 않는다. 실제 게임 캐릭터 사전 선택은 사용자 조건이다. Play 일치는 캐릭터 신원을 확인하지 않으며 다른 캐릭터 선택을 자동 교정하지 않는다. 기존 이름 검색은 과거 실행 이력이다.
+
+성역 왕복은 `--town-destination arcane`으로 실행한다. 방 생성부터 성역 중앙까지만 준비하고 입력을 끝내려면 아래 명령을 사용한다. 이 진입 전용 모드는 성역 화면에 남으며 버프·날개 이동·종료를 실행하지 않는다. `--town-loop`와 동시에 지정할 수 없다.
+
+```powershell
+.\.venv\Scripts\python.exe main.py --arcane-entry --difficulty hell
+```
 
 ## 관찰과 이동
 
@@ -24,15 +32,17 @@ Act 2 복귀는 도착 지역과 HUD, 발판 주변의 고정 지형 단서, 근
 
 창 크기·위치·포커스 변화, 예상 밖 커서 이동, 인식 시간 초과는 추가 입력을 중단한다. WP 패널의 열림/닫힘에 따라 게임이 커서를 반 패널 너비만큼 옮기는 현상은 예상 변위와 긍정 화면 증거가 함께 맞을 때만 인정한다. 표시가 늦으면 최대 0.45초 입력을 보류하며 재관찰한다. 모든 종료 경로에서 세션이 누른 마우스를 해제한다.
 
+SendInput 뒤 커서 위치는 최대80ms 동안 재관찰한다. 이동을 재전송하지 않으며, 목표3픽셀 이내에 오지 않거나 중단/포커스/창 변화가 생기면 클릭하지 않는다. 성역은 지역 제목/HUD와 중앙 발판의 고정 지형·주변 푸른 효과를 함께 찾고 최신 위치로 접근한다. NPC 대화 복구는 마을에만 적용한다.
+
 ## 데이터와 캘리브레이션
 
-- 운용 템플릿 37개와 manifest: ignored `assets/private/town-loop/`. `town-loop-template-<상태/변형>-ko-<crop 크기>` 이름을 사용한다.
-- 선별한 보정·재생 프레임 21개: ignored `assets/private/town-loop/frames/`. `town-loop-frame-<상태/배치>-ko-<캡처 크기>` 이름을 사용한다. 선택/난이도/마을/메뉴·NPC와 세 Act 1 웨이포인트 배치를 포함한다.
+- 공용 UI 템플릿/manifest: `assets/ui/town-loop/remastered-ko-window/`. 원래 crop·변형·검색 영역·threshold·click offset은 보존한다.
+- 공용 마을/성역 지형과 개인 정보 없는 재생 원본: `assets/regions/rogue-encampment/`, `lut-gholein/`, `arcane-sanctuary/`의 템플릿과 references. 실제 이름이 있는 선택/난이도 원본은 필요한 공용 crop과 source hash를 남긴 뒤 세션 정리에서 제거했다. 공용 manifest는 private 원본 없이 로드되며 source hash로 당시 출처를 추적한다.
 - 개발 중 자동 시도별 PNG, `events.jsonl`, `result.json`, `timings.json`: ignored `recordings/summoner/evidence/<timestamp>-town-loop/`.
 
 이벤트의 PNG는 동작을 결정한 **입력 전 화면**이며 파일명의 phase는 그 동작 이후에 확인할 상태다. 다음 이벤트 또는 done 화면이 실제 도착/완료 증거다. timings에는 캡처·인식·입력·관찰→입력 시간 및 관찰 주기가 기록된다. 실패·중단 자료도 해당 개발 세션에서 검토할 동안 유지한다.
 
-세션 종료 정리는 [개발자료 정리 기준](../project/developer-guide.md#evidence-handling)이 소유한다. `2026-10-05` 운용 이미지의 바이트를 보존하여 이름을 정리하고 manifest의 `file`/`variants` 및 `source`/`source_frame`/`variant_sources`를 유지할 assets로 연결했다. 원시 시도 폴더는 영구 입력 자료가 아니며, 실제 정리 결과와 역사적 경로의 의미는 [실행 기록](../plans/run/run-20261004-02-supervised-town-room-loop.md#session-close)에서 확인한다. private 자산은 Git에서 제외되므로 새 체크아웃에는 별도 보정 은행이 필요하다.
+세션 종료 정리는 [개발자료 정리 기준](../project/developer-guide.md#evidence-handling)이 소유한다. `2026-10-05` 이름 정리와 `2026-10-11` 공용화는 유지한 이미지의 바이트를 보존했다. 공용 운용 은행은 private 파일 없이 로드된다. 원시 시도 폴더는 영구 입력 자료가 아니며 과거 경로는 당시 진단 위치다. 자세한 이력은 [실행 기록](../plans/run/run-20261004-02-supervised-town-room-loop.md#session-close)에 보존한다.
 
 기준 창 이미지 1267×753으로 정규화한다. 실제 window 캡처는 1922×1140이며 native 관찰 도구의 이미지와 글자/테두리 샘플링이 달라 별도 검토 변형을 사용했다. 창 종횡비가 3% 이상 다르거나 800×450보다 작으면 추측하지 않고 멈춘다. 언어·그래픽 모드·UI 스케일 변경은 재검토가 필요하다.
 
@@ -45,4 +55,6 @@ Act 2 복귀는 도착 지역과 HUD, 발판 주변의 고정 지형 단서, 근
 
 지원 장면은 character, difficulty, act1, act2, waypoint1, waypoint2, exit, world_waypoint1이다. `--calibrate-from`은 최초 은행을 재생성하며 기존 manifest의 추가 단서/변형을 덮어쓰므로 운용 은행에 재실행하지 않는다. 새 단서의 crop/search/threshold/click_offset은 manifest와 원본 프레임에 함께 남긴다. 실행 중 자동 학습은 하지 않는다.
 
-`--town-destination arcane`은 별도 도착 템플릿과 복귀 지점이 있어야 시작할 수 있다. 초기 마을 검증과 구분한다. 현재 실제 검증 범위 및 미검증 항목은 실행 기록을 확인한다.
+`--town-destination arcane`과 `--arcane-entry`는 별도 성역 제목/중앙 순간이동진 템플릿이 있어야 시작할 수 있다. [실제 연결 기록](../plans/run/run-20261009-07-summoner-live-integration.md)에서 왕복과 커서 대기 수정 후 진입 전용이 통과했다. 이후 main 통합에서도 Act 1→성역 진입을 반복 확인했다. 필드 전투·네 방향 완주 검증과 구분한다.
+
+현재 main은 지옥 Act 2 시작을 확인하면 악몽 마을 진입→저장 종료→지옥 Act 1 확인을 거친다. 준비 방은 `preparation_rooms`에만 기록하고 정상 완료/수용에 포함하지 않는다. 초기화 실패 시 다시 방을 만들지 않는다. Act 1 웨이포인트는 현재 푸른 화염 쌍으로 찾으며 높이/종횡비 조건으로 채팅 글자 오검출을 배제한다. 미검출 시 이전 바닥 템플릿으로 대체하지 않는다. 이동 해제 뒤 배경 안정3개/0.12초와 현재 마을/HUD를 확인하고, 포인터 도착 후60ms의 게임 호버 처리 시간을 거쳐 클릭한다. 웨이포인트 패널이 열리지 않으면 현재 위치를 재탐색해 총3회까지만 접근한다. NPC 대화 복구는 마을에 한정한다.

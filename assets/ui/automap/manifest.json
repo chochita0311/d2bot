@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reference_size": [
+    1267,
+    753
+  ],
+  "areas": {
+    "arcane_sanctuary": {
+      "file": "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-reviewed-window.png",
+      "search": [
+        1100,
+        45,
+        1257,
+        190
+      ],
+      "minimum_score": 0.86,
+      "source_sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
+      "review": "Shared Korean area-title crop, visually reviewed; no character identity or equipment. Title position may move with additional automap information. Positive title evidence only, not absence-based OFF proof."
+    }
+  }
+}

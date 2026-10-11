@@ -34,15 +34,13 @@ class MatchResult:
 class RunLifecycleSession:
     STOP_HOTKEY = "f10"
 
-    CHARACTER_SELECT_TEMPLATE_PATH = Path("assets/room/character_select.png")
-    DIFFICULTY_TEMPLATE_PATH = Path("assets/room/difficulty/difficulty_select.png")
     DIFFICULTY_BUTTON_TEMPLATE_PATHS = {
-        "normal": Path("assets/room/difficulty/normal.png"),
-        "nightmare": Path("assets/room/difficulty/nightmare.png"),
-        "hell": Path("assets/room/difficulty/hell.png"),
+        "normal": Path("assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal-button-241x64.png"),
+        "nightmare": Path("assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare-button-250x66.png"),
+        "hell": Path("assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell-button-245x69.png"),
     }
-    LOADING_TEMPLATE_PATH = Path("assets/room/loading.png")
-    EXIT_TEMPLATE_PATH = Path("assets/room/exit.png")
+    LOADING_TEMPLATE_PATH = Path("assets/ui/town-loop/remastered-ko-window/references/loading-window.png")
+    EXIT_TEMPLATE_PATH = Path("assets/ui/town-loop/remastered-ko-window/references/exit-menu-window.png")
 
     CHARACTER_SELECT_THRESHOLD = 0.86
     DIFFICULTY_THRESHOLD = 0.88
@@ -59,6 +57,8 @@ class RunLifecycleSession:
     CLICK_SETTLE = (0.05, 0.09)
     ACTION_SLEEP = (0.16, 0.3)
     FOCUS_SLEEP = (0.12, 0.2)
+    TOWN_POINTER_SETTLE_SECONDS = 0.08
+    TOWN_HOVER_SETTLE_SECONDS = 0.06
 
     def __init__(self, capture_config: CaptureConfig):
         self.capture_config = capture_config
@@ -74,13 +74,14 @@ class RunLifecycleSession:
         self._town_loop = False
         self._town_guard = None
         self._town_destination = "town"
+        self._arrival_only = False
+        self._resume_town = False
+        self._reset_act2_start = False
         self._evidence_directory: Path | None = None
         self._stop_reason: str | None = None
         self.last_result: str | None = None
         self._town_mouse_held = False
 
-        self._character_select_template = self._load_image(self.CHARACTER_SELECT_TEMPLATE_PATH)
-        self._difficulty_template = self._load_image(self.DIFFICULTY_TEMPLATE_PATH)
         self._difficulty_button_templates = {name: self._load_image(path) for name, path in self.DIFFICULTY_BUTTON_TEMPLATE_PATHS.items()}
         self._loading_template = self._load_image(self.LOADING_TEMPLATE_PATH)
         self._exit_template = self._load_image(self.EXIT_TEMPLATE_PATH)
@@ -90,11 +91,29 @@ class RunLifecycleSession:
         with self._lock:
             return self._is_running
 
-    def start(self, repeat_count: int | None, difficulty: str = "hell", town_loop: bool = False, destination: str = "town") -> None:
+    def start(
+        self,
+        repeat_count: int | None,
+        difficulty: str = "hell",
+        town_loop: bool = False,
+        destination: str = "town",
+        *,
+        arrival_only: bool = False,
+        resume_town: bool = False,
+        reset_act2_start: bool = False,
+    ) -> None:
+        if type(arrival_only) is not bool or (arrival_only and not town_loop):
+            raise ValueError("Arrival-only entry requires the supervised town planner.")
+        if type(resume_town) is not bool or (resume_town and not town_loop):
+            raise ValueError("Town resumption requires the supervised town planner.")
+        if type(reset_act2_start) is not bool or (reset_act2_start and (not town_loop or difficulty != "hell")):
+            raise ValueError("Act 2 start reset requires a supervised Hell entry.")
         if town_loop:
             from diablo2.actions.town_loop_vision import TownLoopPlanner, TownLoopVision
 
-            TownLoopPlanner(TownLoopVision(), repeat_count, difficulty, destination)
+            TownLoopPlanner(
+                TownLoopVision(), repeat_count, difficulty, destination, arrival_only=arrival_only, reset_act2_start=reset_act2_start
+            )
         with self._lock:
             if self._is_running or (self._thread is not None and self._thread.is_alive()):
                 raise RuntimeError("Run lifecycle is already running.")
@@ -102,6 +121,9 @@ class RunLifecycleSession:
             self._difficulty = difficulty if difficulty in self.DIFFICULTY_BUTTON_TEMPLATE_PATHS else "hell"
             self._town_loop = town_loop
             self._town_destination = destination
+            self._arrival_only = arrival_only
+            self._resume_town = resume_town
+            self._reset_act2_start = reset_act2_start
             self._stop_reason = None
             self.last_result = None
             self._stop_event.clear()
@@ -177,7 +199,16 @@ class RunLifecycleSession:
     def _run_town_loop(self, capture: ScreenCapture) -> None:
         from diablo2.actions.town_loop_vision import REFERENCE_SIZE, TownLoopPlanner, TownLoopVision
 
-        planner = TownLoopPlanner(TownLoopVision(), self._repeat_count, self._difficulty, self._town_destination)
+        planner = TownLoopPlanner(
+            TownLoopVision(),
+            self._repeat_count,
+            self._difficulty,
+            self._town_destination,
+            arrival_only=self._arrival_only,
+            reset_act2_start=self._reset_act2_start,
+        )
+        if self._resume_town:
+            planner.data["phase"] = "act1_spawn"
         window = resolve_window_from_config(self.capture_config)
         if window is None:
             raise RuntimeError("Town loop requires a named Diablo window.")
@@ -260,9 +291,8 @@ class RunLifecycleSession:
                     previous_phase = phase
                 if phase == "done":
                     result = "passed"
-                    self.events.put(
-                        LifecycleEvent("info", f"Town loop completed {planner.data['completed']} run(s). Evidence: {directory}")
-                    )
+                    label = "Arcane entry" if self._arrival_only else "Town loop"
+                    self.events.put(LifecycleEvent("info", f"{label} completed {planner.data['completed']} run(s). Evidence: {directory}"))
                     return
                 self._stop_event.wait(0.04)
         except Exception as exc:
@@ -290,7 +320,7 @@ class RunLifecycleSession:
         # WP 패널을 열면 게임이 커서를 반 패널 너비만큼 오른쪽으로 옮긴다.
         # 메뉴의 긍정 증거와 예상 변위가 모두 맞을 때만 이 이동을 인정한다.
         phase = planner.data["phase"]
-        opening = phase in {"wait_act1_panel", "return_panel"}
+        opening = phase in {"wait_act1_panel", "return_panel", "act2_spawn"}
         closing = phase in {"destination_arrival", "act1_return"}
         if not (opening or closing) or self._last_pointer is None:
             return
@@ -336,14 +366,17 @@ class RunLifecycleSession:
             pydirectinput.mouseDown(button="left", _pause=False)
         else:
             self._release_town_mouse()
+            # OS 포인터 도착과 게임의 월드 호버 갱신은 같은 시점이 아니다.
+            self._stop_event.wait(self.TOWN_HOVER_SETTLE_SECONDS)
+            self._ensure_input_allowed()
             pydirectinput.click(_pause=False)
 
     def create_room(self, capture: ScreenCapture, run_number: int) -> None:
         self.events.put(LifecycleEvent("info", f"Lifecycle run {run_number}: creating room."))
-        self._wait_for_template(capture, self._character_select_template, self.CHARACTER_SELECT_THRESHOLD, 20.0, "character select")
+        self._wait_for_character_select(capture)
         self._click_relative(capture, self.PLAY_POINT)
 
-        self._wait_for_template(capture, self._difficulty_template, self.DIFFICULTY_THRESHOLD, 10.0, "difficulty select")
+        self._wait_for_town_label(capture, "difficulty_header")
         difficulty_match = self._wait_for_template(
             capture,
             self._difficulty_button_templates[self._difficulty],
@@ -363,9 +396,23 @@ class RunLifecycleSession:
         self._press_key("esc")
         self._wait_for_template(capture, self._exit_template, self.EXIT_THRESHOLD, 8.0, "exit menu")
         self._click_relative(capture, self.SAVE_AND_EXIT_POINT)
-        self._wait_for_template(
-            capture, self._character_select_template, self.CHARACTER_SELECT_THRESHOLD, 20.0, "character select after exit"
-        )
+        self._wait_for_character_select(capture)
+
+    def _wait_for_character_select(self, capture):
+        self._wait_for_town_label(capture, "play", exclude_difficulty=True)
+
+    def _wait_for_town_label(self, capture, label, *, exclude_difficulty=False):
+        from diablo2.actions.town_loop_vision import TownLoopVision
+
+        vision = TownLoopVision()
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            self._ensure_input_allowed()
+            gray = vision.normalize(capture.grab().frame)
+            if vision.find(gray, label) is not None and (not exclude_difficulty or vision.find(gray, "difficulty_header") is None):
+                return
+            self._stop_event.wait(0.05)
+        raise RuntimeError("Required shared menu label was not observed: " + label)
 
     def _focus_game_window(self, capture: ScreenCapture) -> None:
         window = resolve_window_from_config(self.capture_config)
@@ -498,11 +545,7 @@ class RunLifecycleSession:
             event = pydirectinput.Input(ctypes.c_ulong(0), payload)
             if pydirectinput.SendInput(1, ctypes.pointer(event), ctypes.sizeof(event)) != 1:
                 raise RuntimeError("Desktop pointer movement failed.")
-            self._stop_event.wait(0.012)
-            actual = pydirectinput.position()
-            if abs(actual[0] - target_x) > 3 or abs(actual[1] - target_y) > 3:
-                raise RuntimeError(f"Pointer mapping mismatch: requested {(target_x, target_y)}, observed {actual}")
-            self._last_pointer = tuple(actual)
+            self._wait_for_town_pointer(target_x, target_y)
             return
         current_x, current_y = pydirectinput.position()
         steps = random.randint(*self.MOVE_STEPS)
@@ -516,6 +559,23 @@ class RunLifecycleSession:
             pydirectinput.moveTo(next_x, next_y)
             self._last_pointer = (next_x, next_y)
             time.sleep(random.uniform(*self.MOVE_SLEEP))
+
+    def _wait_for_town_pointer(self, target_x: int, target_y: int) -> None:
+        # SendInput 전송 직후의 위치는 아직 이전 프레임일 수 있다. 재전송 없이 짧게 확인한다.
+        deadline = time.monotonic() + self.TOWN_POINTER_SETTLE_SECONDS
+        while True:
+            if self._stop_event.is_set():
+                raise RuntimeError("stopped before pointer movement completed")
+            if self._town_guard is not None:
+                self._town_guard()
+            actual = pydirectinput.position()
+            if abs(actual[0] - target_x) <= 3 and abs(actual[1] - target_y) <= 3:
+                self._last_pointer = tuple(actual)
+                return
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RuntimeError(f"Pointer mapping mismatch: requested {(target_x, target_y)}, observed {actual}")
+            self._stop_event.wait(min(0.005, remaining))
 
     def _jitter_point(self, point_x: int, point_y: int, radius: int) -> tuple[int, int]:
         if radius <= 0:

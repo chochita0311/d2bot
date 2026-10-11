@@ -26,7 +26,7 @@ Example:
 ```json
 {
   "label": "amethyst",
-  "ground_template": "assets/items/gems/amethyst_on_the_ground.png",
+  "ground_template": "assets/items/gems/amethyst-on-the-ground.png",
   "threshold": 0.8
 }
 ```

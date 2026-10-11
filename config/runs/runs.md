@@ -59,9 +59,9 @@ Use for survival thresholds.
 | `stop_on_death_screen` | `true` | Intended death-screen fallback. |
 | `belt_restock_healing_below`, `belt_restock_mana_below` | `4` | Intended potion restock counts. |
 
-These are model defaults when a field is absent; seeded profile values can override them. The current north-route stage does not execute a full hunting, loot, or life-management engine, so these settings are not evidence of active survival handling.
+These are model defaults when a field is absent; seeded profile values can override them. Latest Summoner uses the character policy below for live resource checks and emergency recovery, rather than treating this run-level intent as a complete hunting, loot, or life-management engine.
 
-The new input-free [character survival contract](../characters/characters.md#survival) uses each character's `survival` policy directly. It does not fall back to this run-level `life` section or enable live care in the north route. These older fields remain available for compatibility; future consumers must choose an explicit owner rather than silently mixing the two policies.
+The input-free [character survival contract](../characters/characters.md#survival) uses each character's `survival` policy directly; current Summoner consumes that character policy. The contract does not fall back to this run-level `life` section or send input itself. These older fields remain available in the model; consumers must choose an explicit owner rather than silently mixing the two policies. Current live acceptance and actual recovery/acquisition limits remain in [Summoner Run](../../docs/features/summoner-run.md).
 
 ## Example
 

@@ -70,6 +70,23 @@ class BeltColumnPolicy:
 
 
 @dataclass(frozen=True)
+class PotionPickupPolicy:
+    preferred_kind: str
+    fallback_kind: str | None = None
+    fallback_at_or_below: int | None = None
+
+    def __post_init__(self):
+        _text(self.preferred_kind, "potion_pickup.preferred_kind")
+        if (self.fallback_kind is None) != (self.fallback_at_or_below is None):
+            raise ValueError("fallback kind and count threshold must be configured together")
+        if self.fallback_kind is not None:
+            _text(self.fallback_kind, "potion_pickup.fallback_kind")
+            _integer(self.fallback_at_or_below, "potion_pickup.fallback_at_or_below")
+            if self.preferred_kind == self.fallback_kind:
+                raise ValueError("preferred and fallback potion kinds must differ")
+
+
+@dataclass(frozen=True)
 class CharacterSurvivalPolicy:
     life_potion_below: float
     mana_potion_below: float
@@ -79,6 +96,7 @@ class CharacterSurvivalPolicy:
     belt_toggle_key: str
     belt_columns: tuple[BeltColumnPolicy, ...]
     buffs: tuple[TimedBuffPolicy, ...] = ()
+    potion_pickup: PotionPickupPolicy | None = None
 
     def __post_init__(self):
         for name in ("life_potion_below", "mana_potion_below"):
@@ -107,6 +125,11 @@ class CharacterSurvivalPolicy:
         if potion_target == 0:
             raise ValueError("potion target must be positive")
         _integer(self.replenish_at_or_below, "replenish_at_or_below", 0, potion_target)
+        if self.potion_pickup is not None:
+            if not isinstance(self.potion_pickup, PotionPickupPolicy):
+                raise ValueError("potion_pickup must be a potion pickup policy")
+            if self.potion_pickup.fallback_at_or_below is not None:
+                _integer(self.potion_pickup.fallback_at_or_below, "potion_pickup.fallback_at_or_below", 0, potion_target)
 
     @classmethod
     def from_dict(cls, raw: dict) -> CharacterSurvivalPolicy:
@@ -119,7 +142,7 @@ class CharacterSurvivalPolicy:
             "belt_toggle_key",
             "belt_columns",
         }
-        _fields(raw, required | {"buffs"}, required, "survival")
+        _fields(raw, required | {"buffs", "potion_pickup"}, required, "survival")
         if not isinstance(raw["belt_columns"], list) or not isinstance(raw.get("buffs", []), list):
             raise ValueError("belt_columns and buffs must be lists")
         columns = []
@@ -132,7 +155,16 @@ class CharacterSurvivalPolicy:
             fields = {"name", "key", "duration_seconds", "renew_before_seconds"}
             _fields(buff, fields, fields, "buff")
             buffs.append(TimedBuffPolicy(**buff))
-        return cls(**{name: raw[name] for name in required - {"belt_columns"}}, belt_columns=tuple(columns), buffs=tuple(buffs))
+        pickup = raw.get("potion_pickup")
+        if pickup is not None:
+            _fields(pickup, {"preferred_kind", "fallback_kind", "fallback_at_or_below"}, {"preferred_kind"}, "potion_pickup")
+            pickup = PotionPickupPolicy(**pickup)
+        return cls(
+            **{name: raw[name] for name in required - {"belt_columns"}},
+            belt_columns=tuple(columns),
+            buffs=tuple(buffs),
+            potion_pickup=pickup,
+        )
 
 
 @dataclass(frozen=True)
@@ -229,6 +261,24 @@ class CharacterSurvivalState:
         if self._counts is None or self.policy is None:
             return None
         return sum(self._counts[number] for number, column in self._columns.items() if column.kind == self.policy.potion_kind)
+
+    def potion_pickup_kinds(self, now: float, *, max_belt_age_seconds: float) -> tuple[str, ...]:
+        now = _number(now, "now")
+        if _number(max_belt_age_seconds, "max_belt_age_seconds") == 0:
+            raise ValueError("positive belt age limit required")
+        if self.policy is None or self.policy.potion_pickup is None or self._belt_stamp is None:
+            return ()
+        count = self.potions_remaining
+        if count is None or not 0 <= now - self._belt_stamp.observed_at <= max_belt_age_seconds:
+            return ()
+        target = sum(column.target_count for column in self.policy.belt_columns if column.kind == self.policy.potion_kind)
+        if count >= target or (count == 0 and self.policy.exit_on_empty):
+            return ()
+        pickup = self.policy.potion_pickup
+        # 보충 전투 모드와 별개로 현재 잔량에서 대체 포션 허용을 매번 다시 판단한다.
+        if pickup.fallback_kind is not None and count <= pickup.fallback_at_or_below:
+            return (pickup.preferred_kind, pickup.fallback_kind)
+        return (pickup.preferred_kind,)
 
     @property
     def next_buff_renewal_at(self) -> float | None:

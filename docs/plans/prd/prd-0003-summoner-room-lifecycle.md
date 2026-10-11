@@ -3,10 +3,10 @@
 ## Metadata
 
 - ID: `prd-0003`
-- Status: `approved` (아래 제한 증분만)
+- Status: `approved` — 전체 Summoner 구현·감독 검증 목표와 아래 완료한 마을 증분. 전체 방 수용은 필요한 필드/정비 연결 뒤 검증한다.
 - Owner role: `human`
 - Created: `2026-10-04`
-- Updated: `2026-10-05`
+- Updated: `2026-10-09`
 
 ## Request Summary
 
@@ -14,6 +14,7 @@
 
 ## Source Set
 
+- Human update: `2026-10-09` 전체 요구사항 확정·구현·감독 검증을 승인하고 감독 30방 중 27방 이상 정상 마감을 정했다. 실패 시 안전 종료 후 사람 확인하며 자동 재시작하지 않는다. [PRD-0006](prd-0006-summoner-combat-and-loot.md)이 전체 수용을, [FEAT-0010](../feature/feat-0010-summoner-cycle-contract.md)이 입력 없는 전체 순서/확인 결과 계약을 소유한다. 실제 종료·완주 증거와 구분한다.
 - Human request: 2026-10-04 요청의 캐릭터 선택 대기, 매 처치 후 새 방, Act 1 마감, 단계별 육안 확인.
 - Golden sources: 최초 초안은 사용자 설명·기존 자료를 사용했다. 이후 승인한 마을 증분의 실제 화면·반복 결과와 남은 검증은 [실행 기록](../run/run-20261004-02-supervised-town-room-loop.md)이 소유한다.
 - Supporting docs: [정책](../../project/policy.md), [현재 서모너 구현](../../features/summoner-run.md), [시스템 설정 범위](../../../config/system/system.md).
@@ -40,7 +41,7 @@
 - 로그인 자동화, 계정 정보 저장/전송, 게임 실행·업데이트.
 - 캐릭터 목록 전체 OCR 및 자동 캐릭터 전환, 타인의 공개 방 참가.
 - 이 PRD에서 생존 수치·전투·아이템·네 방향 이동을 구현하는 것. 각 내용은 별도 PRD 소유다.
-- 승인된 마을 반복 증분 밖의 완전 런 코드 수정·실행. 제한 증분의 구현·감독 테스트는 아래 승인 경계를 따른다.
+- 필요한 필드/정비·기록 안전 경계를 검증하기 전의 전체 실게임 반복 확대. 전체 구현 목표 승인을 실제 완주 증거로 대신하지 않는다.
 - Act 1 정상 마감 조건을 비상 탈출에도 강제하는 것. 위험 시에는 생존 요구가 우선한다.
 
 ## Uncertainty

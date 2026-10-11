@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
 
@@ -90,19 +91,33 @@ class RegionObserver:
             raise ValueError("unreviewed region or capture size")
 
     def scan(
-        self, frame: np.ndarray, context: SceneContext, *, now: float, max_age: float, limit_per_template: int
+        self, frame: np.ndarray, context: SceneContext, *, now: float, max_age: float, limit_per_template: int, workers: int = 1
     ) -> tuple[VisualCandidate, ...]:
         self._validate(frame, context)
         _integer(limit_per_template, "limit_per_template", 1, 16)
+        _integer(workers, "workers", 1, 4)
         if not context.fresh(now, max_age):
             return ()
-        candidates = []
-        vx, vy, _, _ = context.viewport
-        for rule, template in self.templates:
+
+        def match(item):
+            _, template = item
             h, w = template.shape[:2]
             if frame.shape[0] < h or frame.shape[1] < w:
+                return None
+            return cv.matchTemplate(frame, template, cv.TM_CCOEFF_NORMED)
+
+        # 같은 불변 화면의 독립 템플릿만 병렬화한다. 모든 작업을 마친 뒤 반환한다.
+        if workers == 1:
+            matches = map(match, self.templates)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                matches = list(executor.map(match, self.templates))
+        candidates = []
+        vx, vy, _, _ = context.viewport
+        for (rule, template), result in zip(self.templates, matches):
+            h, w = template.shape[:2]
+            if result is None:
                 continue
-            result = cv.matchTemplate(frame, template, cv.TM_CCOEFF_NORMED)
             for _ in range(limit_per_template):
                 _, score, _, (x, y) = cv.minMaxLoc(result)
                 if not np.isfinite(score) or score < rule["threshold"]:

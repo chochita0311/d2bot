@@ -56,6 +56,49 @@ class ArcaneHubVisionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.vision.observe(np.zeros((753, 1267, 3), np.uint8))
 
+    def test_actual_return_map_overlay_is_unknown_until_current_landmarks_are_uncovered(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub"
+        covered = cv.imread(str(owner / "return-map-overlay-on.png"))
+        clear = cv.imread(str(owner / "return-map-overlay-off.png"))
+        self.assertIsNone(self.vision.observe(covered))
+        self.assertEqual((1105, 546), self.vision.observe(clear))
+        self.assertEqual({"right", "upper", "lower"}, {part["id"] for part in self.vision.last_evidence["parts"]})
+        for box in ((1020, 460, 1085, 540), (1130, 460, 1190, 540)):
+            hidden = clear.copy()
+            left, top, right, bottom = box
+            hidden[top:bottom, left:right] = 0
+            self.assertIsNone(self.vision.observe(hidden), box)
+
+    def test_merged_braziers_can_seed_from_other_current_ornaments_but_not_dim_blue(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub"
+        frame = cv.imread(str(owner / "merged-brazier-town-finish.png"))
+        self.vision.parts = [(rule, image) for rule, image in self.vision.parts if rule["id"] in ("upper", "left-tip")]
+        self.assertEqual((1047, 575), self.vision.observe(frame))
+        self.assertEqual({"upper", "left-tip"}, {part["id"] for part in self.vision.last_evidence["parts"]})
+        self.assertEqual("floor_anchored_current_pixels", self.vision.last_evidence["blue_evidence"])
+        for box in ((1032, 499, 1080, 525), (831, 565, 883, 600), (980, 507, 1017, 544), (1078, 507, 1115, 544)):
+            hidden = frame.copy()
+            x0, y0, x1, y1 = box
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden), box)
+        dim = cv.imread(str(owner / "merged-dim-brazier.png"))
+        self.assertIsNotNone(self.vision._match_floor(cv.cvtColor(dim, cv.COLOR_BGR2GRAY), (1047, 575)))
+        self.assertIsNone(self.vision.observe(dim))
+
+    def test_current_southwest_approach_uses_distinct_ornaments_and_never_double_counts_variants(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references"
+        frame = cv.imread(str(owner / "hub/southwest-approach-floor.png"))
+        self.assertEqual((1306, 475), self.vision.observe(frame))
+        self.assertEqual({"right", "lower"}, {part["id"] for part in self.vision.last_evidence["parts"]})
+        for box in ((1380, 456, 1470, 505), (1230, 515, 1390, 570), (1230, 405, 1283, 455), (1325, 405, 1380, 455)):
+            hidden = frame.copy()
+            x0, y0, x1, y1 = box
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden), box)
+        only_lower = [(rule, template) for rule, template in self.vision.parts if rule["id"] == "lower"]
+        self.vision.parts = only_lower + only_lower
+        self.assertIsNone(self.vision._match_floor(cv.cvtColor(frame, cv.COLOR_BGR2GRAY), (1306, 475)))
+
     def test_effect_merged_braziers_need_two_current_ornaments_and_both_blue_patches(self):
         source = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/effects.png"
         if not source.exists():
@@ -69,6 +112,20 @@ class ArcaneHubVisionTests(unittest.TestCase):
             x0, y0, x1, y1 = box
             hidden[y0:y1, x0:x1] = 0
             self.assertIsNone(self.vision.observe(hidden), box)
+
+    def test_current_return_floor_variant_needs_two_distinct_ornaments_and_flames(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub"
+        frame = cv.imread(str(owner / "left-floor-return.png"))
+        self.assertEqual((961, 503), self.vision.observe(frame))
+        self.assertEqual({"left", "upper-left"}, {part["id"] for part in self.vision.last_evidence["parts"]})
+        for box in ((800, 492, 884, 535), (800, 427, 870, 472), (884, 421, 937, 489), (983, 421, 1036, 489)):
+            hidden = frame.copy()
+            x0, y0, x1, y1 = box
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden), box)
+        only_left = [(rule, template) for rule, template in self.vision.parts if rule["id"] == "left"]
+        self.vision.parts = only_left + only_left
+        self.assertIsNone(self.vision._match_floor(cv.cvtColor(frame, cv.COLOR_BGR2GRAY), (961, 503)))
 
     def track(self, tracker, frame, at, motion=(0, 0)):
         point = self.vision.observe(frame)

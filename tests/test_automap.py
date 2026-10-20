@@ -8,6 +8,7 @@ import cv2 as cv
 import numpy as np
 
 from diablo2.common.automap_vision import AutomapObserver
+from diablo2.common.frame_geometry import FrameGeometry, ReferenceLayout
 from diablo2.common.supervised_field import ensure_automap_on
 
 
@@ -27,7 +28,61 @@ class AutomapTests(unittest.TestCase):
         self.assertFalse(observer.visible(np.zeros_like(frame), "arcane_sanctuary"))
         self.assertFalse(observer.visible(np.zeros((753, 900, 3), np.uint8), "arcane_sanctuary"))
 
-    def prepare(self, visible, *, focused=True, panel=False, blocked=None, slow=False, obscured=False, supervised_on=None):
+    def test_current_light_floor_title_variant_requires_the_actual_arcane_letters(self):
+        root = Path(__file__).resolve().parents[1]
+        filename = root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-light-floor.png"
+        frame = cv.imdecode(np.fromfile(str(filename), np.uint8), cv.IMREAD_COLOR)
+        observer = AutomapObserver()
+        self.assertTrue(observer.visible(frame, "arcane_sanctuary"))
+        self.assertGreaterEqual(observer.last_evidence["score"], 0.86)
+        self.assertTrue(observer.last_evidence["template"].endswith("area-title-light-floor-window.png"))
+        self.assertFalse(observer.visible(frame, "canyon_of_the_magi"))
+        removed = cv.resize(frame, (1267, 753), interpolation=cv.INTER_AREA)
+        removed[70:85, 1178:1246] = 0
+        self.assertFalse(observer.visible(removed, "arcane_sanctuary"))
+        self.assertIsNone(observer.last_evidence)
+        canyon = np.zeros((753, 1267, 3), np.uint8)
+        title_path = root / "assets/ui/automap" / observer.manifest["areas"]["canyon_of_the_magi"]["file"]
+        title = cv.imdecode(np.fromfile(str(title_path), np.uint8), cv.IMREAD_COLOR)
+        canyon[100 : 100 + title.shape[0], 1150 : 1150 + title.shape[1]] = title
+        self.assertTrue(observer.visible(canyon, "canyon_of_the_magi"))
+        self.assertFalse(observer.visible(canyon, "arcane_sanctuary"))
+
+    def test_area_title_survives_client_downsampling_without_accepting_removed_letters(self):
+        root = Path(__file__).resolve().parents[1]
+        layout = ReferenceLayout.load(root / "assets/ui/layouts/remastered-1922x1140/viewport.json")
+        source = root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-light-floor.png"
+        frame = cv.imdecode(np.fromfile(str(source), np.uint8), cv.IMREAD_COLOR)
+        observer = AutomapObserver()
+        x0, y0, x1, y1 = layout.client_box
+        for size, client in (((1716, 1011), (11, 40, 1705, 1000)), ((1373, 809), (9, 32, 1364, 800))):
+            with self.subTest(size=size):
+                a, b, c, d = client
+                raw = cv.resize(frame, size, interpolation=cv.INTER_AREA)
+                raw[b:d, a:c] = cv.resize(frame[y0:y1, x0:x1], (c - a, d - b), interpolation=cv.INTER_AREA)
+                geometry = FrameGeometry.create(dict(left=-100, top=20, width=size[0], height=size[1]), layout, client)
+                normalized = geometry.normalize(raw)
+                self.assertTrue(observer.visible(normalized, "arcane_sanctuary"))
+                self.assertGreaterEqual(observer.last_evidence["score"], 0.86)
+                self.assertFalse(observer.visible(normalized, "canyon_of_the_magi"))
+                removed = cv.resize(normalized, (1267, 753), interpolation=cv.INTER_AREA)
+                removed[70:85, 1178:1246] = 0
+                self.assertFalse(observer.visible(removed, "arcane_sanctuary"))
+
+    def test_gold_title_mask_rejects_retained_act1_and_act2_town_frames(self):
+        root = Path(__file__).resolve().parents[1] / "assets/regions"
+        observer = AutomapObserver()
+        for filename in (
+            "rogue-encampment/remastered-ko-window/references/map-reviewed-window.png",
+            "rogue-encampment/remastered-ko-window/references/map-baseline.jpg",
+            "lut-gholein/remastered-ko-window/references/town-baseline.jpg",
+            "lut-gholein/remastered-ko-window/references/main-reviewed.png",
+        ):
+            with self.subTest(filename=filename):
+                frame = cv.imdecode(np.fromfile(str(root / filename), np.uint8), cv.IMREAD_COLOR)
+                self.assertFalse(observer.visible(frame, "arcane_sanctuary"))
+
+    def prepare(self, visible, *, focused=True, panel=False, blocked=None, slow=False, obscured=False, supervised_on=None, **policy):
         now = [0.0]
         stop, capture, backend, observer = Mock(), Mock(), Mock(), Mock()
         stop.is_set.return_value = False
@@ -54,6 +109,7 @@ class AutomapTests(unittest.TestCase):
                     lambda frame: panel,
                     clock=lambda: now[0],
                     supervised_on=supervised_on,
+                    **policy,
                 )
             except RuntimeError as error:
                 result = error
@@ -76,6 +132,16 @@ class AutomapTests(unittest.TestCase):
         self.assertIsInstance(result, RuntimeError)
         self.assertIn("unverified", str(result))
         backend.press.assert_called_once_with("tab")
+
+    def test_restore_confirmation_never_toggles_again_or_accepts_unknown_title(self):
+        for visible in (False, True):
+            with self.subTest(visible=visible):
+                result, backend = self.prepare(lambda backend: visible, allow_toggle=False, timeout=0.5)
+                backend.press.assert_not_called()
+                if visible:
+                    self.assertEqual("on_observed", result["status"])
+                else:
+                    self.assertIsInstance(result, RuntimeError)
 
     def test_label_occluded_title_never_turns_an_unknown_map_off(self):
         result, backend = self.prepare(lambda backend: False, obscured=True)

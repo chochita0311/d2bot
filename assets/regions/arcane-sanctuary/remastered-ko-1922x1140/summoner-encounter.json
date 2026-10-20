@@ -24,10 +24,521 @@
         15,
         81
       ]
+    },
+    {
+      "id": "summoner-robe-alive-north",
+      "path": "templates/encounters/summoner-robe-alive-north.png",
+      "crop": [
+        506,
+        650,
+        544,
+        751
+      ],
+      "sha256": "022dff17f5c042ce3b0463d4faea222596a957f2df5cb10ac18117352d22d41a",
+      "threshold": 0.92,
+      "ground_offset": [
+        19,
+        120
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-north.png",
+        "sha256": "f0c71a8e0b9ed7db9d4808bb14de2c9695acc446ff830aa40bcf9c18cf871c03"
+      },
+      "review": {
+        "reviewed_by": "human-owner",
+        "reviewed_at": "2026-10-11",
+        "basis": "Owner confirmed standing blue/gold robe and subsequent horizontal blue/gold corpse as Summoner in this same room."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-north",
+      "path": "templates/encounters/summoner-robe-corpse-north.png",
+      "crop": [
+        906,
+        682,
+        988,
+        727
+      ],
+      "sha256": "19afdca29c76807393d5e4375a3f72a6373aa4f8b0a0aca48031a9458a908d0d",
+      "threshold": 0.92,
+      "ground_offset": [
+        41,
+        30
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-north.png",
+        "sha256": "9dbbc270f634f738a88950ecafc55306d6b308dd7724886938d3ad9db20f7e88"
+      },
+      "review": {
+        "reviewed_by": "human-owner",
+        "reviewed_at": "2026-10-11",
+        "basis": "Owner confirmed standing blue/gold robe and subsequent horizontal blue/gold corpse as Summoner in this same room."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-shield",
+      "path": "templates/encounters/summoner-robe-alive-shield.png",
+      "crop": [
+        452,
+        652,
+        489,
+        742
+      ],
+      "sha256": "ec41b61ba83eb28dd8df750b79dfba6e947a87667a359b4ad41dacfd717df62a",
+      "threshold": 0.92,
+      "ground_offset": [
+        18,
+        100
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-shield.png",
+        "sha256": "deddb8777d538da90d22cb449c45807a2f347fc0d4af77be3da5f70a7379031f"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-11",
+        "basis": "Additional standing robe pose and horizontal corpse on the current journal platform, visually consistent with the owner-confirmed Summoner kind. Live death confirmation still requires linked current observations; this room was manually finished and is not automated acceptance."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-shield",
+      "path": "templates/encounters/summoner-robe-corpse-shield.png",
+      "crop": [
+        631,
+        668,
+        703,
+        709
+      ],
+      "sha256": "40c97f5484ba270bad41994630967bf173ab87c8ac87b061437268eafd6738a7",
+      "threshold": 0.92,
+      "ground_offset": [
+        41,
+        42
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-shield.png",
+        "sha256": "970eb71ebe320e1d4cb049274dc3d2c0e7dadea5767af603c42732e2864e7900"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-11",
+        "basis": "Additional standing robe pose and horizontal corpse on the current journal platform, visually consistent with the owner-confirmed Summoner kind. Live death confirmation still requires linked current observations; this room was manually finished and is not automated acceptance."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-hit-turn",
+      "path": "templates/encounters/summoner-robe-alive-hit-turn.png",
+      "crop": [
+        514,
+        576,
+        570,
+        693
+      ],
+      "sha256": "14c43ff65ab9aeefd6c8a2312711eb8619d699c46b5a40a5081c59e41fba3db4",
+      "threshold": 0.92,
+      "ground_offset": [
+        36,
+        121
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-hit-turn.png",
+        "sha256": "28372568380c85296039ebb3bd9569ac982835841fab7b749cc4f445d163ef03"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-11",
+        "basis": "Same blue/gold Summoner kind as the owner-confirmed standing and horizontal corpse references. Additional hit/turn pose from GUI23; the live room remained kill_unconfirmed and was manually closed. These sources do not establish post-teleport identity or automated acceptance."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-turn",
+      "path": "templates/encounters/summoner-robe-corpse-turn.png",
+      "crop": [
+        938,
+        606,
+        1021,
+        654
+      ],
+      "sha256": "ef902f919aae71d905505f6ce44451263bdba13a8da304c926d154381bb49336",
+      "threshold": 0.92,
+      "ground_offset": [
+        42,
+        35
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-turn.png",
+        "sha256": "c93d01cc9a7264e27768b4a74c0960bcd74ee3a7795afb3af27fec609992f9b2"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-11",
+        "basis": "Same blue/gold Summoner kind as the owner-confirmed standing and horizontal corpse references. Additional hit/turn pose from GUI23; the live room remained kill_unconfirmed and was manually closed. These sources do not establish post-teleport identity or automated acceptance."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-back-robe",
+      "path": "templates/encounters/summoner-robe-alive-back-robe.png",
+      "crop": [
+        447,
+        643,
+        494,
+        686
+      ],
+      "sha256": "8602bd652219f3813177e0a5ad13ff2b063e70778a85c91884edf03f6edb5cbc",
+      "threshold": 0.92,
+      "ground_offset": [
+        23,
+        109
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-back-robe.png",
+        "sha256": "49d1c05ecb949ae5ae3a4d5f8abf4f8e3e5f7eb37aaece1e32bb8a0f6c2fa735"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Same standing blue/gold Summoner robe and horizontal corpse kind as the human-owner-reviewed life references. Current native field pixels include different poses and partial map occlusion. Both live rooms remained kill_unconfirmed and were manually closed; these calibration pixels do not prove automated death or a completed fresh room."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-lower-robe",
+      "path": "templates/encounters/summoner-robe-alive-lower-robe.png",
+      "crop": [
+        1003,
+        575,
+        1026,
+        620
+      ],
+      "sha256": "6e1b126c347c422eece8b6ff63fcb3722cf982e074deb59959eda61927120d81",
+      "threshold": 0.92,
+      "ground_offset": [
+        7,
+        57
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-lower-robe.png",
+        "sha256": "56425667afb79f23ed135a01c172d6a96d20afb29cea03090b09237c7608baa0"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Same standing blue/gold Summoner robe and horizontal corpse kind as the human-owner-reviewed life references. Current native field pixels include different poses and partial map occlusion. Both live rooms remained kill_unconfirmed and were manually closed; these calibration pixels do not prove automated death or a completed fresh room."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-map-occluded",
+      "path": "templates/encounters/summoner-robe-corpse-map-occluded.png",
+      "crop": [
+        1008,
+        594,
+        1041,
+        627
+      ],
+      "sha256": "29720c761c8ebf0f0e079b97962d31297055404595ab733e7bfba5f5cb84fdb3",
+      "threshold": 0.92,
+      "ground_offset": [
+        6,
+        33
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-map-occluded.png",
+        "sha256": "73f4dee2629c2f359916cb0e4ddcfd9e9c01f4a314db6adb6c0701dd5b38971a"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Same standing blue/gold Summoner robe and horizontal corpse kind as the human-owner-reviewed life references. Current native field pixels include different poses and partial map occlusion. Both live rooms remained kill_unconfirmed and were manually closed; these calibration pixels do not prove automated death or a completed fresh room."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-face-down",
+      "path": "templates/encounters/summoner-robe-corpse-face-down.png",
+      "crop": [
+        548,
+        681,
+        615,
+        729
+      ],
+      "sha256": "2a076401581bca6a3ea6b4895e1a0366ee69499925829d052251c93f1359110d",
+      "threshold": 0.9,
+      "ground_offset": [
+        32,
+        47
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-face-down.png",
+        "sha256": "2dab0ce44d4f293dd03243204f7048bbadcfbbe4e5e2298394b8a697b422d1c1"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Same standing blue/gold Summoner robe and horizontal corpse kind as the human-owner-reviewed life references. Current native field pixels include different poses and partial map occlusion. Both live rooms remained kill_unconfirmed and were manually closed; these calibration pixels do not prove automated death or a completed fresh room."
+      },
+      "threshold_review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "previous": 0.92,
+        "basis": "GUI59 current platform corpse native RGB scores .913019/.910762/.914820; coarse proposal and current ROI already pass. Adjust only this reviewed face-down robe, preserving uniqueness, current platform and two fresh corpse witnesses.",
+        "references": [
+          "references/summoner/platform-corpse-face-down-lighting.png",
+          "references/summoner/platform-corpse-face-down-lighting-before.png",
+          "references/summoner/platform-corpse-face-down-lighting-after-approach.png"
+        ]
+      }
+    },
+    {
+      "id": "summoner-robe-alive-raised-arm",
+      "path": "templates/encounters/summoner-robe-alive-raised-arm.png",
+      "crop": [
+        529,
+        612,
+        584,
+        696
+      ],
+      "sha256": "bbf229c3ebdc75bed5baeedb6ae17fd6b969a2cb9d8fe5b83ae87c26b26a6bc7",
+      "threshold": 0.92,
+      "ground_offset": [
+        27,
+        84
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-raised-arm.png",
+        "sha256": "2881f61b08afbe4c54607ee1f5448598efcac585fa8ea6f90b3073dd8f9c62d3"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Additional raised-arm standing robe and side-facing horizontal striped corpse, visually consistent with the human-owner-confirmed blue/gold Summoner. GUI55 first encounter frame is alive and the final frame is a corpse; source calibration does not prove automated kill confirmation or completed room."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-side-robe",
+      "path": "templates/encounters/summoner-robe-corpse-side-robe.png",
+      "crop": [
+        966,
+        604,
+        1040,
+        638
+      ],
+      "sha256": "382534c521e1a07201a6a31e4758cda74ecd2833612405f29940b881739ab0a0",
+      "threshold": 0.92,
+      "ground_offset": [
+        27,
+        29
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-robe.png",
+        "sha256": "3ccf0104af704bbaa5742a2b3334291bf93e76ee7ed2c4fd22230275456c2a3f"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Additional raised-arm standing robe and side-facing horizontal striped corpse, visually consistent with the human-owner-confirmed blue/gold Summoner. GUI55 first encounter frame is alive and the final frame is a corpse; source calibration does not prove automated kill confirmation or completed room."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-front-cast",
+      "path": "templates/encounters/summoner-robe-alive-front-cast.png",
+      "crop": [
+        768,
+        699,
+        813,
+        779
+      ],
+      "sha256": "2f8605993bbaf35fba3249b1afd04b02d82a5d7489aa37f497951e37a9dde63e",
+      "threshold": 0.92,
+      "ground_offset": [
+        17,
+        88
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-cast.png",
+        "sha256": "48f2d7a652461c34687fe6d9349bfa913b107f7e7b35686bd404cf07146fa47b"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-wide-side",
+      "path": "templates/encounters/summoner-robe-corpse-wide-side.png",
+      "crop": [
+        754,
+        745,
+        845,
+        789
+      ],
+      "sha256": "91b2a60e76b00d6b32ebfe71db17b8cd10b3c0f77c761df32928f676033f5ff5",
+      "threshold": 0.92,
+      "ground_offset": [
+        45,
+        38
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-wide-side.png",
+        "sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-side-lower-bands",
+      "path": "templates/encounters/summoner-robe-corpse-side-lower-bands.png",
+      "crop": [
+        974,
+        619,
+        1030,
+        637
+      ],
+      "sha256": "eb21ed6209ed560f8734626798843f024daf405e54c294a37c1e9ccb0af7bc02",
+      "threshold": 0.92,
+      "ground_offset": [
+        28,
+        20
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-lower-bands.png",
+        "sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Primary visual review of horizontal blue/gold corpse. Only lower robe bands exclude character/energy-shield overlap. Standing/kill time is not inferred; source room failed dedicated kill confirmation."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-lower-band-right",
+      "path": "templates/encounters/summoner-robe-corpse-lower-band-right.png",
+      "crop": [
+        998,
+        619,
+        1030,
+        633
+      ],
+      "sha256": "6f6138cf91f69d2f0194057bb886e008b8c1d404fc884e10719409a038d507d5",
+      "threshold": 0.92,
+      "ground_offset": [
+        4,
+        20
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-lower-bands.png",
+        "sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Right curved blue/gold lower bands exclude variable left-side actor/energy-shield lighting. Source and later shifted before/after frames used for calibration; current platform, uniqueness and ordered fresh corpse-pair remain required."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-front-open",
+      "path": "templates/encounters/summoner-robe-alive-front-open.png",
+      "crop": [
+        1004,
+        423,
+        1044,
+        515
+      ],
+      "sha256": "2b7e3b9bc880ed54f524f5471eae77f9d11f46199a680fa38a394000e15db205",
+      "threshold": 0.92,
+      "ground_offset": [
+        16,
+        102
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-open.png",
+        "sha256": "10b3d6df345fecfe7f09fad3212c5c858fbe9089dbc2b88e604bece9241c0099"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-front-hem",
+      "path": "templates/encounters/summoner-robe-corpse-front-hem.png",
+      "crop": [
+        1000,
+        616,
+        1034,
+        632
+      ],
+      "sha256": "28d55d3cc1b363e0b1e25682976ca73fe4d49b14b540a38b3d0b28f150894023",
+      "threshold": 0.92,
+      "ground_offset": [
+        2,
+        23
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-front-hem.png",
+        "sha256": "dc87a9c3d0ff8d83ddd4a6a7621a3839f8711bbb6cefc038668be2cd86b0ffd3"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-left-hem",
+      "path": "templates/encounters/summoner-robe-corpse-left-hem.png",
+      "crop": [
+        972,
+        614,
+        1012,
+        638
+      ],
+      "sha256": "8bac83fa06b9cb90078bc51f10395777f82c78313eb57ac3c01c65f68d29f029",
+      "threshold": 0.92,
+      "ground_offset": [
+        30,
+        25
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem.png",
+        "sha256": "64eb1714051004bcb764967acb8804b4870b7aacb7d67d23f47e8d6fd29b73ab"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-18",
+        "basis": "Horizontal corpse left hem direction from GUI72 room02. Wider even-sized 40x24 fold separates the curved robe from the previous right-hem overlap and avoids tiny odd-size coarse aliasing; native .92/current-platform/unique-target/ordered corpse pair unchanged. Original 29x15 proposal failed duplicate-scene validation and was replaced before live use."
+      }
     }
   ],
   "limits": [
-    "Reviewed blue-and-gold robe appearance on the rune platform, not a standalone identity or life-state proof",
-    "Native current-frame appearance supports bounded approach/Nova only; missing appearance never confirms death"
-  ]
+    "Current reviewed corpse identity on the current platform requires two fresh ordered corpse observations in the same room and movement generation; an individual alive witness or targeted teleport is not required because nearby Nova can kill Summoner.",
+    "Current platform and stable target position relative to its landmarks are required; missing appearance, Nova effect, and loot labels never confirm death.",
+    "Only the reviewed native blue/gold poses are calibrated; occluded or unseen poses remain unknown."
+  ],
+  "life_review": {
+    "reviewed_by": "human-owner",
+    "reviewed_at": "2026-10-11",
+    "basis": "Owner confirmed standing blue/gold robe and subsequent horizontal blue/gold corpse as Summoner in this same room."
+  }
 }

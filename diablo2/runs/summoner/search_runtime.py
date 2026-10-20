@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 from diablo2.common.field_control import DryFieldInput, FieldObservation
+from diablo2.common.frame_geometry import frame_to_desktop
 from diablo2.runs.summoner.search import SearchAction, SearchObservation
 
 
@@ -80,7 +81,10 @@ class ArcaneSearchRuntime:
             generation = self.search.expected_generation or 0
             packet = self.capture.grab()
             self._window(before)
-            if dict(self.capture.target) != before or packet.frame.shape[:2] != (before["height"], before["width"]):
+            expected_size = (
+                packet.geometry.frame_size if getattr(packet, "geometry", None) is not None else (before["width"], before["height"])
+            )
+            if dict(self.capture.target) != before or packet.frame.shape[:2] != expected_size[::-1]:
                 raise RuntimeError("capture and current window differ")
             stamp = replace(self.next_stamp(), observed_at=captured_at)
             scene = self.scene_reader(packet.frame, stamp)
@@ -124,7 +128,7 @@ class ArcaneSearchRuntime:
                     self.field.stop()
             if action.kind in ("aim", "cast"):
                 self._window(before)
-                aim = (action.aim[0] + before["left"], action.aim[1] + before["top"])
+                aim = frame_to_desktop(self.capture, action.aim)
                 if self.field.dispatch_navigation(stamp, aim=aim, cast=action.kind == "cast"):
                     if not self.search.acknowledge(action, clock(), True):
                         return self.search.fail("navigation_ack_rejected")

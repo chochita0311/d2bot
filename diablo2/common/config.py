@@ -19,6 +19,7 @@ class CaptureConfig:
     follow_window: bool = True
     capture_backend: str = "auto"
     preview_scale: float = 0.75
+    reference_layout: str | None = None
 
 
 @dataclass

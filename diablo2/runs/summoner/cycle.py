@@ -17,6 +17,7 @@ COMMANDS = frozenset(
         "fight_boss",
         "inspect_loot",
         "return_hub",
+        "enter_canyon",
         "return_act1",
         "restock",
         "exit_room",
@@ -35,6 +36,7 @@ EVENTS = frozenset(
         "summoner_dead_confirmed",
         "loot_complete",
         "hub_ready",
+        "canyon_ready",
         "restock_complete",
     )
 )
@@ -261,10 +263,10 @@ class SummonerCycle:
             if self.keys_acquired != self.keys_dropped:
                 return self._halt("key_pickup_incomplete")
             self._loot_complete = True
-            return self._issue("return_hub", observation, now, command.wing)
+            return self._issue("enter_canyon", observation, now, command.wing)
+        if kind == "enter_canyon" and event == "canyon_ready":
+            return self._issue("return_act1", observation, now)
         if kind == "return_hub" and event == "hub_ready":
-            if self._loot_complete:
-                return self._issue("return_act1", observation, now)
             self._wing_index += 1
             if self._wing_index == len(WINGS):
                 return self._halt("summoner_not_found")

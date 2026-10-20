@@ -52,8 +52,9 @@ class SummonerCycleTests(unittest.TestCase):
             ("summoner_dead_confirmed", "inspect_loot"),
         ):
             self.assertEqual(self.step(event).command.kind, command)
-        self.assertEqual(self.step("loot_complete", keys_dropped=keys, keys_acquired=keys).command.kind, "return_hub")
-        for event, command in (("hub_ready", "return_act1"), ("act1_ready", "restock"), ("restock_complete", "exit_room")):
+        self.assertEqual(self.step("loot_complete", keys_dropped=keys, keys_acquired=keys).command.kind, "enter_canyon")
+        self.assertEqual(self.step("hub_ready").action, "wait")
+        for event, command in (("canyon_ready", "return_act1"), ("act1_ready", "restock"), ("restock_complete", "exit_room")):
             self.assertEqual(self.step(event).command.kind, command)
         self.assertEqual(len(self.cycle.results), self.cycle.room_index)
         return self.step("character_select")
@@ -88,7 +89,7 @@ class SummonerCycleTests(unittest.TestCase):
                 self.step("summoner_alive")
                 self.step("summoner_dead_confirmed")
                 self.step("loot_complete")
-                self.step("hub_ready")
+                self.step("canyon_ready")
                 self.step("act1_ready")
                 self.step("restock_complete")
                 last = self.step("character_select")

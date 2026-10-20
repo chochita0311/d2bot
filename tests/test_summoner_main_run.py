@@ -1,8 +1,14 @@
 import threading
 import time
 import unittest
+import json
+import tempfile
+from contextlib import ExitStack
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
+
+import numpy as np
 
 from diablo2.app import build_parser
 from diablo2.runs.summoner.main_run import (
@@ -15,6 +21,10 @@ from diablo2.runs.summoner.main_run import (
     run_north_segment,
     maintain_paused_field,
     validate_buff_site_permit,
+    run_once,
+    run,
+    _json_scalar,
+    return_to_act1_and_exit,
 )
 from diablo2.common.field_control import DryFieldInput
 from diablo2.runs.summoner.navigation import PathChoice
@@ -27,6 +37,173 @@ from diablo2.common.survival import ObservationStamp
 
 
 class SummonerMainRunTests(unittest.TestCase):
+    def test_failed_room_finish_restores_hidden_map_only_with_current_clear_hud_and_focus(self):
+        for obstruction in (None, "panel", "hud", "stop", "focus"):
+            with self.subTest(obstruction=obstruction):
+                capture, session, vision, planner = Mock(), Mock(), Mock(), Mock()
+                capture.target = dict(width=1922)
+                capture.grab.return_value = SimpleNamespace(frame=np.zeros((1140, 1922, 3), np.uint8))
+                planner.data = dict(phase="destination_arrival", arcane_map_inspection=dict(status="hidden"))
+                planner.step.side_effect = RuntimeError("current waypoint absent")
+                session._accept_waypoint_cursor_shift.return_value = None
+                vision.find.side_effect = lambda gray, name: (
+                    dict(score=1)
+                    if (name == "hud" and obstruction != "hud") or (name == "waypoint_header" and obstruction == "panel")
+                    else None
+                )
+                stop = threading.Event()
+                if obstruction == "stop":
+                    stop.set()
+                with patch("diablo2.actions.town_loop_vision.TownLoopPlanner", return_value=planner):
+                    with self.assertRaises(RuntimeError):
+                        return_to_act1_and_exit(
+                            session, capture, lambda: obstruction != "focus", stop, vision, evidence=[], emit=lambda _: None
+                        )
+                self.assertEqual(1 if obstruction is None else 0, session._dispatch_town_action.call_count)
+                if obstruction is None:
+                    self.assertEqual("tab", session._dispatch_town_action.call_args[0][2]["key"])
+                session._release_town_mouse.assert_called_once()
+
+    def test_labels_off_assertion_requires_current_field_resume(self):
+        with self.assertRaisesRegex(ValueError, "Arcane resumption"):
+            run_once(Mock(), live=False, resume_arcane=False, resume_labels_off=True, casts=1, difficulty="hell", output=Path("unused"))
+        args = build_parser().parse_args(["--summoner-run", "--resume-arcane", "--resume-labels-off"])
+        self.assertTrue(args.resume_labels_off)
+
+    def test_fresh_run_initializes_and_retains_route_state_through_room_finish(self):
+        self._fresh_navigation_case()
+
+    def test_missing_mercenary_stops_fresh_run_without_pause_exit_or_next_room(self):
+        self._fresh_navigation_case("mercenary_unverified")
+
+    def test_same_room_recovery_does_not_require_mercenary_portrait(self):
+        with patch("diablo2.common.survival_vision.SurvivalHudObserver") as observer:
+            self.assertEqual(
+                0,
+                run_once(
+                    load_config(Path("config")),
+                    live=False,
+                    resume_arcane=True,
+                    casts=1,
+                    difficulty="hell",
+                    output=Path("unused"),
+                    continuous=True,
+                    character_key="flash",
+                    return_from="north",
+                    finish_room=True,
+                    emit=lambda _: None,
+                ),
+            )
+        observer.assert_called_once_with(allow_high_orb_fallback=True, allow_partial_orb_fallback=True, observe_mercenary=False)
+
+    def _fresh_navigation_case(self, failure=None):
+        config = load_config(Path("config"))
+        capture = Mock()
+        capture.target = dict(left=0, top=0, width=1922, height=1140)
+        capture.current_target.return_value = capture.target
+        window = SimpleNamespace(handle=7)
+        driver = Mock()
+        actual_deadline = time.monotonic() + 140
+        driver.execute.return_value = dict(
+            observation={}, safety={}, buff={}, deadlines=[actual_deadline], preparation_at=actual_deadline - 4
+        )
+        intervals = []
+
+        def navigate(*args, **kwargs):
+            if failure:
+                raise RuntimeError(failure)
+            self.assertEqual(actual_deadline - 4, kwargs["buff_expires_at"])
+            progress = kwargs["progress"]
+            intervals.append(progress)
+            if len(intervals) == 1:
+                self.assertEqual([0.0, 0.0], progress["position"])
+                self.assertEqual([], progress["steps"])
+                return dict(
+                    status="north_segment_observed",
+                    position=[80.0, -40.0],
+                    steps=[{"index": 0}],
+                    breadcrumbs=[],
+                    diagnostic_flags=dict(blocked=np.bool_(False), samples=np.int64(3), score=np.float32(0.5)),
+                )
+            self.assertEqual([80.0, -40.0], progress["position"])
+            self.assertEqual([{"index": 0}], progress["steps"])
+            return dict(status="hub_arrived", **progress)
+
+        with tempfile.TemporaryDirectory(prefix="summoner-run-test-") as directory, ExitStack() as stack:
+            replacements = {
+                "diablo2.runs.summoner.main_run.enter_arcane": Mock(),
+                "diablo2.runs.summoner.main_run.load_arcane_step_planner": Mock(return_value=(Mock(), Mock())),
+                "diablo2.runs.summoner.main_run.AutomaticBuffDriver": Mock(return_value=driver),
+                "diablo2.runs.summoner.main_run.ensure_automap_on": Mock(return_value={}),
+                "diablo2.runs.summoner.main_run.return_to_act1_and_exit": Mock(return_value={}),
+                "diablo2.runs.summoner.main_run.maintain_paused_field": Mock(),
+                "diablo2.common.capture.ScreenCapture": Mock(return_value=capture),
+                "diablo2.common.survival_vision.SurvivalHudObserver": Mock(),
+                "diablo2.common.capture.resolve_window_from_config": Mock(return_value=window),
+                "diablo2.common.capture.USER32": SimpleNamespace(GetForegroundWindow=lambda: 7, IsIconic=lambda _: False),
+                "diablo2.actions.run_lifecycle.RunLifecycleSession": Mock(),
+                "diablo2.common.conditional_loot.ConditionalLootController": Mock(),
+                "diablo2.runs.summoner.camera_ground.CalibratedCameraGroundObserver": Mock(),
+                "diablo2.runs.summoner.continuous_navigation.run_continuous_route": Mock(side_effect=navigate),
+                "keyboard.add_hotkey": Mock(side_effect=lambda key, callback: callback),
+                "keyboard.remove_hotkey": Mock(),
+            }
+            mocks = {name: stack.enter_context(patch(name, replacement)) for name, replacement in replacements.items()}
+            camera = mocks["diablo2.runs.summoner.camera_ground.CalibratedCameraGroundObserver"].return_value
+            camera.calibrations = camera.projections = 0
+            camera.center, camera.authorized, camera.reset_events = (962, 578), True, []
+            loot = mocks["diablo2.common.conditional_loot.ConditionalLootController"].return_value
+            loot.prepare.return_value, loot.records, loot.labels_state = {}, [], "off"
+            output = Path(directory) / "room"
+            result = run_once(
+                config,
+                live=True,
+                resume_arcane=False,
+                casts=1,
+                difficulty="hell",
+                output=output,
+                continuous=True,
+                segments=2,
+                finish_room=True,
+                character_key="flash",
+                emit=lambda _: None,
+            )
+            report = json.loads((output / "report.json").read_text(encoding="utf-8"))
+            mocks["diablo2.common.survival_vision.SurvivalHudObserver"].assert_called_once_with(
+                allow_high_orb_fallback=True, allow_partial_orb_fallback=True, observe_mercenary=True
+            )
+            mocks["diablo2.runs.summoner.main_run.maintain_paused_field"].assert_not_called()
+            if failure:
+                self.assertEqual(2, result)
+                self.assertEqual("failed", report["status"])
+                self.assertEqual([failure], report["errors"])
+                self.assertEqual("mercenary_portrait_unverified", report["operator_review_required"])
+                self.assertTrue(report["field_retained"])
+                self.assertNotIn("safe_exit", report)
+                mocks["diablo2.runs.summoner.main_run.return_to_act1_and_exit"].assert_not_called()
+                return
+            self.assertEqual(0, result, report["errors"])
+            self.assertEqual("north_room_closed", report["status"])
+            self.assertEqual([], report["errors"])
+            self.assertEqual(2, len(intervals))
+            self.assertEqual(dict(blocked=False, samples=3, score=0.5), report["navigation"]["diagnostic_flags"])
+            callbacks = [call[0][1] for call in mocks["keyboard.add_hotkey"].call_args_list]
+            self.assertEqual(len(callbacks), len(set(callbacks)))
+            mocks["diablo2.runs.summoner.main_run.return_to_act1_and_exit"].assert_called_once()
+
+    def test_room_exception_cannot_leave_cycle_summary_running_or_hide_unknown_json_objects(self):
+        with tempfile.TemporaryDirectory(prefix="summoner-run-test-") as directory:
+            output = Path(directory) / "cycles"
+            with patch("diablo2.runs.summoner.main_run.run_once", side_effect=TypeError("unserializable diagnostic")):
+                with self.assertRaisesRegex(TypeError, "unserializable diagnostic"):
+                    run(Mock(), north_cycles=1, live=True, continuous=True, output=output)
+            summary = json.loads((output / "report.json").read_text(encoding="utf-8"))
+            self.assertEqual("failed", summary["status"])
+            self.assertEqual(0, summary["completed"])
+            self.assertEqual("unserializable diagnostic", summary["error"])
+        with self.assertRaises(TypeError):
+            json.dumps(dict(unknown=object()), default=_json_scalar)
+
     def test_paused_resource_recovery_preempts_defense_and_reobserves_before_continuing(self):
         now, stop = [0.0], threading.Event()
         frame = object()
@@ -186,6 +363,17 @@ class SummonerMainRunTests(unittest.TestCase):
         guard = BuffSiteGuard(capture, hud, lambda: True, profile, threading.Event(), ground, hazards, clock=lambda: 10)
         self.assertIsNone(guard.check())
         self.assertEqual([(frame, 10, reading, True)], context)
+        context.clear()
+        capture.reset_mock()
+        hud.reset_mock()
+        self.assertIsNone(guard.wait_check(frame, 10, reading))
+        self.assertEqual([(frame, 10, reading, True)], context)
+        capture.grab.assert_not_called()
+        hud.observe.assert_not_called()
+        self.assertEqual("screen_stale", guard.check(frame, 9.7, reading))
+        self.assertEqual("screen_stale", guard.wait_check(frame, 9.7, reading))
+        capture.grab.assert_not_called()
+        hud.observe.assert_not_called()
 
     def test_paused_nearby_defense_requires_current_pose_frame_buff_and_combat_toggle(self):
         from pathlib import Path

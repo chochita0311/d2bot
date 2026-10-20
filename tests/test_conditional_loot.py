@@ -40,6 +40,21 @@ class LootBackend(DryFieldInput):
 
 
 class ConditionalLootTests(unittest.TestCase):
+    def test_native_parallel_scan_preserves_configured_priority_and_exact_coordinates(self):
+        scanner = LootPickupSession(load_config(Path("config")))
+        candidates = scanner._build_candidates()
+        frame = np.zeros((1140, 1922, 3), np.uint8)
+        key, rune = candidates[:2]
+        for candidate, (x, y) in ((key, (700, 400)), (rune, (1000, 600))):
+            height, width = candidate.template.shape[:2]
+            frame[y : y + height, x : x + width] = candidate.template
+        hit = scanner.scan_frame(frame, candidates)
+        self.assertEqual("key of hate", hit.label)
+        self.assertEqual((700, 400), hit.match.top_left)
+        self.assertGreaterEqual(hit.match.score, key.threshold)
+        self.assertEqual("rune", scanner.scan_frame(frame, [rune]).label)
+        self.assertIsNone(scanner.scan_frame(np.zeros_like(frame), candidates))
+
     def setUp(self):
         self.now, self.focus = [0.0], True
         self.stop, self.backend = FakeStop(self.now), LootBackend()
@@ -56,13 +71,14 @@ class ConditionalLootTests(unittest.TestCase):
             life=SimpleNamespace(ratio=1), mana=SimpleNamespace(ratio=1), belt_visibility="closed"
         )
         self.profile = SimpleNamespace(
+            actions=SimpleNamespace(movement_skill_key="f2"),
             survival=SimpleNamespace(
                 life_potion_below=0.5,
                 mana_potion_below=0.1,
                 potion_pickup=SimpleNamespace(
                     preferred_kind="full_rejuvenation_potion", fallback_kind="rejuvenation_potion", fallback_at_or_below=6
                 ),
-            )
+            ),
         )
         self.config = SimpleNamespace(shared_loot=SimpleNamespace(ignore_labels=[]))
         self.scanner = Mock()
@@ -81,6 +97,7 @@ class ConditionalLootTests(unittest.TestCase):
             lambda frame: False,
             clock=lambda: self.now[0],
             scanner=self.scanner,
+            ground_supplier=lambda: SimpleNamespace(observe=lambda frame, captured_at: SimpleNamespace(point=(750, 450))),
             **kwargs,
         )
         controller.prepare(fresh_room=True)
@@ -121,14 +138,28 @@ class ConditionalLootTests(unittest.TestCase):
 
     def test_fresh_aim_click_and_disappeared_label_stay_unconfirmed(self):
         controller = self.controller()
-        self.scanner.scan_frame.side_effect = [self.hit(), self.hit(), None]
+        self.scanner.scan_frame.side_effect = [self.hit(), self.hit(), self.hit(x=850), self.hit(x=850), None]
         result = controller.after_combat()
         self.assertEqual("click_unconfirmed", result["status"])
         self.assertEqual(1, len(result["clicks"]))
         self.assertFalse(result["clicks"][0]["label_visible_after"])
         self.assertFalse(result["clicks"][0]["pickup_confirmed"])
         self.assertEqual(0, result["pickups_confirmed"])
-        self.assertEqual([("press", "alt"), ("move", -1172, 410), ("click",), ("press", "alt")], list(self.backend.events))
+        self.assertEqual(
+            [
+                ("press", "alt"),
+                ("move", -1172, 410),
+                ("press", "alt"),
+                ("press", "f2"),
+                ("press", "alt"),
+                ("move", -1022, 410),
+                ("click",),
+                ("press", "alt"),
+            ],
+            list(self.backend.events),
+        )
+        self.assertEqual(1, len(result["teleports"]))
+        self.assertTrue(result["teleports"][0]["dispatch_returned"])
         self.assertTrue(result["movement_allowed"])
         self.assertGreaterEqual(self.capture.grab.call_count, 7)
 
@@ -140,6 +171,86 @@ class ConditionalLootTests(unittest.TestCase):
         self.assertEqual("broken scanner", result["error"])
         self.assertEqual([("press", "alt"), ("press", "alt")], list(self.backend.events))
         self.assertTrue(controller.movement_allowed)
+
+    def test_label_reconfirmation_is_reused_for_off_without_extending_teleport_frame_age(self):
+        for capture_seconds, scan_seconds, permitted in ((0.12, 0.05, True), (0.15, 0.06, False)):
+            with self.subTest(permitted=permitted):
+                self.setUp()
+                controller = self.controller()
+                acquired, reconfirmed, request_ages = [None], [None], []
+                scans = [0]
+                press = self.backend.press
+
+                def grab():
+                    acquired[0] = self.now[0]
+                    self.now[0] += capture_seconds
+                    return SimpleNamespace(frame=self.frame)
+
+                def scan(*args):
+                    scans[0] += 1
+                    self.now[0] += scan_seconds
+                    if scans[0] == 2:
+                        reconfirmed[0] = acquired[0]
+                    return self.hit(x=700 if scans[0] <= 2 else 850) if scans[0] <= 4 else None
+
+                def record(key):
+                    if key == "f2":
+                        request_ages.append(self.now[0] - reconfirmed[0])
+                    press(key)
+
+                self.capture.grab.side_effect = grab
+                self.scanner.scan_frame.side_effect = scan
+                self.backend.press = record
+                result = controller.after_combat()
+                self.assertEqual(int(permitted), list(self.backend.events).count(("press", "f2")))
+                self.assertEqual(int(permitted), list(self.backend.events).count(("click",)))
+                self.assertEqual("click_unconfirmed" if permitted else "screen_stale", result["status"])
+                self.assertEqual("off", result["labels_state"])
+                if permitted:
+                    self.assertAlmostEqual(0.22, request_ages[0])
+                else:
+                    self.assertIsNone(result["teleports"][0]["requested_at"])
+
+    def test_focus_loss_during_reused_off_toggle_never_sends_teleport_or_repeats_toggle(self):
+        controller = self.controller()
+        self.scanner.scan_frame.return_value = self.hit()
+        press = self.backend.press
+        toggles = [0]
+
+        def lose_focus(key):
+            press(key)
+            if key == "alt":
+                toggles[0] += 1
+                if toggles[0] == 2:
+                    self.focus = False
+
+        self.backend.press = lose_focus
+        result = controller.after_combat()
+        self.assertEqual("focus_lost", result["status"])
+        self.assertEqual("unknown", result["labels_state"])
+        self.assertNotIn(("press", "f2"), self.backend.events)
+        self.assertEqual(2, toggles[0])
+
+    def test_teleport_never_clicks_when_new_label_or_landing_is_unverified(self):
+        for current in (None, self.hit(x=1300)):
+            with self.subTest(current=current):
+                self.setUp()
+                controller = self.controller()
+                self.scanner.scan_frame.side_effect = [self.hit(), self.hit(), current]
+                result = controller.after_combat()
+                self.assertEqual(1, list(self.backend.events).count(("press", "f2")))
+                self.assertNotIn(("click",), self.backend.events)
+                self.assertFalse(result["clicks"])
+                self.assertEqual("off", result["labels_state"])
+
+    def test_buff_expiring_during_teleport_preempts_click(self):
+        controller = self.controller(deadline_supplier=lambda: 0.3)
+        self.scanner.scan_frame.return_value = self.hit()
+        result = controller.after_combat()
+        self.assertEqual("buff_renewal_due", result["status"])
+        self.assertEqual(1, list(self.backend.events).count(("press", "f2")))
+        self.assertNotIn(("click",), self.backend.events)
+        self.assertEqual("off", result["labels_state"])
 
     def test_configured_key_template_uses_read_only_scanner_and_same_backend(self):
         self.config = load_config(Path(__file__).absolute().parents[1] / "config")
@@ -422,6 +533,8 @@ class ConditionalLootIntegrationTests(unittest.TestCase):
                     return dict(status="inspection_complete", kill_confirmed=False)
 
                 loot.after_combat.side_effect = inspect
+                path = Mock()
+                path.choose.return_value = SimpleNamespace(aim=(1000, 600))
                 with patch("diablo2.runs.summoner.encounter_execution.threading", SimpleNamespace(Event=threading.Event, Thread=Mock())):
                     result = run_platform_encounter(
                         capture,
@@ -430,7 +543,7 @@ class ConditionalLootIntegrationTests(unittest.TestCase):
                         lambda: True,
                         profile,
                         threading.Event(),
-                        (SimpleNamespace(observe=lambda *args, **kwargs: GroundReading((962, 580), "current")), Mock()),
+                        (SimpleNamespace(observe=lambda *args, **kwargs: GroundReading((962, 580), "current")), path),
                         objective,
                         appearance,
                         buff_expires_at=100,

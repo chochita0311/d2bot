@@ -9,6 +9,28 @@ from diablo2.common.hostile_probe import NearbyHostileProbe, nearby_actor_propos
 
 
 class NearbyHostileProbeTests(unittest.TestCase):
+    def test_proposed_body_hover_uses_its_near_ground_and_still_requires_current_panel(self):
+        for condition in ("confirmed", "no_panel", "pointer", "moved_player", "distant_ground"):
+            with self.subTest(condition=condition):
+                now = [10.0]
+                backend, observer = Mock(), Mock()
+                backend.pointer_matches.return_value = condition != "pointer"
+                target = object()
+                observer.observe.return_value = None if condition == "no_panel" else target
+                probe = NearbyHostileProbe(observer, backend, (100, 200), clock=lambda: now[0])
+                frame = SimpleNamespace(shape=(1140, 1922, 3))
+                point = (1300, 429) if condition == "distant_ground" else (1154, 429)
+                self.assertIsNone(probe.observe(frame, (962, 580), 10, points=(point,)))
+                now[0] = 10.1
+                player = (500, 580) if condition == "moved_player" else (962, 580)
+                result = probe.observe(frame, player, 10.1, points=())
+                self.assertEqual(condition == "confirmed", result is target)
+                if condition == "distant_ground":
+                    backend.move.assert_not_called()
+                else:
+                    backend.move.assert_called_once_with(1254, 629)
+                backend.key_down.assert_not_called()
+
     def test_near_effect_only_proposes_hover_points_and_excludes_player_and_distant_effects(self):
         frame = np.zeros((1140, 1922, 3), np.uint8)
         for point in ((962, 580), (1122, 600), (1450, 600)):

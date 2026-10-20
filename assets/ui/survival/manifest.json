@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "layout_id": "remastered-ko-window-1922x1140",
-  "revision": "screen-reference-2026-10-10-v11",
+  "revision": "screen-reference-2026-10-18-v15",
   "high_orb_bound": {
     "minimum_ratio": 0.9,
     "minimum_value": 40,
@@ -120,12 +120,14 @@
     "label_score": 0.9,
     "minimum_glyph_height": 10,
     "number_max_gap": 13,
+    "number_outline_dark_limit": 100,
     "glyph_score": 0.72,
     "glyph_margin": 0.08,
     "belt_anchor_distance": 0.06,
     "item_distance": 0.075,
     "item_margin": 0.025,
-    "closed_anchor_distance": 0.06
+    "closed_anchor_distance": 0.06,
+    "closed_anchor_score": 0.9
   },
   "belt": {
     "anchor_box": [
@@ -161,7 +163,9 @@
         "scroll-middle-2.png"
       ],
       "empty": [
-        "empty-upper.png"
+        "empty-upper.png",
+        "empty-middle-1.png",
+        "empty-middle-2.png"
       ]
     },
     "closed_anchor_box": [
@@ -524,6 +528,79 @@
       "counts": null,
       "evidence": "actual_main176_hud_edge_speck",
       "sha256": "e9c90434e3b76be3cbc81cd69a8dee37bc7a57babccb02d84d8bd72cd4f9ea67"
+    },
+    {
+      "path": "references/field-mana-bright-floor-outline.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        884,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_field_bright_floor_numeric_outline",
+      "sha256": "50c1beb585cc2ccb2bcaa66726d4891c004fb9ad3cda28b4134addb23dfdd7c6",
+      "source_frame_sha256": "16c5e063f767568b09fc036eb7f483bb08ce976fb74843f1f4876d586cd2da40",
+      "source_execution": "north-20261018-195946",
+      "review": "Codex visual review of current HUD numbers on bright floor. Existing glyph scores/margins/range unchanged; no number template learned. Failed room; not completed-room evidence."
+    },
+    {
+      "path": "references/field-mana-bright-floor-outline-followup.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        980,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_field_bright_floor_numeric_outline",
+      "sha256": "a9e29990e105612ac49ccbb5e8bc51046fe2b08dddd3d5d5f97dd6e8ceae0c26",
+      "source_frame_sha256": "86fb4762438bb8ef1547c3bf4623b01462e22a206ffa9a899ebc9907d819dd2e",
+      "source_execution": "north-20261018-195946",
+      "review": "Codex visual review of current HUD numbers on bright floor. Existing glyph scores/margins/range unchanged; no number template learned. Failed room; not completed-room evidence."
+    },
+    {
+      "path": "references/town-belt-three-empty-column1.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "life": [
+        985,
+        985
+      ],
+      "mana": [
+        1075,
+        1075
+      ],
+      "counts": [
+        1,
+        4,
+        4,
+        4
+      ],
+      "evidence": "actual_act1_belt_diagnostic_after_recovery_reconciliation_failure",
+      "sha256": "a629d06557304e7e50bc958a7f25c95989323f931c6e2490c4f74b82a604137e",
+      "source_frame_sha256": "a37f52efe4335829b2bf2d13bbaa87d29a726beb07e6695938bb53139981e1cd",
+      "review": "Primary visual review: first-column rows1-3 empty, row4 purple; columns2/3 four purple each and column4 four scrolls. No potion used during diagnosis."
     }
   ],
   "belt_only_references": [
@@ -656,5 +733,117 @@
         "sha256": "65e3cf175afb9097815d9531a327a66f2287b1341d48e9b8ac3afb6360aca37c"
       }
     }
-  ]
+  ],
+  "reduced_window_references": [
+    {
+      "path": "references/reduced-window-closed-hud.png",
+      "canvas_box": [
+        250,
+        880,
+        1650,
+        1127
+      ],
+      "source_sha256": "2dc456a463e271e49f682f45eddde9a2662a2336e436e80cde23d7841bcc9edc",
+      "sha256": "80a1d2285060b9b149b17658851a80f77b4808695694faf1b20db595f3821d67",
+      "human_life": [
+        985,
+        985
+      ],
+      "human_mana": [
+        1075,
+        1075
+      ],
+      "expected_lower_bound": 0.9,
+      "source_client_size": [
+        1674,
+        954
+      ],
+      "evidence": "actual_reduced_window_town_capture"
+    }
+  ],
+  "empty_slot_sources": [
+    {
+      "path": "empty-middle-1.png",
+      "sha256": "7c20c1fd2752873617ce3f92ef311cc0f8a4cdd1a6cdd22d716e396b2baea814",
+      "source_reference": "references/town-belt-three-empty-column1.png",
+      "source_reference_sha256": "a629d06557304e7e50bc958a7f25c95989323f931c6e2490c4f74b82a604137e",
+      "source_box": [
+        1088,
+        946,
+        1148,
+        1003
+      ],
+      "source_frame_sha256": "a37f52efe4335829b2bf2d13bbaa87d29a726beb07e6695938bb53139981e1cd",
+      "review": "Visually confirmed empty middle-row belt cell; fixed native slot geometry and item distance/margin unchanged."
+    },
+    {
+      "path": "empty-middle-2.png",
+      "sha256": "219e90abb7e9c3aa4d22def674f4c90d0317298c987106821f972c68b6a595bd",
+      "source_reference": "references/town-belt-three-empty-column1.png",
+      "source_reference_sha256": "a629d06557304e7e50bc958a7f25c95989323f931c6e2490c4f74b82a604137e",
+      "source_box": [
+        1088,
+        1003,
+        1148,
+        1060
+      ],
+      "source_frame_sha256": "a37f52efe4335829b2bf2d13bbaa87d29a726beb07e6695938bb53139981e1cd",
+      "review": "Visually confirmed empty middle-row belt cell; fixed native slot geometry and item distance/margin unchanged."
+    }
+  ],
+  "mercenary_portrait": {
+    "template": "mercenary-face-act2.png",
+    "box": [
+      39,
+      79,
+      93,
+      133
+    ],
+    "minimum_score": 0.95,
+    "note": "Opt-in current Act2 mercenary face only; health bar and name excluded. Missing or obscured portrait is unverified, never proof of death. Common normalized native frame required. Normal Flash fresh runs use this guard; explicit same-room recovery remains available.",
+    "references": [
+      {
+        "path": "mercenary-face-act2.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "observed",
+        "sha256": "effa08e4fc89cf9eaa8730772867bb6ac990d6e35b578b1c43b09814c9acb14b",
+        "source_run": "gui-20261018-211746-0d0df9bb06",
+        "source_frame": "automatic-buff-00-step-00.png",
+        "source_frame_sha256": "ec1c6e790b474536a925a1c93a8cd0fe52cd3b013566b7f72e56942cbe0ef027"
+      },
+      {
+        "path": "references/mercenary-face-combat.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "observed",
+        "sha256": "c510ac367e751b1d35772c1bd84c73c79f102e5234d4582d3691512f2469032d",
+        "source_run": "gui-20261018-213122-84cdd56fb5",
+        "source_frame": "phase-00-north-outbound-00-continuous-0084-combat.png",
+        "source_frame_sha256": "54e7d95d6efb4cb1c2189dae21da95f136a24e36200560fcebedce4ef1d456bf"
+      },
+      {
+        "path": "references/mercenary-face-absent.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "unverified",
+        "sha256": "7335eb777d8f2ab2cecb15b63d907d40c3beda852e215d764039be24b4942e06",
+        "source_run": "gui-20261018-213122-84cdd56fb5",
+        "source_frame": "phase-00-north-outbound-00-continuous-0180-combat.png",
+        "source_frame_sha256": "f158abefd6b901b410ade1145588426ffe82fc2afd15b0998420dec0e53b9826"
+      }
+    ]
+  }
 }

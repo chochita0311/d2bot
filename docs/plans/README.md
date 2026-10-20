@@ -1,5 +1,7 @@
 # Planning And Execution Artifacts
 
+현재 Summoner 북쪽 개발 검증은 **연속0/10**이다. 마지막 실제 실행은2026-10-18이며 일지 가림으로 기존 방 복구를 마치지 못한 뒤 사용자가 입력을 중단했다. 새 방3회는 아직 시작하지 않았다. 세션 마감 결과·payload 의미·새 화면에서 재개할 순서는 [통합 run의 세션 인계](run/run-20261009-07-summoner-live-integration.md#session-handoff-20261020)가 소유한다. 실제 게임10연속과 전체30방/27방 수용은 미완료이며 문서·검사 통과와 구분한다.
+
 Use the [shared workflow](../agents/flows/workflow.md) for sequence and approval boundaries, [planning management](../policies/harness/prd-feature-management.md) for scope/status, and the [runner](../agents/operations/runner.md) to start or resume an approved feature. These are the installed harness's owners of the process.
 
 ## Artifact Owners
@@ -13,16 +15,15 @@ Use the [shared workflow](../agents/flows/workflow.md) for sequence and approval
 | `evaluation/` | Evaluator result and evidence coverage | [Evaluation](evaluation/template-evaluation.md) |
 | `fix/` | Targeted corrections tied to evaluator findings | [Fix log](fix/template-fix-log.md) |
 | `heuristic/` | Non-blocking interaction suggestions | [Heuristic backlog](heuristic/template-heuristic-backlog.md) |
+| `refactoring/` | Approved cross-cutting refactor scope, invariants and verification gates | [Frame coordinates](refactoring/refactor-0001-frame-coordinates.md) |
 
 For `docs-content`, an adequate [compact writing contract](../policies/harness/execution-loop-governance.md#docs-content-writing-contract) may be designated as the active spec. Record its real ID and file/section locator in the run and downstream artifacts.
 
 ## Current Work
 
-최신 세션 마감과 다음 실행 인계는 [통합 run Attempt15](run/run-20261009-07-summoner-live-integration.md#attempt15-세션-마감-정리와-다음-gui-실행-인계)가 소유한다. assets 전체 정리에 이어 미사용 private 원본23개와 빈 이미지 폴더를 삭제하고14개 legacy 이미지 이름을 물체/상태 이름으로 맞췄다. 현재 공용339/private0개이며 개인 비이미지 보고서·바인딩은 local owner에 남긴다. 옛 진입/입력 helper·미사용 로그/튜닝 설정을 제거하고 현재 안내와 역사적 증거를 구분했다. 전체557개 회귀(스킵0)가 통과했다. 다음 세션은 GUI Repeat Count1로 현재 새 방 북쪽 왕복·서모너 전투/획득·조건부ALT·제때140초 갱신을 실제로 검증한다. 새 게임 입력과 수용 실적은 추가하지 않았으며 아직 새 방0/5·수용0방이다.
+현재 실행 이력과 실패·복구·검사 수치는 [Attempt18](run/run-20261009-07-summoner-live-integration.md#현재-attempt18-3런마다-속도경로-보완)에서 관리한다. GUI 연결/공용 자산 정리의 당시 범위는 같은 run의 [Attempt13](run/run-20261009-07-summoner-live-integration.md#attempt13-gui-자동-버프-조건부-alt와-공용-자산-정리), 현재 실행 절차는 [Summoner 안내](../features/summoner-run.md)를 따른다. 이 인덱스에 같은 실행 로그를 중복 누적하지 않는다.
 
-GUI 연결 구현 이력은 [통합 run Attempt13](run/run-20261009-07-summoner-live-integration.md#attempt13-gui-자동-버프-조건부-alt와-공용-자산-정리)이 소유한다. GUI를 최신 main에 연결하고 감독 JSON/I 없이 비율·근접 후보 기반 자동 버프와 실제 S+140초 갱신, 이동OFF/전투후ON 검사/OFF를 구현했다. 예전 북쪽 실행기/버튼은 제거했다. 지형·UI·클래스·카메라·창고 숫자는 공용 assets이며 당시 최소화한 개인 이미지도 Attempt15에서 정리했다. 당시 전체557개 입력 없는 검사와 Tk 생성/배치 검사는 통과했으나 새 자동 경로의 실게임 검증은 하지 않았다. 새 방 완전 왕복0/5·수용0방, 실제 처치/획득·네 방향은 미완료다. 실행 안내는 [현재 Summoner 문서](../features/summoner-run.md), 이전 상세 실패는 통합 run의 당시 Attempt가 소유한다.
-
-- [Perceptual Arcane navigation](feature/feat-0013-arcane-perceptual-navigation.md): 현재 우선순위는 새 방 북쪽 끝→중앙 WP→Act 1→방 종료를5회 반복해 보완하는 것이다. 이후 동/남/서를 연결한다. 지도ON·검토 viewport 카메라·현재 끝/중앙 부위·F2 유지/넓은 조향·탈부착 근접 노바를 사용한다. 일반 지도 선 해석, 모든 variation 정확도, 먼 적 정리 후 원위치 복귀, 실제 처치/회수와 정상 반복은 미완료다. Act 1 정비 세부 동작만 사용자 요청대로 건너뛴다. Act 2 초기화 준비 방은 완료 수에서 제외하며 최종30방 중27방 조건은 유지한다.
+- [Perceptual Arcane navigation](feature/feat-0013-arcane-perceptual-navigation.md): 현재 우선순위는 새 방 북쪽10회 연속 정상 마감과 성공/실패 합계3회마다 보완하는 개발 검증이다. 빈 끝은 중앙WP, 처치 후에는 일지·붉은 포탈·협곡WP를 거쳐 Act 1→방 종료로 마감한다. 이후 동/남/서를 연결한다. 지도ON·검토 viewport 카메라·현재 끝/중앙 부위·F2 유지/넓은 조향·탈부착 근접 노바를 사용한다. 일반 지도 선 해석, 모든 variation 정확도, 먼 적 정리 후 원위치 복귀, 실제 처치/회수와 정상 반복은 미완료다. Act 1 정비 세부 동작만 사용자 요청대로 건너뛴다. Act 2 초기화 준비 방은 완료 수에서 제외하며 최종30방 중27방 조건은 유지한다.
 
 - [Automatic buff renewal](feature/feat-0012-automatic-buff-renewal.md): 사용자 지시에 따라 공통 필드 runtime에서 타이머·최신 안전 관찰·프로필 입력·효과 확인을 연결했고 전체 174개 테스트를 통과했다. [Run](run/run-20261009-05-automatic-buff-renewal.md)이 입력 없는 검증과 실제 scene 생산자/감독 갱신의 남은 경계를 소유한다.
 
@@ -53,7 +54,7 @@ GUI 연결 구현 이력은 [통합 run Attempt13](run/run-20261009-07-summoner-
 - [Package-boundary PRD](prd/prd-0002-package-boundary-planning.md): draft direction for shared-run, configuration, and runtime ownership; feature execution requires separate approval.
 - [Summoner completion and experiment plan](../features/summoner-experiment-plan.md): online softcore Resurrection Flash의 방·생존·네 방향·전투/회수·재정비 목표다. 사용자가 `2026-10-09` 요구사항 확정·구현·감독 검증까지 진행하도록 명시했고 현재 FEAT-0013의 상황 인지 네 방향 이동을 실행한다. 기존 기능의 통과는 각 한정된 증거 범위를 유지하며, 미확정 운영값과 후속 기능별 실게임 조건을 전체 목표 승인만으로 채우지 않는다.
 
-- [Summoner platform encounter evidence](feature/feat-0014-summoner-platform-encounter-evidence.md): 현재 룬/일지 바닥 접근과 실제 호버 적 패널 기반 노바, 최대24장 전후 화면의 시각·관찰 순번 기록을 연결했다.215는 실제 접근1회·전용 노바0회였고219는 현재 목표를 즉시 선점했으나 접근 입력이 거부됐다. 다음 재시험에서는 검사 단계·거부 이유·프레임 나이를 구분한다. [SPEC-0013](spec/spec-0013-summoner-platform-encounter-evidence.md)과 [Attempt9 이후 기록](run/run-20261009-07-summoner-live-integration.md#attempt9-서모너-발판-접근과-전투-전후-증거)이 경계를 소유한다. 실제 처치/획득/새 방 반복은 미완료다.
+- [Summoner platform encounter evidence](feature/feat-0014-summoner-platform-encounter-evidence.md): 현재 발판 접근/근접 적 패널 기반 노바와 최대24장 전후 화면을 기록한다. 사용자 확인 종류의 생존/시체 포즈를 사용하고, 생존 관찰은 선택 증거로 두되 같은 방·이동 세대·현재 발판 상대 위치와 연속 두 시체 화면으로 확인하며 처치/전리품 확인 뒤 협곡 마감을 연결했다. [SPEC-0013](spec/spec-0013-summoner-platform-encounter-evidence.md)과 통합 run Attempt18이 경계와 실제 증거를 소유한다. 입력 없는 재생 통과와 실제 자동 처치/획득/새 방 반복 미완료를 구분한다.
 
 - [Live emergency recovery](feature/feat-0015-live-emergency-recovery.md): main216의 마나 부족 시 포션 입력 누락을 보완한다. 현재 보이는 보라 포션 열1회 입력과 새 HUD 회복·실제 벨트 잔량·닫힘을 이동/전투/대기에 연결했으며 관련141개 검사가 통과했다. [SPEC-0014](spec/spec-0014-live-emergency-recovery.md)와 통합 run Attempt10이 실제 재시험 결과를 소유한다. 자동 줍기/재보급/사망 복구는 미구현이다.
 

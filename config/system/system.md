@@ -21,6 +21,9 @@ GUI play actions send input directly and do not use `dry_run` or the CLI pause/s
 - `window_title_mode` (default `contains`): `contains` or `exact` title matching.
 - `follow_window` (default `true`): refreshes the target rectangle if the game window moves.
 - `capture_backend` (default `auto`): tries named-window capture and falls back to its screen rectangle. `window` fails if named-window capture fails; `screen` captures the rectangle directly.
+- `reference_layout` (loader default `null`, current JSON `assets/ui/layouts/remastered-1922x1140/viewport.json`): named-window analysis uses this reviewed frame/client layout. The shared capture boundary scales game content separately from OS borders/title bar; inputs map reference points back to the physical window. The current layout accepts client aspect error up to1%; larger differences stop before input. Unconfigured captures stay native. GUI recording and snapshot explicitly retain native frames; their role is evidence collection. A smaller window can lose text/texture information even when coordinates map correctly.
+
+`capture.target` and `current_target()` always describe physical desktop bounds. `FramePacket.geometry`/`ScreenCapture.frame_geometry` describe the analysis frame and both coordinate directions. The shared `frame_to_desktop` and `desktop_to_frame` helpers refuse geometry changes after capture. Live actions keep their existing focus/geometry and current-screen deadlines; a changed window invalidates pending input. Focusing restores minimized windows only, preserving split/maximized layouts.
 
 ## recording
 

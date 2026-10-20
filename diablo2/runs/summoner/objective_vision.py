@@ -9,6 +9,8 @@ from pathlib import Path
 import cv2 as cv
 import numpy as np
 
+from diablo2.runs.summoner.journal_vision import HorazonJournalObserver
+
 
 @dataclass(frozen=True)
 class ObjectiveReading:
@@ -39,6 +41,7 @@ class ArcaneObjectiveObserver:
         self.template = cv.imread(str(path), cv.IMREAD_GRAYSCALE)
         if self.template is None:
             raise ValueError("reviewed Horazon journal template required")
+        self.closed_journal = HorazonJournalObserver()
         manifest = json.loads((owner / "objective-runes.json").read_text(encoding="utf-8"))
         self.glyphs = []
         for part in manifest["parts"]:
@@ -117,12 +120,25 @@ class ArcaneObjectiveObserver:
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed objective frame required")
         world = frame[55:900, 24:1900]
-        scores = cv.matchTemplate(cv.cvtColor(world, cv.COLOR_BGR2GRAY), self.template, cv.TM_CCOEFF_NORMED)
-        _, score, _, (x, y) = cv.minMaxLoc(scores)
-        if score < 0.92:
-            return self._glyph_platform(frame)
-        x, y = x + 24, y + 55
-        h, w = self.template.shape
+        _, score, _, (x, y) = cv.minMaxLoc(cv.matchTemplate(cv.cvtColor(world, cv.COLOR_BGR2GRAY), self.template, cv.TM_CCOEFF_NORMED))
+        if score >= 0.92:
+            h, w = self.template.shape
+            reading = self._journal_platform(frame, score, (x + 24, y + 55, x + 24 + w, y + 55 + h))
+            if reading is not None:
+                return reading
+        # 기존 현재 앵커를 보존하고, 두 기존 외형이 모두 없을 때만 닫힌 일지를 사용한다.
+        reading = self._glyph_platform(frame)
+        if reading is not None:
+            return reading
+        for match in self.closed_journal.matches(frame):
+            reading = self._journal_platform(frame, match.score, match.box, ground=match.platform_ground)
+            if reading is not None:
+                return reading
+        return None
+
+    def _journal_platform(self, frame, score, box, *, ground=None):
+        x, y, right, bottom = box
+        w, h = right - x, bottom - y
         # 바닥/아이템의 파란 효과만으로 목표를 만들지 않고 현재 일지 주변의 큰 룬을 요구한다.
         left, top = max(24, x - 500), max(55, y - 350)
         right, bottom = min(1900, x + w + 500), min(900, y + 80)
@@ -136,11 +152,12 @@ class ArcaneObjectiveObserver:
             if 20 <= width <= 100 and 20 <= height <= 110 and area >= 150
         )
         if not 4 <= len(boxes) <= 12 or max(b[0] for b in boxes) - min(b[0] for b in boxes) < 200:
-            return self._glyph_platform(frame)
+            return None
         return ObjectiveReading(
             "summoner_platform",
             (x, y, x + w, y + h),
             float(score),
             boxes,
-            ground_point=self._visible_ground((x + w / 2, y + h + 80)),
+            # 세부 일지 crop도 검토된 같은 발판 기준점을 유지한다.
+            ground_point=self._visible_ground((x + w / 2, y + h + 80) if ground is None else ground),
         )

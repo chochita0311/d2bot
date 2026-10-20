@@ -12,10 +12,26 @@ class StaleSupervision(ValueError):
     """유효한 형식의 감독 확인이 만료되어 새 관측이 필요한 경우다."""
 
 
-def ensure_automap_on(capture, backend, focused, stop, hud, policy, observer, panels_open, *, clock=time.monotonic, supervised_on=None):
+def ensure_automap_on(
+    capture,
+    backend,
+    focused,
+    stop,
+    hud,
+    policy,
+    observer,
+    panels_open,
+    *,
+    clock=time.monotonic,
+    supervised_on=None,
+    allow_toggle=True,
+    timeout=3,
+):
     """입력 없는 최신 화면에서 지도 제목을 확인하고 필요한 경우 Tab 한 번 뒤 다시 확인한다."""
+    if type(allow_toggle) is not bool or type(timeout) not in (int, float) or not 0.1 <= timeout <= 3:
+        raise ValueError("bounded automap observation policy required")
     toggled, missing_since = False, None
-    deadline = clock() + 3
+    deadline = clock() + timeout
     while clock() < deadline:
         if stop.is_set() or not focused():
             raise RuntimeError("automap preparation interrupted or unfocused")
@@ -42,7 +58,7 @@ def ensure_automap_on(capture, backend, focused, stop, hud, policy, observer, pa
             # 이름표가 제목을 가린 재개 화면의 최신 감독 근거다. 자동 지도 인식으로 기록하지 않는다.
             return dict(status="on_supervised", tab_sent=False, evidence=supervised_on)
         missing_since = acquired if missing_since is None else missing_since
-        if not toggled and getattr(observer, "last_obscured", False) is not True and acquired - missing_since >= 0.15:
+        if allow_toggle and not toggled and getattr(observer, "last_obscured", False) is not True and acquired - missing_since >= 0.15:
             if stop.is_set() or not focused():
                 raise RuntimeError("automap preparation interrupted or unfocused")
             backend.press("tab")
@@ -160,10 +176,15 @@ def resource_guard(reading, policy):
         return "observation_unverified"
     if reading.life.ratio < policy.life_potion_below or reading.mana.ratio < policy.mana_potion_below:
         return "resource_low"
+    if getattr(reading, "mercenary_status", None) == "unverified":
+        return "mercenary_unverified"
     return None
 
 
-def wait_readable_resources(capture, hud, focused, policy, stop, deadline, *, clock=time.monotonic, observe_frame=None):
+def wait_readable_resources(
+    capture, hud, focused, policy, stop, deadline, *, clock=time.monotonic, observe_frame=None, check_frame=None, retry_reasons=()
+):
+    blocked = "observation_unverified"
     while clock() < deadline and not stop.is_set():
         if not focused():
             return "focus_lost"
@@ -172,31 +193,75 @@ def wait_readable_resources(capture, hud, focused, policy, stop, deadline, *, cl
         reading = hud.observe(frame)
         if observe_frame is not None:
             observe_frame(frame, acquired)
-        if clock() - acquired >= 0.25:
-            return "screen_stale"
-        blocked = resource_guard(reading, policy)
-        if blocked != "observation_unverified":
+        blocked = "screen_stale" if clock() - acquired >= 0.25 else resource_guard(reading, policy)
+        if blocked is None and check_frame is not None:
+            blocked = check_frame(frame, acquired, reading)
+        if blocked != "observation_unverified" and blocked not in retry_reasons:
             return blocked
         # 잠깐 가려진 글자는 입력 없이 새 화면을 기다린다. 이전 최대값을 재사용하지 않는다.
         stop.wait(0.02)
-    return "observation_unverified" if not stop.is_set() else "interrupted"
+    return blocked if not stop.is_set() else "interrupted"
 
 
 def dispatch_buffs(
-    capture, hud, backend, focused, profile, stop, *, trace_frames=None, observation_wait=0.75, sequence_timeout=8, before_step=None
+    capture,
+    hud,
+    backend,
+    focused,
+    profile,
+    stop,
+    *,
+    trace_frames=None,
+    observation_wait=0.75,
+    sequence_timeout=8,
+    before_step=None,
+    before_step_frame=None,
+    trace_before_dispatch=False,
 ):
     # 짧은 감독 준비용이다. 전송 기록은 효과나 안전의 자동 확인이 아니다.
     if trace_frames is not None and (trace_frames or len(profile.actions.pre_run_buff_order) > 16):
         raise ValueError("buff trace requires an empty buffer and at most sixteen steps")
     events, swapped, status = [], False, "dispatched_unconfirmed"
     began = time.monotonic()
+
+    def check_and_trace(frame, acquired, reading):
+        blocked = before_step_frame(frame, acquired, reading) if before_step_frame is not None else None
+        if blocked:
+            return blocked
+        if trace_frames is not None:
+            # 자동 런은 이미 검사한 입력 전 화면을 남긴다. 키 뒤 기록 전용 캡처를 중복하지 않는다.
+            processed = time.monotonic()
+            trace_frames.append(
+                (
+                    frame,
+                    dict(
+                        key=token,
+                        index=len(events),
+                        phase="before_dispatch",
+                        captured_at=acquired,
+                        processed_at=processed,
+                        hud=asdict(reading),
+                    ),
+                )
+            )
+            if processed - acquired >= 0.25:
+                return "trace_screen_stale"
+        return None
+
     try:
         for token in profile.actions.pre_run_buff_order:
             if stop.is_set() or not focused() or time.monotonic() - began >= sequence_timeout:
                 status = "interrupted"
                 break
             blocked = wait_readable_resources(
-                capture, hud, focused, profile.survival, stop, min(began + sequence_timeout, time.monotonic() + observation_wait)
+                capture,
+                hud,
+                focused,
+                profile.survival,
+                stop,
+                min(began + sequence_timeout, time.monotonic() + observation_wait),
+                check_frame=check_and_trace if trace_before_dispatch else before_step_frame,
+                retry_reasons=("screen_stale", "buff_ground_unverified") if trace_before_dispatch else (),
             )
             if blocked:
                 status = blocked
@@ -217,7 +282,7 @@ def dispatch_buffs(
             if token == "w":
                 swapped = not swapped
             stop.wait(profile.actions.buff_action_pause_seconds.get(token, 0.4))
-            if trace_frames is not None and not stop.is_set() and focused():
+            if trace_frames is not None and not trace_before_dispatch and not stop.is_set() and focused():
                 if len(trace_frames) >= 16:
                     raise ValueError("buff trace exceeds sixteen frames")
                 acquired = time.monotonic()
@@ -230,6 +295,7 @@ def dispatch_buffs(
                         {
                             "key": token,
                             "index": len(events) - 1,
+                            "phase": "after_dispatch",
                             "captured_at": acquired,
                             "processed_at": processed,
                             "hud": asdict(reading),
@@ -250,6 +316,7 @@ def dispatch_buffs(
         "effect_verified": False,
         "held_after": [],
         "errors": [],
+        "trace_phase": "before_dispatch" if trace_before_dispatch else "after_dispatch",
     }
 
 

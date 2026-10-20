@@ -4,11 +4,12 @@ import argparse
 import json
 import threading
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
-from diablo2.common.config import CaptureConfig, load_config
+from diablo2.common.config import load_config
 from diablo2.common.controller import BotController, ControllerFieldInput
+from diablo2.common.frame_geometry import frame_to_desktop, geometry_is_current
 from diablo2.common.field_control import FieldDirective, HeldFieldInput
 from diablo2.common.survival_vision import SurvivalHudObserver
 
@@ -167,9 +168,18 @@ def main(argv=None):
     import keyboard
 
     hud = SurvivalHudObserver()
-    capture = ScreenCapture(CaptureConfig(window_title="Diablo II: Resurrected", window_title_mode="exact", capture_backend="window"))
+    capture = ScreenCapture(
+        replace(config.capture, window_title="Diablo II: Resurrected", window_title_mode="exact", capture_backend="window")
+    )
     window = resolve_window_from_config(capture.config)
-    focused = lambda: window is not None and USER32.GetForegroundWindow() == window.handle and not USER32.IsIconic(window.handle)
+    target = dict(capture.target)
+    focused = lambda: (
+        window is not None
+        and USER32.GetForegroundWindow() == window.handle
+        and not USER32.IsIconic(window.handle)
+        and capture.current_target() == target
+        and geometry_is_current(capture)
+    )
     controller = BotController(dry_run=not args.live)
     backend = RecordingInput(
         ControllerFieldInput(
@@ -237,7 +247,7 @@ def main(argv=None):
                 if blocked:
                     raise RuntimeError(blocked)
                 validate_permit(proof, args.character, profile.survival, time.time(), buff=True)
-                aim = (capture.target["left"] + choice.aim[0], capture.target["top"] + choice.aim[1])
+                aim = frame_to_desktop(capture, choice.aim)
                 report["path_choice"] = asdict(choice)
                 report["player_ground"] = asdict(ground_reading)
                 report["planned_frame_at"] = acquired
@@ -299,7 +309,7 @@ def main(argv=None):
             remaining = min(
                 permit["buff_casts"][b.name] + b.duration_seconds - b.renew_before_seconds - time.time() for b in profile.survival.buffs
             )
-            aim = (capture.target["left"] + args.aim[0], capture.target["top"] + args.aim[1])
+            aim = frame_to_desktop(capture, args.aim)
             report = hold_probe(
                 capture,
                 hud,

@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "journal": {
+    "path": "templates/objective/journal-closed-north.png",
+    "crop": [
+      913,
+      344,
+      963,
+      395
+    ],
+    "sha256": "c18f47cec3fd29b59e01b5d95c1f72131ab9085b1425595d510139e0543533f8",
+    "threshold": 0.92,
+    "source": {
+      "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-north.png",
+      "sha256": "9dbbc270f634f738a88950ecafc55306d6b308dd7724886938d3ad9db20f7e88"
+    }
+  },
+  "portal_reference": {
+    "path": "references/summoner/journal-red-portal.png",
+    "sha256": "f9b77eeaecd095f80c3ea51a0e5057e396fbdbcd4907ff007f6189257f039a01"
+  },
+  "review": {
+    "date": "2026-10-11",
+    "basis": "Manual GUI verified journal click, immediate nearby-floor click, red portal, Canyon waypoint, Act 1, then save/exit."
+  },
+  "limits": [
+    "Current Arcane area and confirmed kill/loot required before journal interaction.",
+    "Do not wait for scrolling dialogue: click current nearby floor on the next frame.",
+    "A unique current red portal and current Canyon area/waypoint are required; no fixed portal coordinate."
+  ],
+  "journal_variants": [
+    {
+      "path": "templates/objective/journal-closed-left-page.png",
+      "crop": [
+        913,
+        405,
+        946,
+        442
+      ],
+      "sha256": "4f8d5f016bfe86427dd4e5b0058c817d293e64cbe2c8ef718e9be5241ea9f117",
+      "threshold": 0.92,
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-wide-side.png",
+        "sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9"
+      }
+    },
+    {
+      "path": "templates/objective/journal-closed-front-page.png",
+      "crop": [
+        971,
+        258,
+        1021,
+        309
+      ],
+      "sha256": "1f556b5c48201ce9082fe710d3a48f665e4a2b3281516cdbc1323d92a2870c5a",
+      "threshold": 0.92,
+      "platform_ground_offset": [
+        17.5,
+        196.0
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-front-hem.png",
+        "sha256": "dc87a9c3d0ff8d83ddd4a6a7621a3839f8711bbb6cefc038668be2cd86b0ffd3"
+      },
+      "review": "Closed front page, no rune/glow background. Explicit platform-ground offset retains the same [988.5,454] landmark as the legacy full journal in this source, independent of crop dimensions."
+    }
+  ]
+}

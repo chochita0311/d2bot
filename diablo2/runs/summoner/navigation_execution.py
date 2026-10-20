@@ -99,7 +99,18 @@ def plan_arcane_step(
 
 
 def dispatch_planned_step(
-    backend, focused, stop, aim, key, captured_at, *, clock=time.monotonic, verify_aim=None, expires_at=None, diagnostics=None
+    backend,
+    focused,
+    stop,
+    aim,
+    key,
+    captured_at,
+    *,
+    clock=time.monotonic,
+    verify_aim=None,
+    expires_at=None,
+    diagnostics=None,
+    pointer_preparation=None,
 ):
     # 포인터 이동 지연도 같은 화면의 유효 시간을 소비한다. F2는 한 번만 누른다.
     def record(stage, reason, **values):
@@ -124,6 +135,36 @@ def dispatch_planned_step(
         record(stage, reason, checked_at=now, frame_age_seconds=age)
         return reason == "allowed"
 
+    if pointer_preparation is not None:
+        # 접근 시 커서 대기는 다음 새 화면에서 확인한다. 현재 지형/HUD의 250ms 제한은 유지한다.
+        if not allowed("before_pointer"):
+            pointer_preparation.clear()
+            return False
+        prepared = pointer_preparation.get("aim") == aim
+        if prepared and backend.pointer_matches(aim):
+            if captured_at < pointer_preparation["requested_at"] + 0.05:
+                record("pointer_preparation", "pointer_settling")
+                return False
+        else:
+            if not allowed("before_pointer_move"):
+                pointer_preparation.clear()
+                return False
+            backend.move(*aim)
+            pointer_preparation.update(aim=aim, requested_at=clock())
+            record("pointer_preparation", "pointer_settling")
+            return False
+        if verify_aim is not None and not verify_aim():
+            pointer_preparation.clear()
+            record("pointer_verification", "pointer_mismatch", checked_at=None, frame_age_seconds=None)
+            return False
+        if not allowed("before_cast"):
+            pointer_preparation.clear()
+            return False
+        backend.press(key)
+        pointer_preparation.clear()
+        record("cast", "sent")
+        return True
+
     for index, (action, args) in enumerate(((backend.move, aim), (backend.press, (key,)))):
         stage = "before_pointer" if index == 0 else "before_cast"
         if not allowed(stage):
@@ -143,7 +184,20 @@ def dispatch_planned_step(
 
 
 def observe_step_landing(
-    capture, hud, focused, policy, stop, frame, view, choice, ground, path, *, reference_seconds, clock=time.monotonic, expires_at=None
+    capture,
+    hud,
+    focused,
+    policy,
+    stop,
+    frame,
+    view,
+    choice,
+    ground,
+    path,
+    *,
+    reference_seconds,
+    clock=time.monotonic,
+    expires_at=None,
 ):
     from diablo2.runs.summoner.navigation import BackgroundMotionObserver
 

@@ -178,7 +178,8 @@ class FieldProbeTests(unittest.TestCase):
         hud.observe.side_effect = None
         hud.observe.return_value = unknown
         self.assertEqual(
-            wait_readable_resources(capture, hud, lambda: True, self.policy, stop, time.monotonic() + 0.03), "observation_unverified"
+            wait_readable_resources(capture, hud, lambda: True, self.policy, stop, time.monotonic() + 0.03),
+            "observation_unverified",
         )
 
     def test_focus_loss_and_due_buff_have_distinct_outcomes(self):
@@ -199,7 +200,8 @@ class FieldProbeTests(unittest.TestCase):
                 "test", "test", self.reading.life, self.reading.mana, "closed", belt_visibility="closed"
             )
         profile = SimpleNamespace(
-            actions=SimpleNamespace(pre_run_buff_order=order, buff_action_pause_seconds=dict.fromkeys(order, 0)), survival=self.policy
+            actions=SimpleNamespace(pre_run_buff_order=order, buff_action_pause_seconds=dict.fromkeys(order, 0)),
+            survival=self.policy,
         )
         with patch("diablo2.common.supervised_field.wait_readable_resources", return_value=None), patch(
             "diablo2.tools.field_input_probe.time.monotonic", side_effect=clock or time.monotonic
@@ -217,6 +219,127 @@ class FieldProbeTests(unittest.TestCase):
         self.assertEqual(7, len(events))
         self.assertEqual(1580, trace[0][1]["hud"]["life"]["maximum"])
         self.assertFalse(report["effect_verified"])
+
+    def test_automatic_buff_trace_reuses_each_current_safety_frame_and_preserves_veto(self):
+        for blocked in (None, "buff_nearby_hostile", "slow"):
+            with self.subTest(blocked=blocked):
+                capture, hud, driver, trace = Mock(), Mock(), DryFieldInput(), []
+                frame, now = object(), [1.0]
+                capture.grab.return_value = SimpleNamespace(frame=frame)
+                hud.observe.return_value = HudReading(
+                    "test", "test", self.reading.life, self.reading.mana, "closed", belt_visibility="closed"
+                )
+                order = ("w", "a", "a", "s", "d", "f1", "w")
+                profile = SimpleNamespace(
+                    actions=SimpleNamespace(pre_run_buff_order=order, buff_action_pause_seconds=dict.fromkeys(order, 0)),
+                    survival=self.policy,
+                )
+
+                def check(value, acquired, reading):
+                    self.assertIs(frame, value)
+                    self.assertIs(hud.observe.return_value, reading)
+                    if blocked == "slow":
+                        now[0] += 0.3
+                        return None
+                    return blocked
+
+                from diablo2.common.supervised_field import wait_readable_resources as real_wait
+
+                def wait(*args, **kwargs):
+                    return real_wait(*args, clock=lambda: now[0], **kwargs)
+
+                with patch("diablo2.common.supervised_field.time.monotonic", side_effect=lambda: now[0]), patch(
+                    "diablo2.common.supervised_field.wait_readable_resources", side_effect=wait
+                ):
+                    report = dispatch_buffs(
+                        capture,
+                        hud,
+                        driver,
+                        lambda: True,
+                        profile,
+                        threading.Event(),
+                        before_step_frame=check,
+                        trace_frames=trace,
+                        trace_before_dispatch=True,
+                    )
+                expected = 7 if blocked is None else 1
+                self.assertEqual(expected, capture.grab.call_count)
+                self.assertEqual(expected, hud.observe.call_count)
+                self.assertEqual(list(order) if blocked is None else [], [row[1] for row in driver.events])
+                self.assertEqual(
+                    "dispatched_unconfirmed" if blocked is None else "trace_screen_stale" if blocked == "slow" else blocked,
+                    report["status"],
+                )
+                self.assertEqual("before_dispatch", report["trace_phase"])
+                if blocked is None:
+                    self.assertEqual(list(order), [metadata["key"] for _, metadata in trace])
+                    self.assertTrue(all(metadata["phase"] == "before_dispatch" for _, metadata in trace))
+                    self.assertFalse(report["effect_verified"])
+
+    def test_buff_step_shares_its_current_resource_frame_and_vetoes_input(self):
+        for blocked in (None, "buff_nearby_hostile", "screen_stale"):
+            with self.subTest(blocked=blocked):
+                capture, hud, check = Mock(), Mock(), Mock(return_value=blocked)
+                frame = object()
+                capture.grab.return_value = SimpleNamespace(frame=frame)
+                hud.observe.return_value = HudReading(
+                    "test", "test", self.reading.life, self.reading.mana, "closed", belt_visibility="closed"
+                )
+                driver = DryFieldInput()
+                profile = SimpleNamespace(
+                    actions=SimpleNamespace(pre_run_buff_order=("a",), buff_action_pause_seconds={"a": 0}), survival=self.policy
+                )
+                report = dispatch_buffs(capture, hud, driver, lambda: True, profile, threading.Event(), before_step_frame=check)
+                capture.grab.assert_called_once()
+                hud.observe.assert_called_once_with(frame)
+                check.assert_called_once()
+                self.assertIs(frame, check.call_args[0][0])
+                self.assertIs(hud.observe.return_value, check.call_args[0][2])
+                self.assertEqual(1 if blocked is None else 0, len(report["buff_dispatches"]))
+                self.assertEqual(blocked or "dispatched_unconfirmed", report["status"])
+
+    def test_automatic_buff_reacquires_a_rejected_frame_before_tracing_and_dispatching(self):
+        capture, hud, driver, trace = Mock(), Mock(), DryFieldInput(), []
+        frames, now, checked = [object(), object()], [1.0], []
+        capture.grab.side_effect = [SimpleNamespace(frame=frame) for frame in frames]
+        hud.observe.return_value = HudReading("test", "test", self.reading.life, self.reading.mana, "closed", belt_visibility="closed")
+        profile = SimpleNamespace(
+            actions=SimpleNamespace(pre_run_buff_order=("a",), buff_action_pause_seconds={"a": 0}), survival=self.policy
+        )
+
+        def check(frame, acquired, reading):
+            checked.append((frame, acquired))
+            if frame is frames[0]:
+                now[0] += 0.3
+                return "screen_stale"
+            return None
+
+        from diablo2.common.supervised_field import wait_readable_resources as real_wait
+
+        def wait(*args, **kwargs):
+            return real_wait(*args, clock=lambda: now[0], **kwargs)
+
+        with patch("diablo2.common.supervised_field.time.monotonic", side_effect=lambda: now[0]), patch(
+            "diablo2.common.supervised_field.wait_readable_resources", side_effect=wait
+        ):
+            report = dispatch_buffs(
+                capture,
+                hud,
+                driver,
+                lambda: True,
+                profile,
+                threading.Event(),
+                before_step_frame=check,
+                trace_frames=trace,
+                trace_before_dispatch=True,
+            )
+        self.assertEqual("dispatched_unconfirmed", report["status"])
+        self.assertEqual([(frames[0], 1.0), (frames[1], 1.3)], checked)
+        self.assertEqual(2, hud.observe.call_count)
+        self.assertEqual(1, len(trace))
+        self.assertIs(frames[1], trace[0][0])
+        self.assertEqual(1.3, trace[0][1]["captured_at"])
+        self.assertEqual([("press", "a")], list(driver.events))
 
     def test_slow_buff_trace_stops_before_the_next_cast(self):
         trace = []
@@ -340,7 +463,13 @@ class FieldProbeTests(unittest.TestCase):
             RuntimeError, "focus_lost"
         ):
             wait_renewal_deadline(
-                150, capture=Mock(), hud=Mock(), focused=lambda: False, policy=self.policy, stop=threading.Event(), clock=lambda: 10
+                150,
+                capture=Mock(),
+                hud=Mock(),
+                focused=lambda: False,
+                policy=self.policy,
+                stop=threading.Event(),
+                clock=lambda: 10,
             )
 
     def test_step_plan_requires_new_ground_floor_and_fresh_processing(self):
@@ -397,6 +526,108 @@ class FieldProbeTests(unittest.TestCase):
             backend.move.assert_called_once_with(100, 100)
             backend.press.assert_not_called()
             self.assertEqual("frame_expired" if accepted else "pointer_mismatch", diagnostics["reason"])
+
+    def test_prepared_pointer_casts_only_from_new_frame_after_settle(self):
+        backend, preparation, diagnostics, now = DryFieldInput(), {}, {}, [100.2]
+
+        def dispatch(captured_at):
+            return dispatch_planned_step(
+                backend,
+                lambda: True,
+                threading.Event(),
+                (100, 100),
+                "f2",
+                captured_at,
+                clock=lambda: now[0],
+                pointer_preparation=preparation,
+                diagnostics=diagnostics,
+            )
+
+        self.assertFalse(dispatch(100))
+        self.assertEqual([("move", 100, 100)], list(backend.events))
+        self.assertEqual("pointer_settling", diagnostics["reason"])
+        now[0] = 100.24
+        self.assertFalse(dispatch(100.22))
+        self.assertNotIn(("press", "f2"), backend.events)
+        now[0] = 100.51
+        self.assertTrue(dispatch(100.3))
+        self.assertEqual([("move", 100, 100), ("press", "f2")], list(backend.events))
+        self.assertEqual({}, preparation)
+
+    def test_prepared_pointer_rechecks_drift_changed_aim_and_current_refusals(self):
+        for drift, aim in ((True, (100, 100)), (False, (120, 100))):
+            backend, diagnostics = DryFieldInput(), {}
+            backend.move(*((110, 100) if drift else (100, 100)))
+            preparation = dict(aim=(100, 100), requested_at=100)
+            self.assertFalse(
+                dispatch_planned_step(
+                    backend,
+                    lambda: True,
+                    threading.Event(),
+                    aim,
+                    "f2",
+                    100.1,
+                    clock=lambda: 100.2,
+                    pointer_preparation=preparation,
+                    diagnostics=diagnostics,
+                )
+            )
+            self.assertEqual(("move", *aim), backend.events[-1])
+            self.assertEqual("pointer_settling", diagnostics["reason"])
+            self.assertNotIn(("press", "f2"), backend.events)
+        for stopped, focus, acquired, expires, reason in (
+            (True, True, 100.1, None, "stop_requested"),
+            (False, False, 100.1, None, "focus_lost"),
+            (False, True, 99.9, None, "frame_expired"),
+            (False, True, 100.1, 100.2, "deadline_expired"),
+        ):
+            backend, diagnostics, stop = DryFieldInput(), {}, threading.Event()
+            backend.move(100, 100)
+            if stopped:
+                stop.set()
+            preparation = dict(aim=(100, 100), requested_at=100)
+            self.assertFalse(
+                dispatch_planned_step(
+                    backend,
+                    lambda: focus,
+                    stop,
+                    (100, 100),
+                    "f2",
+                    acquired,
+                    clock=lambda: 100.2,
+                    expires_at=expires,
+                    pointer_preparation=preparation,
+                    diagnostics=diagnostics,
+                )
+            )
+            self.assertEqual(reason, diagnostics["reason"])
+            self.assertEqual({}, preparation)
+            self.assertNotIn(("press", "f2"), backend.events)
+
+    def test_prepared_pointer_validation_cannot_overrun_current_frame(self):
+        backend, preparation, now, diagnostics = DryFieldInput(), dict(aim=(100, 100), requested_at=100), [100.4], {}
+        backend.move(100, 100)
+
+        def verify():
+            now[0] = 100.55
+            return True
+
+        self.assertFalse(
+            dispatch_planned_step(
+                backend,
+                lambda: True,
+                threading.Event(),
+                (100, 100),
+                "f2",
+                100.3,
+                clock=lambda: now[0],
+                verify_aim=verify,
+                pointer_preparation=preparation,
+                diagnostics=diagnostics,
+            )
+        )
+        self.assertEqual("frame_expired", diagnostics["reason"])
+        self.assertNotIn(("press", "f2"), backend.events)
 
     def test_large_hub_departure_requires_current_waypoint_near_current_ground(self):
         settings = PathSettings(12, 0.5, 40, 120, 120, 30, 4)

@@ -1,6 +1,7 @@
 """현재 비율·보이는 포션과 새 HUD/전체 벨트로 제한된 비상 회복을 연결한다."""
 
 import time
+from dataclasses import asdict
 
 from diablo2.common.supervised_field import resource_guard
 
@@ -14,11 +15,13 @@ class EmergencyResourceRecovery:
     def active(self):
         return not self.stop.is_set() and self.focused()
 
-    def _wait(self, deadline, accept):
+    def _wait(self, deadline, accept, observe=None):
         while self.clock() < deadline and self.active():
             acquired = self.clock()
             frame = self.capture.grab().frame
             reading = self.hud.observe(frame)
+            if observe is not None:
+                observe(frame, reading, acquired)
             if 0 <= self.clock() - acquired < 0.25 and self.active() and accept(reading):
                 return frame, reading, acquired
             self.stop.wait(0.02)
@@ -71,12 +74,27 @@ class EmergencyResourceRecovery:
                 return False
             self.backend.press(self.policy.belt_toggle_key)
             opened = True
+            last_belt = []
+
+            def remember_belt(frame, reading, acquired):
+                last_belt[:] = [(frame, reading, acquired)]
+
             current = self._wait(
                 min(deadline, self.clock() + 0.75),
                 lambda value: value.belt_visibility == "expanded" and value.belt_contents(self.policy) is not None,
+                observe=remember_belt,
             )
             if current is None:
                 record["status"] = "belt_reconciliation_unconfirmed"
+                if last_belt:
+                    failed_frame, failed_reading, failed_at = last_belt[0]
+                    self.evidence.append((prefix + "-belt-unverified.png", failed_frame))
+                    record["belt_unverified"] = dict(
+                        observed_at=failed_at,
+                        visibility=failed_reading.belt_visibility,
+                        status=failed_reading.belt_status,
+                        slots=[asdict(slot) for slot in failed_reading.slots],
+                    )
                 return False
             self.evidence.append((prefix + "-belt.png", current[0]))
             contents = current[1].belt_contents(self.policy)

@@ -69,10 +69,12 @@ def calibrate(evidence: Path, directory: Path = ASSET_DIRECTORY) -> None:
 
 
 class TownLoopVision:
-    def __init__(self, directory: Path = ASSET_DIRECTORY):
+    def __init__(self, directory: Path = ASSET_DIRECTORY, *, arcane_waypoint_observer=None):
         from diablo2.common.automap_vision import AutomapObserver
 
         self.automap = AutomapObserver()
+        self.arcane_waypoint_observer = arcane_waypoint_observer
+        self.native_frame = None
         self.templates = {}
         manifest_path = directory / "manifest.json"
         if not manifest_path.exists():
@@ -84,6 +86,7 @@ class TownLoopVision:
                 raise RuntimeError(f"Town loop calibration image is unreadable: {name}")
             self.templates[name] = image
         self.variants = {}
+        self.match_variants = {}
         for name, definition in self.manifest["templates"].items():
             self.variants[name] = [self.templates[name]]
             for filename in definition.get("variants", []):
@@ -91,6 +94,15 @@ class TownLoopVision:
                 if image is None:
                     raise RuntimeError(f"Town loop calibration variant is unreadable: {filename}")
                 self.variants[name].append(image)
+            scales = definition.get("width_scales", [1.0])
+            if not scales or any(not 0.96 <= scale <= 1.04 for scale in scales):
+                raise ValueError("Town label width scales must stay within four percent: " + name)
+            filenames = [definition["file"]] + definition.get("variants", [])
+            self.match_variants[name] = [
+                (filename, scale, image if scale == 1 else cv.resize(image, None, fx=scale, fy=1, interpolation=cv.INTER_LINEAR))
+                for filename, image in zip(filenames, self.variants[name])
+                for scale in scales
+            ]
         self.motion = BackgroundMotionObserver(minimum_matches=12, minimum_inlier_ratio=0.65, maximum_error=3)
         self.reset_camera()
 
@@ -124,13 +136,22 @@ class TownLoopVision:
         expected_ratio = REFERENCE_SIZE[0] / REFERENCE_SIZE[1]
         if width < 800 or height < 450 or abs(width / height / expected_ratio - 1) > 0.03:
             raise RuntimeError(f"Uncalibrated window shape: {width}x{height}; stop and recalibrate instead of guessing.")
+        self.native_frame = frame
         self.color = cv.resize(frame, REFERENCE_SIZE, interpolation=cv.INTER_AREA)
         return cv.cvtColor(self.color, cv.COLOR_BGR2GRAY)
 
     def find(self, gray: np.ndarray, name: str):
         if name not in self.manifest["templates"]:
             return None
-        if name == "area_arcane" and self.automap.visible(self.color, "arcane_sanctuary"):
+        observer = getattr(self, "arcane_waypoint_observer", None)
+        native = getattr(self, "native_frame", None)
+        if name == "world_arcane_waypoint" and observer is not None and native is not None and native.shape == (1140, 1922, 3):
+            point = observer.observe(native)
+            if point is not None:
+                # 같은 현재 원본의 중앙 근거를 마을 좌표로 변환한다. 지난 도착 판독은 재사용하지 않는다.
+                return dict(x=point[0] * REFERENCE_SIZE[0] / 1922, y=point[1] * REFERENCE_SIZE[1] / 1140, evidence="current_native_hub")
+        area = {"area_arcane": "arcane_sanctuary", "area_canyon": "canyon_of_the_magi"}.get(name)
+        if area is not None and self.automap.visible(self.color, area):
             # 회색 지도 선이 제목을 통과해도 공통 금색 제목 판독을 재사용한다.
             at = self.automap.last_evidence["title_at"]
             return dict(x=at[0] + 34, y=at[1] + 7, score=self.automap.last_evidence["score"])
@@ -145,14 +166,13 @@ class TownLoopVision:
         )
         region = foreground(region)
         region = cv.GaussianBlur(region, (3, 3), 0.8)
-        for index, template in enumerate(self.variants[name]):
+        for filename, width_scale, template in self.match_variants[name]:
             if region.shape[0] < template.shape[0] or region.shape[1] < template.shape[1]:
                 continue
             scores = cv.matchTemplate(region, cv.GaussianBlur(foreground(template), (3, 3), 0.8), cv.TM_CCOEFF_NORMED)
             _, score, _, location = cv.minMaxLoc(scores)
             if score < definition.get("threshold", 0.88) or (best is not None and best["score"] >= score):
                 continue
-            filename = definition["file"] if index == 0 else definition["variants"][index - 1]
             offset = definition.get("variant_click_offsets", {}).get(
                 filename, definition.get("click_offset", [template.shape[1] / 2, template.shape[0] / 2])
             )
@@ -163,7 +183,7 @@ class TownLoopVision:
                 blue = cv.inRange(cv.cvtColor(region_color, cv.COLOR_BGR2HSV), np.array([95, 55, 120]), np.array([135, 255, 255]))
                 if cv.countNonZero(blue) < 40:
                     continue
-            best = {"x": px, "y": py, "score": float(score)}
+            best = {"x": px, "y": py, "score": float(score), "template": filename, "width_scale": width_scale}
         return best
 
     def find_blue_pair(self, definition):
@@ -201,6 +221,9 @@ class TownLoopPlanner:
     uncertain input outcome. There is no generic blind retry loop.
     """
 
+    ACT1_STALLED_WAYPOINT_SHIFT = 12
+    ACT1_DISTANT_WAYPOINT_RADIUS = 180
+
     def __init__(
         self,
         vision: TownLoopVision,
@@ -210,19 +233,24 @@ class TownLoopPlanner:
         *,
         arrival_only: bool = False,
         reset_act2_start: bool = False,
+        inspect_arcane_map: bool = False,
     ):
         if not isinstance(repeat_count, int) or isinstance(repeat_count, bool) or not 1 <= repeat_count <= 3:
             raise ValueError("Supervised town loop requires an explicit repeat count from 1 to 3.")
         if difficulty not in {"normal", "nightmare", "hell"}:
             raise ValueError("Unknown difficulty.")
-        if destination not in {"town", "arcane"}:
+        if destination not in {"town", "arcane", "canyon"}:
             raise ValueError("Unknown waypoint destination.")
         if type(arrival_only) is not bool or (arrival_only and (destination != "arcane" or repeat_count != 1)):
             raise ValueError("Arrival-only entry requires exactly one Arcane visit.")
         if type(reset_act2_start) is not bool or (reset_act2_start and difficulty != "hell"):
             raise ValueError("Act 2 start reset requires Hell as the target difficulty.")
+        if type(inspect_arcane_map) is not bool or (inspect_arcane_map and (destination != "arcane" or arrival_only)):
+            raise ValueError("Temporary Arcane map inspection requires a return waypoint flow.")
         if destination == "arcane" and any(name not in vision.templates for name in ("area_arcane", "world_arcane_waypoint")):
             raise ValueError("Arcane arrival has not been calibrated; use the town destination first.")
+        if destination == "canyon" and any(name not in vision.templates for name in ("area_canyon", "world_canyon_waypoint")):
+            raise ValueError("Canyon arrival has not been calibrated.")
         self.vision = vision
         self.data = {
             "phase": "character",
@@ -236,6 +264,9 @@ class TownLoopPlanner:
             "ready_at": 0.0,
             "probes": 0,
             "waypoint_attempts": 0,
+            "act1_waypoint_point": None,
+            "waypoint_detour_used": False,
+            "waypoint_detour_until": 0,
             "return_attempts": 0,
             "map_toggled": False,
             "action_number": 0,
@@ -247,6 +278,8 @@ class TownLoopPlanner:
             "difficulty_reset_used": False,
             "reset_stage": None,
             "preparation_rooms": 0,
+            "inspect_arcane_map": inspect_arcane_map,
+            "arcane_map_inspection": None,
         }
 
     def restore(self, data: dict) -> None:
@@ -324,13 +357,23 @@ class TownLoopPlanner:
                     if data["completed"] >= data["repeat_count"]:
                         self._transition("done", now)
                         return None
-                data.update(probes=0, waypoint_attempts=0, return_attempts=0, map_toggled=False, npc_recoveries=0)
+                data.update(
+                    probes=0,
+                    waypoint_attempts=0,
+                    act1_waypoint_point=None,
+                    waypoint_detour_used=False,
+                    waypoint_detour_until=0,
+                    return_attempts=0,
+                    map_toggled=False,
+                    npc_recoveries=0,
+                    arcane_map_inspection=None,
+                )
             return self._action("difficulty", now, "Open difficulty for the selected game character", (play["x"], play["y"]))
 
         if phase == "difficulty":
             button = find(data["difficulty"])
             if find("difficulty_header") and button:
-                return self._action("act1_spawn", now, f"Create {data['difficulty']} room", (button["x"], button["y"]), settle=1.4)
+                return self._action("act1_spawn", now, f"Create {data['difficulty']} room", (button["x"], button["y"]), settle=0.12)
             return None
 
         if phase == "act1_spawn":
@@ -435,6 +478,9 @@ class TownLoopPlanner:
                 return None
             waypoint = find("world_act1_waypoint")
             if phase == "act1_moving":
+                # 이미 보이던 먼 WP의 우회는 같은 WP 재검출만으로 즉시 취소하지 않는다.
+                if now < data.get("waypoint_detour_until", 0):
+                    return None
                 if waypoint or now >= data["move_until"]:
                     return self._release(now, "Waypoint detected while moving" if waypoint else "Bounded movement elapsed")
                 return None
@@ -445,12 +491,34 @@ class TownLoopPlanner:
                     return None
                 if data["waypoint_attempts"] >= 3:
                     raise RuntimeError("Act 1 waypoint did not open after three observed approaches.")
+                previous = data.get("act1_waypoint_point")
+                if (
+                    waypoint is not None
+                    and previous is not None
+                    and data["waypoint_attempts"] >= 2
+                    and not data.get("waypoint_detour_used")
+                ):
+                    current = np.array([waypoint["x"], waypoint["y"]])
+                    foot = np.array([REFERENCE_SIZE[0] / 2, REFERENCE_SIZE[1] * 0.51])
+                    if (
+                        np.linalg.norm(current - previous) <= self.ACT1_STALLED_WAYPOINT_SHIFT
+                        and np.linalg.norm(current - foot) > self.ACT1_DISTANT_WAYPOINT_RADIUS
+                    ):
+                        # 카메라가 고정돼도 첫 클릭으로 걸어갈 수 있다. 현재 발판 재클릭 뒤에만 우회한다.
+                        data.update(waypoint_detour_used=True, waypoint_detour_until=now + 1.0)
+                        if current[0] < foot[0]:
+                            # 왼쪽 먼 WP에서 아래 우회는 텐트 쪽으로 되돌렸다. 현재 WP 앞의 위쪽 통로로 한 번만 접근한다.
+                            detour = ((current[0] + foot[0]) / 2, max(80, min(current[1], foot[1]) - 80))
+                        else:
+                            detour = (950, 539)
+                        return self._move(now, "Visible waypoint approach stalled: bounded waypoint-side detour", detour, duration=1.0)
                 # 첫 클릭이 접근만 했다면 도착한 발판을 다시 클릭한다.
                 if waypoint is None:
                     return self._move(now, "Waypoint approach blocked: lower-right detour", (950, 539), duration=1.0)
             if waypoint:
                 data["waypoint_attempts"] += 1
                 data["approach_until"] = now + 2.0
+                data["act1_waypoint_point"] = [waypoint["x"], waypoint["y"]]
                 return self._action("wait_act1_panel", now, "Open detected world waypoint", (waypoint["x"], waypoint["y"]), settle=0.08)
             if data["probes"] >= 3:
                 raise RuntimeError("Act 1 waypoint was not visible after three bounded town probes.")
@@ -465,15 +533,28 @@ class TownLoopPlanner:
 
         if phase == "act2_list":
             if menu and find("list_act2"):
-                point = (265, 498) if data["destination"] == "arcane" else (265, 211)
-                return self._action("destination_arrival", now, f"Travel to {data['destination']}", point, settle=1.4)
+                point = (265, {"town": 211, "arcane": 498, "canyon": 539}[data["destination"]])
+                return self._action("destination_arrival", now, f"Travel to {data['destination']}", point, settle=0.12)
             return None
 
         if phase == "destination_arrival":
-            destination = act2 if data["destination"] == "town" else find("area_arcane")
+            destination = act2 if data["destination"] == "town" else find("area_" + data["destination"])
+            inspection = data.get("arcane_map_inspection")
+            waypoint = None
+            if inspection and inspection["status"] == "hidden":
+                waypoint = find("world_arcane_waypoint")
+                # 지도를 숨긴 동안에는 현재 native 전체 중앙 근거만 지역/클릭을 승인한다.
+                destination = waypoint if waypoint and waypoint.get("evidence") == "current_native_hub" else None
+                if not destination and now - inspection["requested_at"] >= 1.5:
+                    raise RuntimeError("Current Arcane waypoint missing during temporary map inspection.")
             if destination and hud and not menu and not find("save_exit"):
-                waypoint = find("world_act2_waypoint" if data["destination"] == "town" else "world_arcane_waypoint")
+                waypoint = waypoint or find(
+                    "world_act2_waypoint" if data["destination"] == "town" else "world_" + data["destination"] + "_waypoint"
+                )
                 if waypoint is None:
+                    if data.get("inspect_arcane_map") and inspection is None and not find("npc_cancel"):
+                        data["arcane_map_inspection"] = dict(status="hidden", requested_at=now)
+                        return self._action("destination_arrival", now, "Inspect current Arcane waypoint with automap hidden", key="tab")
                     return None
                 if data["arrival_only"]:
                     data["completed"] = 1
@@ -487,14 +568,21 @@ class TownLoopPlanner:
         if phase == "return_panel":
             if menu and find("list_act2"):
                 return self._action("return_list", now, "Switch return list to Act 1", (158, 178))
-            destination = act2 if data["destination"] == "town" else find("area_arcane")
+            destination = act2 if data["destination"] == "town" else find("area_" + data["destination"])
+            inspection = data.get("arcane_map_inspection")
+            native_waypoint = None
+            if inspection and inspection["status"] == "hidden":
+                native_waypoint = find("world_arcane_waypoint")
+                destination = native_waypoint if native_waypoint and native_waypoint.get("evidence") == "current_native_hub" else None
             if destination and hud and not menu and not find("save_exit"):
                 if data["destination"] == "town" and find("npc_cancel"):
                     if data["npc_recoveries"] >= 3:
                         raise RuntimeError("NPC dialogue recovery limit reached.")
                     data["npc_recoveries"] += 1
                     return self._action("return_panel", now, "Close detected return-town NPC dialogue", key="esc", settle=0.2)
-                waypoint = find("world_act2_waypoint" if data["destination"] == "town" else "world_arcane_waypoint")
+                waypoint = native_waypoint or find(
+                    "world_act2_waypoint" if data["destination"] == "town" else "world_" + data["destination"] + "_waypoint"
+                )
                 if waypoint:
                     if data["return_attempts"] >= 3:
                         raise RuntimeError("Return waypoint did not open after three observed approaches.")
@@ -509,10 +597,17 @@ class TownLoopPlanner:
             return None
         if phase == "return_list":
             if menu and find("list_act1"):
-                return self._action("act1_return", now, "Return to Rogue Encampment", (265, 211), settle=1.4)
+                return self._action("act1_return", now, "Return to Rogue Encampment", (265, 211), settle=0.12)
             return None
         if phase == "act1_return":
+            inspection = data.get("arcane_map_inspection")
+            if inspection and inspection["status"] == "hidden" and hud and not menu and not find("save_exit"):
+                # WP 메뉴가 닫힌 현재 HUD에서 한 번 복원하고 다음 화면의 Act1 제목을 요구한다.
+                inspection["status"] = "restore_requested"
+                return self._action("act1_return", now, "Restore automap after waypoint return", key="tab")
             if act1 and hud and not menu and not find("save_exit"):
+                if inspection and inspection["status"] == "restore_requested":
+                    inspection["status"] = "act1_on_observed"
                 return self._action("exit_menu", now, "Act 1 finish confirmed: open exit menu", key="esc")
             return None
         if phase == "exit_menu":

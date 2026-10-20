@@ -48,6 +48,7 @@ class ArcaneRouteGraph:
         self.exit_intent = None
         self.pending_retreat = None
         self.retreated_branches = set()
+        self.escape_retreats = set()
         self.failed_exits = {}
         self.chart, self.place_charts, self.missing_since = 0, [], None
         self.matcher = cv.BFMatcher(cv.NORM_HAMMING)
@@ -245,9 +246,19 @@ class ArcaneRouteGraph:
             key = (self.chart, self.current_place, avoid_entry)
             # 막다른 꺾임은 현재 보이는 진입 발판으로 한 번 되돌아갈 수 있다.
             # 같은 장소에서 이미 실제로 사용했거나 실패한 진입로를 무한 재시도하지 않는다.
-            if self.traversed.get(key, 0) or self.failed_exits.get(key, 0):
+            entry_failed = self.failed_exits.get(key, 0)
+            other_failed = any(
+                chart == self.chart and place == self.current_place and direction != avoid_entry and count > 0
+                for (chart, place, direction), count in self.failed_exits.items()
+            )
+            repeated = self.traversed.get(key, 0)
+            escape = other_failed and not entry_failed and (self.pending_retreat == key or key not in self.escape_retreats)
+            if entry_failed or (repeated and not escape):
                 self.reason = "graph_entry_retreat_exhausted"
                 return PathChoice(None, self.reason)
+            if repeated:
+                # 새로 확인한 다른 출구 실패 뒤에만 기존 진입로를 한 번 재사용한다.
+                self.escape_retreats.add(key)
             self.pending_retreat = key
         if not ports:
             self.reason = "graph_no_unvisited_landing"
@@ -323,5 +334,6 @@ class ArcaneRouteGraph:
             exit_intent=self.exit_intent,
             pending_retreat=self.pending_retreat,
             retreated_branches=len(self.retreated_branches),
+            escape_retreats=len(self.escape_retreats),
             feature_bytes=sum(item.features.points.nbytes + item.features.descriptors.nbytes for item in self.references),
         )

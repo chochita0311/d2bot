@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from queue import Queue
@@ -77,7 +77,7 @@ class RecordingSession:
     def _run(self) -> None:
         recorder: SessionRecorder | None = None
         try:
-            capture = ScreenCapture(self.capture_config)
+            capture = ScreenCapture(replace(self.capture_config, reference_layout=None))
             first_packet = capture.grab()
             height, width = first_packet.frame.shape[:2]
             recording_config = RecordingConfig(

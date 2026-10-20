@@ -4,6 +4,7 @@ import random
 import threading
 import time
 from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from queue import Queue
 
@@ -12,7 +13,8 @@ import numpy as np
 
 from diablo2.common.capture import ScreenCapture, focus_window, resolve_window_from_config
 from diablo2.common.config import BotConfig
-from diablo2.common.controller import keyboard, pydirectinput
+from diablo2.common.frame_geometry import frame_to_desktop, geometry_is_current
+from diablo2.common.controller import keyboard, move_desktop_pointer, pydirectinput
 
 
 @dataclass
@@ -115,10 +117,14 @@ class LootPickupSession:
 
     def scan_frame(self, frame: np.ndarray, candidates: list[LootCandidate] | None = None) -> LootScanHit | None:
         active_candidates = candidates or self._build_candidates()
-        for candidate in active_candidates:
-            match = self._locate_template(frame, candidate.template, candidate.threshold)
-            if match is not None:
-                return LootScanHit(label=candidate.label, match=match)
+        if not active_candidates:
+            return None
+        # 같은 화면의 원본 색상 비교를 병렬화하되 설정 우선순위와 임계값은 유지한다.
+        with ThreadPoolExecutor(max_workers=min(3, len(active_candidates))) as pool:
+            matches = pool.map(lambda candidate: self._locate_template(frame, candidate.template, candidate.threshold), active_candidates)
+            for candidate, match in zip(active_candidates, matches):
+                if match is not None:
+                    return LootScanHit(label=candidate.label, match=match)
         return None
 
     def try_pickup_visible_loot(self, capture: ScreenCapture, focus_window_first: bool = False) -> LootActionResult:
@@ -287,8 +293,7 @@ class LootPickupSession:
         )
 
     def _click_match_center(self, capture: ScreenCapture, match: MatchResult) -> None:
-        abs_x = capture.target["left"] + match.top_left[0] + match.width // 2
-        abs_y = capture.target["top"] + match.top_left[1] + match.height // 2
+        abs_x, abs_y = frame_to_desktop(capture, (match.top_left[0] + match.width // 2, match.top_left[1] + match.height // 2))
         abs_x, abs_y = self._jitter_point(abs_x, abs_y, self.TARGET_JITTER)
         self._move_absolute(capture, abs_x, abs_y)
         self._sleep_range(*self.CLICK_SETTLE)
@@ -298,6 +303,8 @@ class LootPickupSession:
 
     def _move_absolute(self, capture: ScreenCapture | None, target_x: int, target_y: int) -> None:
         if capture is not None:
+            if not geometry_is_current(capture):
+                raise RuntimeError("window geometry changed after capture")
             target = capture.target
             target_x = max(target["left"] + 2, min(target_x, target["left"] + target["width"] - 2))
             target_y = max(target["top"] + 2, min(target_y, target["top"] + target["height"] - 2))
@@ -310,7 +317,7 @@ class LootPickupSession:
             next_x = int(current_x + (target_x - current_x) * ratio)
             bend = random.randint(-8, 8)
             next_y = int(current_y + (target_y - current_y) * ratio + bend * (1 - abs(0.5 - ratio) * 2))
-            pydirectinput.moveTo(next_x, next_y)
+            move_desktop_pointer(next_x, next_y)
             self._last_pointer = (next_x, next_y)
             time.sleep(random.uniform(*self.MOVE_SLEEP))
 

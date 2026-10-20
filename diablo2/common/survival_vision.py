@@ -88,6 +88,7 @@ class HudReading:
     belt_status: str
     slots: tuple[SlotReading, ...] = ()
     belt_visibility: str = "unknown"
+    mercenary_status: str | None = None
 
     def belt_contents(self, policy: CharacterSurvivalPolicy) -> dict[int, tuple[str | None, int]] | None:
         if self.belt_status != "read" or len(self.slots) != 16:
@@ -117,10 +118,18 @@ class HudReading:
 class SurvivalHudObserver:
     """검토한 HUD 배치의 후보 관찰만 반환하며 게임 입력과 효과 확인을 하지 않는다."""
 
-    def __init__(self, asset_directory: str | Path = DEFAULT_ASSETS, *, allow_high_orb_fallback=False, allow_partial_orb_fallback=False):
+    def __init__(
+        self,
+        asset_directory: str | Path = DEFAULT_ASSETS,
+        *,
+        allow_high_orb_fallback=False,
+        allow_partial_orb_fallback=False,
+        observe_mercenary=False,
+    ):
         self.asset_directory = Path(asset_directory).resolve()
         self.allow_high_orb_fallback = allow_high_orb_fallback
         self.allow_partial_orb_fallback = allow_partial_orb_fallback
+        self.observe_mercenary = observe_mercenary
         self.manifest = json.loads((self.asset_directory / "manifest.json").read_text(encoding="utf-8"))
         if type(self.manifest["schema_version"]) is not int or self.manifest["schema_version"] != 1:
             raise ValueError("Unsupported survival vision schema")
@@ -138,6 +147,7 @@ class SurvivalHudObserver:
             "glyph_margin",
             "belt_anchor_distance",
             "closed_anchor_distance",
+            "closed_anchor_score",
             "item_distance",
             "item_margin",
         ):
@@ -148,6 +158,8 @@ class SurvivalHudObserver:
             raise ValueError("Positive integer glyph height required")
         if type(settings["number_max_gap"]) is not int or settings["number_max_gap"] < 1:
             raise ValueError("Positive integer numeric spacing limit required")
+        if type(settings["number_outline_dark_limit"]) is not int or not 0 < settings["number_outline_dark_limit"] < 255:
+            raise ValueError("Reviewed numeric outline darkness required")
         if set(self.manifest["resources"]) != {"life", "mana"}:
             raise ValueError("Both HUD resource references required")
         self.labels = {key: self._load_image(value["template"], gray=True) for key, value in self.manifest["resources"].items()}
@@ -213,6 +225,16 @@ class SurvivalHudObserver:
                 self._box_shape((left, top, left + belt["slot_size"][0], top + belt["slot_size"][1]))
         if any(image.shape[:2] != tuple(reversed(belt["slot_size"])) for images in self.items.values() for image in images):
             raise ValueError("Item dimensions must match slots")
+        self.mercenary_portrait = None
+        if observe_mercenary:
+            portrait = self.manifest["mercenary_portrait"]
+            shape = self._box_shape(portrait["box"])
+            score = portrait["minimum_score"]
+            if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 0 < score < 1:
+                raise ValueError("Reviewed mercenary portrait score required")
+            self.mercenary_portrait = cv.cvtColor(self._load_image(portrait["template"]), cv.COLOR_BGR2GRAY)
+            if self.mercenary_portrait.shape != shape:
+                raise ValueError("Mercenary portrait dimensions must match its box")
 
     def _box_shape(self, box) -> tuple[int, int]:
         if len(box) != 4 or any(type(value) is not int for value in box):
@@ -239,8 +261,21 @@ class SurvivalHudObserver:
         return frame[top:bottom, left:right]
 
     def _read_number(self, image: np.ndarray) -> ResourceReading:
-        settings = self.manifest["matching"]
         mask = text_mask(image)
+        reading = self._number_from_mask(mask.copy())
+        if reading.ratio is not None or reading.reason == "number_out_of_range":
+            return reading
+        # 밝은 지형이 글자에 붙은 경우에만 현재 검은 외곽선과 인접한 흰 획으로 다시 분리한다.
+        # 숫자/구분자 모양·점수·차이·범위 검사는 그대로이며 기존 유효 숫자는 고치지 않는다.
+        dark = (image.min(axis=2) < self.manifest["matching"]["number_outline_dark_limit"]).astype(np.uint8)
+        outlined = mask & cv.dilate(dark, np.ones((3, 3), np.uint8))
+        if np.array_equal(outlined, mask):
+            return reading
+        current = self._number_from_mask(outlined)
+        return replace(current, reason="read_outlined") if current.ratio is not None else reading
+
+    def _number_from_mask(self, mask: np.ndarray) -> ResourceReading:
+        settings = self.manifest["matching"]
         # 숫자와 6px 이상 떨어진 crop 가장자리의 1열/3픽셀 잡음만 제외한다.
         # 숫자 내부 조각이나 더 큰 미확인 문자는 지우지 않는다.
         for edge, neighbor in ((0, slice(1, 7)), (-1, slice(-7, -1))):
@@ -385,6 +420,20 @@ class SurvivalHudObserver:
         return tuple(self._slot_reading(frame, 4, column) for column in range(1, 5))
 
     def observe(self, frame: np.ndarray) -> HudReading:
+        reading = self._observe_resources(frame)
+        if self.mercenary_portrait is None:
+            return reading
+        status = "unverified"
+        if frame.shape == (self.frame_size[1], self.frame_size[0], 3):
+            reference = self.manifest["mercenary_portrait"]
+            face = cv.cvtColor(self._crop(frame, reference["box"]), cv.COLOR_BGR2GRAY)
+            score = float(cv.matchTemplate(face, self.mercenary_portrait, cv.TM_CCOEFF_NORMED)[0, 0])
+            if math.isfinite(score) and score >= reference["minimum_score"]:
+                status = "observed"
+        # 현재 초상화 일치만 보고한다. 미검출은 사망 판정이나 부활 요청이 아니다.
+        return replace(reading, mercenary_status=status)
+
+    def _observe_resources(self, frame: np.ndarray) -> HudReading:
         unknown = ResourceReading(reason="hud_unverified")
         unavailable = HudReading(self.layout_id, self.revision, unknown, unknown, "unverified")
         if not isinstance(frame, np.ndarray) or frame.dtype != np.uint8 or frame.ndim != 3 or frame.shape[2] != 3:
@@ -394,7 +443,27 @@ class SurvivalHudObserver:
         settings = self.manifest["matching"]
         boxes = {key: self._resource_box(frame, key) for key in self.manifest["resources"]}
         if all(box is None for box in boxes.values()):
-            return unavailable
+            if not (self.allow_high_orb_fallback or self.allow_partial_orb_fallback):
+                return unavailable
+            # 축소 화면의 얇은 글자가 소실돼도 닫힌 HUD의 색상 거리와 별도 모양 일치,
+            # 두 현재 액체 띠가 모두 양성일 때만 기존 비율 하한을 사용한다. 수치는 만들지 않는다.
+            anchor = self._crop(frame, self.manifest["belt"]["closed_anchor_box"])
+            if self._distance(anchor, self.closed_anchor) > settings["closed_anchor_distance"]:
+                return unavailable
+            shape_score = cv.matchTemplate(
+                cv.GaussianBlur(anchor, (3, 3), 0.8), cv.GaussianBlur(self.closed_anchor, (3, 3), 0.8), cv.TM_CCOEFF_NORMED
+            )[0, 0]
+            if not math.isfinite(float(shape_score)) or shape_score < settings["closed_anchor_score"]:
+                return unavailable
+            bounded = {
+                key: self._orb_fallback(frame, key, ResourceReading(reason="label_unverified;closed_hud_anchor"))
+                for key in ("life", "mana")
+            }
+            if any(reading.ratio is None for reading in bounded.values()):
+                return unavailable
+            return HudReading(
+                self.layout_id, self.revision, bounded["life"], bounded["mana"], "not_verified_expanded", belt_visibility="closed"
+            )
         # 한 문구가 가려져도 같은 화면의 다른 자원 관찰까지 지우지 않는다.
         life = unknown if boxes["life"] is None else self._read_number(self._crop(frame, boxes["life"]))
         mana = unknown if boxes["mana"] is None else self._read_number(self._crop(frame, boxes["mana"]))

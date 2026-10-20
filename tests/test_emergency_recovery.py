@@ -114,6 +114,10 @@ class EmergencyRecoveryTests(unittest.TestCase):
                     self.assertNotIn("potions_remaining", records[0])
                 if condition in ("stop_after_press", "focus_after_press"):
                     self.assertEqual([("press", "1")], events)
+                if condition == "unreadable_belt":
+                    self.assertEqual("slot_unverified", records[0]["belt_unverified"]["status"])
+                    self.assertEqual(16, len(records[0]["belt_unverified"]["slots"]))
+                    self.assertTrue(any(name.endswith("-belt-unverified.png") for name, _ in evidence))
 
     def test_actual_empty_belt_stops_after_reconciliation_even_if_resources_rose(self):
         result, events, records, evidence = self.exercise("empty")

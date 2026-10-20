@@ -4,6 +4,8 @@ This document organizes the high-level product direction and system structure fo
 
 ## Current implementation
 
+Game frame normalization belongs to [common frame geometry](../../diablo2/common/frame_geometry.py) and [capture](../../diablo2/common/capture.py), below run-specific observers. A configured layout supplies reference frame/client bounds; capture reads the actual Windows client bounds, normalizes content independently of OS chrome, and retains physical target metadata. Every input producer converts reference points to desktop coordinates through the same mapping, and pointer-to-terrain checks use its inverse. Town's existing1267×753 planning stage converts once into the analysis frame before that mapping. Native GUI recordings/snapshots opt out. [The coordinate track](../plans/refactoring/refactor-0001-frame-coordinates.md) owns this change's scope and validation; working coordinate mapping alone does not establish visual accuracy at smaller sizes.
+
 | Area | Responsibility |
 | --- | --- |
 | `main.py`, `diablo2/app.py` | CLI arguments and dispatch to the desktop GUI or CLI preview. |

@@ -2,6 +2,7 @@ import threading
 import unittest
 from unittest.mock import Mock, patch
 from queue import Queue
+from pathlib import Path
 
 import numpy as np
 import cv2 as cv
@@ -16,6 +17,7 @@ class SceneVision:
     def __init__(self):
         self.names = set()
         self.templates = {}
+        self.points = {}
 
     def normalize(self, frame):
         return frame
@@ -27,10 +29,43 @@ class SceneVision:
         return True
 
     def find(self, frame, name):
-        return {"x": 100, "y": 100, "score": 1.0} if name in self.names else None
+        x, y = self.points.get(name, (100, 100))
+        return {"x": x, "y": y, "score": 1.0} if name in self.names else None
 
 
 class TownLoopContractTests(unittest.TestCase):
+    def test_reduced_window_waypoint_title_survives_font_width_rounding_but_missing_letters_do_not(self):
+        vision = TownLoopVision()
+        filename = Path(__file__).resolve().parents[1] / "assets/ui/waypoint/references/waypoint-header-reduced-frame.png"
+        title = cv.imread(str(filename))
+        frame = np.zeros((753, 1267, 3), np.uint8)
+        frame[110:152, 190:355] = title
+        match = vision.find(vision.normalize(frame), "waypoint_header")
+        self.assertIsNotNone(match)
+        self.assertGreaterEqual(match["score"], 0.82)
+        self.assertLess(abs(match["x"] - 277), 3)
+        frame[120:144, 232:322] = 0
+        self.assertIsNone(vision.find(vision.normalize(frame), "waypoint_header"))
+        self.assertIsNone(vision.find(vision.normalize(np.zeros_like(frame)), "waypoint_header"))
+
+    def test_native_current_hub_can_reopen_waypoint_when_scaled_blue_pair_is_merged(self):
+        from diablo2.runs.summoner.scene_vision import ArcaneHubObserver
+
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-brazier-town-finish.png"
+        )
+        frame = cv.imread(str(source))
+        vision = TownLoopVision()
+        self.assertIsNone(vision.find(vision.normalize(frame), "world_arcane_waypoint"))
+        vision.arcane_waypoint_observer = ArcaneHubObserver()
+        planner = TownLoopPlanner(vision, destination="arcane")
+        planner.data["phase"] = "destination_arrival"
+        action = planner.step(frame, 1)
+        self.assertEqual("return_panel", action["phase"])
+        self.assertEqual([690, 380], action["point"])
+        self.assertIsNone(vision.find(vision.normalize(np.zeros_like(frame)), "world_arcane_waypoint"))
+
     def setUp(self):
         self.vision = SceneVision()
         self.planner = TownLoopPlanner(self.vision)
@@ -148,9 +183,64 @@ class TownLoopContractTests(unittest.TestCase):
         self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)
         self.assertEqual("click", self.step(0, "hud", "area_act1", "world_act1_waypoint")["kind"])
         self.assertIsNone(self.step(1, "hud", "area_act1", "world_act1_waypoint"))
-        self.assertEqual("click", self.step(2.1, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.vision.points["world_act1_waypoint"] = (130, 100)
+        action = self.step(2.1, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual(("click", [130, 100]), (action["kind"], action["point"]))
         self.assertEqual(2, self.planner.data["waypoint_attempts"])
         self.assertEqual("act2_list", self.step(2.3, "waypoint_header", "list_act1")["phase"])
+
+    def test_visible_distant_waypoint_stall_uses_one_bounded_detour_before_fresh_retry(self):
+        self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)
+        self.vision.points["world_act1_waypoint"] = (135, 258)
+        self.assertEqual("click", self.step(0, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.vision.points["world_act1_waypoint"] = (144, 262)
+        retry = self.step(2.1, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual(("click", [144, 262]), (retry["kind"], retry["point"]))
+        detour = self.step(4.2, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual(("hold", [389, 182]), (detour["kind"], detour["point"]))
+        self.assertIsNone(self.step(4.3, "hud", "area_act1", "world_act1_waypoint"))
+        self.assertEqual("release", self.step(5.3, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.assertEqual("click", self.step(5.5, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        with self.assertRaisesRegex(RuntimeError, "three observed approaches"):
+            self.step(7.6, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual(3, self.planner.data["waypoint_attempts"])
+
+    def test_visible_waypoint_detour_releases_on_lost_town_or_npc_and_near_waypoint_does_not_detour(self):
+        for interrupted in (("hud",), ("hud", "area_act1", "npc_cancel")):
+            self.setUp()
+            self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)
+            self.step(0, "hud", "area_act1", "world_act1_waypoint")
+            self.step(2.1, "hud", "area_act1", "world_act1_waypoint")
+            self.step(4.2, "hud", "area_act1", "world_act1_waypoint")
+            self.assertEqual("release", self.step(4.3, *interrupted)["kind"])
+        self.setUp()
+        self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)
+        self.vision.points["world_act1_waypoint"] = (633, 384)
+        self.step(0, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual("click", self.step(2.1, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.assertFalse(self.planner.data.get("waypoint_detour_used", False))
+
+    def test_visible_waypoint_stall_detour_follows_current_side_and_resets_for_next_room(self):
+        self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)
+        self.vision.points["world_act1_waypoint"] = (1100, 258)
+        self.step(0, "hud", "area_act1", "world_act1_waypoint")
+        self.step(2.1, "hud", "area_act1", "world_act1_waypoint")
+        action = self.step(4.2, "hud", "area_act1", "world_act1_waypoint")
+        self.assertEqual([950, 539], action["point"])
+        self.planner.data.update(phase="after_exit", repeat_count=2)
+        self.assertEqual("difficulty", self.step(5, "play")["phase"])
+        self.assertFalse(self.planner.data["waypoint_detour_used"])
+        self.assertIsNone(self.planner.data["act1_waypoint_point"])
+        self.assertEqual(0, self.planner.data["waypoint_detour_until"])
+
+    def test_stationary_camera_waypoint_first_click_can_walk_and_second_click_open_without_detour(self):
+        self.planner.data.update(phase="act1_waypoint", started=0, deadline=30, probes=3)
+        self.vision.points["world_act1_waypoint"] = (135, 258)
+        self.assertEqual("click", self.step(0, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.assertEqual("click", self.step(2.1, "hud", "area_act1", "world_act1_waypoint")["kind"])
+        self.assertFalse(self.planner.data["waypoint_detour_used"])
+        self.assertEqual("act2_list", self.step(2.3, "waypoint_header", "list_act1")["phase"])
+        self.assertEqual(2, self.planner.data["waypoint_attempts"])
 
     def test_return_waypoint_retries_require_fresh_town_evidence_and_are_bounded(self):
         self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
@@ -252,6 +342,60 @@ class TownLoopContractTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "three observed"):
             self.step(6, "hud", "area_arcane", "world_arcane_waypoint")
 
+    def test_arcane_return_can_inspect_map_once_using_only_current_native_hub_then_restore_in_act1(self):
+        self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+        self.planner = TownLoopPlanner(self.vision, destination="arcane", inspect_arcane_map=True)
+        self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
+        action = self.step(0, "hud", "area_arcane")
+        self.assertEqual("tab", action["key"])
+        # 지역 제목이 없는 지도 OFF에서 과거 좌표/축소 불꽃 쌍만으로 클릭하지 않는다.
+        self.assertIsNone(self.step(0.2, "hud", "world_arcane_waypoint"))
+        original = self.vision.find
+
+        def native(frame, name):
+            result = original(frame, name)
+            if name == "world_arcane_waypoint" and result:
+                result["evidence"] = "current_native_hub"
+            return result
+
+        self.vision.find = native
+        action = self.step(0.3, "hud", "world_arcane_waypoint")
+        self.assertEqual("click", action["kind"])
+        self.assertEqual([100, 100], action["point"])
+        self.assertIsNone(self.step(1.1, "hud"))
+        action = self.step(1.2, "hud", "world_arcane_waypoint")
+        self.assertEqual("click", action["kind"])
+        self.assertEqual("return_panel", action["phase"])
+        self.step(2, "hud", "waypoint_header", "list_act2")
+        self.step(3, "hud", "waypoint_header", "list_act1")
+        self.assertIsNone(self.step(4, "hud", "waypoint_header"))
+        self.assertEqual("tab", self.step(5, "hud")["key"])
+        self.assertIsNone(self.step(6, "hud"))
+        self.assertIsNone(self.step(7, "hud", "area_act2"))
+        self.assertEqual("esc", self.step(8, "hud", "area_act1")["key"])
+        self.assertEqual("act1_on_observed", self.planner.data["arcane_map_inspection"]["status"])
+
+    def test_arcane_return_map_inspection_requires_clear_current_area_and_is_bounded_without_native_hub(self):
+        for obstruction in ("area", "hud", "menu", "exit", "npc", None):
+            with self.subTest(obstruction=obstruction):
+                self.setUp()
+                self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+                self.planner = TownLoopPlanner(self.vision, destination="arcane", inspect_arcane_map=True)
+                self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
+                names = [] if obstruction == "hud" else ["hud"]
+                if obstruction != "area":
+                    names.append("area_arcane")
+                names += {"menu": ["waypoint_header"], "exit": ["save_exit"], "npc": ["npc_cancel"]}.get(obstruction, [])
+                action = self.step(0, *names)
+                if obstruction is not None:
+                    self.assertIsNone(action)
+                    self.assertIsNone(self.planner.data["arcane_map_inspection"])
+                else:
+                    self.assertEqual("tab", action["key"])
+                    self.assertIsNone(self.step(0.2, "hud"))
+                    with self.assertRaisesRegex(RuntimeError, "Current Arcane waypoint missing"):
+                        self.step(1.5, "hud", "world_arcane_waypoint")
+
     def test_arcane_positive_area_without_waypoint_calibration_cannot_start(self):
         self.vision.templates = {"area_arcane": None}
         with self.assertRaisesRegex(ValueError, "not been calibrated"):
@@ -275,6 +419,19 @@ class TownLoopContractTests(unittest.TestCase):
         session = RunLifecycleSession.__new__(RunLifecycleSession)
         with self.assertRaisesRegex(ValueError, "supervised town planner"):
             session.start(1, arrival_only=True)
+
+    def test_arcane_travel_uses_current_arrival_evidence_after_short_input_settle(self):
+        self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+        self.planner = TownLoopPlanner(self.vision, destination="arcane", arrival_only=True)
+        self.planner.data.update(phase="act2_list", started=0, deadline=30)
+        action = self.step(0, "hud", "waypoint_header", "list_act2")
+        self.assertEqual("destination_arrival", action["phase"])
+        self.assertIsNone(self.step(0.1, "hud", "area_arcane", "world_arcane_waypoint"))
+        self.assertEqual("destination_arrival", self.planner.data["phase"])
+        self.assertIsNone(self.step(0.2, "hud", "area_arcane"))
+        self.assertEqual("destination_arrival", self.planner.data["phase"])
+        self.assertIsNone(self.step(0.3, "hud", "area_arcane", "world_arcane_waypoint"))
+        self.assertEqual("done", self.planner.data["phase"])
 
     def test_visible_waypoint_releases_hold_before_reacquired_click(self):
         self.planner.data.update(phase="act1_waypoint", started=0, deadline=30)

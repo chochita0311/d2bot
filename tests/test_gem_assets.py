@@ -1,6 +1,7 @@
 import json
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import numpy as np
@@ -63,7 +64,7 @@ class GemAssetTests(unittest.TestCase):
         self.assertEqual((width, height), (result.width, result.height))
         self.assertEqual((height, width, 3), session._extract_region(frame, result).shape)
         target = {"left": 100, "top": 200}
-        self.assertEqual((380, 321), session._relative_point(target, result, *session.GEM_TAB_POINT))
+        self.assertEqual((380, 321), session._relative_point(SimpleNamespace(target=target), result, *session.GEM_TAB_POINT))
 
     def test_stash_header_cannot_authorize_a_truncated_panel(self):
         session = self.session()

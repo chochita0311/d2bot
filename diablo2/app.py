@@ -42,6 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--resume-arcane", action="store_true", help="Development Arcane resume flag; automatic runs reject unknown ALT state"
     )
     resume.add_argument("--resume-town", action="store_true", help="Resume --summoner-run from a positively observed Act 1/2 town")
+    parser.add_argument("--resume-labels-off", action="store_true", help="Assert known ALT OFF for a supervised current Arcane recovery")
     parser.add_argument("--north-casts", type=int, choices=range(1, 13), default=3, help="Discrete north integration bound (1-12)")
     parser.add_argument(
         "--north-segments", type=int, choices=range(1, 5), default=1, help="Retain route history across 1-4 development segments"
@@ -137,6 +138,7 @@ def main() -> int:
             live=args.live,
             resume_arcane=args.resume_arcane or args.return_to_hub_from is not None,
             resume_town=args.resume_town,
+            resume_labels_off=args.resume_labels_off,
             casts=args.north_casts,
             segments=args.north_segments,
             continuous=args.continuous_north

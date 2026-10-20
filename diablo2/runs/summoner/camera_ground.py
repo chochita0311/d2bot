@@ -133,11 +133,11 @@ class CalibratedCameraGroundObserver:
             return reading
         if (
             reading.point is not None
-            and reading.reason == "flash_es_and_body_shape"
+            and reading.reason in ("flash_es_and_body_shape", "flash_body_shape_and_es")
             and self.viewport_anchor is not None
             and math.hypot(*(a - b for a, b in zip(reading.point, self.viewport_anchor))) > self.maximum_shift
         ):
-            # 금색 지형+전경 조합은 몸 신원이 아니다. 검토한 카메라 밖의 이 약한 후보로 보정을 옮기지 않는다.
+            # 흐린 윤곽/전경과 금색 효과는 몸 신원이 아니다. 이 약한 후보로 검토한 카메라 보정을 옮기거나 폐기하지 않는다.
             reading = GroundReading(None, "ground_unverified")
         if reading.point is not None and reading.reason != "flash_marker_tracked":
             if (
@@ -147,6 +147,12 @@ class CalibratedCameraGroundObserver:
                 # 전경/효과 후보가 순간 다른 개체로 튀면 그 좌표를 이동에 사용하지 않는다.
                 # 같은 viewport의 원래 중심에서 실제 몸3개를 다시 읽어야 보정을 복구한다.
                 self.reset("camera_actor_displaced", captured_at=captured_at)
+                self.reset_events[-1].update(
+                    candidate_point=reading.point,
+                    candidate_reason=reading.reason,
+                    candidate_score=reading.score,
+                    viewport_anchor=self.viewport_anchor,
+                )
                 return GroundReading(None, "camera_actor_displaced")
             if self.samples and captured_at - self.samples[-1][0] > 0.5:
                 self.samples.clear()

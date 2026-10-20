@@ -15,6 +15,7 @@ import numpy as np
 from diablo2.common.config import load_config
 from diablo2.common.survival import CharacterSurvivalState, ObservationStamp
 from diablo2.common.survival_vision import DEFAULT_ASSETS, ResourceReading, SurvivalHudObserver, glyph_parts, text_mask
+from diablo2.common.supervised_field import resource_guard
 from diablo2.tools.survival_observe import build_parser, main
 
 
@@ -22,6 +23,85 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SurvivalVisionTests(unittest.TestCase):
+    def test_mercenary_portrait_is_opt_in_current_face_only_and_absence_is_unverified(self):
+        observer = SurvivalHudObserver(observe_mercenary=True)
+        portrait = observer.manifest["mercenary_portrait"]
+        for reference in portrait["references"]:
+            frame = self.reference("closed")
+            left, top, right, bottom = reference["box"]
+            frame[top:bottom, left:right] = cv.imread(str(DEFAULT_ASSETS / reference["path"]))
+            # Health bar/name changes cannot determine this face-only status.
+            frame[60:78, 30:105] = 0
+            frame[136:160, 30:105] = 255
+            reading = observer.observe(frame)
+            self.assertEqual(reference["expected"], reading.mercenary_status)
+            self.assertIsNone(self.observer.observe(frame).mercenary_status)
+            self.assertEqual(None if reference["expected"] == "observed" else "mercenary_unverified", resource_guard(reading, self.policy))
+        frame[top:bottom, left:right] = 0
+        self.assertEqual("unverified", observer.observe(frame).mercenary_status)
+        self.assertEqual("unverified", observer.observe(frame[:1000]).mercenary_status)
+        low = replace(reading, life=ResourceReading(1, 1000))
+        self.assertEqual("resource_low", resource_guard(low, self.policy))
+
+    def test_three_current_empty_cells_reconcile_without_guessing_unreadable_or_hidden_slots(self):
+        frame = self.reference("town-belt-three-empty-column1")
+        reading = self.observer.observe(frame)
+        self.assertEqual("expanded", reading.belt_visibility)
+        self.assertEqual(
+            {1: ("purple_potion", 1), 2: ("purple_potion", 4), 3: ("purple_potion", 4), 4: ("town_portal_scroll", 4)},
+            reading.belt_contents(self.policy),
+        )
+        self.assertEqual(["empty", "empty", "empty", "purple_potion"], [slot.kind for slot in reading.slots if slot.column == 1])
+        for row in (2, 3):
+            changed = frame.copy()
+            top = 889 + (row - 1) * 57
+            changed[top : top + 57, 1088:1148] = 255
+            self.assertIsNone(self.observer.observe(changed).belt_contents(self.policy))
+        self.assertEqual(0.075, self.observer.manifest["matching"]["item_distance"])
+        self.assertEqual(0.025, self.observer.manifest["matching"]["item_margin"])
+
+    def test_current_numeric_outline_separates_bright_floor_without_changing_digits_or_thresholds(self):
+        for name, current in (("field-mana-bright-floor-outline", 884), ("field-mana-bright-floor-outline-followup", 980)):
+            with self.subTest(name=name):
+                frame = self.reference(name)
+                reading = self.observer.observe(frame)
+                self.assertEqual((1580, 1580), (reading.life.current, reading.life.maximum))
+                self.assertEqual((current, 1543, "read_outlined"), (reading.mana.current, reading.mana.maximum, reading.mana.reason))
+                self.assertEqual("closed", reading.belt_visibility)
+                self.assertEqual(0.72, self.observer.manifest["matching"]["glyph_score"])
+                self.assertEqual(0.08, self.observer.manifest["matching"]["glyph_margin"])
+                left, top, right, bottom = self.observer._resource_box(frame, "mana")
+                removed = frame.copy()
+                removed[top:bottom, left:right] = (185, 185, 185)
+                self.assertIsNone(self.observer.observe(removed).mana.ratio)
+
+    def test_reduced_window_requires_closed_hud_shape_and_both_current_liquid_bands(self):
+        bounded = SurvivalHudObserver(allow_high_orb_fallback=True, allow_partial_orb_fallback=True)
+        row = bounded.manifest["reduced_window_references"][0]
+        frame = np.zeros((1140, 1922, 3), np.uint8)
+        left, top, right, bottom = row["canvas_box"]
+        frame[top:bottom, left:right] = cv.imread(str(DEFAULT_ASSETS / row["path"]))
+        self.assertIsNone(self.observer.observe(frame).life.ratio)
+        reading = bounded.observe(frame)
+        for value in (reading.life, reading.mana):
+            self.assertIsNone(value.current)
+            self.assertIsNone(value.maximum)
+            self.assertEqual(row["expected_lower_bound"], value.ratio)
+            self.assertIn("closed_hud_anchor;orb_high_bound", value.reason)
+        self.assertEqual("closed", reading.belt_visibility)
+        self.assertIsNone(reading.belt_contents(self.policy))
+        for key in ("life", "mana"):
+            for color in ((0, 0, 0), (0, 150, 0), (255, 255, 255)):
+                changed = frame.copy()
+                for name in ("high_orb_bound", "partial_orb_bound"):
+                    x0, y0, x1, y1 = bounded.manifest[name]["resources"][key]["box"]
+                    changed[y0:y1, x0:x1] = color
+                self.assertIsNone(bounded.observe(changed).life.ratio, (key, color))
+        x0, y0, x1, y1 = bounded.manifest["belt"]["closed_anchor_box"]
+        frame[y0:y1, x0:x1] = 0
+        with patch.object(bounded, "_distance", return_value=0):
+            self.assertIsNone(bounded.observe(frame).life.ratio)
+
     def test_isolated_crop_edge_speck_preserves_actual_pair_and_internal_noise_stays_unknown(self):
         source = DEFAULT_ASSETS / "references/field-mana-leading-edge-speck.png"
         image = cv.imread(str(source))

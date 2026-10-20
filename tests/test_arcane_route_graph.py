@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 import cv2 as cv
 import numpy as np
@@ -10,6 +11,31 @@ from diablo2.runs.summoner.terrain_patterns import TerrainLanding
 
 
 class ArcaneRouteGraphTests(unittest.TestCase):
+    def test_saved_stair_edge_uses_a_fresh_observed_entry_after_failed_side_landing(self):
+        from diablo2.runs.summoner.navigation_execution import load_arcane_step_planner
+
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stair-edge-blocked-landing.png"
+        )
+        frame = cv.imread(str(source))
+        _, path = load_arcane_step_planner(automap=True)
+        path.teleport = dict(path.teleport, preferred_distance=path.teleport["maximum_distance"])
+        view = path.observe(frame, sequence=1, generation=0, captured_at=10, viewport=(24, 55, 1900, 900), anchor=(962, 578))
+        graph = ArcaneRouteGraph()
+        graph.observe(None, view.anchor, None, 10)
+        graph.entry = "south"
+        graph.traversed[(0, 0, "south")] = 1
+        first = graph.choose(path, view, "north", 10.15)
+        self.assertEqual("graph_observed_exit_east", first.reason)
+        graph.fail_landing(first.aim, view.anchor)
+        x, y = first.aim
+        escape = graph.choose(path, view, "north", 10.15, excluded=((x - 64, y - 64, x + 64, y + 64),))
+        self.assertEqual("graph_observed_exit_south", escape.reason)
+        self.assertLess(escape.aim[0], 962)
+        self.assertGreater(escape.aim[1], 578)
+        self.assertEqual("graph_frame_stale", graph.choose(path, view, "north", 10.26).reason)
+
     def test_actual_retreat_marks_the_branch_back_to_the_cap_after_arrival_at_another_place(self):
         path, graph = self.path(), ArcaneRouteGraph()
         graph.observe(None, (800, 400), None, 1)
@@ -200,6 +226,25 @@ class ArcaneRouteGraphTests(unittest.TestCase):
         self.assertEqual("graph_observed_exit_north", choice.reason)
         self.assertGreater(choice.aim[0], 800)
         self.assertLess(choice.aim[1], 400)
+
+    def test_failed_side_exit_allows_one_previously_used_entry_escape(self):
+        path, graph = self.path(), ArcaneRouteGraph()
+        graph.observe(None, (800, 400), None, 1)
+        graph.entry = "south"
+        key = (graph.chart, graph.current_place, "south")
+        graph.traversed[key] = 1
+        view = self.view(path, [(1300, 650), (300, 650)], 1)
+        self.assertEqual("graph_observed_exit_east", graph.choose(path, view, "north", 1).reason)
+        graph.fail_landing((1300, 650), view.anchor)
+        view = self.view(path, [(300, 650)], 1)
+        self.assertEqual("graph_observed_exit_south", graph.choose(path, view, "north", 1).reason)
+        self.assertEqual({key}, graph.escape_retreats)
+        self.assertEqual("graph_observed_exit_south", graph.choose(path, view, "north", 1).reason)
+        graph.pending_retreat = None
+        self.assertEqual("graph_entry_retreat_exhausted", graph.choose(path, view, "north", 1).reason)
+        graph.escape_retreats.clear()
+        graph.fail_landing((300, 650), view.anchor)
+        self.assertIsNone(graph.choose(path, view, "north", 1).aim)
 
     def test_local_southwest_corner_is_allowed_when_actual_entry_is_southeast(self):
         path, graph = self.path(), ArcaneRouteGraph()

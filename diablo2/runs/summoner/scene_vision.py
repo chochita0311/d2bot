@@ -168,7 +168,7 @@ class ArcaneHubObserver:
         return point
 
     def _match_floor(self, gray, candidate):
-        matches, tolerance = [], self.rules["location_tolerance"]
+        by_part, tolerance = {}, self.rules["location_tolerance"]
         for rule, template in self.parts:
             x, y = (int(round(value)) for value in np.array(candidate) + rule["offset"])
             h, w = template.shape
@@ -179,7 +179,11 @@ class ArcaneHubObserver:
             _, score, _, (dx, dy) = cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))
             if score >= rule["threshold"]:
                 point = (x0 + dx - rule["offset"][0], y0 + dy - rule["offset"][1])
-                matches.append((point, float(score), rule["id"]))
+                previous = by_part.get(rule["id"])
+                if previous is None or score > previous[1]:
+                    # 같은 실제 문양의 다른 검토 포즈는 독립 근거로 중복 계산하지 않는다.
+                    by_part[rule["id"]] = (point, float(score), rule["id"])
+        matches = list(by_part.values())
         if len(matches) < self.rules["minimum_parts"]:
             return None
         center = tuple(int(round(v)) for v in np.median([item[0] for item in matches], axis=0))
@@ -190,38 +194,36 @@ class ArcaneHubObserver:
     def _floor_anchored_braziers(self, gray, blue_mask):
         # 캐릭터 효과와 불꽃이 합쳐져도 현재 문양 두 개로 위치를 먼저 찾는다.
         # 축소 비교는 후보만 만들며 문양 native 점수와 양쪽 현재 청색 픽셀을 모두 요구한다.
-        seed_id = self.rules.get("floor_seed_id")
-        seed = next(((rule, image) for rule, image in self.parts if rule["id"] == seed_id), None)
-        if seed is None:
-            return []
-        rule, image = seed
-        coarse = cv.matchTemplate(
-            cv.resize(gray[55:900, 24:1900], None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA),
-            cv.resize(image, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA),
-            cv.TM_CCOEFF_NORMED,
-        )
+        seed_ids = self.rules.get("floor_seed_ids", [self.rules.get("floor_seed_id")])
+        seeds = [(rule, image) for rule, image in self.parts if rule["id"] in seed_ids]
+        small = cv.resize(gray[55:900, 24:1900], None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
         found, pair = [], self.rules["blue_pair"]
         radius = pair["local_radius"]
-        for _ in range(4):
-            _, score, _, (x, y) = cv.minMaxLoc(coarse)
-            if score < rule["threshold"]:
-                break
-            coarse[
-                max(0, y - image.shape[0] // 2) : y + image.shape[0] // 2 + 1, max(0, x - image.shape[1] // 2) : x + image.shape[1] // 2 + 1
-            ] = -1
-            matched = self._match_floor(gray, (24 + x * 2 - rule["offset"][0], 55 + y * 2 - rule["offset"][1]))
-            if matched is None or not any(item[2] == seed_id for item in matched[1]):
-                continue
-            center, _ = matched
-            separation = sum(pair["separation"]) / 2
-            counts = []
-            for dx in (-separation / 2, separation / 2):
-                bx, by = int(round(center[0] + dx - 24)), int(round(center[1] - pair["ground_offset"][1] - 55))
-                patch = blue_mask[max(0, by - radius) : by + radius + 1, max(0, bx - radius) : bx + radius + 1]
-                counts.append(cv.countNonZero(patch))
-            if all(count >= pair["minimum_area"] for count in counts):
-                found.append(matched)
-                self.last_pair_points.append(tuple(float(value) for value in center))
+        for rule, image in seeds:
+            coarse = cv.matchTemplate(small, cv.resize(image, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA), cv.TM_CCOEFF_NORMED)
+            for _ in range(4):
+                _, score, _, (x, y) = cv.minMaxLoc(coarse)
+                if score < rule["threshold"]:
+                    break
+                coarse[
+                    max(0, y - image.shape[0] // 2) : y + image.shape[0] // 2 + 1,
+                    max(0, x - image.shape[1] // 2) : x + image.shape[1] // 2 + 1,
+                ] = -1
+                matched = self._match_floor(gray, (24 + x * 2 - rule["offset"][0], 55 + y * 2 - rule["offset"][1]))
+                if matched is None or not any(item[2] == rule["id"] for item in matched[1]):
+                    continue
+                center, _ = matched
+                if any(math.hypot(*(a - b for a, b in zip(center, previous[0]))) <= self.rules["location_tolerance"] for previous in found):
+                    continue
+                separation = sum(pair["separation"]) / 2
+                counts = []
+                for dx in (-separation / 2, separation / 2):
+                    bx, by = int(round(center[0] + dx - 24)), int(round(center[1] - pair["ground_offset"][1] - 55))
+                    patch = blue_mask[max(0, by - radius) : by + radius + 1, max(0, bx - radius) : bx + radius + 1]
+                    counts.append(cv.countNonZero(patch))
+                if all(count >= pair["minimum_area"] for count in counts):
+                    found.append(matched)
+                    self.last_pair_points.append(tuple(float(value) for value in center))
         return found
 
     def confirm_static_pair(self, frame, reference):

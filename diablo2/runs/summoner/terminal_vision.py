@@ -3,6 +3,7 @@ from __future__ import annotations
 import itertools
 import json
 import math
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -23,6 +24,8 @@ class TerminalReading:
     current_parts: tuple = ()
     reference_observed_at: float = None
     visible_fractions: tuple = ()
+    minimum_separation: float = 84
+    minimum_area: float = 8000
 
 
 class TerminalStabilityTracker:
@@ -33,14 +36,43 @@ class TerminalStabilityTracker:
         self.reference, self.observed_at = None, None
         self.approach, self.approach_only = None, False
         self.landmark_relocalized = False
+        self.previous_current_full, self.approach_displacement = None, None
+        self.approach_static_pairs = 0
 
     def reset(self):
         self.reference, self.observed_at = None, None
         self.approach, self.approach_only = None, False
         self.landmark_relocalized = False
+        self.previous_current_full, self.approach_displacement = None, None
+        self.approach_static_pairs = 0
+
+    def require_relocalization(self):
+        # 화면 표현이 바뀌면 과거 상자의 국소 좌표 대신 현재 두 부위의 공통 이동부터 확인한다.
+        self.approach = None
+        self.landmark_relocalized = True
+        self.previous_current_full, self.approach_displacement = None, None
+        self.approach_static_pairs = 0
 
     def update(self, frame, reading, acquired_at, displacement):
         self.approach = None
+        self.approach_displacement = None
+        previous = self.previous_current_full
+        self.previous_current_full = (
+            (reading, acquired_at)
+            if reading is not None
+            and reading.provenance == "current_three_parts"
+            and len(reading.part_ids) == len(reading.evidence_boxes) == 3
+            and reading.current_parts == (True, True, True)
+            else None
+        )
+        if previous is not None and self.previous_current_full is not None:
+            before, before_at = previous
+            if 0 < acquired_at - before_at < 0.25 and before.kind == reading.kind and before.part_ids == reading.part_ids:
+                shifts = [(current[0] - old[0], current[1] - old[1]) for old, current in zip(before.evidence_boxes, reading.evidence_boxes)]
+                if all(math.hypot(*shift) < 2 for shift in shifts):
+                    # 접근 준비만 보조한다. 실제 도착에는 별도 배경 정지가 계속 필요하다.
+                    self.approach_displacement = tuple(sum(shift[axis] for shift in shifts) / 3 for axis in (0, 1))
+        self.approach_static_pairs = self.approach_static_pairs + 1 if self.approach_displacement is not None else 0
         if reading is not None:
             self.reference = reading if len(reading.part_ids) == 3 else None
             self.observed_at = acquired_at
@@ -118,6 +150,22 @@ class ArcaneTerminalObserver:
             for parts in [self.parts] + [parts for _, parts in self.alternate_layouts]
             for rule, native, _ in parts
         }
+        self.chest_parts = []
+        self.chest_detail_parts = []
+        self.previous_full = None
+        for path in data.get("chest_parts", []):
+            if path not in self.native_parts:
+                raise ValueError("reviewed chest appearance required")
+            rule, native = self.native_parts[path]
+            self.chest_parts.append((rule, native, cv.resize(native, None, fx=0.5, fy=0.5)))
+        for path in data.get("chest_detail_parts", []):
+            if path not in self.native_parts or path in data.get("chest_parts", []):
+                raise ValueError("separate reviewed chest detail required")
+            rule, native = self.native_parts[path]
+            minimum = data.get("chest_detail_minimum_scores", {}).get(path, 0.92)
+            if not 0.91 <= minimum <= 1 or rule["threshold"] < minimum:
+                raise ValueError("chest detail native score below reviewed minimum")
+            self.chest_detail_parts.append((rule, native, cv.resize(native, None, fx=0.5, fy=0.5)))
 
     @staticmethod
     def _load_parts(manifest, rules):
@@ -136,6 +184,28 @@ class ArcaneTerminalObserver:
     def observe(self, frame):
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed terminal frame required")
+        # 직전 배치의 세 부위가 지금도 모두 확인되면 같은 위치를 전역 재탐색하지 않는다.
+        # 한 부위라도 사라지면 즉시 전체 탐색으로 돌아가며 과거 점수/시한을 재사용하지 않는다.
+        if self.previous_full is not None:
+            current = self.confirm_static_parts(frame, self.previous_full)
+            if current is not None and all(current.current_parts):
+                current = self._layout(
+                    [
+                        [(box, score, fraction)]
+                        for box, score, fraction in zip(current.evidence_boxes, current.scores, current.visible_fractions)
+                    ],
+                    current.kind,
+                    [(self.native_parts[name][0], None, None) for name in current.part_ids],
+                    current.minimum_separation,
+                    current.minimum_area,
+                )
+                if current is not None:
+                    self.previous_full = current
+                    return current
+        self.previous_full = self._observe_full(frame)
+        return self.previous_full
+
+    def _observe_full(self, frame):
         gray = cv.cvtColor(frame[55:900, 24:1900], cv.COLOR_BGR2GRAY)
         small = cv.resize(gray, None, fx=0.5, fy=0.5)
         occluded = label_occlusion_mask(frame)[55:900, 24:1900]
@@ -145,42 +215,78 @@ class ArcaneTerminalObserver:
         reading = None if groups is None else self._layout(groups, "nonboss_chest_trio", self.parts)
         if reading is not None:
             return reading
+        # 양성의 첫 배치는 짧게 끝낸다. 나머지는 같은 현재 화면의 독립 외형만 병렬 비교한다.
+        # 레이아웃 순서·점수·가림·물체 간격 판정과 프레임 사이 캐시 정책은 바꾸지 않는다.
+        remaining = list(
+            {
+                (part[0]["path"], part[0]["threshold"]): part
+                for parts in [self.parts] + [parts for _, parts in self.alternate_layouts]
+                for part in parts
+                if (part[0]["path"], part[0]["threshold"]) not in matches
+            }.values()
+        )
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            results = pool.map(lambda part: self._match_part(gray, small, part, occluded), remaining)
+            for part, found in zip(remaining, results):
+                matches[(part[0]["path"], part[0]["threshold"])] = found
         for kind, parts in self.alternate_layouts:
             groups = self._match_groups(gray, small, parts, matches, occluded)
             reading = None if groups is None else self._layout(groups, kind, parts)
             if reading is not None:
                 return reading
-        return None
+        # 몸통 조합을 먼저 쓰고, 부분 외형은 더 넓은 물체 간격으로 중복 계수를 막는다.
+        reading = self._composed_chests(gray, small, self.chest_parts, matches, occluded)
+        if reading is not None or not self.chest_detail_parts:
+            return reading
+        return self._composed_chests(gray, small, self.chest_parts + self.chest_detail_parts, matches, occluded, 120, 16000)
+
+    def _composed_chests(self, gray, small, parts, matches, occluded, minimum_separation=84, minimum_area=8000):
+        candidates = []
+        for part in parts:
+            groups = self._match_groups(gray, small, (part,), matches, occluded)
+            if groups is not None:
+                for match in groups[0]:
+                    if match[2] == 1.0:
+                        candidates.append((match, part))
+        readings = []
+        for trio in itertools.combinations(candidates, 3):
+            reading = self._layout(
+                [[match] for match, _ in trio], "nonboss_chest_platform", [part for _, part in trio], minimum_separation, minimum_area
+            )
+            if reading is not None:
+                readings.append(reading)
+        return max(readings, key=lambda item: sum(item.scores)) if readings else None
 
     def confirm_static_parts(self, frame, reference):
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed terminal frame required")
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        scores, current, fractions = [], [], []
+        scores, current, fractions, boxes = [], [], [], []
         occluded = label_occlusion_mask(frame)
         for name, box in zip(reference.part_ids, reference.evidence_boxes):
             rule, template = self.native_parts[name]
             x0, y0, x1, y1 = box
             left, top = max(24, x0 - 3), max(55, y0 - 3)
             patch = gray[top : min(900, y1 + 3), left : min(1900, x1 + 3)]
-            score = (
-                -1
-                if min(patch.shape) == 0 or any(a < b for a, b in zip(patch.shape, template.shape))
-                else float(cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))[1])
-            )
+            score, location = -1, (0, 0)
+            if min(patch.shape) > 0 and all(a >= b for a, b in zip(patch.shape, template.shape)):
+                _, score, _, location = cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))
             fraction = 1.0
             if score < rule["threshold"] and all(a >= b for a, b in zip(patch.shape, template.shape)):
                 mask = occluded[top : top + patch.shape[0], left : left + patch.shape[1]]
                 if np.any(mask):
-                    score, _, fraction = visible_template_peak(patch, template, mask == 0)
+                    score, location, fraction = visible_template_peak(patch, template, mask == 0)
             matched = score >= rule["threshold"]
             current.append(matched)
             scores.append(score if matched else None)
             fractions.append(fraction if matched else None)
+            x, y = left + location[0], top + location[1]
+            boxes.append((x, y, x + template.shape[1], y + template.shape[0]) if matched else box)
         if len(current) != 3 or sum(current) < 2:
             return None
         return replace(
             reference,
+            evidence_boxes=tuple(boxes),
             scores=tuple(scores),
             current_parts=tuple(current),
             visible_fractions=tuple(fractions),
@@ -286,32 +392,38 @@ class ArcaneTerminalObserver:
                     return None
                 groups.append(matches[key])
                 continue
-            coarse_scores = cv.matchTemplate(small, template, cv.TM_CCOEFF_NORMED)
-            scores = coarse_scores.copy()
-            found = []
-            height, width = native.shape
-            # 작은 문양은 반 축소의 홀짝 정렬로 점수가 낮아진다. 후보만 넓히고 native 승인은 그대로 둔다.
-            coarse_threshold = 0.8 if min(height, width) <= 48 else 0.85
-            for _ in range(4):
-                _, score, _, (x, y) = cv.minMaxLoc(scores)
-                if score < coarse_threshold:
-                    break
-                x0, y0 = max(0, x * 2 - 3), max(0, y * 2 - 3)
-                patch = gray[y0 : y * 2 + height + 4, x0 : x * 2 + width + 4]
-                if patch.shape[0] >= height and patch.shape[1] >= width:
-                    _, exact, _, (dx, dy) = cv.minMaxLoc(cv.matchTemplate(patch, native, cv.TM_CCOEFF_NORMED))
-                    if exact >= rule["threshold"]:
-                        left, top = 24 + x0 + dx, 55 + y0 + dy
-                        box = (left, top, left + width, top + height)
-                        found.append((box, float(exact), 1.0))
-                scores[max(0, y - height // 2) : y + height // 2 + 1, max(0, x - width // 2) : x + width // 2 + 1] = -1
-            if np.any(occluded) and len(found) < 4:
-                found.extend(ArcaneTerminalObserver._occluded_matches(gray, coarse_scores, rule, native, occluded, found))
+            found = ArcaneTerminalObserver._match_part(gray, small, (rule, native, template), occluded)
             matches[key] = found
             if not found:
                 return None
             groups.append(found)
         return groups
+
+    @staticmethod
+    def _match_part(gray, small, part, occluded):
+        rule, native, template = part
+        coarse_scores = cv.matchTemplate(small, template, cv.TM_CCOEFF_NORMED)
+        scores = coarse_scores.copy()
+        found = []
+        height, width = native.shape
+        # 작은 문양은 반 축소의 홀짝 정렬로 점수가 낮아진다. 후보만 넓히고 native 승인은 그대로 둔다.
+        coarse_threshold = 0.8 if min(height, width) <= 48 else 0.85
+        for _ in range(4):
+            _, score, _, (x, y) = cv.minMaxLoc(scores)
+            if score < coarse_threshold:
+                break
+            x0, y0 = max(0, x * 2 - 3), max(0, y * 2 - 3)
+            patch = gray[y0 : y * 2 + height + 4, x0 : x * 2 + width + 4]
+            if patch.shape[0] >= height and patch.shape[1] >= width:
+                _, exact, _, (dx, dy) = cv.minMaxLoc(cv.matchTemplate(patch, native, cv.TM_CCOEFF_NORMED))
+                if exact >= rule["threshold"]:
+                    left, top = 24 + x0 + dx, 55 + y0 + dy
+                    box = (left, top, left + width, top + height)
+                    found.append((box, float(exact), 1.0))
+            scores[max(0, y - height // 2) : y + height // 2 + 1, max(0, x - width // 2) : x + width // 2 + 1] = -1
+        if np.any(occluded) and len(found) < 4:
+            found.extend(ArcaneTerminalObserver._occluded_matches(gray, coarse_scores, rule, native, occluded, found))
+        return found
 
     @staticmethod
     def _occluded_matches(gray, coarse_scores, rule, native, occluded, full_matches):
@@ -337,17 +449,17 @@ class ArcaneTerminalObserver:
         return found
 
     @staticmethod
-    def _layout(groups, kind, parts):
+    def _layout(groups, kind, parts, minimum_separation=84, minimum_area=8000):
         valid = []
         for trio in itertools.product(*groups):
             points = [((box[0] + box[2]) / 2, (box[1] + box[3]) / 2) for box, _, _ in trio]
             distances = [math.hypot(a[0] - b[0], a[1] - b[1]) for a, b in itertools.combinations(points, 2)]
-            if min(distances) < 84 or max(distances) > 700:
+            if min(distances) < minimum_separation or max(distances) > 700:
                 continue
             if len(points) == 3:
                 a, b, c = points
                 area = abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) / 2
-                if area < 8000:
+                if area < minimum_area:
                     continue
             valid.append((sum(score for _, score, _ in trio), points, trio))
         if not valid:
@@ -363,4 +475,6 @@ class ArcaneTerminalObserver:
             provenance="current_masked_three_parts" if any(fraction < 1 for _, _, fraction in trio) else "current_three_parts",
             current_parts=(True, True, True),
             visible_fractions=tuple(fraction for _, _, fraction in trio),
+            minimum_separation=minimum_separation,
+            minimum_area=minimum_area,
         )

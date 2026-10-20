@@ -8,7 +8,10 @@ from dataclasses import asdict
 from pathlib import Path
 from queue import Empty
 
+import numpy as np
+
 from diablo2.common.automatic_field import AutomaticBuffDriver, CooperativeStop, validate_runtime_permit
+from diablo2.common.frame_geometry import FrameGeometry, frame_to_desktop, geometry_is_current
 
 from diablo2.common.supervised_field import (
     RecordingInput,
@@ -27,6 +30,13 @@ from diablo2.runs.summoner.navigation_execution import (
     observe_step_landing,
     plan_arcane_step,
 )
+
+
+def _json_scalar(value):
+    # 영상 판독의 NumPy 스칼라는 의미를 보존해 JSON 기본형으로 쓴다. 다른 객체는 오류를 숨기지 않는다.
+    if isinstance(value, np.generic):
+        return value.item()
+    raise TypeError("Object of type {} is not JSON serializable".format(type(value).__name__))
 
 
 def reusable_buffs(report, profile, *, wall_now, monotonic_now):
@@ -124,7 +134,7 @@ def renew_supervised_field_buffs(
         trace_frames=trace,
         observation_wait=2,
         sequence_timeout=12,
-        before_step=guard.wait_check,
+        before_step_frame=guard.wait_check,
     )
     record["buff"] = dispatched
     record["resource_observations"] = guard.observations
@@ -155,14 +165,17 @@ class BuffSiteGuard:
         self.supervised_ground = supervised_ground
         self.observations = []
 
-    def check(self):
+    def check(self, frame=None, acquired=None, reading=None):
         from diablo2.runs.summoner.continuous_navigation import near_ground
 
         if self.stop.is_set() or not self.focused():
             return "interrupted_or_unfocused"
-        acquired = self.clock()
-        frame = self.capture.grab().frame
-        reading = self.hud.observe(frame)
+        if frame is None:
+            acquired = self.clock()
+            frame = self.capture.grab().frame
+            reading = self.hud.observe(frame)
+        elif acquired is None or reading is None or not 0 <= self.clock() - acquired < 0.25:
+            return "screen_stale"
         blocked = resource_guard(reading, self.profile.survival)
         if blocked:
             return blocked
@@ -212,10 +225,14 @@ class BuffSiteGuard:
             self.samples = [(at, value) for at, value in self.samples if acquired - at <= 1]
         return None
 
-    def wait_check(self):
+    def wait_check(self, frame=None, acquired=None, reading=None):
+        if frame is not None:
+            # 전달받은 화면을 몰래 바꾸면 바깥 입력/기록이 이전 시각을 사용한다. 재획득은 호출자가 맡는다.
+            return self.check(frame, acquired, reading)
         deadline = self.clock() + 0.75
         while True:
-            blocked = self.check()
+            blocked = self.check(frame, acquired, reading)
+            frame, acquired, reading = None, None, None
             if blocked not in ("observation_unverified", "buff_ground_unverified", "screen_stale") or self.clock() >= deadline:
                 return blocked
             self.stop.wait(0.02)
@@ -276,7 +293,7 @@ def clear_buff_site(capture, hud, backend, focused, profile, stop, reference_sec
             blocked = resource_guard(hud.observe(last), profile.survival)
             if blocked is not None:
                 held.release()
-                if blocked == "resource_low":
+                if blocked in ("resource_low", "mercenary_unverified"):
                     raise RuntimeError(blocked)
                 unavailable_since = acquired if unavailable_since is None else unavailable_since
                 if clock() - unavailable_since >= 1.5:
@@ -349,7 +366,13 @@ def maintain_paused_field(
     if enabled and target_vision is not None:
         from diablo2.common.hostile_probe import NearbyHostileProbe
 
-        probe = NearbyHostileProbe(target_vision, backend, (capture.target["left"], capture.target["top"]), clock=clock)
+        probe = NearbyHostileProbe(
+            target_vision,
+            backend,
+            (capture.target["left"], capture.target["top"]),
+            clock=clock,
+            to_desktop=lambda point: frame_to_desktop(capture, point),
+        )
 
     def watchdog():
         while not watchdog_stop.wait(0.02):
@@ -390,6 +413,11 @@ def maintain_paused_field(
                 mana_ratio=reading.mana.ratio,
                 blocked=blocked,
             )
+            if blocked == "mercenary_unverified":
+                if held is not None:
+                    held.release()
+                guard_report["status"] = blocked
+                raise RuntimeError(blocked)
             if blocked == "resource_low":
                 if held is not None:
                     held.release()
@@ -597,7 +625,7 @@ def run_north_segment(
                 row.update(status="monster_candidate_review", candidates=[asdict(candidate) for candidate in candidates])
                 emit("NORTH_REVIEW: current monster appearance candidate; no next cast")
                 return dict(status="north_hazard_review", **progress)
-            aim = (capture.target["left"] + choice.aim[0], capture.target["top"] + choice.aim[1])
+            aim = frame_to_desktop(capture, choice.aim)
 
             def verify_aim():
                 if stop.is_set() or not focused():
@@ -709,10 +737,11 @@ def exit_to_character(session, capture, focused, stop, vision):
         deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
             guard()
-            gray = vision.normalize(capture.grab().frame)
+            frame = capture.grab().frame
+            gray = vision.normalize(frame)
             matches = [vision.find(gray, name) for name in names]
             if all(match is not None for match in matches):
-                return matches
+                return matches, frame
             stop.wait(0.05)
         raise RuntimeError("safe exit state unverified: " + ",".join(names))
 
@@ -721,18 +750,19 @@ def exit_to_character(session, capture, focused, stop, vision):
     session._town_guard = guard
     session._last_pointer = None
     session._press_key("esc")
-    match = wait_for(("save_exit",), 8)[0]
-    x = round(match["x"] * capture.target["width"] / 1267)
-    y = round(match["y"] * capture.target["height"] / 753)
+    matches, frame = wait_for(("save_exit",), 8)
+    match = matches[0]
+    x = round(match["x"] * frame.shape[1] / 1267)
+    y = round(match["y"] * frame.shape[0] / 753)
     session._click_relative(capture, (x, y))
     wait_for(("play",), 20)
 
 
-def return_to_act1_and_exit(session, capture, focused, stop, vision, *, evidence, emit=print):
-    """현재 중앙 WP를 다시 관찰해 Act 1과 캐릭터 선택까지 기존 실행기로 잇는다."""
+def return_to_act1_and_exit(session, capture, focused, stop, vision, *, evidence, emit=print, destination="arcane"):
+    """현재 지역 WP를 다시 관찰해 Act 1과 캐릭터 선택까지 기존 실행기로 잇는다."""
     from diablo2.actions.town_loop_vision import REFERENCE_SIZE, TownLoopPlanner
 
-    planner = TownLoopPlanner(vision, 1, "hell", "arcane")
+    planner = TownLoopPlanner(vision, 1, "hell", destination, inspect_arcane_map=destination == "arcane")
     planner.data["phase"] = "destination_arrival"
     previous, actions = None, []
     cursor_pending_since = None
@@ -770,6 +800,27 @@ def return_to_act1_and_exit(session, capture, focused, stop, vision, *, evidence
                 previous = phase
             stop.wait(0.04)
         return dict(status="act1_then_character_select_observed", actions=actions, planner=planner.data)
+    except Exception:
+        inspection = planner.data.get("arcane_map_inspection")
+        if inspection and inspection["status"] == "hidden" and not stop.is_set() and focused():
+            try:
+                acquired = time.monotonic()
+                frame = capture.grab().frame
+                gray = vision.normalize(frame)
+                if (
+                    vision.find(gray, "hud")
+                    and not any(vision.find(gray, name) for name in ("waypoint_header", "save_exit", "npc_cancel"))
+                    and 0 <= time.monotonic() - acquired < 0.25
+                ):
+                    guard()
+                    action = dict(kind="key", key="tab", reason="Restore temporary Arcane map after finish interruption")
+                    session._dispatch_town_action(capture, frame, action, REFERENCE_SIZE)
+                    inspection["status"] = "restore_requested_after_error"
+                    emit("NORTH_ROOM_FINISH: " + action["reason"])
+                    evidence.append(("room-finish-map-restore-after-error.png", frame))
+            except Exception as restore_error:
+                emit("NORTH_ROOM_FINISH_MAP_RESTORE: " + str(restore_error))
+        raise
     finally:
         session._release_town_mouse()
         session._town_guard = None
@@ -803,7 +854,7 @@ def run(config, *, north_cycles=None, **options):
             room_output = output / ("initial-return" if recovering else "room-{:02d}".format(summary["completed"] + 1))
             current = dict(options, output=room_output, finish_room=True, signals=signals)
             if index:
-                current.update(resume_arcane=False, resume_town=False, return_from=None, continue_navigation=None)
+                current.update(resume_arcane=False, resume_town=False, return_from=None, continue_navigation=None, resume_labels_off=False)
             result = run_once(config, **current)
             report = json.loads((room_output / "report.json").read_text(encoding="utf-8"))
             summary["rooms"].append(dict(report=room_output.name + "/report.json", status=report["status"], recovery=recovering))
@@ -817,8 +868,11 @@ def run(config, *, north_cycles=None, **options):
             emit("NORTH_ROOM_CYCLES: {}/{} new-room tests closed through Act 1".format(summary["completed"], north_cycles))
         summary["status"] = "north_room_tests_finished"
         return 0
+    except Exception as exc:
+        summary.update(status="failed", error=str(exc))
+        raise
     finally:
-        (output / "report.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+        (output / "report.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2, default=_json_scalar), encoding="utf-8")
 
 
 def run_once(
@@ -830,6 +884,7 @@ def run_once(
     difficulty,
     output,
     resume_town=False,
+    resume_labels_off=False,
     segments=1,
     continuous=False,
     field_seconds=20,
@@ -863,10 +918,13 @@ def run_once(
     from diablo2.runs.summoner.terminal_vision import ArcaneTerminalObserver
     from diablo2.runs.summoner.objective_vision import ArcaneObjectiveObserver
     from diablo2.runs.summoner.encounter_execution import SummonerAppearanceObserver, run_platform_encounter
+    from diablo2.runs.summoner.life_vision import SummonerLifeTracker
     from diablo2.runs.summoner.camera_ground import CalibratedCameraGroundObserver
 
     if type(casts) is not int or not 1 <= casts <= 12:
         raise ValueError("north casts must be one to twelve")
+    if type(resume_labels_off) is not bool or (resume_labels_off and not resume_arcane):
+        raise ValueError("explicit labels OFF assertion requires current Arcane resumption")
     if automap not in ("on", "preserve"):
         raise ValueError("automap must be on or explicit diagnostic preserve")
     if type(segments) is not int or not 1 <= segments <= 4:
@@ -893,8 +951,14 @@ def run_once(
     if estimate.action != "estimate" or estimate.frames is None:
         raise ValueError("configured class/FCR reference required")
     planner = load_arcane_step_planner(automap=automap == "on", character_class=profile.character_class)
-    hud = SurvivalHudObserver(allow_high_orb_fallback=True, allow_partial_orb_fallback=True)
-    weapon, town_vision = WeaponSetObserver(), TownLoopVision()
+    hud = SurvivalHudObserver(
+        allow_high_orb_fallback=True,
+        allow_partial_orb_fallback=True,
+        observe_mercenary=character_key == "flash" and not resume_arcane,
+    )
+    automap_vision = AutomapObserver() if automap == "on" else None
+    hub_vision = ArcaneHubObserver() if continuous else None
+    weapon, town_vision = WeaponSetObserver(), TownLoopVision(arcane_waypoint_observer=hub_vision)
 
     def panels_open(frame):
         if weapon.observe(frame) is not None:
@@ -905,7 +969,6 @@ def run_once(
     hazards = ArcaneHazardObserver()
     hover_vision = ArcaneHoverObserver()
     target_vision = ArcaneTargetObserver() if continuous else None
-    hub_vision = ArcaneHubObserver() if continuous else None
     session = RunLifecycleSession(config.capture)
     if not live:
         mode = "{} seconds held-F2 wide steering".format(field_seconds) if continuous else "{} north casts".format(casts)
@@ -916,6 +979,12 @@ def run_once(
     capture, hotkeys, evidence, trace = None, [], [], []
     stop = CooperativeStop(stop_event)
     report = dict(status="preparing", errors=[], acceptance_room=False, resume_arcane=resume_arcane, resume_town=resume_town)
+    report["mercenary_monitor"] = dict(
+        enabled=character_key == "flash" and not resume_arcane,
+        scope="current_portrait_only",
+        same_room_recovery=resume_arcane,
+    )
+    report["timing"] = dict(preparation_started_at=time.monotonic())
     report.update(segments_requested=segments, segments_completed=0, continuations=[])
     report.update(continuous=continuous, field_seconds=field_seconds if continuous else None)
     report.update(wing=wing, return_from=return_from, engage_monsters=engage_monsters)
@@ -935,7 +1004,7 @@ def run_once(
             nonlocal buff_expires_at
             record = automatic_driver.execute()
             report.setdefault("buff_renewals", []).append(record)
-            buff_expires_at = min(record["deadlines"])
+            buff_expires_at = record["preparation_at"]
             return buff_expires_at
 
         maintain_paused_field(
@@ -959,8 +1028,10 @@ def run_once(
 
     try:
         if not resume_arcane:
+            report["timing"]["entry_started_at"] = time.monotonic()
             enter_arcane(session, difficulty, emit, resume_town=resume_town, stop=stop)
             report["entry"] = "arcane_hub_observed"
+            report["timing"]["arcane_arrived_at"] = time.monotonic()
         capture = ScreenCapture(config.capture)
         session._focus_game_window(capture)
         window = resolve_window_from_config(config.capture)
@@ -972,10 +1043,11 @@ def run_once(
                 and USER32.GetForegroundWindow() == window.handle
                 and not USER32.IsIconic(window.handle)
                 and capture.current_target() == target
+                and geometry_is_current(capture)
             )
 
         for key in {config.hotkeys.stop, config.hotkeys.pause, "f10"}:
-            hotkeys.append(keyboard.add_hotkey(key, stop.request_stop))
+            hotkeys.append(keyboard.add_hotkey(key, lambda: stop.request_stop()))
         controller = BotController(dry_run=False)
         backend = RecordingInput(
             ControllerFieldInput(
@@ -1003,11 +1075,15 @@ def run_once(
             stop,
             panels_open,
             deadline_supplier=lambda: buff_expires_at,
+            ground_supplier=lambda: planner[0],
+            cast_reference_seconds=estimate.frames / 25.0,
         )
         report["item_label_policy"] = "off_while_moving_on_for_post_combat_scan"
-        report["item_label_preparation"] = loot_controller.prepare(fresh_room=not resume_arcane)
+        report["item_label_preparation"] = loot_controller.prepare(
+            fresh_room=not resume_arcane, labels_on=False if resume_labels_off else None
+        )
         if automap == "on":
-            report["automap"] = ensure_automap_on(capture, backend, focused, stop, hud, profile.survival, AutomapObserver(), panels_open)
+            report["automap"] = ensure_automap_on(capture, backend, focused, stop, hud, profile.survival, automap_vision, panels_open)
         else:
             report["automap"] = dict(status="preserved_for_diagnostic", visibility="unverified")
 
@@ -1023,6 +1099,8 @@ def run_once(
             reviewed_layout=Path(__file__).resolve().parents[3] / "assets/ui/layouts/remastered-1922x1140/camera-ground.json",
         )
         planner = (camera_ground, planner[1])
+        if isinstance(getattr(capture, "frame_geometry", None), FrameGeometry):
+            report["frame_geometry"] = capture.frame_geometry.as_dict()
         area_vision = AutomapObserver()
 
         def observe_runtime():
@@ -1045,6 +1123,7 @@ def run_once(
             if close:
                 raise RuntimeError("buff_nearby_hostile")
             if not area_vision.visible(frame, "arcane_sanctuary"):
+                evidence.append(("runtime-title-unverified.png", frame))
                 raise RuntimeError("current Arcane title unverified")
             if time.monotonic() - acquired >= 0.25:
                 raise RuntimeError("screen_stale")
@@ -1081,9 +1160,10 @@ def run_once(
                 profile,
                 stop,
                 trace_frames=current_trace,
+                trace_before_dispatch=True,
                 observation_wait=2,
                 sequence_timeout=12,
-                before_step=before_step,
+                before_step_frame=before_step,
             )
             evidence.extend(
                 ("automatic-buff-{:02d}-step-{:02d}.png".format(len(report.get("buff_renewals", [])), metadata["index"]), image)
@@ -1106,11 +1186,11 @@ def run_once(
         report["automatic_buff"] = initial
         report["buff"] = initial["buff"]
         report["camera_projection"] = dict(source="shared_layout_and_current_runtime_viewport", maximum_occlusion_seconds=None)
-        buff_deadlines = initial["deadlines"]
-        buff_expires_at = min(buff_deadlines)
+        buff_expires_at = initial["preparation_at"]
         emit("AUTOMATIC_BUFF_READY: balanced configured sequence; no inventory or supervisor input; timer uses actual cast requests")
 
         segment, route_return, phase_transition = 0, return_from, None
+        progress = dict(steps=[], position=[0.0, 0.0], breadcrumbs=[(0.0, 0.0)])
         phase_number = 0
         renewed_current_field = False
         report["buff_renewals"] = []
@@ -1148,7 +1228,7 @@ def run_once(
                         return_from=route_return,
                         engage_monsters=engage_monsters,
                         progress=progress,
-                        buff_expires_at=min(buff_deadlines) if buff_deadlines else None,
+                        buff_expires_at=buff_expires_at,
                         emit=emit,
                         continue_current_field=bool(segment) and not renewed_current_field,
                         transition_from=phase_transition,
@@ -1158,6 +1238,8 @@ def run_once(
                         objective_vision=objective_vision,
                         recover_resources=recover_resources,
                         loot_controller=loot_controller,
+                        automap_vision=automap_vision,
+                        panels_open=panels_open,
                     )
                 finally:
                     evidence.extend((prefix + name, frame) for name, frame in phase_evidence)
@@ -1185,17 +1267,19 @@ def run_once(
                     hazards=hazards,
                     progress=progress,
                     hover_vision=hover_vision,
-                    buff_expires_at=min(buff_deadlines) if buff_deadlines else None,
+                    buff_expires_at=buff_expires_at,
                 )
             report["status"] = report["navigation"]["status"]
+            progress = dict(report["navigation"])
+            progress.pop("status", None)
             if continuous and report["navigation"].get("continuous_status") == "buff_renewal_due":
                 if len(report["buff_renewals"]) >= 8:
                     raise RuntimeError("automatic buff renewal limit reached")
-                renewal = dict(wing=wing, return_from=route_return, previous_deadline=buff_expires_at)
+                renewal = dict(wing=wing, return_from=route_return, previous_preparation_at=buff_expires_at)
                 report["buff_renewals"].append(renewal)
                 renewal.update(automatic_driver.execute())
-                proof, buff_deadlines = renewal["observation"], renewal["deadlines"]
-                buff_expires_at = min(buff_deadlines)
+                proof = renewal["observation"]
+                buff_expires_at = renewal["preparation_at"]
                 renewed_current_field = True
                 emit("BUFF_RENEWED_AUTOMATIC: fresh nearby/ratio observations and balanced sequence; same route retained")
                 continue
@@ -1255,7 +1339,32 @@ def run_once(
                             target_observer=target_vision,
                             recover_resources=recover_resources,
                             loot_controller=loot_controller,
+                            life_tracker=SummonerLifeTracker(character_key, output.parent.name + "/" + output.name),
                         )
+                        if report["encounter"].get("kill_confirmed") is True and report["encounter"].get("loot_complete") is True:
+                            from diablo2.runs.summoner.canyon_finish import enter_canyon
+
+                            report["canyon_entry"] = enter_canyon(
+                                backend,
+                                capture,
+                                focused,
+                                stop,
+                                hud,
+                                profile,
+                                planner,
+                                town_vision,
+                                kill_confirmed=True,
+                                loot_complete=True,
+                                evidence=evidence,
+                                buff_expires_at=buff_expires_at,
+                                reference_seconds=estimate.frames / 25.0,
+                                emit=emit,
+                            )
+                            report["room_finish"] = return_to_act1_and_exit(
+                                session, capture, focused, stop, town_vision, evidence=evidence, emit=emit, destination="canyon"
+                            )
+                            report["status"] = "north_room_closed"
+                            break
                 emit("FIELD_PAUSED: inputs released; current room retained for navigation correction")
                 emit("PAUSED_SURVIVAL_GUARD: HUD monitoring remains active; actual low resources or sustained HUD loss trigger safety exit")
                 pause_field()
@@ -1276,6 +1385,11 @@ def run_once(
         report["errors"].append(str(exc))
         emit("SUMMONER_STOP: " + str(exc))
         failure = str(exc)
+        if failure == "mercenary_unverified":
+            # NPC 정비를 추측하지 않으며 감독자가 기존 return으로 같은 방을 복구한다.
+            stop.set()
+            report["operator_review_required"] = "mercenary_portrait_unverified"
+            emit("MERCENARY_UNVERIFIED: inputs stopped; current portrait absent or obscured; supervised return required")
         # 명시적 중단이나 포커스 상실 뒤에는 종료 입력도 보내지 않는다.
         if continuous and failure not in ("resource_low", "paused_hud_unverified"):
             report["field_retained"] = True
@@ -1338,7 +1452,7 @@ def run_once(
 
         def save_report():
             pending = output / "report.json.pending"
-            pending.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            pending.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=_json_scalar), encoding="utf-8")
             pending.replace(output / "report.json")
 
         # 이미지 직렬화 중 재중단돼도 입력/판정 보고서를 남기고 불완전한 이미지 보관 상태를 명시한다.

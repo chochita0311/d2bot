@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "frame_size": [1922, 1140],
+  "client_box": [13, 47, 1909, 1127],
+  "aspect_tolerance": 0.01,
+  "reference": "references/camera-layout-body-ko-1922x1140.png",
+  "reference_sha256": "cf60463706c3313811dd42fe13a9bffaa79669aee9ab20d78387717041e617dc",
+  "review": "Reviewed game-content rectangle excludes the white OS title bar and black window borders. Region and UI observers retain their existing 1922x1140 reference coordinates. Actual Windows client bounds supply the source rectangle; different client aspect beyond one percent is refused. Small-window visual accuracy requires separate validation."
+}

@@ -10,7 +10,8 @@
     "window_title": "Diablo",
     "window_title_mode": "contains",
     "follow_window": true,
-    "capture_backend": "auto"
+    "capture_backend": "auto",
+    "reference_layout": "assets/ui/layouts/remastered-1922x1140/viewport.json"
   },
   "recording": {
     "enabled": false,

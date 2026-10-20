@@ -9,6 +9,7 @@ from diablo2.common.capture import ScreenCapture, SessionRecorder
 from diablo2.common.config import BotConfig
 from diablo2.common.controller import BotController
 from diablo2.common.detectors import TemplateMatcher, draw_overlay
+from diablo2.common.frame_geometry import frame_to_desktop
 
 
 class DiabloBot:
@@ -33,8 +34,7 @@ class DiabloBot:
             if match.action == "click_center":
                 center_x = (match.top_left[0] + match.bottom_right[0]) // 2
                 center_y = (match.top_left[1] + match.bottom_right[1]) // 2
-                absolute_x = self.capture.target["left"] + center_x
-                absolute_y = self.capture.target["top"] + center_y
+                absolute_x, absolute_y = frame_to_desktop(self.capture, (center_x, center_y))
                 self.controller.click(absolute_x, absolute_y)
 
     def run(self) -> int:

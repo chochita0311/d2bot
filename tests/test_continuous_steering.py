@@ -33,6 +33,25 @@ class ContinuousSteeringTests(unittest.TestCase):
         steering.update(self.view(1.16), PathChoice((1200, 200), "floor"), 1.16)
         self.assertEqual((1200, 200), steering.aim)
 
+    def test_closed_previous_floor_requires_two_new_frames_before_opposite_cast(self):
+        steering = ContinuousSteering(0.32, 32)
+        steering.update(self.view(1), PathChoice((1200, 200), "floor"), 1)
+        opposite = PathChoice((400, 600), "opposite")
+        self.assertEqual((False, "opposite_floor_recheck"), steering.update(self.view(1.08, closed=True), opposite, 1.08))
+        self.assertEqual((1200, 200), steering.aim)
+        self.assertEqual((False, "no_new_path"), steering.update(self.view(1.08, closed=True), opposite, 1.1))
+        self.assertEqual((True, "previous_floor_closed"), steering.update(self.view(1.16, closed=True), opposite, 1.16))
+        self.assertEqual(opposite.aim, steering.aim)
+
+    def test_transient_closed_floor_opposite_does_not_change_steering(self):
+        steering = ContinuousSteering(0.32, 32)
+        original = PathChoice((1200, 200), "floor")
+        steering.update(self.view(1), original, 1)
+        steering.update(self.view(1.08, closed=True), PathChoice((400, 600), "opposite"), 1.08)
+        steering.update(self.view(1.16), original, 1.16)
+        self.assertEqual(original.aim, steering.aim)
+        self.assertIsNone(steering.pending)
+
     def test_two_fresh_bend_frames_turn_without_waiting_full_cast(self):
         steering = ContinuousSteering(0.32, 32)
         steering.update(self.view(1), PathChoice((1200, 200), "floor"), 1)

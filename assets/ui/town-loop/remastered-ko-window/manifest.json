@@ -556,7 +556,7 @@
         355,
         152
       ],
-      "threshold": 0.88,
+      "threshold": 0.82,
       "source_frame": "../../../regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-baseline.jpg",
       "variants": [
         "../../waypoint/templates/waypoint-header-reviewed-window.png"
@@ -586,6 +586,33 @@
       "asset_sha256": "4a753719cb4427122da89a633c0f8de3dfcb2453733e4069f4c8e0c2d565a1de",
       "variant_asset_sha256": {
         "../../waypoint/templates/waypoint-header-reviewed-window.png": "db3d3c9ede918f884a21e8ea443b4de59ace304dcd8153fe878f57872c6e3944"
+      },
+      "width_scales": [
+        1.0,
+        0.96,
+        0.98,
+        1.02,
+        1.04
+      ],
+      "replay_evidence": {
+        "file": "../../waypoint/references/waypoint-header-reduced-frame.png",
+        "asset_sha256": "667fff274941099b8029208a910a661a66df45379b3c74e99f7d8dbf267c359d",
+        "source_sha256": "bc30d0ffb46195282efc1cb5d4d6c56f73f737e1d5a5bb8e21a582618e04c5fe",
+        "normalization": [
+          1267,
+          753
+        ],
+        "crop": [
+          190,
+          110,
+          355,
+          152
+        ],
+        "source_client_size": [
+          1674,
+          954
+        ],
+        "purpose": "Generic header-only regression evidence; not a runtime template"
       }
     },
     "list_act1": {
@@ -984,6 +1011,92 @@
       "asset_sha256": "ee6d59c7dd01151f2b9c72c1cf52aed8a691f05a56d2ed4a26c33c5f61a6fef8",
       "variant_asset_sha256": {
         "../../../regions/lut-gholein/remastered-ko-window/templates/palace-settled.png": "a58e0a5b93da691f4832db4b4afc5d8d4a5118421749067c6d0797d056c939ae"
+      }
+    },
+    "area_canyon": {
+      "file": "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/area-canyon.png",
+      "crop": [
+        1154,
+        69,
+        1252,
+        87
+      ],
+      "search": [
+        1100,
+        45,
+        1257,
+        190
+      ],
+      "threshold": 0.86,
+      "asset_sha256": "82cb4a7abf84fede98742ecfe09dd4fb87985bbb9ea2901e1e62684d22247ba4",
+      "source_frame": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-arrival.png"
+    },
+    "world_canyon_waypoint": {
+      "file": "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-floor.png",
+      "crop": [
+        736,
+        198,
+        870,
+        295
+      ],
+      "search": [
+        24,
+        55,
+        1250,
+        590
+      ],
+      "threshold": 0.92,
+      "asset_sha256": "160cc41848db20471bcb0d95caadfacc1382ab6d022db38a7261ff9f56268da3",
+      "source_frame": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-arrival.png",
+      "click_offset": [
+        27,
+        42
+      ],
+      "variants": [
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor.png",
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor-day.png"
+      ],
+      "variant_click_offsets": {
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor.png": [
+          148,
+          32
+        ],
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor-day.png": [
+          148,
+          32
+        ]
+      },
+      "variant_provenance": {
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor.png": {
+          "asset_sha256": "319c155a161abb563a6485c0b83f7de6dff57a79e16a2574d67db6bb46b3a2b4",
+          "source_frame": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied.png",
+          "source_sha256": "9aaf75b43b98ef8177078e5b8a414ecb1a1cd7a26d0486677b7911b002967479",
+          "crop": [
+            462,
+            353,
+            594,
+            401
+          ],
+          "source_reference_size": [
+            1267,
+            753
+          ]
+        },
+        "../../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor-day.png": {
+          "asset_sha256": "294671305e5cdfff8a40c121abae9bce9fb274bda4be6dd73bbc1dc949800c33",
+          "source_frame": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied-day.png",
+          "source_sha256": "fc2f359c33fd636c6c7b9185e60a3420fb60213381138e0d18e435cbff9cbd63",
+          "crop": [
+            462,
+            353,
+            594,
+            401
+          ],
+          "source_reference_size": [
+            1267,
+            753
+          ]
+        }
       }
     }
   },

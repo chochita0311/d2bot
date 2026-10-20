@@ -129,6 +129,52 @@
         "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/effects.png",
         "sha256": "fe8c8f0124d384be49562258dcfcb907376cac5185ad89ba27f743e26bbb4fce"
       }
+    },
+    {
+      "id": "lower",
+      "variant": "southwest-approach",
+      "path": "templates/hub/floor-lower-southwest-approach.png",
+      "crop": [
+        1235,
+        520,
+        1380,
+        564
+      ],
+      "offset": [
+        -71,
+        45
+      ],
+      "threshold": 0.8,
+      "sha256": "b9cfcf5d6953d320bec101a1ae093ab1fe6aaf31384e87a5471a86656d1b791f",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/southwest-approach-floor.png",
+        "sha256": "00f7c393aa05e271b17602fc18eb91ffe1fe31ee9a5981c9c6f7cffe66efae16",
+        "execution_id": "gui-20261011-143650-74582dfdab",
+        "review": "Current unobscured lower ornament after central approach; the old lower template scored .799942. Same part id is counted once across pose variants. Native .8 and distinct current ornaments/blue patches remain required."
+      }
+    },
+    {
+      "id": "left",
+      "variant": "return-floor",
+      "path": "templates/hub/floor-left-return.png",
+      "crop": [
+        800,
+        492,
+        884,
+        535
+      ],
+      "offset": [
+        -161,
+        -11
+      ],
+      "threshold": 0.8,
+      "sha256": "aa74d561d85b589e8ce83e53091bd7f126752a3b95222eee19e0bdcffa584031",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/left-floor-return.png",
+        "sha256": "25b914b7a47db6427553fef248d514bc9e11966641f29bcb11fb4e91757e6eb5",
+        "execution_id": "gui-20261011-173349-cd30f39eac",
+        "review": "Codex visual review: current left floor ornament is unobscured; old left .795484 misses native .8 while separate upper-left .909394 passes. Same left id counts once across variants. Both current blue patches and two independent native ornaments remain required."
+      }
     }
   ],
   "blue_pair": {
@@ -170,5 +216,14 @@
     "Current proximity and post-release settling checked by movement engine",
     "Merged animated blue effects may use two current floor ornaments and blue pixels in two distinct expected brazier patches; no past match scores"
   ],
-  "floor_seed_id": "right"
+  "floor_seed_ids": [
+    "right",
+    "upper",
+    "left-tip"
+  ],
+  "floor_seed_source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-brazier-town-finish.png",
+    "sha256": "6eafa647e92b4117deb0c26c48e1f153352849539725c3013467579129c32786",
+    "review": "Current floor-only candidate proposal may start from right, upper or left-tip reviewed ornaments. Approval still needs two distinct native .8 ornaments, <=8px agreement and two separate expected current blue patches of at least45 pixels. Duplicate seed proposals at the same center count once. Merged-dim-brazier replay remains unknown because the right blue patch is insufficient. Town finish may consume this native current hub producer through its injected observer; no past arrival is reused."
+  }
 }

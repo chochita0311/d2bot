@@ -7,6 +7,7 @@ import time
 
 from diablo2.actions.loot_pickup import LootPickupSession
 from diablo2.common.supervised_field import resource_guard
+from diablo2.common.frame_geometry import frame_to_desktop
 
 
 class _LootAbort(RuntimeError):
@@ -42,7 +43,9 @@ class ConditionalLootController:
         scanner=None,
         deadline_supplier=None,
         potion_count_supplier=None,
-        max_scan_seconds=1.2,
+        ground_supplier=None,
+        cast_reference_seconds=0.32,
+        max_scan_seconds=3,
         max_scan_frames=12,
         max_clicks=2,
     ):
@@ -52,10 +55,13 @@ class ConditionalLootController:
             raise ValueError("bounded loot frame count required")
         if type(max_clicks) is not int or not 0 <= max_clicks <= 4:
             raise ValueError("bounded loot click count required")
+        if not 0 < cast_reference_seconds < 1.5:
+            raise ValueError("configured teleport cast reference required")
         self.config, self.capture, self.hud, self.backend = config, capture, hud, backend
         self.focused, self.profile, self.stop, self.panels_open = focused, profile, stop, panels_open
         self.clock, self.scanner = clock, scanner if scanner is not None else LootPickupSession(config)
         self.deadline_supplier, self.potion_count_supplier = deadline_supplier, potion_count_supplier
+        self.ground_supplier, self.cast_reference_seconds = ground_supplier, cast_reference_seconds
         self.max_scan_seconds, self.max_scan_frames, self.max_clicks = max_scan_seconds, max_scan_frames, max_clicks
         self.labels_state, self._prepared = "unknown", False
         self.records = []
@@ -105,12 +111,17 @@ class ConditionalLootController:
             self._guard(acquired, buff_expires_at=buff_expires_at, scan_deadline=scan_deadline)
         return frame, acquired
 
-    def _toggle(self, target, *, buff_expires_at=None, scan_deadline=None, restoring=False):
+    def _toggle(self, target, *, buff_expires_at=None, scan_deadline=None, restoring=False, verified_acquired_at=None):
         if self.labels_state == target:
             return False
         if self.labels_state not in ("on", "off"):
             raise _LootAbort("item_labels_state_unknown")
-        _, acquired = self._read(buff_expires_at=buff_expires_at, scan_deadline=scan_deadline, restoring=restoring)
+        if verified_acquired_at is None:
+            _, acquired = self._read(buff_expires_at=buff_expires_at, scan_deadline=scan_deadline, restoring=restoring)
+        else:
+            # 같은 _read에서 자원/패널 확인을 끝낸 화면만 재사용한다. 관찰 시각은 갱신하지 않는다.
+            acquired = verified_acquired_at
+            self._guard(acquired, buff_expires_at=buff_expires_at, scan_deadline=scan_deadline)
         if restoring:
             self._active()
         else:
@@ -188,7 +199,10 @@ class ConditionalLootController:
         return (hit.match.top_left[0] + hit.match.width // 2, hit.match.top_left[1] + hit.match.height // 2)
 
     def after_combat(self, *, buff_expires_at=None, reason="combat_ended_scan", combat_id=None):
-        result = dict(status="inspection_pending", reason=reason, kill_confirmed=False, pickups_confirmed=0, clicks=[], scan_frames=0)
+        result = dict(
+            status="inspection_pending", reason=reason, kill_confirmed=False, pickups_confirmed=0, clicks=[], teleports=[], scan_frames=0
+        )
+        result["scan_observations"] = []
         if combat_id is not None and combat_id in self._combat_ids:
             result.update(status="combat_scan_already_handled", labels_state=self.labels_state, movement_allowed=self.movement_allowed)
             return result
@@ -217,6 +231,9 @@ class ConditionalLootController:
                 allowed = self._eligible(candidates, attempted)
                 result["scan_frames"] += 1
                 hit = self.scanner.scan_frame(frame, allowed) if allowed else None
+                result["scan_observations"].append(
+                    dict(acquired_at=acquired, processed_at=self.clock(), label=None if hit is None else hit.label)
+                )
                 self._guard(acquired, buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 if hit is None:
                     quiet += 1
@@ -235,7 +252,7 @@ class ConditionalLootController:
                 height, width = frame.shape[:2]
                 if not (0 <= center[0] < width and 0 <= center[1] < height):
                     raise _LootAbort("loot_aim_outside_capture")
-                aim = (self.capture.target["left"] + center[0], self.capture.target["top"] + center[1])
+                aim = frame_to_desktop(self.capture, center)
                 self.backend.move(*aim)
                 fresh, fresh_at = self._read(buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 reconfirm = [candidate for candidate in self._eligible(candidates, attempted) if candidate.label == hit.label]
@@ -250,6 +267,52 @@ class ConditionalLootController:
                 ):
                     attempted.add(hit.label.casefold())
                     continue
+                if not self.backend.pointer_matches(aim):
+                    raise _LootAbort("loot_aim_unverified")
+                self._guard(fresh_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                # 필드에서는 아이템에 단 한 번 텔레포트한 뒤 새 위치에서만 클릭한다.
+                # 이동 중 라벨은 OFF이며, 전송/시전 대기를 착지 성공으로 기록하지 않는다.
+                approach = dict(label=hit.label, aim=aim, requested_at=None, dispatch_returned=False)
+                result["teleports"].append(approach)
+                self._toggle("off", buff_expires_at=buff_expires_at, scan_deadline=deadline, verified_acquired_at=fresh_at)
+                self.stop.wait(0.05)
+                self._guard(fresh_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                if not self.backend.pointer_matches(aim):
+                    raise _LootAbort("loot_aim_unverified")
+                approach["requested_at"] = self.clock()
+                self.backend.press(self.profile.actions.movement_skill_key)
+                approach["dispatch_returned"] = True
+                self.stop.wait(self.cast_reference_seconds)
+                self._toggle("on", buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                landed, landed_at = self._read(buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                current = self.scanner.scan_frame(landed, reconfirm) if reconfirm else None
+                ground = self.ground_supplier() if self.ground_supplier is not None else None
+                if ground is None:
+                    raise _LootAbort("loot_landing_unverified")
+                prepare = getattr(ground, "prepare_frame", None)
+                if prepare is not None:
+                    prepare(landed, landed_at, self.hud.observe(landed), self.focused())
+                player = ground.observe(landed, captured_at=landed_at).point
+                self._guard(landed_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                if current is None or player is None:
+                    raise _LootAbort("loot_landing_unverified")
+                center = self._center(current)
+                if math.hypot((center[0] - player[0]) / 300, (center[1] - player[1]) / 180) > 1:
+                    raise _LootAbort("loot_landing_not_near_item")
+                approach.update(observed_after_at=landed_at, player=player, item_center=center, status="current_item_near_player")
+                aim = frame_to_desktop(self.capture, center)
+                self.backend.move(*aim)
+                fresh, fresh_at = self._read(buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                current = self.scanner.scan_frame(fresh, reconfirm) if reconfirm else None
+                self._guard(fresh_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
+                if (
+                    current is None
+                    or current.label != hit.label
+                    or math.hypot(*(a - b for a, b in zip(center, self._center(current)))) > 18
+                    or not current.match.top_left[0] <= center[0] < current.match.top_left[0] + current.match.width
+                    or not current.match.top_left[1] <= center[1] < current.match.top_left[1] + current.match.height
+                ):
+                    raise _LootAbort("loot_label_changed_after_teleport")
                 if not self.backend.pointer_matches(aim):
                     raise _LootAbort("loot_aim_unverified")
                 self._guard(fresh_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)

@@ -4,12 +4,12 @@ import argparse
 import json
 import math
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import cv2 as cv
 
-from diablo2.common.config import CaptureConfig, load_config
+from diablo2.common.config import load_config
 from diablo2.common.survival import CharacterSurvivalState, ObservationStamp
 from diablo2.common.survival_vision import DEFAULT_ASSETS, SurvivalHudObserver
 
@@ -37,9 +37,9 @@ def main(argv=None) -> int:
     if args.character and (args.age_limit is None or not math.isfinite(args.age_limit) or args.age_limit <= 0):
         parser.error("Policy requests require an explicit positive finite --age-limit")
     observer = SurvivalHudObserver(args.assets)
+    config = load_config(args.config) if args.character or args.live else None
     state = None
     if args.character:
-        config = load_config(args.config)
         if args.character not in config.characters or config.characters[args.character].survival is None:
             parser.error("Explicit character with a configured survival policy required")
         state = CharacterSurvivalState(args.character, args.room, config.characters[args.character].survival)
@@ -47,7 +47,9 @@ def main(argv=None) -> int:
     if args.live:
         from diablo2.common.capture import USER32, ScreenCapture, resolve_window_from_config
 
-        capture = ScreenCapture(CaptureConfig(window_title="Diablo II: Resurrected", window_title_mode="exact", capture_backend="window"))
+        capture = ScreenCapture(
+            replace(config.capture, window_title="Diablo II: Resurrected", window_title_mode="exact", capture_backend="window")
+        )
     reports = []
     try:
         for sequence in range(args.frames):

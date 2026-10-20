@@ -15,7 +15,8 @@ import numpy as np
 
 from diablo2.common.capture import ScreenCapture, focus_window, resolve_window_from_config
 from diablo2.common.config import CaptureConfig
-from diablo2.common.controller import keyboard, pydirectinput
+from diablo2.common.frame_geometry import desktop_to_frame, frame_to_desktop, geometry_is_current
+from diablo2.common.controller import keyboard, move_desktop_pointer, pydirectinput
 
 
 @dataclass
@@ -187,7 +188,6 @@ class GemSummingSession:
             self._focus_game_window(capture)
 
             initial_packet = capture.grab()
-            target = capture.target
             stash_match = self._locate_stash_panel(initial_packet.frame)
             if stash_match is None:
                 raise RuntimeError(
@@ -253,7 +253,7 @@ class GemSummingSession:
                         self.events.put(GemActionEvent("warning", "Gem summing interrupted by user."))
                         return
 
-                    slot_point = self._slot_center(target, stash_match, step.col, step.row)
+                    slot_point = self._slot_center(capture, stash_match, step.col, step.row)
                     self._ctrl_shift_click_absolute(capture, *slot_point, button="right")
                     self._sleep_range(*self.ACTION_SLEEP)
                     self._click_match_center(capture, cube_button_match)
@@ -583,8 +583,9 @@ class GemSummingSession:
     def _cube_result_icon_crop(self, capture: ScreenCapture, stash_match: MatchResult, result_point: tuple[int, int]) -> np.ndarray:
         packet = capture.grab()
         stash_frame = self._extract_region(packet.frame, stash_match)
-        local_x = result_point[0] - capture.target["left"] - stash_match.top_left[0]
-        local_y = result_point[1] - capture.target["top"] - stash_match.top_left[1]
+        frame_point = desktop_to_frame(capture, result_point)
+        local_x = frame_point[0] - stash_match.top_left[0]
+        local_y = frame_point[1] - stash_match.top_left[1]
         start_x = int(local_x - self.CUBE_CELL_WIDTH // 2)
         start_y = int(local_y - self.CUBE_CELL_HEIGHT // 2)
         cell = stash_frame[start_y : start_y + self.CUBE_CELL_HEIGHT, start_x : start_x + self.CUBE_CELL_WIDTH]
@@ -637,7 +638,7 @@ class GemSummingSession:
                 cell = self._cube_cell_crop(stash_frame, row, col)
                 score = self._cube_cell_occupancy_score(cell)
                 if score >= 18.0:
-                    occupied.append((*self._cube_cell_center(capture.target, stash_match, row, col), score))
+                    occupied.append((*self._cube_cell_center(capture, stash_match, row, col), score))
         occupied.sort(key=lambda item: item[2], reverse=True)
         return [(x, y) for x, y, _ in occupied]
 
@@ -656,10 +657,10 @@ class GemSummingSession:
         gray = cv.cvtColor(cell, cv.COLOR_BGR2GRAY)
         return float(np.mean(gray)) + float(np.std(gray))
 
-    def _cube_cell_center(self, target: dict[str, int], stash_match: MatchResult, row: int, col: int) -> tuple[int, int]:
-        x = target["left"] + stash_match.top_left[0] + self.CUBE_GRID_START_X + col * self.CUBE_CELL_STEP_X + self.CUBE_CELL_WIDTH // 2
-        y = target["top"] + stash_match.top_left[1] + self.CUBE_GRID_START_Y + row * self.CUBE_CELL_STEP_Y + self.CUBE_CELL_HEIGHT // 2
-        return x, y
+    def _cube_cell_center(self, capture, stash_match: MatchResult, row: int, col: int) -> tuple[int, int]:
+        x = stash_match.top_left[0] + self.CUBE_GRID_START_X + col * self.CUBE_CELL_STEP_X + self.CUBE_CELL_WIDTH // 2
+        y = stash_match.top_left[1] + self.CUBE_GRID_START_Y + row * self.CUBE_CELL_STEP_Y + self.CUBE_CELL_HEIGHT // 2
+        return frame_to_desktop(capture, (x, y))
 
     def _classify_blank_left(self, processed_variants: dict[str, np.ndarray]) -> float:
         total_score = 0.0
@@ -679,16 +680,16 @@ class GemSummingSession:
             return -1.0
         return ordered[1]
 
-    def _slot_center(self, target: dict[str, int], stash_match: MatchResult, col: int, row: int) -> tuple[int, int]:
-        x = target["left"] + stash_match.top_left[0] + self.SLOT_START_X + col * self.SLOT_STEP_X + self.SLOT_SIZE // 2
-        y = target["top"] + stash_match.top_left[1] + self.SLOT_START_Y + row * self.SLOT_STEP_Y + self.SLOT_SIZE // 2
-        return x, y
+    def _slot_center(self, capture, stash_match: MatchResult, col: int, row: int) -> tuple[int, int]:
+        x = stash_match.top_left[0] + self.SLOT_START_X + col * self.SLOT_STEP_X + self.SLOT_SIZE // 2
+        y = stash_match.top_left[1] + self.SLOT_START_Y + row * self.SLOT_STEP_Y + self.SLOT_SIZE // 2
+        return frame_to_desktop(capture, (x, y))
 
-    def _relative_point(self, target: dict[str, int], stash_match: MatchResult, point_x: int, point_y: int) -> tuple[int, int]:
-        return target["left"] + stash_match.top_left[0] + point_x, target["top"] + stash_match.top_left[1] + point_y
+    def _relative_point(self, capture, stash_match: MatchResult, point_x: int, point_y: int) -> tuple[int, int]:
+        return frame_to_desktop(capture, (stash_match.top_left[0] + point_x, stash_match.top_left[1] + point_y))
 
     def _click_relative(self, capture: ScreenCapture, stash_match: MatchResult, point_x: int, point_y: int) -> None:
-        abs_x, abs_y = self._relative_point(capture.target, stash_match, point_x, point_y)
+        abs_x, abs_y = self._relative_point(capture, stash_match, point_x, point_y)
         abs_x, abs_y = self._jitter_point(abs_x, abs_y, self.TARGET_JITTER)
         self._move_absolute(capture, abs_x, abs_y)
         self._sleep_range(*self.CLICK_SETTLE)
@@ -703,7 +704,7 @@ class GemSummingSession:
         point_y: int,
         button: str,
     ) -> None:
-        abs_x, abs_y = self._relative_point(capture.target, stash_match, point_x, point_y)
+        abs_x, abs_y = self._relative_point(capture, stash_match, point_x, point_y)
         abs_x, abs_y = self._jitter_point(abs_x, abs_y, self.TARGET_JITTER)
         self._move_absolute(capture, abs_x, abs_y)
         self._sleep_range(*self.CLICK_SETTLE)
@@ -730,8 +731,7 @@ class GemSummingSession:
         self._last_pointer = (abs_x, abs_y)
 
     def _click_match_center(self, capture: ScreenCapture, match: MatchResult) -> None:
-        abs_x = capture.target["left"] + match.top_left[0] + match.width // 2
-        abs_y = capture.target["top"] + match.top_left[1] + match.height // 2
+        abs_x, abs_y = frame_to_desktop(capture, (match.top_left[0] + match.width // 2, match.top_left[1] + match.height // 2))
         abs_x, abs_y = self._jitter_point(abs_x, abs_y, self.TARGET_JITTER)
         self._move_absolute(capture, abs_x, abs_y)
         self._sleep_range(*self.CLICK_SETTLE)
@@ -744,11 +744,13 @@ class GemSummingSession:
         return point_x + random.randint(-radius, radius), point_y + random.randint(-radius, radius)
 
     def _park_cursor(self, capture: ScreenCapture, stash_match: MatchResult) -> None:
-        abs_x, abs_y = self._relative_point(capture.target, stash_match, *self.SAFE_PARK_POINT)
+        abs_x, abs_y = self._relative_point(capture, stash_match, *self.SAFE_PARK_POINT)
         self._move_absolute(capture, abs_x, abs_y)
 
     def _move_absolute(self, capture: ScreenCapture | None, target_x: int, target_y: int) -> None:
         if capture is not None:
+            if not geometry_is_current(capture):
+                raise RuntimeError("window geometry changed after capture")
             target = capture.target
             target_x = max(target["left"] + 2, min(target_x, target["left"] + target["width"] - 2))
             target_y = max(target["top"] + 2, min(target_y, target["top"] + target["height"] - 2))
@@ -761,7 +763,7 @@ class GemSummingSession:
             next_x = int(current_x + (target_x - current_x) * ratio)
             bend = random.randint(-8, 8)
             next_y = int(current_y + (target_y - current_y) * ratio + bend * (1 - abs(0.5 - ratio) * 2))
-            pydirectinput.moveTo(next_x, next_y)
+            move_desktop_pointer(next_x, next_y)
             self._last_pointer = (next_x, next_y)
             time.sleep(random.uniform(*self.MOVE_SLEEP))
 

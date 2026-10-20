@@ -479,7 +479,7 @@
             1111,
             700
           ],
-          "threshold": 0.92,
+          "threshold": 0.91,
           "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
         },
         {
@@ -558,6 +558,857 @@
         "sha256": "09e545719f5caea01c373e876b886e5af7696bdf9a56fffbf70cefd710d95e3b",
         "review": "main196 terminal with dense gold labels and corpses: clean gold floor tip and two separate dark arched chests. Reuses existing chest crop twice; three independent non-collinear current objects required, .92 native score unchanged. Crops exclude labels, corpses, actors and HUD."
       }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "small-stone-chest-northwest-face",
+          "path": "templates/terminal/small-stone-chest-northwest-face.png",
+          "crop": [
+            871,
+            606,
+            930,
+            655
+          ],
+          "threshold": 0.92,
+          "sha256": "6a219bdfce87910ab9cf3d01a22f80802bb9fb64a6b0772c44256dce05b3301e"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-stone-boxes.png",
+        "sha256": "c38e394a76b0f54cd4f5e1f76bf6230577a3b4a6f3d2dd6439c2fcb91bed5d5b",
+        "review": "GUI 20261011-135234 room01 outbound interval01 frame0701: one metal chest and two separate stone boxes. The northwest box crop excludes actors, corpses, item labels and HUD. Existing metal/southeast-box templates are reused. Three distinct non-collinear current objects at native .92 remain required; cross-template matches on one chest cannot count twice.",
+        "execution": "gui-20261011-135234-6ac71db1cd",
+        "frame": "phase-00-north-outbound-01-continuous-0701-after.png"
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "stone-chest-dark",
+          "path": "templates/terminal/stone-chest-dark.png",
+          "crop": [
+            1387,
+            652,
+            1426,
+            690
+          ],
+          "threshold": 0.92,
+          "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+        },
+        {
+          "id": "terminal-metal-chest-lit-face",
+          "path": "templates/terminal/metal-chest-lit-face.png",
+          "crop": [
+            1091,
+            674,
+            1140,
+            701
+          ],
+          "threshold": 0.92,
+          "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-lit-metal-chest-face.png",
+        "sha256": "fb8e6f7e06d46578a1a4253490983479a7eb9d93aa4581501eec2e607d6eb73e",
+        "execution": "gui-20261011-150851-260598ca43",
+        "frame": "phase-00-north-outbound-00-continuous-0271-after.png",
+        "review": "Codex visual review: three distinct closed metal chests after combat. The right chest is brightly lit, and the old full-body southeast template misses it. The new front-face crop excludes the flame/actors/corpses/HUD. Existing northwest and front dark-body templates are reused. Native .92 and three-object non-collinear geometry remain required. Saved-frame replay does not prove the lighting cause or a completed fresh room."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "small-stone-box-dark-left",
+          "path": "templates/terminal/small-stone-box-dark-left.png",
+          "crop": [
+            712,
+            715,
+            761,
+            741
+          ],
+          "threshold": 0.92,
+          "sha256": "8a3bf2322412844a9abcb2a7e6799eb00cadb559c91d57b90add50be14bdf774"
+        },
+        {
+          "id": "small-stone-box-dark-right",
+          "path": "templates/terminal/small-stone-box-dark-right.png",
+          "crop": [
+            1287,
+            709,
+            1336,
+            738
+          ],
+          "threshold": 0.92,
+          "sha256": "ff15089b41a9875a6b2bc8484317c87ba7de18de597b9991ef09161851833f09"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-dark-stone-boxes.png",
+        "sha256": "1fb5e5dcc9d33f25964ec93db646ab593f840a773b1230d8fc65f04426a8ac7b",
+        "execution": "gui-20261011-152143-c3f42e6116",
+        "frame": "phase-00-north-outbound-03-continuous-1196-before.png",
+        "review": "Codex visual review: three separate small dark stone boxes on the north terminal with two spires and corpses. Left and right clean body crops exclude actors/corpses/labels/HUD; the existing front box crop is reused. Three distinct current native .92 objects and non-collinear layout remain required. This failed saved-room endpoint calibration is not a completed fresh run or exhaustive wing classifier."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "stone-chest-dark",
+          "path": "templates/terminal/stone-chest-dark.png",
+          "crop": [
+            1387,
+            652,
+            1426,
+            690
+          ],
+          "threshold": 0.92,
+          "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+        },
+        {
+          "id": "terminal-metal-chest-lit-face",
+          "path": "templates/terminal/metal-chest-lit-face.png",
+          "crop": [
+            1091,
+            674,
+            1140,
+            701
+          ],
+          "threshold": 0.92,
+          "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-arched-chest-faces.png",
+        "sha256": "497f850228a2280e5383b636e7fbb879b8d4a03218d1f96ae7a4ed1f840b64a8",
+        "execution": "gui-20261011-161059-02070a4c8d",
+        "frame": "phase-00-north-outbound-01-continuous-0614-after.png",
+        "review": "Codex visual review: three distinct closed arched chests. Reuse the existing left full body, right front, and lit southeast front crops at native .961066/.940121/.953694. The two front crops stay in this reviewed layout and are not added to the full-body composition pool. Require three separate current objects, native .92, existing distance/area, settling and tracking limits. This saved source is not a completed room or a general lighting proof."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "small-stone-chest-clear-left-face",
+          "path": "templates/terminal/small-stone-chest-clear-left-face.png",
+          "crop": [
+            563,
+            680,
+            600,
+            725
+          ],
+          "threshold": 0.92,
+          "sha256": "fd234a1008850a637f64c00f340416775e8ac45886d854d80544e52bb6720d78"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-small-chest.png",
+        "sha256": "ab089eac33f727c78d36c4d5051c70c9cdb87a6f120fc419e7a57ed5ebc638b1",
+        "execution": "gui-20261011-162732-eb4eaf95d7",
+        "frame": "phase-00-north-outbound-03-continuous-1338-after.png",
+        "review": "Codex visual review: left small stone chest partly covered by monster corpse; crop only the unobstructed left top/front, excluding corpse. Two other distinct closed chests reuse reviewed body crops. This partial face remains in this fixed three-object layout, outside the six-body composition pool. Native .92, existing distance/area and settling/tracking limits remain required. Failed-room calibration is not fresh-room completion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-engraved-stone-plate",
+          "path": "templates/terminal/engraved-stone-plate.png",
+          "crop": [
+            1065,
+            660,
+            1111,
+            700
+          ],
+          "threshold": 0.91,
+          "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-stone-plate-arched-and-square.png",
+        "sha256": "d1f1e9ec2df1685b86a5e81741eaa972c372806dc23e8f09910b98dbba07e2f8",
+        "execution_id": "gui-20261011-171832-5867cdc305",
+        "review": "Current engraved floor plate, separate right arched chest and front square box; existing crops reused at native .92. The left box remains unverified; no new template or body-pool expansion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "dark-arched-chest-clean-roof",
+          "path": "templates/terminal/dark-arched-chest-clean-roof.png",
+          "crop": [
+            1186,
+            467,
+            1240,
+            501
+          ],
+          "threshold": 0.92,
+          "sha256": "60dc650ed325d2ccba87bf4c2a622bd878af703f756551335aed02850c6d1075"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-small-boxes-and-dark-arched-roof.png",
+        "sha256": "73627c0875181ee4b1462556d7840df073906ff0798bff51f5b00bda7be804a5",
+        "execution_id": "gui-20261011-174330-fa26f54a66",
+        "review": "Codex visual review: two separate small boxes match existing full bodies .981076/.981481; the separate right arched chest misses existing native .92 appearances. New crop is only clean upper roof stone, excluding surrounding corpses/bones. Keep it in this fixed three-object layout, outside the six-body pool. Native .92, three distinct objects, existing geometry/settling/two-second tracking remain required. This incomplete-room replay does not prove corpse occlusion caused the miss."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-metal-chest-lit-face",
+          "path": "templates/terminal/metal-chest-lit-face.png",
+          "crop": [
+            1091,
+            674,
+            1140,
+            701
+          ],
+          "threshold": 0.92,
+          "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        },
+        {
+          "id": "small-stone-box-gray-body",
+          "path": "templates/terminal/small-stone-box-gray-body.png",
+          "crop": [
+            1716,
+            625,
+            1775,
+            670
+          ],
+          "threshold": 0.92,
+          "sha256": "3905f6d2aa26a5d1929b8891bb87b89e5d9b58a596940bfc0cc9a047707bb657"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chests-gray-stone-box.png",
+        "sha256": "7795ecd77e964ee10c20cc9a5e02979f558c12e86825d7b5f2888985f1398144",
+        "execution_id": "gui-20261011-185046-ab815556c5",
+        "review": "Reviewed stopped native frame: two separate closed metal chests and a gray stone box. New box top/front excludes actors, corpses, labels and HUD. Reuse two existing chest parts. Current native .92, three separate non-collinear objects, proximity and settling remain required. Saved failed-room calibration is not a completed fresh room."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-dark",
+          "path": "templates/terminal/stone-chest-dark.png",
+          "crop": [
+            1387,
+            652,
+            1426,
+            690
+          ],
+          "threshold": 0.92,
+          "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        },
+        {
+          "id": "dark-arched-chest-front-left",
+          "path": "templates/terminal/dark-arched-chest-front-left.png",
+          "crop": [
+            724,
+            283,
+            792,
+            325
+          ],
+          "threshold": 0.92,
+          "sha256": "0c00af79452efa974a8d9af8d80d8f0a8eadf1464055c55a6ca468b41d609027"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-chests-square-box.png",
+        "sha256": "065fb5fd96ff65cb20c6144d34c27e41f5547d0441a8b6a1f85ae95ca7d8474a",
+        "execution_id": "gui-20261011-190505-ed3c5c56d5",
+        "review": "Reviewed outbound frame1466: two separate dark closed arched chests and a square stone box. New left front/roof interior excludes the corpse above/right, actors, labels and HUD. Reuse right chest and upper box parts. This partial body is confined to the fixed layout, outside the six-body pool. Current native .92 and all existing three-object geometry/settling/tracking limits remain required. Saved failure calibration is not a completed fresh room."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "small-stone-chest-right-edge-upper-instance",
+          "path": "templates/terminal/small-stone-chest-right-edge.png",
+          "crop": [
+            1366,
+            810,
+            1390,
+            851
+          ],
+          "threshold": 0.92,
+          "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+        },
+        {
+          "id": "small-stone-chest-right-edge-lower-instance",
+          "path": "templates/terminal/small-stone-chest-right-edge.png",
+          "crop": [
+            1366,
+            810,
+            1390,
+            851
+          ],
+          "threshold": 0.92,
+          "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-gray-box-edges.png",
+        "sha256": "4d85a90e08fec2aa81722493e18d518a2331e472aa3914975c5cacf0179bb1de",
+        "execution_id": "gui-20261011-195433-8f7d501f0e",
+        "review": "Primary visual review of current outbound frame324: one left closed metal chest and two physically separate gray stone boxes to the right. Reuse the northwest chest and two instances of the existing right edge; no new crop or six-body-pool expansion. Current native .92, distinct objects, non-collinear geometry, proximity and settling remain required. Whole-object removal of any one chest is rejected. The stopped map-on view with its left chest occluded remains unknown; this saved failed-room replay is not a live completion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-stone-chest-left",
+          "path": "templates/terminal/square-stone-chest-left.png",
+          "crop": [
+            391,
+            449,
+            445,
+            477
+          ],
+          "threshold": 0.92,
+          "sha256": "2efb5a0ae2239b2c6ff334accca343e48c586da8122966f5e231bad0988091e0"
+        },
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-stone-box-and-metal-chest.png",
+        "sha256": "70cb456b359fe3d4f88b1c9e9c1ab6d2cf5ddf0989e588f5957ea975f0e407fc",
+        "execution_id": "gui-20261011-212211-d0c235ecae",
+        "review": "Primary visual review: corpse partly covers the left small stone box; its existing clear top/face crop matches .97304. The separate right square box and lower metal chest match .97255/.92814. Reuse only these existing appearances in this fixed three-object layout, without new crops or expanding the six-body pool. Native .92, distinct objects, non-collinear geometry, proximity and settling remain required. This saved failed-room replay does not prove a completed live run."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        },
+        {
+          "id": "terminal-dark-arched-chest-southeast-body",
+          "path": "templates/terminal/dark-arched-chest-southeast-body.png",
+          "crop": [
+            1160,
+            600,
+            1208,
+            648
+          ],
+          "threshold": 0.92,
+          "sha256": "e065444a52128c3acf827ee8899970d5fae2749ffc909b08ca40c1f8870e5db2"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-stone-boxes-dark-metal-face.png",
+        "sha256": "3a4d57720fe3ebee822f7e0df256312a7af493ae0927541404c6fe20370fe2b5",
+        "execution_id": "gui-20261011-215927-e1f8e348d8",
+        "review": "Primary visual review: two distinct small stone boxes and one separate lower-right metal chest. Existing square body, square variant and clean dark southeast face match .97582/.93105/.97619. Reuse them in this fixed three-object layout at native .92; no new crop or six-body-pool expansion. Independent objects, existing geometry/proximity/settling remain required. Raw .90 adds no native candidates compared with .92 in the two selected failed-room views. Saved replay is not a live completion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-engraved-stone-plate",
+          "path": "templates/terminal/engraved-stone-plate.png",
+          "crop": [
+            1065,
+            660,
+            1111,
+            700
+          ],
+          "threshold": 0.91,
+          "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+        },
+        {
+          "id": "terminal-metal-chest-lit-face",
+          "path": "templates/terminal/metal-chest-lit-face.png",
+          "crop": [
+            1091,
+            674,
+            1140,
+            701
+          ],
+          "threshold": 0.92,
+          "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-pair-engraved-floor.png",
+        "sha256": "64aca82f71dd9bd051985e996ec9e4ff938c3ce11b4ebb29adc1851b21387b3d",
+        "execution_id": "gui-20261011-221127-b16119ac8e",
+        "review": "Primary visual review: third chest is corpse-covered; two separate right metal chests and the engraved floor plate remain visible. Existing metal face/body scores .97120/.96734 and the plate .93358 in the final view; settled view .97124/.96731/.91641. Reuse the existing terrain plate in a fixed two-chest layout. Only this plate threshold changes .92 to .91 consistently across reviewed fixed layouts; chest thresholds .92, three separate locations, geometry, proximity and settling remain required. No new crop or six-body pool expansion. Saved failed-room replay does not prove live completion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "small-stone-chest-clear-left-face",
+          "path": "templates/terminal/small-stone-chest-clear-left-face.png",
+          "crop": [
+            563,
+            680,
+            600,
+            725
+          ],
+          "threshold": 0.92,
+          "sha256": "fd234a1008850a637f64c00f340416775e8ac45886d854d80544e52bb6720d78"
+        },
+        {
+          "id": "terminal-dark-metal-chest-right-face",
+          "path": "templates/terminal/dark-metal-chest-right-face.png",
+          "crop": [
+            968,
+            607,
+            1005,
+            636
+          ],
+          "threshold": 0.92,
+          "sha256": "cdb42bbcf15f799b73f037b58fbb110a9bc8826b468c7a55dc5b373e80839a5b"
+        },
+        {
+          "id": "terminal-dark-metal-chest-lower-body",
+          "path": "templates/terminal/dark-metal-chest-lower-body.png",
+          "crop": [
+            944,
+            726,
+            1009,
+            770
+          ],
+          "threshold": 0.92,
+          "sha256": "6021590fc2bbee2d39d0ea749249a0a35198c4e0c4fa3d55935416c6e694faf9"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-pair-small-box.png",
+        "sha256": "585936e9d75fbbf94f67dce54c6a23522ba897cda9d1839fd149cb13c816e87a",
+        "execution_id": "gui-20261011-223647-7864e92c3d",
+        "review": "Primary visual review: one separate left small stone box and two dark metal chests at right. New dark right-front/lower-body crops exclude actors, HUD, labels and corpses; native .92 and three distinct-object geometry/proximity/settling remain required. Existing lighting/style crops miss these two bodies. Saved failure replay, not live completion."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "stone-chest-northwest",
+          "path": "templates/terminal/stone-chest-northwest.png",
+          "crop": [
+            625,
+            210,
+            714,
+            286
+          ],
+          "threshold": 0.92,
+          "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "small-stone-chest-gray-front",
+          "path": "templates/terminal/small-stone-chest-gray-front.png",
+          "crop": [
+            1111,
+            599,
+            1151,
+            624
+          ],
+          "threshold": 0.91,
+          "sha256": "2763e7273465a6b7d5d43d070df1acf2796eeb6dec771d7b4a8c69b131ab1f5f"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-gray-box-front.png",
+        "sha256": "e656bfbf5b957a62a75fbdca608aace9ce50833a520172982aefb5cf249ea3de",
+        "execution_id": "gui-20261018-144823-bbf7e4eb5b",
+        "review": "Primary codex-visual review 2026-10-18: map-hidden end has a separate left metal chest, lower-right dark arched chest and upper-right gray box. The existing gray-box left face scores .895156 below .92 although its coarse proposal passes; use only its unobscured front. Reuse two full body appearances; native .92, three distinct objects, original fixed-layout geometry and arrival gates remain required. Detail composition retains120px/16000px2. Saved failed-room replay, not a live completion or exhaustive visual coverage."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "square-chest",
+          "path": "templates/terminal/square-chest.png",
+          "crop": [
+            1225,
+            231,
+            1285,
+            282
+          ],
+          "threshold": 0.92,
+          "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+        },
+        {
+          "id": "terminal-dark-arched-chest-clean-front",
+          "path": "templates/terminal/dark-arched-chest-clean-front.png",
+          "crop": [
+            887,
+            577,
+            925,
+            610
+          ],
+          "threshold": 0.92,
+          "sha256": "06c215ee0cb4bb075e8c3d0daa1bc7714c46afbcab42f52ffafbdfb86d49d116"
+        },
+        {
+          "id": "terminal-dark-arched-chest-left",
+          "path": "templates/terminal/dark-arched-chest-left.png",
+          "crop": [
+            748,
+            646,
+            812,
+            696
+          ],
+          "threshold": 0.92,
+          "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-arched-chests-small-box.png",
+        "sha256": "3e7caf6c395e0b8a19042511e0a3dd2ac3802616f0e5a1805b2b63bffed248d8",
+        "execution_id": "gui-20261018-151940-794c995820",
+        "review": "Primary visual review 2026-10-18: final map-hidden failed-room view contains a separate left small stone box and two right arched metal chests. Use only the unobscured left front of the upper metal chest; exclude the player, pointer, map line and transient fire. Reuse the reviewed square chest and lower arched body in this fixed layout. All native thresholds .92, three separate locations, original geometry, freshness, proximity and settling remain required. No chest-only pool expansion. Saved calibration does not prove live completion or recovery of fire-obscured frames."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-engraved-lower-floor-spoke",
+          "path": "templates/terminal/engraved-lower-floor-spoke.png",
+          "crop": [
+            970,
+            833,
+            1024,
+            876
+          ],
+          "threshold": 0.92,
+          "sha256": "cc2d04352c5ad267d617f3b4f6f1dce347952e194bca563b51e0870441376e34"
+        },
+        {
+          "id": "terminal-dark-arched-chest-clean-front",
+          "path": "templates/terminal/dark-arched-chest-clean-front.png",
+          "crop": [
+            887,
+            577,
+            925,
+            610
+          ],
+          "threshold": 0.92,
+          "sha256": "06c215ee0cb4bb075e8c3d0daa1bc7714c46afbcab42f52ffafbdfb86d49d116"
+        },
+        {
+          "id": "small-stone-chest-gray-front",
+          "path": "templates/terminal/small-stone-chest-gray-front.png",
+          "crop": [
+            1111,
+            599,
+            1151,
+            624
+          ],
+          "threshold": 0.91,
+          "sha256": "2763e7273465a6b7d5d43d070df1acf2796eeb6dec771d7b4a8c69b131ab1f5f"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-chests-lower-floor-spoke.png",
+        "sha256": "bd92bc404e50ab01c182ca2d729e2a7de6e3b47a765a61d3b3923c540ab38624",
+        "execution_id": "gui-20261018-194506-eee8dc3b1e",
+        "source_frame_sha256": "626ca439b53ed230a4e99c2bd750b13a3e1cf5a488e4d772db2e18b88e64afe6",
+        "review": "Primary visual review 2026-10-18: separate left small box, upper right arched chest front, and lower engraved floor spoke remain in native world ROI when the lower arched body clips y900. Require all three current native .92 parts, separate locations/non-collinear geometry and current settled near arrival. No body/detail pool expansion or existing threshold change. Removing any selected physical landmark must reject; hidden left chest remains unknown."
+      }
     }
-  ]
+  ],
+  "chest_parts": [
+    "templates/terminal/stone-chest-northwest.png",
+    "templates/terminal/stone-chest-southeast.png",
+    "templates/terminal/square-chest.png",
+    "templates/terminal/square-chest-variant.png",
+    "templates/terminal/dark-arched-chest-right.png",
+    "templates/terminal/dark-arched-chest-left.png"
+  ],
+  "chest_composition_source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-mixed-small-and-arched-chests.png",
+    "sha256": "2e82b552935088c80e4f805b82fc026dde31966dc7e5f0eaa1a43bf99d55515b",
+    "execution": "gui-20261011-153318-ec84a788e1",
+    "frame": "phase-00-north-outbound-03-continuous-1430-after.png",
+    "review": "Codex visual review: two separate small stone boxes and one large arched chest on the terminal platform. Existing native body appearances match all three, but no fixed layout included this mixture. Explicit reviewed chest-only appearance pool permits mixed kinds and repeated kinds; each current object still requires its own native .92 match, center separation 84..700px and non-collinear area >=8000px2. Floor ornaments, actors, corpses and absent enemies are excluded from this pool. This saved failed-room calibration is not a fresh-room completion. Mixed-kind fallback uses only six reviewed full body appearances and unmasked native matches; Masked comparisons stay within reviewed fixed layouts; the separately declared chest_detail_parts fallback permits current unmasked detail combinations with a stricter120px minimum separation."
+  },
+  "chest_detail_parts": [
+    "templates/terminal/dark-closed-chest-top.png",
+    "templates/terminal/dark-open-chest-southeast-face.png",
+    "templates/terminal/dark-arched-chest-southeast-body.png",
+    "templates/terminal/stone-chest-dark.png",
+    "templates/terminal/square-stone-chest-left.png",
+    "templates/terminal/square-stone-chest-right.png",
+    "templates/terminal/square-stone-chest-front.png",
+    "templates/terminal/small-stone-chest-right-edge.png",
+    "templates/terminal/small-stone-chest-northwest-face.png",
+    "templates/terminal/metal-chest-lit-face.png",
+    "templates/terminal/small-stone-box-dark-left.png",
+    "templates/terminal/small-stone-box-dark-right.png",
+    "templates/terminal/small-stone-chest-clear-left-face.png",
+    "templates/terminal/dark-arched-chest-clean-roof.png",
+    "templates/terminal/small-stone-box-gray-body.png",
+    "templates/terminal/dark-arched-chest-front-left.png",
+    "templates/terminal/dark-metal-chest-right-face.png",
+    "templates/terminal/dark-metal-chest-lower-body.png",
+    "templates/terminal/small-stone-chest-gray-front.png"
+  ],
+  "chest_detail_composition_source": {
+    "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-chests-small-box.png",
+    "sha256": "f1a7bbd4901fb35044cbc48c749a015a88390add3c1d7d87e6f29d2a221005ad",
+    "execution_id": "gui-20261011-222934-7519293c1e",
+    "review": "Primary visual review: existing dark closed top, separate right metal body, and lower small-box edge identify three objects. Recombine explicitly reviewed chest detail appearances only after existing fixed layouts and six-body fallback miss. All three native .92/unmasked current matches, center separation120..700px and triangle area16000px2 remain required; the stricter120px minimum prevents multiple detail hits on one physical chest, and the larger area rejects collinear physical chests whose different crop centers create a small artificial triangle. Preserve these geometry limits on subsequent current local confirmations. No terrain, shrine, corpse or enemy-absence evidence enters this pool. The previously unknown label-rich north-three-chest-end source visibly contains three separate chests; its unmasked detail matches can now qualify without using label-contaminated templates. Replay is not a fresh room completion."
+  },
+  "chest_detail_minimum_scores": {
+    "templates/terminal/small-stone-chest-gray-front.png": 0.91
+  },
+  "chest_detail_minimum_scores_review": "Primary visual review 2026-10-18: gray-front .9193 with other two independent chests .9327/.9208 on current hidden frame. Only this reviewed appearance .92 to .91; other parts, pool membership6/19 and composition120px/16000px2 unchanged."
 }

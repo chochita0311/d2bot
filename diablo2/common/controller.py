@@ -15,7 +15,7 @@ except ImportError:  # pragma: no cover
     pydirectinput = None
 
 
-def _virtual_pointer_move(x, y):
+def move_desktop_pointer(x, y):
     # moveTo는 주 모니터 크기로 정규화한다. 다른 모니터/음수 원점도
     # 마을 입력과 같은 가상 데스크톱 좌표로 전송해야 실제 조준점과 일치한다.
     user32 = ctypes.windll.user32
@@ -31,6 +31,17 @@ def _virtual_pointer_move(x, y):
     if pydirectinput.SendInput(1, ctypes.pointer(event), ctypes.sizeof(event)) != 1:
         raise RuntimeError("field pointer movement was not dispatched")
     return (left, top, width, height)
+
+
+def _dispatch_field_mouse(flags):
+    # pydirectinput.mouseDown/Up은 전송 결과를 반환하지 않는다.
+    # 키 입력과 마찬가지로 SendInput의 실제 삽입 수를 확인한다.
+    extra = ctypes.c_ulong(0)
+    payload = pydirectinput.Input_I()
+    payload.mi = pydirectinput.MouseInput(0, 0, 0, flags, 0, ctypes.pointer(extra))
+    event = pydirectinput.Input(ctypes.c_ulong(0), payload)
+    if pydirectinput.SendInput(1, ctypes.pointer(event), ctypes.sizeof(event)) != 1:
+        raise RuntimeError("field mouse {} was not dispatched".format("release" if flags == 0x0004 else "down"))
 
 
 class BotController:
@@ -75,7 +86,7 @@ class BotController:
         if self.dry_run or pydirectinput is None:
             self.log.info("Dry-run click at (%s, %s)", x, y)
             return
-        pydirectinput.moveTo(x, y)
+        move_desktop_pointer(x, y)
         time.sleep(0.05)
         pydirectinput.click()
 
@@ -141,12 +152,10 @@ class ControllerFieldInput:
         if not left <= x < right or not top <= y < bottom:
             raise ValueError("field click outside current game window")
         try:
-            if pydirectinput.mouseDown(_pause=False) is not True:
-                raise RuntimeError("field mouse down was not dispatched")
+            _dispatch_field_mouse(0x0002)
             time.sleep(0.05)
         finally:
-            if pydirectinput.mouseUp(_pause=False) is not True:
-                raise RuntimeError("field mouse release was not dispatched")
+            _dispatch_field_mouse(0x0004)
 
     def move(self, x, y):
         self._guard()
@@ -157,7 +166,7 @@ class ControllerFieldInput:
             self.controller.log.info("Dry-run field aim: %s %s", x, y)
         else:
             self.pointer_evidence = None
-            desktop = _virtual_pointer_move(x, y)
+            desktop = move_desktop_pointer(x, y)
             started = time.monotonic()
             # 전송 완료만으로 조준 성공을 만들지 않는다. 재전송 없이 짧게 확인한다.
             while True:

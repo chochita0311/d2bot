@@ -14,7 +14,8 @@ import numpy as np
 
 from diablo2.common.capture import ScreenCapture, focus_window, resolve_window_from_config
 from diablo2.common.config import CaptureConfig
-from diablo2.common.controller import keyboard, pydirectinput
+from diablo2.common.frame_geometry import frame_to_desktop, geometry_is_current
+from diablo2.common.controller import keyboard, move_desktop_pointer, pydirectinput
 
 
 @dataclass
@@ -353,6 +354,8 @@ class RunLifecycleSession:
             self._release_town_mouse()
             return
         self._ensure_input_allowed()
+        if not geometry_is_current(capture):
+            raise RuntimeError("window geometry changed after capture")
         if action["kind"] == "key":
             self._release_town_mouse()
             pydirectinput.press(action["key"], _pause=False)
@@ -488,7 +491,7 @@ class RunLifecycleSession:
         return MatchResult(top_left=max_loc, width=template.shape[1], height=template.shape[0], score=float(max_value))
 
     def _relative_point(self, capture: ScreenCapture, point_x: int, point_y: int) -> tuple[int, int]:
-        return capture.target["left"] + point_x, capture.target["top"] + point_y
+        return frame_to_desktop(capture, (point_x, point_y))
 
     def _click_relative(self, capture: ScreenCapture, point: tuple[int, int]) -> None:
         self._ensure_input_allowed()
@@ -503,8 +506,7 @@ class RunLifecycleSession:
 
     def _click_match_center(self, capture: ScreenCapture, match: MatchResult) -> None:
         self._ensure_input_allowed()
-        abs_x = capture.target["left"] + match.top_left[0] + match.width // 2
-        abs_y = capture.target["top"] + match.top_left[1] + match.height // 2
+        abs_x, abs_y = frame_to_desktop(capture, (match.top_left[0] + match.width // 2, match.top_left[1] + match.height // 2))
         abs_x, abs_y = self._jitter_point(abs_x, abs_y, self.TARGET_JITTER)
         self._move_absolute(capture, abs_x, abs_y)
         self._sleep_range(*self.CLICK_SETTLE)
@@ -526,6 +528,8 @@ class RunLifecycleSession:
 
     def _move_absolute(self, capture: ScreenCapture | None, target_x: int, target_y: int) -> None:
         if capture is not None:
+            if not geometry_is_current(capture):
+                raise RuntimeError("window geometry changed after capture")
             target = capture.target
             target_x = max(target["left"] + 2, min(target_x, target["left"] + target["width"] - 2))
             target_y = max(target["top"] + 2, min(target_y, target["top"] + target["height"] - 2))
@@ -534,17 +538,7 @@ class RunLifecycleSession:
             # 게임의 상대 입력 처리와 커서 위치가 어긋날 수 있다.
             if self._stop_event.is_set():
                 return
-            user32 = ctypes.windll.user32
-            origin_x, origin_y = user32.GetSystemMetrics(76), user32.GetSystemMetrics(77)
-            desktop_width, desktop_height = user32.GetSystemMetrics(78), user32.GetSystemMetrics(79)
-            dx = round((target_x - origin_x) * 65535 / (desktop_width - 1))
-            dy = round((target_y - origin_y) * 65535 / (desktop_height - 1))
-            extra = ctypes.c_ulong(0)
-            payload = pydirectinput.Input_I()
-            payload.mi = pydirectinput.MouseInput(dx, dy, 0, 0x0001 | 0x8000 | 0x4000, 0, ctypes.pointer(extra))
-            event = pydirectinput.Input(ctypes.c_ulong(0), payload)
-            if pydirectinput.SendInput(1, ctypes.pointer(event), ctypes.sizeof(event)) != 1:
-                raise RuntimeError("Desktop pointer movement failed.")
+            move_desktop_pointer(target_x, target_y)
             self._wait_for_town_pointer(target_x, target_y)
             return
         current_x, current_y = pydirectinput.position()
@@ -556,7 +550,7 @@ class RunLifecycleSession:
             next_x = int(current_x + (target_x - current_x) * ratio)
             bend = random.randint(-8, 8)
             next_y = int(current_y + (target_y - current_y) * ratio + bend * (1 - abs(0.5 - ratio) * 2))
-            pydirectinput.moveTo(next_x, next_y)
+            move_desktop_pointer(next_x, next_y)
             self._last_pointer = (next_x, next_y)
             time.sleep(random.uniform(*self.MOVE_SLEEP))
 

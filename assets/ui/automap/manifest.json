@@ -15,7 +15,22 @@
       ],
       "minimum_score": 0.86,
       "source_sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
-      "review": "Shared Korean area-title crop, visually reviewed; no character identity or equipment. Title position may move with additional automap information. Positive title evidence only, not absence-based OFF proof."
+      "review": "Shared Korean area-title crop, visually reviewed; no character identity or equipment. Title position may move with additional automap information. Positive title evidence only, not absence-based OFF proof.",
+      "variants": [
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-light-floor-window.png"
+      ]
+    },
+    "canyon_of_the_magi": {
+      "file": "../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/area-canyon.png",
+      "search": [
+        1100,
+        45,
+        1257,
+        190
+      ],
+      "minimum_score": 0.86,
+      "source_sha256": "8f221258257c738ac4779ddff7083fc4a30be4f6a7e3758693a42393b3f886a6",
+      "review": "Reviewed Korean Canyon title; gold foreground matching excludes gray automap lines. Positive area only."
     }
   }
 }

@@ -1,5 +1,7 @@
 import unittest
+import json
 from pathlib import Path
+from unittest.mock import patch
 
 import cv2 as cv
 import numpy as np
@@ -8,7 +10,183 @@ from diablo2.runs.summoner.terminal_vision import ArcaneTerminalObserver, Termin
 
 
 class ArcaneTerminalVisionTests(unittest.TestCase):
-    def test_overlapping_gold_labels_keep_two_current_parts_without_inventing_the_third(self):
+    def test_gray_front_lighting_tuning_keeps_three_objects_and_strict_composition(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        gray_front = "templates/terminal/small-stone-chest-gray-front.png"
+        frame = cv.imread(str(owner / "north-gray-front-lighting-hidden.png"))
+        observer = ArcaneTerminalObserver()
+        reading = observer.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual((120, 16000), (reading.minimum_separation, reading.minimum_area))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        for part, score in zip(reading.part_ids, reading.scores):
+            self.assertGreaterEqual(score, 0.91 if part == gray_front else 0.92)
+            if part == gray_front:
+                self.assertLess(score, 0.92)
+        for left, top, right, bottom in ((80, 380, 190, 455), (725, 460, 805, 535), (740, 600, 810, 685)):
+            missing = frame.copy()
+            missing[top:bottom, left:right] = 0
+            self.assertIsNone(ArcaneTerminalObserver().observe(missing))
+        for suffix in ("map-on", "unconfirmed"):
+            self.assertIsNone(ArcaneTerminalObserver().observe(cv.imread(str(owner / ("north-gray-front-lighting-" + suffix + ".png")))))
+        self.assertIsNotNone(ArcaneTerminalObserver().observe(cv.imread(str(owner / "north-gray-front-lighting-settled.png"))))
+        baseline = ArcaneTerminalObserver()
+        for parts in [baseline.parts] + [parts for _, parts in baseline.alternate_layouts]:
+            for rule, _, _ in parts:
+                if rule["path"] == gray_front:
+                    rule["threshold"] = 0.92
+        self.assertIsNone(baseline.observe(frame))
+        data = json.loads((owner.parent.parent / "terminal-patterns.json").read_text(encoding="utf-8"))
+        for minimum in (None, 0.90):
+            data["chest_detail_minimum_scores"] = {} if minimum is None else {gray_front: minimum}
+            with patch("diablo2.runs.summoner.terminal_vision.Path.read_text", return_value=json.dumps(data)):
+                with self.assertRaisesRegex(ValueError, "below reviewed minimum"):
+                    ArcaneTerminalObserver()
+
+    def test_lower_floor_spoke_and_two_distinct_chests_survive_clipped_lower_body_but_require_each_landmark(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        frame = cv.imread(str(owner / "references/terminal/north-two-chests-lower-floor-spoke.png"))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertIn("templates/terminal/engraved-lower-floor-spoke.png", reading.part_ids)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual((6, 19), (len(self.vision.chest_parts), len(self.vision.chest_detail_parts)))
+        np.testing.assert_array_equal(cv.imread(str(owner / "templates/terminal/engraved-lower-floor-spoke.png")), frame[833:876, 970:1024])
+        for left, top, right, bottom in ((950, 817, 1040, 900), (1180, 680, 1320, 810), (620, 700, 720, 790)):
+            missing = frame.copy()
+            missing[top:bottom, left:right] = 0
+            self.assertIsNone(self.vision.observe(missing))
+        self.assertIsNone(
+            self.vision.observe(cv.imread(str(owner / "references/terminal/north-two-chests-lower-floor-spoke-obscured.png")))
+        )
+
+    def test_two_arched_chests_and_small_box_require_each_current_object(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        frame = cv.imread(str(owner / "references/terminal/north-two-arched-chests-small-box.png"))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertIn("templates/terminal/dark-arched-chest-clean-front.png", reading.part_ids)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        self.assertEqual(19, len(self.vision.chest_detail_parts))
+        template = cv.imread(str(owner / "templates/terminal/dark-arched-chest-clean-front.png"))
+        np.testing.assert_array_equal(template, frame[577:610, 887:925])
+        for box in ((325, 555, 398, 620), (880, 540, 985, 625), (885, 680, 990, 775)):
+            missing = frame.copy()
+            x0, y0, x1, y1 = box
+            missing[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(missing))
+
+    def test_corpse_covered_gray_box_front_requires_three_separate_current_chests(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        frame = cv.imread(str(owner / "references/terminal/north-corpse-covered-gray-box-front.png"))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertIn("templates/terminal/small-stone-chest-gray-front.png", reading.part_ids)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        template = cv.imread(str(owner / "templates/terminal/small-stone-chest-gray-front.png"))
+        np.testing.assert_array_equal(template, frame[599:624, 1111:1151])
+        for x0, y0, x1, y1 in ((500, 550, 607, 640), (1090, 700, 1190, 790), (1100, 570, 1180, 635)):
+            missing = frame.copy()
+            missing[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(missing))
+
+    def test_map_overlay_views_require_three_current_chests_without_relaxing_scores(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        covered = cv.imread(str(owner / "north-map-overlay-on.png"))
+        clear = cv.imread(str(owner / "north-map-overlay-off.png"))
+        for source in (covered, clear, covered):
+            reading = self.vision.observe(source)
+            self.assertIsNotNone(reading)
+            self.assertEqual("current_three_parts", reading.provenance)
+            self.assertEqual(3, len(set(reading.evidence_boxes)))
+            self.assertTrue(all(score >= 0.92 for score in reading.scores))
+            for x0, y0, x1, y1 in ((520, 560, 620, 640), (1100, 710, 1190, 790), (1080, 560, 1210, 655)):
+                missing = source.copy()
+                missing[y0:y1, x0:x1] = 0
+                self.assertIsNone(self.vision.observe(missing))
+
+    def test_metal_chest_and_two_gray_box_edges_require_three_physical_objects(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-gray-box-edges.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(2, reading.part_ids.count("templates/terminal/small-stone-chest-right-edge.png"))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((184, 472, 289, 568), (776, 490, 850, 560), (776, 635, 850, 706)):
+            missing = frame.copy()
+            missing[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(missing))
+
+    def test_speed_review_sources_require_each_of_three_physical_chests(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        cases = (
+            (
+                "north-metal-chests-gray-stone-box.png",
+                "small-stone-box-gray-body.png",
+                ((1110, 450, 1230, 545), (1670, 440, 1810, 545), (1710, 615, 1785, 680)),
+            ),
+            (
+                "north-dark-metal-chests-square-box.png",
+                "dark-arched-chest-front-left.png",
+                ((713, 250, 815, 337), (1290, 400, 1385, 483), (1295, 260, 1370, 335)),
+            ),
+        )
+        for name, part, objects in cases:
+            with self.subTest(name=name):
+                frame = cv.imread(str(owner / name))
+                reading = self.vision.observe(frame)
+                self.assertIsNotNone(reading)
+                self.assertIn("templates/terminal/" + part, reading.part_ids)
+                self.assertTrue(all(score >= 0.92 for score in reading.scores))
+                self.assertEqual(3, len(set(reading.evidence_boxes)))
+                for x0, y0, x1, y1 in objects:
+                    missing = frame.copy()
+                    missing[y0:y1, x0:x1] = 0
+                    self.assertIsNone(self.vision.observe(missing))
+
+    def test_successive_current_layouts_follow_small_and_large_camera_shifts_and_reject_a_missing_object(self):
+        root = Path(__file__).resolve().parents[1]
+        frame = cv.imread(
+            str(root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-stone-boxes.png")
+        )
+        first = self.vision.observe(frame)
+        self.assertIsNotNone(first)
+        for shift in (2, 12):
+            moved = cv.warpAffine(frame, np.float32([[1, 0, shift], [0, 1, 0]]), (1922, 1140))
+            current = self.vision.observe(moved)
+            self.assertIsNotNone(current)
+            np.testing.assert_allclose(current.point, (first.point[0] + shift, first.point[1]), atol=0.01)
+            self.assertTrue(all(current.current_parts))
+            x0, y0, x1, y1 = current.evidence_boxes[0]
+            moved[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(moved))
+
+    def test_metal_chest_and_two_stone_boxes_require_three_distinct_current_objects(self):
+        root = Path(__file__).resolve().parents[1]
+        path = root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-stone-boxes.png"
+        frame = cv.imread(str(path))
+        self.assertIsNotNone(frame)
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertIn("templates/terminal/small-stone-chest-northwest-face.png", reading.part_ids)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        for x0, y0, x1, y1 in reading.evidence_boxes:
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_overlapping_labels_allow_new_layout_without_inventing_the_old_missing_part_score(self):
         root = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references"
         paths = (
             root / "terminal/north-gold-labels-full.png",
@@ -19,7 +197,11 @@ class ArcaneTerminalVisionTests(unittest.TestCase):
         before, after = (cv.imread(str(path)) for path in paths)
         full = self.vision.observe(before)
         self.assertIsNotNone(full)
-        self.assertIsNone(self.vision.observe(after))
+        current = self.vision.observe(after)
+        self.assertIsNotNone(current)
+        self.assertIn("templates/terminal/small-stone-box-gray-body.png", current.part_ids)
+        self.assertTrue(all(current.current_parts))
+        self.assertTrue(all(score >= 0.92 for score in current.scores))
         tracker = TerminalStabilityTracker(self.vision)
         tracker.update(before, full, 0, None)
         tracked = tracker.update(after, None, 0.2, (0, 0))
@@ -45,7 +227,7 @@ class ArcaneTerminalVisionTests(unittest.TestCase):
         self.assertIn("templates/terminal/dark-open-chest-southeast-face.png", reading.part_ids)
         self.assertEqual(3, len(set(reading.evidence_boxes)))
         self.assertTrue(all(score >= 0.92 for score in reading.scores))
-        for x0, y0, x1, y1 in reading.evidence_boxes:
+        for x0, y0, x1, y1 in ((140, 450, 240, 540), (710, 450, 815, 540), (710, 595, 815, 690)):
             hidden = frame.copy()
             hidden[y0:y1, x0:x1] = 0
             self.assertIsNone(self.vision.observe(hidden))
@@ -296,14 +478,23 @@ class ArcaneTerminalVisionTests(unittest.TestCase):
         self.assertIsNotNone(reading)
         np.testing.assert_allclose(reading.point, (1056.5, 299.166667), atol=1)
 
-    def test_old_label_contaminated_source_is_not_a_positive_template(self):
+    def test_label_rich_source_uses_three_current_unmasked_chest_details(self):
         path = (
             Path(__file__).resolve().parents[1]
             / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-chest-end.png"
         )
         if not path.exists():
             self.fail("Required shared occlusion source not installed")
-        self.assertIsNone(self.vision.observe(cv.imread(str(path))))
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual((1.0, 1.0, 1.0), reading.visible_fractions)
+        for x0, y0, x1, y1 in ((825, 600, 930, 690), (1410, 610, 1480, 670), (1395, 745, 1500, 830)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
 
     def test_layout_mismatch_is_not_silently_resized(self):
         with self.assertRaises(ValueError):
@@ -425,6 +616,73 @@ class ArcaneTerminalVisionTests(unittest.TestCase):
             self.assertIsNone(self.vision.observe(hidden))
         self.assertIsNone(self.vision.observe(np.zeros_like(frame)))
 
+    def test_bright_chest_face_keeps_three_distinct_current_objects(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-lit-metal-chest-face.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        for x0, y0, x1, y1 in ((480, 625, 580, 710), (1055, 625, 1150, 710), (1065, 775, 1160, 860)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_reviewed_detail_composition_requires_three_whole_chests_in_each_current_view(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        self.assertEqual(6, len(self.vision.chest_parts))
+        self.assertEqual(19, len(self.vision.chest_detail_parts))
+        for rule, _, _ in self.vision.chest_detail_parts:
+            minimum = 0.91 if rule["path"] == "templates/terminal/small-stone-chest-gray-front.png" else 0.92
+            self.assertGreaterEqual(rule["threshold"], minimum)
+        for suffix in ("", "-settled"):
+            with self.subTest(suffix=suffix):
+                frame = cv.imread(str(owner / ("north-dark-chests-small-box" + suffix + ".png")))
+                reading = self.vision.observe(frame)
+                self.assertIsNotNone(reading)
+                self.assertEqual("current_three_parts", reading.provenance)
+                self.assertEqual((1.0, 1.0, 1.0), reading.visible_fractions)
+                self.assertEqual((120, 16000), (reading.minimum_separation, reading.minimum_area))
+                repeated = self.vision.observe(frame)
+                self.assertEqual((120, 16000), (repeated.minimum_separation, repeated.minimum_area))
+                for x0, y0, x1, y1 in ((395, 585, 500, 675), (975, 585, 1075, 675), (980, 740, 1055, 805)):
+                    hidden = frame.copy()
+                    hidden[y0:y1, x0:x1] = 0
+                    self.assertIsNone(self.vision.observe(hidden))
+
+    def test_dark_metal_pair_and_small_box_require_each_physical_chest_in_both_views(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        for suffix in ("", "-settled"):
+            with self.subTest(suffix=suffix):
+                frame = cv.imread(str(owner / ("north-dark-metal-pair-small-box" + suffix + ".png")))
+                reading = self.vision.observe(frame)
+                self.assertIsNotNone(reading)
+                self.assertEqual("current_three_parts", reading.provenance)
+                self.assertTrue(all(score >= 0.92 for score in reading.scores))
+                for x0, y0, x1, y1 in ((350, 565, 430, 635), (925, 570, 1020, 645), (915, 695, 1020, 785)):
+                    hidden = frame.copy()
+                    hidden[y0:y1, x0:x1] = 0
+                    self.assertIsNone(self.vision.observe(hidden))
+
+    def test_three_dark_stone_boxes_are_not_a_two_box_junction(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-dark-stone-boxes.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        for x0, y0, x1, y1 in reading.evidence_boxes:
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
     def test_item_labels_use_current_visible_texture_and_still_require_each_object(self):
         path = (
             Path(__file__).resolve().parents[1]
@@ -440,6 +698,175 @@ class ArcaneTerminalVisionTests(unittest.TestCase):
         self.assertTrue(0.6 <= min(reading.visible_fractions) < 0.7)
         self.assertEqual(3, len(set(reading.evidence_boxes)))
         for x0, y0, x1, y1 in reading.evidence_boxes:
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_mixed_full_chest_bodies_require_three_current_physical_objects(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-mixed-small-and-arched-chests.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(2, reading.part_ids.count("templates/terminal/square-chest.png"))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        for x0, y0, x1, y1 in ((550, 670, 640, 740), (1100, 650, 1230, 750), (1125, 815, 1210, 885)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+        tracker = TerminalStabilityTracker(self.vision)
+        tracker.update(frame, reading, 0, None)
+        partial = frame.copy()
+        partial[670:740, 550:640] = 0
+        tracked = tracker.update(partial, None, 0.2, (0, 0))
+        self.assertIsNotNone(tracked)
+        self.assertEqual(2, sum(tracked.current_parts))
+        self.assertEqual(0, tracked.reference_observed_at)
+        self.assertIsNone(tracker.update(partial, None, 2.01, (0, 0)))
+
+    def test_three_arched_chests_reuse_reviewed_faces_without_expanding_body_pool(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-arched-chest-faces.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((1110, 300, 1230, 400), (1680, 300, 1810, 400), (1680, 440, 1810, 550)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_corpse_covered_small_chest_uses_only_its_clear_face(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-small-chest.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertIn("templates/terminal/small-stone-chest-clear-left-face.png", reading.part_ids)
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((550, 670, 625, 740), (1100, 640, 1220, 750), (1100, 790, 1230, 885)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_corpse_covered_stone_box_and_metal_chest_reuse_three_current_objects(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        frame = cv.imread(str(owner / "references/terminal/north-corpse-covered-stone-box-and-metal-chest.png"))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertIn("templates/terminal/square-stone-chest-left.png", reading.part_ids)
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((170, 480, 255, 550), (750, 480, 835, 550), (725, 605, 840, 705)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_fire_obscured_terminal_requires_new_clear_current_objects(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal"
+        self.assertIsNone(self.vision.observe(cv.imread(str(owner / "north-fire-obscured.png"))))
+        reading = self.vision.observe(cv.imread(str(owner / "north-fire-cleared.png")))
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+
+    def test_two_stone_boxes_and_dark_metal_face_require_three_physical_objects(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        frame = cv.imread(str(owner / "references/terminal/north-two-stone-boxes-dark-metal-face.png"))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((550, 435, 635, 510), (1120, 435, 1200, 510), (1110, 565, 1220, 660)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_two_metal_chests_and_engraved_floor_require_all_three_current_landmarks(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140"
+        for name in ("north-metal-pair-engraved-floor.png", "north-metal-pair-engraved-floor-settled.png"):
+            with self.subTest(name=name):
+                frame = cv.imread(str(owner / "references/terminal" / name))
+                reading = self.vision.observe(frame)
+                self.assertIsNotNone(reading)
+                self.assertEqual("current_three_parts", reading.provenance)
+                self.assertEqual(3, len(set(reading.evidence_boxes)))
+                self.assertEqual(6, len(self.vision.chest_parts))
+                scores = dict(zip(reading.part_ids, reading.scores))
+                self.assertGreaterEqual(scores["templates/terminal/engraved-stone-plate.png"], 0.91)
+                for part, score in scores.items():
+                    if part != "templates/terminal/engraved-stone-plate.png":
+                        self.assertGreaterEqual(score, 0.92)
+                if "settled" in name:
+                    self.assertLess(scores["templates/terminal/engraved-stone-plate.png"], 0.92)
+                for x0, y0, x1, y1 in ((735, 560, 815, 645), (990, 570, 1100, 655), (985, 705, 1100, 805)):
+                    hidden = frame.copy()
+                    hidden[y0:y1, x0:x1] = 0
+                    self.assertIsNone(self.vision.observe(hidden))
+
+    def test_fixed_floor_layouts_reject_shared_nonterminal_native_references(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references"
+        checked = 0
+        for group in ("hub", "entry", "navigation", "summoner"):
+            for path in sorted((owner / group).glob("*.png")):
+                frame = cv.imread(str(path))
+                if frame.shape != (1140, 1922, 3):
+                    continue
+                with self.subTest(path=str(path)):
+                    self.assertIsNone(self.vision.observe(frame))
+                checked += 1
+        self.assertGreaterEqual(checked, 36)
+
+    def test_stone_plate_and_two_distinct_chests_reuse_current_reviewed_parts(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-stone-plate-arched-and-square.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertIn("templates/terminal/engraved-stone-plate.png", reading.part_ids)
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((1270, 350, 1370, 425), (1535, 345, 1660, 455), (1550, 505, 1645, 585)):
+            hidden = frame.copy()
+            hidden[y0:y1, x0:x1] = 0
+            self.assertIsNone(self.vision.observe(hidden))
+
+    def test_dark_arched_clean_roof_stays_in_reviewed_three_object_layout(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-small-boxes-and-dark-arched-roof.png"
+        )
+        frame = cv.imread(str(path))
+        reading = self.vision.observe(frame)
+        self.assertIsNotNone(reading)
+        self.assertEqual("current_three_parts", reading.provenance)
+        self.assertIn("templates/terminal/dark-arched-chest-clean-roof.png", reading.part_ids)
+        self.assertEqual(3, len(set(reading.evidence_boxes)))
+        self.assertTrue(all(score >= 0.92 for score in reading.scores))
+        self.assertEqual(6, len(self.vision.chest_parts))
+        for x0, y0, x1, y1 in ((600, 455, 700, 540), (1160, 445, 1290, 540), (1170, 605, 1260, 685)):
             hidden = frame.copy()
             hidden[y0:y1, x0:x1] = 0
             self.assertIsNone(self.vision.observe(hidden))

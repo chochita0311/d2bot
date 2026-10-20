@@ -8,9 +8,25 @@ import cv2 as cv
 import numpy as np
 
 from diablo2.runs.summoner.objective_vision import ArcaneObjectiveObserver
+from diablo2.runs.summoner.journal_vision import HorazonJournalObserver
 
 
 class ArcaneObjectiveVisionTests(unittest.TestCase):
+    def test_closed_front_page_retains_same_platform_anchor_across_full_and_detail_journal_matches(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        journal = HorazonJournalObserver()
+        for name in ("platform-corpse-front-hem.png", "platform-corpse-front-hem-followup.png"):
+            frame = cv.imread(str(owner / name))
+            self.assertEqual((988.5, 454.0), self.observer.observe(frame).ground_point)
+            detailed = next(match for match in journal.matches(frame) if match.platform_ground is not None)
+            self.assertEqual((988.5, 454.0), detailed.platform_ground)
+            shifted = cv.copyMakeBorder(frame[:-1, :-1], 1, 0, 1, 0, cv.BORDER_CONSTANT)
+            self.assertEqual((989.5, 455.0), self.observer.observe(shifted).ground_point)
+            journal_only = np.zeros_like(frame)
+            journal_only[258:309, 971:1021] = frame[258:309, 971:1021]
+            self.assertIsNotNone(journal.observe(journal_only))
+            self.assertIsNone(self.observer.observe(journal_only))
+
     def setUp(self):
         self.observer = ArcaneObjectiveObserver()
 
@@ -130,6 +146,23 @@ class ArcaneObjectiveVisionTests(unittest.TestCase):
         # 일지 없는 룬/파란 효과만으로 위치나 보스를 만들지 않는다.
         frame[400 : 400 + h, 700 : 700 + w] = 0
         self.assertIsNone(self.observer.observe(frame))
+
+    def test_closed_journal_part_is_shared_with_exit_but_still_needs_current_runes(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frame = cv.imread(str(owner / "platform-corpse-wide-side.png"))
+        reading = self.observer.observe(frame)
+        self.assertEqual((913, 405, 946, 442), reading.journal_box)
+        self.assertGreaterEqual(reading.journal_score, 0.92)
+        self.assertEqual(6, len(reading.rune_boxes))
+        self.assertFalse(hasattr(reading, "dead"))
+        self.assertEqual((929.5, 423.5), HorazonJournalObserver().observe(frame))
+        hidden = frame.copy()
+        hidden[400:460, 900:965] = 0
+        self.assertIsNone(HorazonJournalObserver().observe(hidden))
+        journal_only = np.zeros_like(frame)
+        journal_only[405:442, 913:946] = frame[405:442, 913:946]
+        self.assertIsNotNone(HorazonJournalObserver().observe(journal_only))
+        self.assertIsNone(self.observer.observe(journal_only))
 
     def test_actual_platform_reuses_journal_without_claiming_boss_life_state(self):
         path = (

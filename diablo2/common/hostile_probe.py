@@ -36,13 +36,16 @@ class NearbyHostileProbe:
 
     OFFSETS = ((-80, -130), (80, -130), (0, -80), (-160, -80), (160, -80), (-240, -40), (240, -40), (-120, 0), (120, 0), (0, -160))
 
-    def __init__(self, target_observer, backend, origin, *, clock):
+    def __init__(self, target_observer, backend, origin, *, clock, to_desktop=None):
         self.observer, self.backend, self.origin, self.clock = target_observer, backend, origin, clock
+        self.to_desktop = to_desktop or (lambda point: tuple(int(a + b) for a, b in zip(self.origin, point)))
         self.pending, self.index = None, 0
+        self.pending_ground = None
         self.next_proposal_at = float("-inf")
 
     def reset(self):
         self.pending = None
+        self.pending_ground = None
 
     def observe(self, frame, player, acquired, *, points=None):
         now = self.clock()
@@ -51,11 +54,12 @@ class NearbyHostileProbe:
             return None
         if self.pending is not None:
             point, requested_at = self.pending
-            absolute = tuple(int(a + b) for a, b in zip(self.origin, point))
+            absolute = self.to_desktop(point)
             # 실제 커서와 새 화면이 같은 근접 지점을 지지해야 한다. 이전 패널을 저장하지 않는다.
             if (
                 0.05 <= acquired - requested_at <= 0.5
-                and math.hypot((point[0] - player[0]) / 300, (point[1] - player[1]) / 180) <= 1
+                and self.pending_ground is not None
+                and math.hypot((self.pending_ground[0] - player[0]) / 300, (self.pending_ground[1] - player[1]) / 180) <= 1
                 and self.backend.pointer_matches(absolute)
             ):
                 target = self.observer.observe(frame)
@@ -69,15 +73,21 @@ class NearbyHostileProbe:
             if not points or now < self.next_proposal_at:
                 return None
             point = points[self.index % len(points)]
+            # 후보는 바닥 효과에서 몸통 쪽으로 80px 올린 호버점이다. 근접 거리는 원래 바닥으로 잰다.
+            ground = (point[0], point[1] + 80)
             self.next_proposal_at = now + 0.5
         else:
             dx, dy = self.OFFSETS[self.index % len(self.OFFSETS)]
             point = (int(player[0] + dx), int(player[1] + dy))
+            ground = point
         self.index += 1
+        if math.hypot((ground[0] - player[0]) / 300, (ground[1] - player[1]) / 180) > 1:
+            return None
         if not 24 <= point[0] < frame.shape[1] - 24 or not 55 <= point[1] < 900:
             return None
         if not 0 <= self.clock() - acquired < 0.25:
             return None
-        self.backend.move(*tuple(int(a + b) for a, b in zip(self.origin, point)))
+        self.backend.move(*self.to_desktop(point))
         self.pending = (point, self.clock())
+        self.pending_ground = ground
         return None

@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "frame_size": [
+    1922,
+    1140
+  ],
+  "reference_size": [
+    1267,
+    753
+  ],
+  "source": {
+    "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-arrival.png",
+    "sha256": "8f221258257c738ac4779ddff7083fc4a30be4f6a7e3758693a42393b3f886a6",
+    "review": "2026-10-11 supervised journal/red portal arrival; title and distinct waypoint floor crop exclude actors and HUD. Shared replay contains no player/account identifiers."
+  },
+  "parts": {
+    "area-canyon": {
+      "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/area-canyon.png",
+      "crop": [
+        1154,
+        69,
+        1252,
+        87
+      ],
+      "search": [
+        1100,
+        45,
+        1257,
+        190
+      ],
+      "threshold": 0.86,
+      "sha256": "82cb4a7abf84fede98742ecfe09dd4fb87985bbb9ea2901e1e62684d22247ba4",
+      "click_offset": null
+    },
+    "waypoint-floor": {
+      "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-floor.png",
+      "crop": [
+        736,
+        198,
+        870,
+        295
+      ],
+      "search": [
+        24,
+        55,
+        1250,
+        590
+      ],
+      "threshold": 0.92,
+      "sha256": "160cc41848db20471bcb0d95caadfacc1382ab6d022db38a7261ff9f56268da3",
+      "click_offset": [
+        27,
+        42
+      ]
+    },
+    "waypoint-south-steps": {
+      "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-south-steps.png",
+      "crop": [
+        951,
+        129,
+        1070,
+        180
+      ],
+      "reference_size": [
+        1922,
+        1140
+      ],
+      "threshold": 0.92,
+      "sha256": "7b147d7f8d9d0bd64b7b63599676917d076eb0ea43a0d2db33d80fb924e0562f",
+      "source": {
+        "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/portal-arrival.png",
+        "sha256": "85244f290b57d64f347a5dc78ca418eed96ab7f665def857c0c9c2152b3e6bd3",
+        "review": "Reviewed visible south stairs on first portal arrival. Used only for at most two observed approaches when the full waypoint floor is not yet visible; title and HUD required. No arbitrary north coordinate."
+      }
+    },
+    "waypoint-left-floor": {
+      "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor.png",
+      "crop": [
+        462,
+        353,
+        594,
+        401
+      ],
+      "reference_size": [
+        1267,
+        753
+      ],
+      "threshold": 0.92,
+      "sha256": "319c155a161abb563a6485c0b83f7de6dff57a79e16a2574d67db6bb46b3a2b4",
+      "click_offset": [
+        148,
+        32
+      ],
+      "source": {
+        "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied.png",
+        "sha256": "9aaf75b43b98ef8177078e5b8a414ecb1a1cd7a26d0486677b7911b002967479",
+        "source_frame_sha256": "c19ed6efa81abcb2b1ac1eb86f3572eb731c4b0703ee7669792e2057a5729018",
+        "retained_boxes": [
+          [
+            150,
+            150,
+            1650,
+            900
+          ],
+          [
+            1700,
+            90,
+            1900,
+            140
+          ],
+          [
+            250,
+            880,
+            1650,
+            1127
+          ]
+        ],
+        "review": "Current Canyon waypoint with character covering center; distinct left pit edge plus left floor spoke stays visible. Click offset targets the current near left side of the interactive waypoint, not a remembered screen coordinate. Same-frame Canyon title and HUD remain required."
+      }
+    },
+    "waypoint-left-floor-day": {
+      "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor-day.png",
+      "crop": [
+        462,
+        353,
+        594,
+        401
+      ],
+      "reference_size": [
+        1267,
+        753
+      ],
+      "threshold": 0.92,
+      "sha256": "294671305e5cdfff8a40c121abae9bce9fb274bda4be6dd73bbc1dc949800c33",
+      "click_offset": [
+        148,
+        32
+      ],
+      "source": {
+        "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied-day.png",
+        "sha256": "fc2f359c33fd636c6c7b9185e60a3420fb60213381138e0d18e435cbff9cbd63",
+        "source_frame_sha256": "0c4adba77b289d483e947d09f0e53d8af57ea15dc70978da3fc73a494d2e4fe4",
+        "retained_boxes": [
+          [
+            150,
+            150,
+            1650,
+            900
+          ],
+          [
+            1700,
+            90,
+            1900,
+            140
+          ],
+          [
+            250,
+            880,
+            1650,
+            1127
+          ]
+        ],
+        "review": "Same current waypoint and left floor/pit geometry in daylight; night-template score .744354 misses .92. Source is a single current capture, not independent-room validation. Region/HUD and existing three-attempt limit unchanged."
+      }
+    }
+  }
+}

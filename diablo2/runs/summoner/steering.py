@@ -158,6 +158,11 @@ class ContinuousSteering:
             supported = floor_supports_aim(view, self.aim, self.clearance_pixels)
             previous = tuple(a - b for a, b in zip(self.aim, view.anchor))
             turning = _angle(previous, direction) >= 35
+            if not supported and _angle(previous, direction) >= 150:
+                # 한 화면의 바닥 누락만으로 정반대 시전을 보내지 않는다. 이전 입력도 해제한다.
+                if self.pending is None or _angle(self.pending, direction) >= 20:
+                    self.pending = direction
+                    return False, "opposite_floor_recheck"
             # 기존 조준이 공허/발판 가장자리로 바뀌면 시전 참고 시간보다 새 화면을 우선한다.
             if not supported:
                 changed, reason = True, "previous_floor_closed"

@@ -1,6 +1,8 @@
 # Automap visibility
 
-The shared Korean Arcane area-title crop verifies the title shown with the full-screen automap. It contains no character identity or equipment. It is normalized to the reviewed 1267×753 window layout; other languages and layouts require reviewed variants.
+The shared Korean Arcane area-title crops verify the title shown with the full-screen automap. They contain no character identity or equipment. They are normalized to the reviewed 1267×753 window layout; other languages and layouts require reviewed variants. The optional `variants` list supplies additional reviewed appearances at the same .86 threshold. Current positive evidence records which template matched. The light-floor variant is calibrated against one stopped return frame; title removal, blank frames and the Canyon title remain negative for Arcane.
+
+The shared observer compares both continuous gold-channel contrast and the existing binary gold mask against the same reviewed letters. Continuous contrast preserves reduced-window antialiasing; the binary mask preserves native titles over colored floor. Both exclude gray map lines, and the .86 threshold is unchanged. Current evidence records the matching encoding. Synthetic client downsampling to 1716×1011 and 1373×809 retains the light-floor title, while removed letters, blank frames, the Canyon title and retained Act 1/Act 2 town frames stay negative. These replays do not establish accuracy in every live reduced window.
 
 Summoner main defaults to ON. It checks a current, readable, panel-closed field frame before sending at most one Tab, then requires a positive title match before moving. A missing title is unverified visibility rather than proof of OFF. `--automap preserve` is an explicit diagnostic option; it does not assert visibility. The run does not toggle the map while moving.
 

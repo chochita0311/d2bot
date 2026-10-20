@@ -4,6 +4,7 @@ import ctypes
 import os
 import sys
 import threading
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -475,7 +476,11 @@ class D2BotControlPanel:
         snapshots_dir.mkdir(parents=True, exist_ok=True)
         snapshot_path = snapshots_dir / "gui_snapshot.png"
         try:
-            packet = ScreenCapture(self.config.capture).grab()
+            snapshot_capture = ScreenCapture(replace(self.config.capture, reference_layout=None))
+            try:
+                packet = snapshot_capture.grab()
+            finally:
+                snapshot_capture.close()
             success = cv.imwrite(str(snapshot_path), packet.frame)
         except Exception as exc:
             messagebox.showerror("Snapshot Error", str(exc))

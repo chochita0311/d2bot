@@ -54,6 +54,9 @@ def validate_runtime_permit(proof, now):
 class AutomaticBuffDriver:
     """현재 안전 관찰과 실제 시전 요청 시각으로 버프를 실행한다."""
 
+    # 1초 안정 관찰과 W→A→A→S의 실제 요청 지연을 갱신 시한 전에 확보한다.
+    PREPARATION_LEAD_SECONDS = 4.0
+
     def __init__(self, profile, guard_factory, dispatch, observe, clear_hostiles, stop, *, clock=time.monotonic):
         self.profile = profile
         self.guard_factory, self.dispatch, self.observe = guard_factory, dispatch, observe
@@ -61,6 +64,8 @@ class AutomaticBuffDriver:
         self.deadlines = []
 
     def execute(self):
+        previous_deadline = min(self.deadlines) if self.deadlines else None
+        preparation_started_at = self.clock()
         order = tuple(token.lower() for token in self.profile.actions.pre_run_buff_order)
         if not order or order.count("w") % 2:
             raise ValueError("buff sequence must restore the starting main weapon set")
@@ -102,9 +107,16 @@ class AutomaticBuffDriver:
             observation=proof,
             stability=stability,
             deadlines=deadlines,
+            preparation_at=self.preparation_at,
+            preparation_started_at=preparation_started_at,
+            previous_deadline=previous_deadline,
             equipment_basis="main_weapon_start_precondition_and_balanced_sequence",
             effect_status="not_independently_verified",
         )
 
+    @property
+    def preparation_at(self):
+        return min(self.deadlines) - self.PREPARATION_LEAD_SECONDS if self.deadlines else None
+
     def due(self):
-        return bool(self.deadlines) and self.clock() >= min(self.deadlines)
+        return self.preparation_at is not None and self.clock() >= self.preparation_at

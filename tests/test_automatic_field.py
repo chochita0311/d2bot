@@ -139,13 +139,45 @@ class AutomaticFieldTests(unittest.TestCase):
         self.assertEqual([153], result["deadlines"])
         self.assertEqual("not_independently_verified", result["effect_status"])
         self.assertFalse(result["buff"]["effect_verified"])
-        self.now = 152.999
+        self.assertEqual(149, result["preparation_at"])
+        self.now = 148.999
         self.assertFalse(driver.due())
-        self.now = 153
+        self.now = 149
         self.assertTrue(driver.due())
         renewed = driver.execute()
-        self.assertEqual([296], renewed["deadlines"])
+        self.assertEqual([292], renewed["deadlines"])
+        self.assertEqual(153, renewed["previous_deadline"])
         self.assertEqual(["dispatch", "dispatch"], self.events)
+
+    def test_renewal_reserves_stability_and_prefix_time_without_moving_actual_s_deadline(self):
+        driver = self.driver()
+        first = driver.execute()
+        previous_deadline = first["deadlines"][0]
+        self.now = driver.preparation_at
+        requests = []
+
+        def prepare():
+            self.now += 1.3
+            return {"window_seconds": 1.0}
+
+        def dispatch(check):
+            requests.append(("w", self.now))
+            self.now += 1.9
+            requests.append(("s", self.now))
+            return dict(
+                status="dispatched_unconfirmed",
+                equipment_dispatch_balanced=True,
+                buff_dispatches=[dict(key=key, cast_request_monotonic=at) for key, at in requests],
+            )
+
+        driver.guard_factory = lambda: SimpleNamespace(prepare=prepare, wait_check=lambda: None)
+        driver.dispatch = dispatch
+        renewed = driver.execute()
+        self.assertLess(requests[0][1], previous_deadline)
+        self.assertLess(requests[1][1], previous_deadline)
+        self.assertEqual(previous_deadline, renewed["previous_deadline"])
+        self.assertEqual([requests[1][1] + 140], renewed["deadlines"])
+        self.assertEqual("not_independently_verified", renewed["effect_status"])
 
     def test_nearby_hostile_clear_then_new_stability_check(self):
         driver = self.driver(unsafe=True)

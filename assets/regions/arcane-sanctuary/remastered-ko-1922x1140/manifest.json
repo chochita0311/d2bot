@@ -1026,6 +1026,1152 @@
       "path": "templates/terminal/stone-chest-southeast.png",
       "historical_filename": "terminal-stone-chest-southeast.png",
       "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+    },
+    {
+      "path": "references/summoner/platform-alive-north.png",
+      "sha256": "f0c71a8e0b9ed7db9d4808bb14de2c9695acc446ff830aa40bcf9c18cf871c03",
+      "execution_id": "20261011-gui",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-north.png",
+      "sha256": "9dbbc270f634f738a88950ecafc55306d6b308dd7724886938d3ad9db20f7e88",
+      "execution_id": "20261011-gui",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/journal-red-portal.png",
+      "sha256": "f9b77eeaecd095f80c3ea51a0e5057e396fbdbcd4907ff007f6189257f039a01",
+      "execution_id": "20261011-gui",
+      "details_owner": "journal-exit.json"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-north.png",
+      "sha256": "022dff17f5c042ce3b0463d4faea222596a957f2df5cb10ac18117352d22d41a",
+      "execution_id": "20261011-gui",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-north.png",
+      "sha256": "19afdca29c76807393d5e4375a3f72a6373aa4f8b0a0aca48031a9458a908d0d",
+      "execution_id": "20261011-gui",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "templates/objective/journal-closed-north.png",
+      "sha256": "c18f47cec3fd29b59e01b5d95c1f72131ab9085b1425595d510139e0543533f8",
+      "execution_id": "20261011-gui",
+      "details_owner": "journal-exit.json"
+    },
+    {
+      "path": "references/terminal/north-metal-chest-two-stone-boxes.png",
+      "sha256": "c38e394a76b0f54cd4f5e1f76bf6230577a3b4a6f3d2dd6439c2fcb91bed5d5b",
+      "execution_id": "20261011-gui",
+      "details_owner": "terminal-patterns.json"
+    },
+    {
+      "path": "templates/terminal/small-stone-chest-northwest-face.png",
+      "sha256": "6a219bdfce87910ab9cf3d01a22f80802bb9fb64a6b0772c44256dce05b3301e",
+      "execution_id": "20261011-gui",
+      "details_owner": "terminal-patterns.json"
+    },
+    {
+      "path": "references/hub/southwest-approach-floor.png",
+      "sha256": "00f7c393aa05e271b17602fc18eb91ffe1fe31ee9a5981c9c6f7cffe66efae16",
+      "details_owner": "hub-patterns.json",
+      "execution_id": "gui-20261011-143650-74582dfdab"
+    },
+    {
+      "path": "templates/hub/floor-lower-southwest-approach.png",
+      "sha256": "b9cfcf5d6953d320bec101a1ae093ab1fe6aaf31384e87a5471a86656d1b791f",
+      "details_owner": "hub-patterns.json",
+      "execution_id": "gui-20261011-143650-74582dfdab"
+    },
+    {
+      "path": "references/summoner/platform-alive-shield.png",
+      "sha256": "deddb8777d538da90d22cb449c45807a2f347fc0d4af77be3da5f70a7379031f",
+      "detail_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-shield.png",
+      "sha256": "ec41b61ba83eb28dd8df750b79dfba6e947a87667a359b4ad41dacfd717df62a",
+      "detail_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-shield.png",
+      "sha256": "970eb71ebe320e1d4cb049274dc3d2c0e7dadea5767af603c42732e2864e7900",
+      "detail_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-shield.png",
+      "sha256": "40c97f5484ba270bad41994630967bf173ab87c8ac87b061437268eafd6738a7",
+      "detail_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/terminal/north-lit-metal-chest-face.png",
+      "sha256": "fb8e6f7e06d46578a1a4253490983479a7eb9d93aa4581501eec2e607d6eb73e",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-150851-260598ca43"
+    },
+    {
+      "path": "templates/terminal/metal-chest-lit-face.png",
+      "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-150851-260598ca43"
+    },
+    {
+      "path": "references/terminal/north-three-dark-stone-boxes.png",
+      "sha256": "1fb5e5dcc9d33f25964ec93db646ab593f840a773b1230d8fc65f04426a8ac7b",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-152143-c3f42e6116"
+    },
+    {
+      "path": "templates/terminal/small-stone-box-dark-left.png",
+      "sha256": "8a3bf2322412844a9abcb2a7e6799eb00cadb559c91d57b90add50be14bdf774",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-152143-c3f42e6116"
+    },
+    {
+      "path": "templates/terminal/small-stone-box-dark-right.png",
+      "sha256": "ff15089b41a9875a6b2bc8484317c87ba7de18de597b9991ef09161851833f09",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-152143-c3f42e6116"
+    },
+    {
+      "path": "references/terminal/north-mixed-small-and-arched-chests.png",
+      "sha256": "2e82b552935088c80e4f805b82fc026dde31966dc7e5f0eaa1a43bf99d55515b",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-153318-ec84a788e1"
+    },
+    {
+      "path": "references/navigation/stair-edge-blocked-landing.png",
+      "sha256": "865b99ad69c5636b452e6be50911bdf42c5c5f671d9031f2e00fc850591565f1",
+      "execution_id": "gui-20261011-154820-17d2ae8558",
+      "details_owner": "README.md"
+    },
+    {
+      "path": "references/hub/merged-dim-brazier.png",
+      "sha256": "65221ebff7f4ecba06d6a98a5644946d38c5e76692e6dc2baae5177e921e034d",
+      "execution_id": "recovery-20261011-stair-room02",
+      "details_owner": "hub-patterns.json"
+    },
+    {
+      "path": "references/hub/merged-brazier-town-finish.png",
+      "sha256": "6eafa647e92b4117deb0c26c48e1f153352849539725c3013467579129c32786",
+      "execution_id": "recovery-20261011-stair-room02-retry",
+      "details_owner": "hub-patterns.json"
+    },
+    {
+      "path": "references/terminal/north-three-arched-chest-faces.png",
+      "sha256": "497f850228a2280e5383b636e7fbb879b8d4a03218d1f96ae7a4ed1f840b64a8",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-161059-02070a4c8d"
+    },
+    {
+      "path": "references/terminal/north-corpse-covered-small-chest.png",
+      "sha256": "ab089eac33f727c78d36c4d5051c70c9cdb87a6f120fc419e7a57ed5ebc638b1",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-162732-eb4eaf95d7"
+    },
+    {
+      "path": "references/terminal/north-fire-obscured.png",
+      "sha256": "a2661421186fa08db262bc29bc7020ac6ce8d542699025c293b0816b3dd3c0a2",
+      "details_owner": "references/README.md",
+      "execution_id": "gui-20261011-164142-4f1252dfd3"
+    },
+    {
+      "path": "references/terminal/north-fire-cleared.png",
+      "sha256": "4e833251f43cbb702041eec2f4a68df1d5f8657ec4b7e59249ba21043831da0b",
+      "details_owner": "references/README.md",
+      "execution_id": "gui-20261011-164142-4f1252dfd3"
+    },
+    {
+      "path": "references/navigation/area-title-light-floor.png",
+      "sha256": "1150f8f69a23cb5088114b027f2e1d04a522af2fe5f41a0333098744bddfcba0",
+      "details_owner": "references/README.md",
+      "execution_id": "recovery-20261011-return-key-reset-retry"
+    },
+    {
+      "path": "templates/navigation/area-title-light-floor-window.png",
+      "sha256": "86ad380ab6e8d556108054d438ef4b2107f8fb808a68c13963f6a17cfc5bc3bf",
+      "details_owner": "references/README.md",
+      "execution_id": "recovery-20261011-return-key-reset-retry"
+    },
+    {
+      "path": "references/terminal/north-stone-plate-arched-and-square.png",
+      "sha256": "d1f1e9ec2df1685b86a5e81741eaa972c372806dc23e8f09910b98dbba07e2f8",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-171832-5867cdc305"
+    },
+    {
+      "path": "references/hub/left-floor-return.png",
+      "sha256": "25b914b7a47db6427553fef248d514bc9e11966641f29bcb11fb4e91757e6eb5",
+      "details_owner": "hub-patterns.json",
+      "execution_id": "gui-20261011-173349-cd30f39eac"
+    },
+    {
+      "path": "templates/hub/floor-left-return.png",
+      "sha256": "aa74d561d85b589e8ce83e53091bd7f126752a3b95222eee19e0bdcffa584031",
+      "details_owner": "hub-patterns.json",
+      "execution_id": "gui-20261011-173349-cd30f39eac"
+    },
+    {
+      "path": "references/terminal/north-small-boxes-and-dark-arched-roof.png",
+      "sha256": "73627c0875181ee4b1462556d7840df073906ff0798bff51f5b00bda7be804a5",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-174330-fa26f54a66"
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-clean-roof.png",
+      "sha256": "60dc650ed325d2ccba87bf4c2a622bd878af703f756551335aed02850c6d1075",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-174330-fa26f54a66"
+    },
+    {
+      "path": "references/terminal/north-metal-chests-gray-stone-box.png",
+      "sha256": "7795ecd77e964ee10c20cc9a5e02979f558c12e86825d7b5f2888985f1398144",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-185046-ab815556c5"
+    },
+    {
+      "path": "templates/terminal/small-stone-box-gray-body.png",
+      "sha256": "3905f6d2aa26a5d1929b8891bb87b89e5d9b58a596940bfc0cc9a047707bb657",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-185046-ab815556c5"
+    },
+    {
+      "path": "references/terminal/north-dark-metal-chests-square-box.png",
+      "sha256": "065fb5fd96ff65cb20c6144d34c27e41f5547d0441a8b6a1f85ae95ca7d8474a",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-190505-ed3c5c56d5"
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-front-left.png",
+      "sha256": "0c00af79452efa974a8d9af8d80d8f0a8eadf1464055c55a6ca468b41d609027",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-190505-ed3c5c56d5"
+    },
+    {
+      "path": "references/terminal/north-metal-chest-two-gray-box-edges.png",
+      "sha256": "4d85a90e08fec2aa81722493e18d518a2331e472aa3914975c5cacf0179bb1de",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-195433-8f7d501f0e"
+    },
+    {
+      "path": "references/summoner/platform-alive-hit-turn.png",
+      "sha256": "28372568380c85296039ebb3bd9569ac982835841fab7b749cc4f445d163ef03",
+      "details_owner": "summoner-encounter.json",
+      "execution_id": "gui-20261011-204257-f95fb2f4f8"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-hit-turn.png",
+      "sha256": "14c43ff65ab9aeefd6c8a2312711eb8619d699c46b5a40a5081c59e41fba3db4",
+      "details_owner": "summoner-encounter.json",
+      "execution_id": "gui-20261011-204257-f95fb2f4f8"
+    },
+    {
+      "path": "references/summoner/platform-corpse-turn.png",
+      "sha256": "c93d01cc9a7264e27768b4a74c0960bcd74ee3a7795afb3af27fec609992f9b2",
+      "details_owner": "summoner-encounter.json",
+      "execution_id": "gui-20261011-204257-f95fb2f4f8"
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-turn.png",
+      "sha256": "ef902f919aae71d905505f6ce44451263bdba13a8da304c926d154381bb49336",
+      "details_owner": "summoner-encounter.json",
+      "execution_id": "gui-20261011-204257-f95fb2f4f8"
+    },
+    {
+      "path": "references/terminal/north-corpse-covered-stone-box-and-metal-chest.png",
+      "sha256": "70cb456b359fe3d4f88b1c9e9c1ab6d2cf5ddf0989e588f5957ea975f0e407fc",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-212211-d0c235ecae"
+    },
+    {
+      "path": "references/terminal/north-two-stone-boxes-dark-metal-face.png",
+      "sha256": "3a4d57720fe3ebee822f7e0df256312a7af493ae0927541404c6fe20370fe2b5",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-215927-e1f8e348d8"
+    },
+    {
+      "path": "references/terminal/north-metal-pair-engraved-floor.png",
+      "sha256": "64aca82f71dd9bd051985e996ec9e4ff938c3ce11b4ebb29adc1851b21387b3d",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-221127-b16119ac8e"
+    },
+    {
+      "path": "references/terminal/north-metal-pair-engraved-floor-settled.png",
+      "sha256": "2c8e2134eaaec26ac592880caffb5285eb88af653f9f51a355378e419c994015",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-221127-b16119ac8e"
+    },
+    {
+      "path": "references/terminal/north-dark-chests-small-box.png",
+      "sha256": "f1a7bbd4901fb35044cbc48c749a015a88390add3c1d7d87e6f29d2a221005ad",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-222934-7519293c1e"
+    },
+    {
+      "path": "references/terminal/north-dark-chests-small-box-settled.png",
+      "sha256": "9826d7f1a65c1ecb8e98b560274263edc7aaf8aca0d7ff5f1a2e2def5368e551",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-222934-7519293c1e"
+    },
+    {
+      "path": "references/terminal/north-dark-metal-pair-small-box.png",
+      "sha256": "585936e9d75fbbf94f67dce54c6a23522ba897cda9d1839fd149cb13c816e87a",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-223647-7864e92c3d"
+    },
+    {
+      "path": "references/terminal/north-dark-metal-pair-small-box-settled.png",
+      "sha256": "6aef26b15b410941cd5fdbd58f8816fe410ea1cd99bf507fad90ea489a69e253",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-223647-7864e92c3d"
+    },
+    {
+      "path": "templates/terminal/dark-metal-chest-right-face.png",
+      "sha256": "cdb42bbcf15f799b73f037b58fbb110a9bc8826b468c7a55dc5b373e80839a5b",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-223647-7864e92c3d"
+    },
+    {
+      "path": "templates/terminal/dark-metal-chest-lower-body.png",
+      "sha256": "6021590fc2bbee2d39d0ea749249a0a35198c4e0c4fa3d55935416c6e694faf9",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-223647-7864e92c3d"
+    },
+    {
+      "path": "templates/terminal/small-stone-chest-clear-left-face.png",
+      "sha256": "fd234a1008850a637f64c00f340416775e8ac45886d854d80544e52bb6720d78",
+      "details_owner": "terminal-patterns.json",
+      "execution_id": "gui-20261011-162732-eb4eaf95d7"
+    },
+    {
+      "path": "references/terminal/north-map-overlay-on.png",
+      "sha256": "6f79f0f59cef881e9f58f187c50e0da8370e58fce09dd2c46d26ab924151f95f",
+      "execution_id": "gui-20261018-133925-8bbe0f4b71",
+      "source_frame_sha256": "03b962c7a2b4480af0e8826dbb7b10907cadc9508f21eb62ecaf6effaf2756ac",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary current visual review: same stationary terminal with three distinct chests. Keep only field pixels at original positions; black outside removes OS chrome and HUD. Manual Tab ON/OFF captures, not a completed room. ON remains unverified, OFF matches three existing native templates at unchanged thresholds; no runtime template added."
+    },
+    {
+      "path": "references/terminal/north-map-overlay-off.png",
+      "sha256": "d7e801ac7b195ef4467c1f2ea66679c1db9a99b400090b5452f0d1f5a20d11a8",
+      "execution_id": "gui-20261018-133925-8bbe0f4b71",
+      "source_frame_sha256": "39bc3a358a9e11c3522b68f471a32813e47a20c1bec95c754dae7a52ac430c19",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary current visual review: same stationary terminal with three distinct chests. Keep only field pixels at original positions; black outside removes OS chrome and HUD. Manual Tab ON/OFF captures, not a completed room. ON remains unverified, OFF matches three existing native templates at unchanged thresholds; no runtime template added."
+    },
+    {
+      "path": "references/summoner/platform-alive-back-robe.png",
+      "sha256": "49d1c05ecb949ae5ae3a4d5f8abf4f8e3e5f7eb37aaece1e32bb8a0f6c2fa735",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "3a5197c758a8b192f4f4ed6a547e50779c43a589e9a10b92947a6d05849e740a",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native replay. OS chrome and HUD are black; no source recording is required at runtime."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-back-robe.png",
+      "sha256": "8602bd652219f3813177e0a5ad13ff2b063e70778a85c91884edf03f6edb5cbc",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-alive-lower-robe.png",
+      "sha256": "56425667afb79f23ed135a01c172d6a96d20afb29cea03090b09237c7608baa0",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "adaf6d26d1647520052ba9fbf3f934cb5d87df6a9ebfa3c2eed0fe446a27c78b",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native replay. OS chrome and HUD are black; no source recording is required at runtime."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-lower-robe.png",
+      "sha256": "6e1b126c347c422eece8b6ff63fcb3722cf982e074deb59959eda61927120d81",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-map-occluded.png",
+      "sha256": "73f4dee2629c2f359916cb0e4ddcfd9e9c01f4a314db6adb6c0701dd5b38971a",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "c361a0b728db7c4540093a89217ff824d0b4737ea942063d464f730cf8d88031",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native replay. OS chrome and HUD are black; no source recording is required at runtime."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-map-occluded.png",
+      "sha256": "29720c761c8ebf0f0e079b97962d31297055404595ab733e7bfba5f5cb84fdb3",
+      "execution_id": "gui-20261018-140541-eb81ba971c",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-face-down.png",
+      "sha256": "2dab0ce44d4f293dd03243204f7048bbadcfbbe4e5e2298394b8a697b422d1c1",
+      "execution_id": "gui-20261018-141407-ddd23184cd",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "17825e1b4634ef4b75bd2cad7547ff10cf960e556be379cb245a5ef22dac3499",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native replay. OS chrome and HUD are black; no source recording is required at runtime."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-face-down.png",
+      "sha256": "2a076401581bca6a3ea6b4895e1a0366ee69499925829d052251c93f1359110d",
+      "execution_id": "gui-20261018-141407-ddd23184cd",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/terminal/north-corpse-covered-gray-box-front.png",
+      "sha256": "e656bfbf5b957a62a75fbdca608aace9ce50833a520172982aefb5cf249ea3de",
+      "execution_id": "gui-20261018-144823-bbf7e4eb5b",
+      "details_owner": "terminal-patterns.json",
+      "source_frame_sha256": "2b99ba5ccb630e5b85d9c50e56235f587ea83fb100f5c82057260d7fc49a2d7f",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native source; OS chrome and HUD black, no runtime recording dependency."
+    },
+    {
+      "path": "templates/terminal/small-stone-chest-gray-front.png",
+      "sha256": "2763e7273465a6b7d5d43d070df1acf2796eeb6dec771d7b4a8c69b131ab1f5f",
+      "execution_id": "gui-20261018-144823-bbf7e4eb5b",
+      "details_owner": "terminal-patterns.json"
+    },
+    {
+      "path": "references/terminal/north-two-arched-chests-small-box.png",
+      "sha256": "3e7caf6c395e0b8a19042511e0a3dd2ac3802616f0e5a1805b2b63bffed248d8",
+      "execution_id": "gui-20261018-151940-794c995820",
+      "details_owner": "terminal-patterns.json",
+      "source_frame_sha256": "ee745f98fdbebbe7cb33069bea23e20751f504704d831d139c0d49d2f9f88b2e",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native source; OS chrome and HUD black, no runtime recording dependency."
+    },
+    {
+      "path": "templates/terminal/dark-arched-chest-clean-front.png",
+      "sha256": "06c215ee0cb4bb075e8c3d0daa1bc7714c46afbcab42f52ffafbdfb86d49d116",
+      "execution_id": "gui-20261018-151940-794c995820",
+      "details_owner": "terminal-patterns.json"
+    },
+    {
+      "path": "references/summoner/platform-alive-raised-arm.png",
+      "sha256": "2881f61b08afbe4c54607ee1f5448598efcac585fa8ea6f90b3073dd8f9c62d3",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "f70abeeee3769c965793929454d2d18390892ea51681a9f060c2ce52f1f47a58",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native source; OS chrome, area overlay and HUD excluded from canvas."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-raised-arm.png",
+      "sha256": "bbf229c3ebdc75bed5baeedb6ae17fd6b969a2cb9d8fe5b83ae87c26b26a6bc7",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-robe.png",
+      "sha256": "3ccf0104af704bbaa5742a2b3334291bf93e76ee7ed2c4fd22230275456c2a3f",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "412823b9dec41fb77fef189ef1e9098bb9c6ec2829de078bdd8c5a845e91fd61",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Field-only native source; OS chrome, area overlay and HUD excluded from canvas."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-side-robe.png",
+      "sha256": "382534c521e1a07201a6a31e4758cda74ecd2833612405f29940b881739ab0a0",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-robe-followup-1.png",
+      "sha256": "781543218d1727345bfa6c98bf51b7c932ce1f5efe1609ec6e836101eee53edd",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "ac0e867966267ca10a00640079a9bf7c880e03655560daed1e9dc16fb29fce05",
+      "source_sequence": 22,
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Separate GUI55 follow-up observation, excluded from template calibration; field-only replay source."
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-robe-followup-2.png",
+      "sha256": "102d86ddd06948dbc71dda7e601fc4c27ac33d6416990cbfbdee0da05b764151",
+      "execution_id": "gui-20261018-170308-9727cc4bd7",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "877af89ba487d633b6c275813fd0b8677e126c50c3a53699c61356f4943b7b95",
+      "source_sequence": 23,
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Separate GUI55 follow-up observation, excluded from template calibration; field-only replay source."
+    },
+    {
+      "path": "references/summoner/platform-corpse-face-down-lighting.png",
+      "sha256": "e966534ef1cd58a63789b67dc504fa330bc7a211ee16fb57941608267e197dde",
+      "execution_id": "gui-20261018-182547-89aeaf9ea3",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "83f8f9663641993c3cbf70b61e9b7f80900dc3126fe3c45a5e72daca5aa9f3b7",
+      "source_sequence": 111,
+      "source_acquired_at": 23936.484,
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Codex visual review of the owner-confirmed blue/gold horizontal Summoner corpse kind. GUI59 corpse-only native lighting replay, not an automated kill or completed room."
+    },
+    {
+      "path": "references/summoner/platform-corpse-face-down-lighting-before.png",
+      "sha256": "8957efb487808c07ed3f87783bf8b9d91ab92bd9ee939aebaafc5c1b90328686",
+      "execution_id": "gui-20261018-182547-89aeaf9ea3",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "406d53155e14b9cf3ba31cd7a60361f011532502ec254b1ec3985bacd6e78980",
+      "source_sequence": 0,
+      "source_acquired_at": 23924.421,
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Codex visual review of the owner-confirmed blue/gold horizontal Summoner corpse kind. GUI59 corpse-only native lighting replay, not an automated kill or completed room."
+    },
+    {
+      "path": "references/summoner/platform-corpse-face-down-lighting-after-approach.png",
+      "sha256": "0dec718dd3332d30f12aa5d793d7444d2290c41cd8174f355de672e57e6878d6",
+      "execution_id": "gui-20261018-182547-89aeaf9ea3",
+      "details_owner": "summoner-encounter.json",
+      "source_frame_sha256": "81a3dc5e2beb8dd015b2b09dc7dc2cee79e521b3229fb20a4710334cfa3c655f",
+      "source_sequence": 2,
+      "source_acquired_at": 23925.312,
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Codex visual review of the owner-confirmed blue/gold horizontal Summoner corpse kind. GUI59 corpse-only native lighting replay, not an automated kill or completed room."
+    },
+    {
+      "path": "references/hub/return-map-overlay-on.png",
+      "sha256": "4aee55404cdb8202cf5b35e962691474154cea09496bd506ab185231cc7efc6e",
+      "execution_id": "gui-20261018-191306-c98ba93eb9",
+      "source_frame_sha256": "b7068af0772be15f53618956ca3a40f5518b437a1f7a748488757ef55fd8c31c",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Codex stationary manual Tab comparison after GUI64 central return pause. Field-only native pixels; map ON is unknown, map OFF has two current blue flames and three independent native floor ornaments. No runtime crop or threshold change; not an automated completed room."
+    },
+    {
+      "path": "references/hub/return-map-overlay-off.png",
+      "sha256": "6afa212ed01ce80e3a20821b2718ceec245af37a48520845dfbd15b0c1f1cb31",
+      "execution_id": "gui-20261018-191306-c98ba93eb9",
+      "source_frame_sha256": "edb7f01ceeab1a838cf82098f0cde53461a3081ee3e586a69b2e0537cb9b1ffc",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Codex stationary manual Tab comparison after GUI64 central return pause. Field-only native pixels; map ON is unknown, map OFF has two current blue flames and three independent native floor ornaments. No runtime crop or threshold change; not an automated completed room."
+    },
+    {
+      "path": "references/terminal/north-two-chests-lower-floor-spoke.png",
+      "sha256": "bd92bc404e50ab01c182ca2d729e2a7de6e3b47a765a61d3b3923c540ab38624",
+      "execution_id": "gui-20261018-194506-eee8dc3b1e",
+      "source_frame_sha256": "626ca439b53ed230a4e99c2bd750b13a3e1cf5a488e4d772db2e18b88e64afe6",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of two distinct current chests plus separate lower engraved floor spoke. Obscured frame lacks the current left chest. Field-only calibration, not completed-room evidence."
+    },
+    {
+      "path": "templates/terminal/engraved-lower-floor-spoke.png",
+      "sha256": "cc2d04352c5ad267d617f3b4f6f1dce347952e194bca563b51e0870441376e34",
+      "execution_id": "gui-20261018-194506-eee8dc3b1e",
+      "source_frame_sha256": "626ca439b53ed230a4e99c2bd750b13a3e1cf5a488e4d772db2e18b88e64afe6",
+      "source_reference": "references/terminal/north-two-chests-lower-floor-spoke.png",
+      "source_reference_sha256": "bd92bc404e50ab01c182ca2d729e2a7de6e3b47a765a61d3b3923c540ab38624",
+      "source_box": [
+        970,
+        833,
+        1024,
+        876
+      ],
+      "review": "Current lower floor spoke only; excludes HUD, actors, corpses and chest bodies. Fixed layout only, no chest pool membership."
+    },
+    {
+      "path": "references/terminal/north-two-chests-lower-floor-spoke-obscured.png",
+      "sha256": "d32fe0fc6efbdec6a5d5f70bbe69397e85c0dafe2fe1fb65101f01d39b6f77f9",
+      "execution_id": "gui-20261018-194506-eee8dc3b1e",
+      "source_frame_sha256": "3df73881ae239f169cfa99180c53c9079e9fd933920d2628dc3bc7b556ddc185",
+      "source_box": [
+        24,
+        55,
+        1900,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of two distinct current chests plus separate lower engraved floor spoke. Obscured frame lacks the current left chest. Field-only calibration, not completed-room evidence."
+    },
+    {
+      "path": "references/summoner/platform-alive-front-cast.png",
+      "sha256": "48f2d7a652461c34687fe6d9349bfa913b107f7e7b35686bd404cf07146fa47b",
+      "execution_id": "return-20261018-202204",
+      "source_frame_sha256": "72f034cd11854a135d2b3f79f7f7540c3abac91e95a0720d1a154610d6e6e604",
+      "source_box": [
+        150,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure. HUD and identity regions excluded."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-front-cast.png",
+      "sha256": "2f8605993bbaf35fba3249b1afd04b02d82a5d7489aa37f497951e37a9dde63e",
+      "execution_id": "return-20261018-202204",
+      "source_frame_sha256": "72f034cd11854a135d2b3f79f7f7540c3abac91e95a0720d1a154610d6e6e604",
+      "source_reference": "references/summoner/platform-alive-front-cast.png",
+      "source_reference_sha256": "48f2d7a652461c34687fe6d9349bfa913b107f7e7b35686bd404cf07146fa47b",
+      "source_box": [
+        768,
+        699,
+        813,
+        779
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure."
+    },
+    {
+      "path": "references/summoner/platform-corpse-wide-side.png",
+      "sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9",
+      "execution_id": "return-20261018-202204",
+      "source_frame_sha256": "99ecb4dbf9cde2648b761805694672798bc0cae098dd06f593bc51b635cb5384",
+      "source_box": [
+        150,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure. HUD and identity regions excluded."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-wide-side.png",
+      "sha256": "91b2a60e76b00d6b32ebfe71db17b8cd10b3c0f77c761df32928f676033f5ff5",
+      "execution_id": "return-20261018-202204",
+      "source_frame_sha256": "99ecb4dbf9cde2648b761805694672798bc0cae098dd06f593bc51b635cb5384",
+      "source_reference": "references/summoner/platform-corpse-wide-side.png",
+      "source_reference_sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9",
+      "source_box": [
+        754,
+        745,
+        845,
+        789
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner kind confirmed by the owner: standing during encounter, then horizontal corpse only after paused-survival Nova. Calibration does not establish automated kill, loot or room closure."
+    },
+    {
+      "path": "templates/objective/journal-closed-left-page.png",
+      "sha256": "4f8d5f016bfe86427dd4e5b0058c817d293e64cbe2c8ef718e9be5241ea9f117",
+      "execution_id": "return-20261018-202204",
+      "source_reference": "references/summoner/platform-corpse-wide-side.png",
+      "source_reference_sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9",
+      "source_box": [
+        913,
+        405,
+        946,
+        442
+      ],
+      "review": "Primary visual review of current closed journal left page, excluding adjacent energy-shield orb and actor; shared platform and Canyon-exit appearance at unchanged .92."
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-lower-bands.png",
+      "sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889",
+      "execution_id": "resume-20261018-204328",
+      "source_frame_sha256": "cff36154e9148c6b35820cbb12e24ca5538fba5266cfa7a628c8d57be8581118",
+      "source_box": [
+        150,
+        55,
+        1650,
+        850
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of horizontal blue/gold corpse. Only lower robe bands exclude character/energy-shield overlap. Standing/kill time is not inferred; source room failed dedicated kill confirmation. Followups excluded from template calibration; map toggles were stationary manual diagnostic only."
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-lower-bands-followup-map-on.png",
+      "sha256": "5b5c39d0665fe28cf05d5f65ca94fcc646cc1ecabb66f6f55a52ce1eae36ad76",
+      "execution_id": "resume-20261018-204328",
+      "source_frame_sha256": "39f3ef2da0d7c4569410781cfba97cefab176503ac2b7634228e46b39c3c155a",
+      "source_box": [
+        150,
+        55,
+        1650,
+        850
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of horizontal blue/gold corpse. Only lower robe bands exclude character/energy-shield overlap. Standing/kill time is not inferred; source room failed dedicated kill confirmation. Followups excluded from template calibration; map toggles were stationary manual diagnostic only."
+    },
+    {
+      "path": "references/summoner/platform-corpse-side-lower-bands-followup-map-off.png",
+      "sha256": "e4e8df3090ae3da55dd0d62e72be266ceadc4e9645156d623a12b3de616b2f64",
+      "execution_id": "resume-20261018-204328",
+      "source_frame_sha256": "f5d3eeaa4b008e39e3bce67a538c74349d24c8292551235c3bab8463d9d2552a",
+      "source_box": [
+        150,
+        55,
+        1650,
+        850
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of horizontal blue/gold corpse. Only lower robe bands exclude character/energy-shield overlap. Standing/kill time is not inferred; source room failed dedicated kill confirmation. Followups excluded from template calibration; map toggles were stationary manual diagnostic only."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-side-lower-bands.png",
+      "sha256": "eb21ed6209ed560f8734626798843f024daf405e54c294a37c1e9ccb0af7bc02",
+      "execution_id": "resume-20261018-204328",
+      "source_reference": "references/summoner/platform-corpse-side-lower-bands.png",
+      "source_reference_sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889",
+      "source_box": [
+        974,
+        619,
+        1030,
+        637
+      ],
+      "review": "Primary visual review of horizontal blue/gold corpse. Only lower robe bands exclude character/energy-shield overlap. Standing/kill time is not inferred; source room failed dedicated kill confirmation."
+    },
+    {
+      "path": "references/summoner/platform-corpse-lower-band-lighting-before.png",
+      "sha256": "750e1317a34f3a42b74aa2b2a383d5ab173f3afcd192ea03bbc10a65a762d179",
+      "execution_id": "resume-20261018-205841",
+      "source_frame_sha256": "5ee52eb9de20e5c4c78de65dd5d1513b1b6e5b78a4f2c11a42aedda0f657ccfc",
+      "source_box": [
+        150,
+        55,
+        1650,
+        850
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of same horizontal corpse after camera shift. Calibration includes these lighting views; no automated kill/closure claimed."
+    },
+    {
+      "path": "references/summoner/platform-corpse-lower-band-lighting-after.png",
+      "sha256": "8ed419eb929d248dbac616ea23dde7f8efbe51e7b9b55285cf7d12d230e63c87",
+      "execution_id": "resume-20261018-205841",
+      "source_frame_sha256": "20297ebf1f990b30b8a5db377f9be909bbb7fc54d1052ad7effb22ad90dc8af5",
+      "source_box": [
+        150,
+        55,
+        1650,
+        850
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of same horizontal corpse after camera shift. Calibration includes these lighting views; no automated kill/closure claimed."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-lower-band-right.png",
+      "sha256": "6f6138cf91f69d2f0194057bb886e008b8c1d404fc884e10719409a038d507d5",
+      "execution_id": "resume-20261018-204328",
+      "source_reference": "references/summoner/platform-corpse-side-lower-bands.png",
+      "source_reference_sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889",
+      "source_box": [
+        998,
+        619,
+        1030,
+        633
+      ],
+      "review": "Primary visual review of right curved blue/gold lower robe bands. Additional lighting views informed crop selection."
+    },
+    {
+      "path": "references/terminal/north-gray-front-lighting-hidden.png",
+      "sha256": "971f761d7c58ee31e4c9fd244057c52805bf24bc9c202c2c4859460942ca3d73",
+      "execution_id": "resume-20261018-210444",
+      "source_frame_sha256": "e74724eda21d0c17641af1fdcddf08c90399850f42f74d2a6628524cda8fee0a",
+      "source_box": [
+        24,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of three distinct current chests and lighting/effect variations. Only gray-front native .9193 on hidden frame informs .91 calibration; map-on/unconfirmed remain unknown. Field-only source, failed fresh room; no completed-run claim."
+    },
+    {
+      "path": "references/terminal/north-gray-front-lighting-map-on.png",
+      "sha256": "0a25e173d34d697c3be4d2b6addbe30fd73290d6b1fbd53ee8260ecb54e30783",
+      "execution_id": "resume-20261018-210444",
+      "source_frame_sha256": "7cfb31747a48ebe66c66f3183baa13a47acfbe9d51ee883de8a502450eccff64",
+      "source_box": [
+        24,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of three distinct current chests and lighting/effect variations. Only gray-front native .9193 on hidden frame informs .91 calibration; map-on/unconfirmed remain unknown. Field-only source, failed fresh room; no completed-run claim."
+    },
+    {
+      "path": "references/terminal/north-gray-front-lighting-unconfirmed.png",
+      "sha256": "09e92095ecb8d931a987a77660c4d3812e8262cc1ddc17842338f39614ae97d3",
+      "execution_id": "resume-20261018-210444",
+      "source_frame_sha256": "d534954c32d6d19e3e81877b31d1722af969c093a5f1f4486487a6364109c12b",
+      "source_box": [
+        24,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of three distinct current chests and lighting/effect variations. Only gray-front native .9193 on hidden frame informs .91 calibration; map-on/unconfirmed remain unknown. Field-only source, failed fresh room; no completed-run claim."
+    },
+    {
+      "path": "references/terminal/north-gray-front-lighting-settled.png",
+      "sha256": "4017498fe6494aa7a1b98b9661e2bb5a98487a0ce21b7a958247e8a068703447",
+      "execution_id": "resume-20261018-210444",
+      "source_frame_sha256": "b6db40e58eea6f355aea083a96c3abc27426022e682a045f3055ac494d80f3b3",
+      "source_box": [
+        24,
+        230,
+        1650,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of three distinct current chests and lighting/effect variations. Only gray-front native .9193 on hidden frame informs .91 calibration; map-on/unconfirmed remain unknown. Field-only source, failed fresh room; no completed-run claim."
+    },
+    {
+      "path": "references/summoner/platform-alive-front-open.png",
+      "sha256": "10b3d6df345fecfe7f09fad3212c5c858fbe9089dbc2b88e604bece9241c0099",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "f9d187f51a5ec5c1202854ad3906103b7807273bf533f57d2e2dd97f427e0eb4",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+    },
+    {
+      "path": "references/summoner/platform-corpse-front-hem.png",
+      "sha256": "dc87a9c3d0ff8d83ddd4a6a7621a3839f8711bbb6cefc038668be2cd86b0ffd3",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "8c36ab6a3d9e870c0c573ff0a357dcc37279de9d088b5ce421d5037220993cbc",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+    },
+    {
+      "path": "references/summoner/platform-corpse-front-hem-followup.png",
+      "sha256": "58b66ae5dbccb66e8fef01a7ba67aa1263254b5ef0373b763df38a3dd283e44d",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "c86029726e3e496f088821ecbb845c726ce16613b9c7d2445ee5e6081c484503",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-front-open.png",
+      "sha256": "2b7e3b9bc880ed54f524f5471eae77f9d11f46199a680fa38a394000e15db205",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame_sha256": "f9d187f51a5ec5c1202854ad3906103b7807273bf533f57d2e2dd97f427e0eb4",
+      "source_box": [
+        1004,
+        423,
+        1044,
+        515
+      ],
+      "review": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-front-hem.png",
+      "sha256": "28d55d3cc1b363e0b1e25682976ca73fe4d49b14b540a38b3d0b28f150894023",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame_sha256": "8c36ab6a3d9e870c0c573ff0a357dcc37279de9d088b5ce421d5037220993cbc",
+      "source_box": [
+        1000,
+        616,
+        1034,
+        632
+      ],
+      "review": "Primary visual review: standing blue/gold Summoner in initial encounter and horizontal same-color corpse in later field. Current automated encounter failed recognition; calibration is not a completed fresh run or known death time."
+    },
+    {
+      "path": "templates/objective/journal-closed-front-page.png",
+      "sha256": "1f556b5c48201ce9082fe710d3a48f665e4a2b3281516cdbc1323d92a2870c5a",
+      "execution_id": "gui-20261018-224439-b31b876a89",
+      "source_frame_sha256": "8c36ab6a3d9e870c0c573ff0a357dcc37279de9d088b5ce421d5037220993cbc",
+      "source_box": [
+        971,
+        258,
+        1021,
+        309
+      ],
+      "review": "Closed journal front-page calibration; platform offset anchored to current legacy full-journal observation."
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem.png",
+      "sha256": "64eb1714051004bcb764967acb8804b4870b7aacb7d67d23f47e8d6fd29b73ab",
+      "execution_id": "gui-20261018-231655-96fe1d9830",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "829f635b913a0be725f7b1805666977a2b71c8fbfd2a639978fc014c5ef8a943",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of horizontal blue/gold Summoner corpse. New left hem fold excludes effects/overlapping bones; later paused image is a separate same-room observation, not template calibration or a completed fresh run."
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem-followup.png",
+      "sha256": "716c727c50477257260cf25b489c495402b20d17f002df5804d0503305d352f7",
+      "execution_id": "gui-20261018-231655-96fe1d9830",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "adedd01a55daa6ce256b285adf7fb1f690493baaf056f851d734c06ccee069e3",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Primary visual review of horizontal blue/gold Summoner corpse. New left hem fold excludes effects/overlapping bones; later paused image is a separate same-room observation, not template calibration or a completed fresh run."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-left-hem.png",
+      "sha256": "8bac83fa06b9cb90078bc51f10395777f82c78313eb57ac3c01c65f68d29f029",
+      "execution_id": "gui-20261018-231655-96fe1d9830",
+      "source_frame_sha256": "829f635b913a0be725f7b1805666977a2b71c8fbfd2a639978fc014c5ef8a943",
+      "source_box": [
+        972,
+        614,
+        1012,
+        638
+      ],
+      "review": "Primary visual review of the complete left hem fold; even 40x24 native crop supersedes an unaccepted 29x15 proposal which failed duplicate rejection. Native .92 unchanged."
+    },
+    {
+      "path": "references/summoner/journal-occluded-by-player-after-approach.png",
+      "sha256": "39ad4d4328dd42304fc8218b5426ce82eb1079275879aeaa111c2a964928f009",
+      "execution_id": "resume-20261018-234228/initial-return",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "163c568ca8fe4fb5777ebfa7f95e0edcf2460fb928cad559863a13f6307fac27",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "canvas_size": [
+        1922,
+        1140
+      ],
+      "review": "Diagnostic only: the character obscures the journal after a safe-floor F2 approach. No journal template, inferred click point, death timing, fresh-room completion or new threshold is derived. OS chrome, HUD and identity overlays are excluded."
     }
   ],
   "source_retention": [

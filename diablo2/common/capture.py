@@ -11,6 +11,7 @@ import mss
 import numpy as np
 
 from diablo2.common.config import CaptureConfig, RecordingConfig
+from diablo2.common.frame_geometry import FrameGeometry, ReferenceLayout
 
 
 SRCCOPY = 0x00CC0020
@@ -62,11 +63,21 @@ class WindowInfo:
 class FramePacket:
     frame: np.ndarray
     timestamp: float
+    geometry: FrameGeometry | None = None
 
 
 class ScreenCapture:
     def __init__(self, config: CaptureConfig):
         self.config = config
+        self._layout = None
+        self.frame_geometry = None
+        if config.reference_layout:
+            if not config.window_title:
+                raise ValueError("reference layout requires a named game window")
+            path = Path(config.reference_layout)
+            if not path.is_absolute():
+                path = Path(__file__).resolve().parents[2] / path
+            self._layout = ReferenceLayout.load(path)
         self._sct = mss.mss()
         self._target = self._resolve_target()
         self._window: WindowInfo | None = None
@@ -105,6 +116,16 @@ class ScreenCapture:
             return {"left": window.left, "top": window.top, "width": window.width, "height": window.height}
         return dict(self._target)
 
+    def current_client_box(self):
+        if self._layout is None:
+            return (0, 0, self._target["width"], self._target["height"])
+        window = self._resolve_window()
+        rect, origin = wintypes.RECT(), wintypes.POINT()
+        if not USER32.GetClientRect(window.handle, ctypes.byref(rect)) or not USER32.ClientToScreen(window.handle, ctypes.byref(origin)):
+            raise RuntimeError("current game client bounds unavailable")
+        left, top = origin.x - window.left, origin.y - window.top
+        return (left, top, left + rect.right, top + rect.bottom)
+
     def grab(self) -> FramePacket:
         if self.config.window_title and self.config.follow_window:
             self._window = self._resolve_window()
@@ -115,6 +136,7 @@ class ScreenCapture:
                 "height": self._window.height,
             }
 
+        client_box = self.current_client_box()
         frame = None
         if self._window and self.config.capture_backend in {"auto", "window"}:
             frame = capture_window_image(self._window.handle, self._window.width, self._window.height)
@@ -125,7 +147,14 @@ class ScreenCapture:
             shot = np.array(self._sct.grab(self._target))
             frame = cv.cvtColor(shot, cv.COLOR_BGRA2BGR)
 
-        return FramePacket(frame=frame, timestamp=time.time())
+        geometry = self.frame_geometry
+        if geometry is None or geometry.target != self._target or geometry.source_client != client_box:
+            geometry = FrameGeometry.create(self._target, self._layout, client_box)
+        if self.current_target() != self._target or self.current_client_box() != client_box:
+            raise RuntimeError("window geometry changed during capture")
+        frame = geometry.normalize(frame)
+        self.frame_geometry = geometry
+        return FramePacket(frame=frame, timestamp=time.time(), geometry=geometry)
 
     def close(self) -> None:
         self._sct.close()
@@ -221,7 +250,9 @@ def _release_capture_objects(hwnd: int, hwnd_dc: int, mem_dc: int, bitmap: int, 
 
 def focus_window(window: WindowInfo) -> bool:
     hwnd = window.handle
-    USER32.ShowWindow(hwnd, SW_RESTORE)
+    # 분할/최대화 배치를 보존한다. 최소화한 창만 복원한다.
+    if USER32.IsIconic(hwnd):
+        USER32.ShowWindow(hwnd, SW_RESTORE)
 
     foreground = USER32.GetForegroundWindow()
     if foreground == hwnd:

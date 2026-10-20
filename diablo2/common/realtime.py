@@ -8,6 +8,7 @@ from typing import Any, Callable
 
 from diablo2.common.capture import ScreenCapture
 from diablo2.common.config import CaptureConfig
+from diablo2.common.frame_geometry import FrameGeometry
 from diablo2.common.survival import _integer, _number
 
 
@@ -19,6 +20,7 @@ class RuntimeFrame:
     target: dict[str, int]
     generation: int = 0
     wall_captured_at: float | None = None
+    geometry: FrameGeometry | None = None
 
     def __post_init__(self):
         _integer(self.sequence_id, "sequence_id")
@@ -271,6 +273,7 @@ class RealtimeVisionRuntime:
                         target=dict(capture.target),
                         generation=generation,
                         wall_captured_at=packet.timestamp,
+                        geometry=getattr(packet, "geometry", None),
                     )
                 )
                 sequence_id += 1

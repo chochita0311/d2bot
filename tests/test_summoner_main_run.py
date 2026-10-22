@@ -25,6 +25,7 @@ from diablo2.runs.summoner.main_run import (
     run,
     _json_scalar,
     return_to_act1_and_exit,
+    exit_to_character,
 )
 from diablo2.common.field_control import DryFieldInput
 from diablo2.runs.summoner.navigation import PathChoice
@@ -37,6 +38,75 @@ from diablo2.common.survival import ObservationStamp
 
 
 class SummonerMainRunTests(unittest.TestCase):
+    def test_emergency_exit_uses_fresh_menu_and_settled_actual_pointer_then_confirms_selection(self):
+        for condition in (
+            "normal",
+            "stale",
+            "pointer",
+            "stop",
+            "focus",
+            "initial_focus",
+            "menu_missing",
+            "menu_deadline",
+            "selection_missing",
+        ):
+            with self.subTest(condition=condition):
+                now, focused, stopped = [0.0], [condition != "initial_focus"], [False]
+                backend, capture, vision = DryFieldInput(), Mock(target=dict(left=100, top=50)), Mock()
+                frame = np.zeros((1140, 1922, 3), np.uint8)
+                evidence, diagnostics = [], {}
+
+                def grab():
+                    now[0] += 0.02
+                    return SimpleNamespace(frame=frame)
+
+                def wait(seconds):
+                    now[0] += seconds + 1e-8
+                    if backend.pointer is not None:
+                        if condition == "stop":
+                            stopped[0] = True
+                        if condition == "focus":
+                            focused[0] = False
+
+                stop = SimpleNamespace(is_set=lambda: stopped[0], wait=wait)
+                capture.grab.side_effect = grab
+                vision.normalize.side_effect = lambda current: current
+
+                def find(current, name):
+                    now[0] += 0.3 if condition == "stale" else 0.08
+                    if name == "save_exit" and condition != "menu_missing":
+                        return dict(x=600, y=300)
+                    if name == "play" and condition != "selection_missing":
+                        return dict(x=600, y=650)
+                    return None
+
+                vision.find.side_effect = find
+                press = backend.press
+
+                def request(key):
+                    press(key)
+                    if condition == "menu_deadline":
+                        now[0] = 7.9
+
+                backend.press = request
+                backend.click = lambda: backend.events.append(("click",))
+                if condition == "pointer":
+                    backend.pointer_matches = lambda aim: False
+                options = dict(evidence=evidence, diagnostics=diagnostics, clock=lambda: now[0])
+                if condition == "normal":
+                    exit_to_character(capture, lambda: focused[0], stop, vision, backend, **options)
+                    self.assertEqual("character_select_observed", diagnostics["status"])
+                    self.assertGreaterEqual(diagnostics["click_requested_at"] - diagnostics["pointer_requested_at"], 0.05)
+                else:
+                    with self.assertRaises(RuntimeError):
+                        exit_to_character(capture, lambda: focused[0], stop, vision, backend, **options)
+                    self.assertNotIn("status", diagnostics)
+                self.assertEqual(0 if condition == "initial_focus" else 1, list(backend.events).count(("press", "esc")))
+                self.assertEqual(int(condition in ("normal", "selection_missing")), list(backend.events).count(("click",)))
+                self.assertLessEqual(len(evidence), 1)
+                if evidence:
+                    self.assertEqual("safe-exit-last.png", evidence[0][0])
+
     def test_failed_room_finish_restores_hidden_map_only_with_current_clear_hud_and_focus(self):
         for obstruction in (None, "panel", "hud", "stop", "focus"):
             with self.subTest(obstruction=obstruction):
@@ -73,8 +143,20 @@ class SummonerMainRunTests(unittest.TestCase):
     def test_fresh_run_initializes_and_retains_route_state_through_room_finish(self):
         self._fresh_navigation_case()
 
-    def test_missing_mercenary_stops_fresh_run_without_pause_exit_or_next_room(self):
+    def test_low_resources_or_six_second_unresolved_near_threat_exit_without_paused_training(self):
+        for failure in ("resource_low", "nova_target_requires_review"):
+            self._fresh_navigation_case(failure)
+
+    def test_unverified_mercenary_exits_without_paused_training_or_next_room(self):
         self._fresh_navigation_case("mercenary_unverified")
+
+    def test_mercenary_failure_never_exits_after_user_stop_or_focus_loss(self):
+        for cancellation in ("stopped", "unfocused"):
+            with self.subTest(cancellation=cancellation):
+                self._fresh_navigation_case("mercenary_unverified", cancellation=cancellation)
+
+    def test_title_failure_during_buff_renewal_exits_without_paused_refresh_or_more_buff_inputs(self):
+        self._fresh_navigation_case("current Arcane title unverified")
 
     def test_same_room_recovery_does_not_require_mercenary_portrait(self):
         with patch("diablo2.common.survival_vision.SurvivalHudObserver") as observer:
@@ -96,8 +178,9 @@ class SummonerMainRunTests(unittest.TestCase):
             )
         observer.assert_called_once_with(allow_high_orb_fallback=True, allow_partial_orb_fallback=True, observe_mercenary=False)
 
-    def _fresh_navigation_case(self, failure=None):
+    def _fresh_navigation_case(self, failure=None, *, cancellation=None):
         config = load_config(Path("config"))
+        external_stop, focused_state = threading.Event(), [True]
         capture = Mock()
         capture.target = dict(left=0, top=0, width=1922, height=1140)
         capture.current_target.return_value = capture.target
@@ -105,14 +188,24 @@ class SummonerMainRunTests(unittest.TestCase):
         driver = Mock()
         actual_deadline = time.monotonic() + 140
         driver.execute.return_value = dict(
-            observation={}, safety={}, buff={}, deadlines=[actual_deadline], preparation_at=actual_deadline - 4
+            observation={}, safety={}, buff={}, deadlines=[actual_deadline], preparation_at=actual_deadline - 5
         )
+        if failure == "current Arcane title unverified":
+            driver.execute.side_effect = [driver.execute.return_value, RuntimeError(failure)]
         intervals = []
 
         def navigate(*args, **kwargs):
+            if failure == "current Arcane title unverified":
+                return dict(status="field_paused", continuous_status="buff_renewal_due")
+            if failure == "nova_target_requires_review":
+                return dict(status="field_paused", continuous_status=failure)
             if failure:
+                if cancellation == "stopped":
+                    external_stop.set()
+                elif cancellation == "unfocused":
+                    focused_state[0] = False
                 raise RuntimeError(failure)
-            self.assertEqual(actual_deadline - 4, kwargs["buff_expires_at"])
+            self.assertEqual(actual_deadline - 5, kwargs["buff_expires_at"])
             progress = kwargs["progress"]
             intervals.append(progress)
             if len(intervals) == 1:
@@ -137,10 +230,13 @@ class SummonerMainRunTests(unittest.TestCase):
                 "diablo2.runs.summoner.main_run.ensure_automap_on": Mock(return_value={}),
                 "diablo2.runs.summoner.main_run.return_to_act1_and_exit": Mock(return_value={}),
                 "diablo2.runs.summoner.main_run.maintain_paused_field": Mock(),
+                "diablo2.runs.summoner.main_run.exit_to_character": Mock(),
                 "diablo2.common.capture.ScreenCapture": Mock(return_value=capture),
                 "diablo2.common.survival_vision.SurvivalHudObserver": Mock(),
                 "diablo2.common.capture.resolve_window_from_config": Mock(return_value=window),
-                "diablo2.common.capture.USER32": SimpleNamespace(GetForegroundWindow=lambda: 7, IsIconic=lambda _: False),
+                "diablo2.common.capture.USER32": SimpleNamespace(
+                    GetForegroundWindow=lambda: 7 if focused_state[0] else 8, IsIconic=lambda _: False
+                ),
                 "diablo2.actions.run_lifecycle.RunLifecycleSession": Mock(),
                 "diablo2.common.conditional_loot.ConditionalLootController": Mock(),
                 "diablo2.runs.summoner.camera_ground.CalibratedCameraGroundObserver": Mock(),
@@ -154,6 +250,10 @@ class SummonerMainRunTests(unittest.TestCase):
             camera.center, camera.authorized, camera.reset_events = (962, 578), True, []
             loot = mocks["diablo2.common.conditional_loot.ConditionalLootController"].return_value
             loot.prepare.return_value, loot.records, loot.labels_state = {}, [], "off"
+            loot_hud = dict(acquired_at=10, life_ratio=None, mana_ratio=1, recovered_at=10.1)
+            loot.last_hud_failure = (np.zeros((1140, 1922, 3), np.uint8), loot_hud)
+            loot_landing = dict(acquired_at=10, status="unverified", missing=["label"], player=[962, 578])
+            loot.last_landing_observation = (np.zeros((1140, 1922, 3), np.uint8), loot_landing)
             output = Path(directory) / "room"
             result = run_once(
                 config,
@@ -166,21 +266,40 @@ class SummonerMainRunTests(unittest.TestCase):
                 segments=2,
                 finish_room=True,
                 character_key="flash",
+                stop_event=external_stop,
                 emit=lambda _: None,
             )
             report = json.loads((output / "report.json").read_text(encoding="utf-8"))
+            self.assertEqual(loot_hud, report["loot_hud_reacquisition"])
+            self.assertTrue((output / "loot-hud-unverified-last.png").is_file())
+            self.assertEqual(loot_landing, report["loot_landing_observation"])
+            self.assertTrue((output / "loot-landing-last.png").is_file())
+            if failure == "current Arcane title unverified":
+                self.assertEqual(2, driver.execute.call_count)
+                self.assertEqual(1, len(report["buff_renewals"]))
+                self.assertNotIn("buff", report["buff_renewals"][0])
             mocks["diablo2.common.survival_vision.SurvivalHudObserver"].assert_called_once_with(
                 allow_high_orb_fallback=True, allow_partial_orb_fallback=True, observe_mercenary=True
             )
             mocks["diablo2.runs.summoner.main_run.maintain_paused_field"].assert_not_called()
             if failure:
                 self.assertEqual(2, result)
-                self.assertEqual("failed", report["status"])
-                self.assertEqual([failure], report["errors"])
-                self.assertEqual("mercenary_portrait_unverified", report["operator_review_required"])
-                self.assertTrue(report["field_retained"])
-                self.assertNotIn("safe_exit", report)
-                mocks["diablo2.runs.summoner.main_run.return_to_act1_and_exit"].assert_not_called()
+                self.assertEqual("interrupted" if cancellation == "stopped" else "failed", report["status"])
+                self.assertEqual(
+                    ["near_hostile_requires_review" if failure == "nova_target_requires_review" else failure], report["errors"]
+                )
+                if failure == "mercenary_unverified":
+                    self.assertEqual("mercenary_portrait_unverified", report["operator_review_required"])
+                    self.assertEqual(1, driver.execute.call_count)
+                    mocks["diablo2.runs.summoner.main_run.return_to_act1_and_exit"].assert_not_called()
+                if cancellation:
+                    self.assertTrue(report["field_retained"])
+                    self.assertNotIn("safe_exit", report)
+                    mocks["diablo2.runs.summoner.main_run.exit_to_character"].assert_not_called()
+                else:
+                    self.assertEqual("character_select_observed", report["safe_exit"])
+                    self.assertFalse(report["field_retained"])
+                    mocks["diablo2.runs.summoner.main_run.exit_to_character"].assert_called_once()
                 return
             self.assertEqual(0, result, report["errors"])
             self.assertEqual("north_room_closed", report["status"])
@@ -238,6 +357,35 @@ class SummonerMainRunTests(unittest.TestCase):
         self.assertGreater(hud.observe.call_count, 1)
         self.assertEqual("operator_stop", report["paused_survival_guard"]["status"])
         self.assertFalse(backend.events)
+
+    def test_paused_current_near_threat_at_six_seconds_requests_exit_and_releases_attack(self):
+        now, frame, report = [0.0], object(), {}
+        backend, capture, hud, ground, hazards = DryFieldInput(), Mock(), Mock(), Mock(), Mock()
+        capture.grab.side_effect = lambda: (now.__setitem__(0, now[0] + 0.1) or SimpleNamespace(frame=frame))
+        hud.observe.return_value = SimpleNamespace(
+            life=ResourceReading(900, 1000), mana=ResourceReading(900, 1000), belt_visibility="closed"
+        )
+        ground.observe.return_value = SimpleNamespace(point=(960, 580))
+        hazards.observe.return_value = (SimpleNamespace(ground=(1000, 600)),)
+        stop = SimpleNamespace(is_set=lambda: False, wait=lambda seconds: now.__setitem__(0, now[0] + seconds))
+        with patch("diablo2.runs.summoner.main_run.threading", SimpleNamespace(Event=threading.Event, Thread=Mock())):
+            with self.assertRaisesRegex(RuntimeError, "^near_hostile_requires_review$"):
+                maintain_paused_field(
+                    capture,
+                    hud,
+                    lambda: True,
+                    load_config(Path("config")).characters["flash"],
+                    stop,
+                    report=report,
+                    evidence=[],
+                    clock=lambda: now[0],
+                    backend=backend,
+                    ground=ground,
+                    hazards=hazards,
+                    buff_expires_at=100,
+                )
+        self.assertEqual("near_hostile_requires_review", report["paused_survival_guard"]["defense_status"])
+        self.assertEqual(("up", "f4"), backend.events[-1])
 
     def test_same_process_renewal_requires_new_safety_dispatch_and_effect_before_new_deadline(self):
         profile = SimpleNamespace(

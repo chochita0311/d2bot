@@ -13,7 +13,7 @@ import cv2 as cv
 from diablo2.common.field_control import HeldFieldInput, FieldDirective
 from diablo2.common.frame_geometry import frame_to_desktop
 from diablo2.common.supervised_field import resource_guard
-from diablo2.common.hostile_probe import NearbyHostileProbe
+from diablo2.common.hostile_probe import NearbyHostileProbe, nearby_actor_proposals
 from diablo2.runs.summoner.continuous_navigation import near_ground
 from diablo2.runs.summoner.navigation_execution import dispatch_planned_step
 
@@ -46,7 +46,7 @@ class SummonerAppearanceObserver:
             template = cv.imread(str(path), cv.IMREAD_COLOR)
             if template is None:
                 raise ValueError("Summoner appearance template unavailable")
-            proposal = cv.resize(template, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
+            proposal = cv.resize(cv.cvtColor(template, cv.COLOR_BGR2GRAY), None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
             self.parts.append((rule, template, proposal))
 
     def observe(self, frame, platform):
@@ -54,6 +54,20 @@ class SummonerAppearanceObserver:
 
     def observe_corpse(self, frame, platform):
         return self._observe(frame, platform, "corpse")
+
+    @staticmethod
+    def _blue_gold_matches(patch, template, minimum):
+        if minimum is None:
+            return True
+
+        def bands(frame):
+            blue, green, red = (channel.astype("int16") for channel in cv.split(frame))
+            return (blue - red >= 15) & (blue - green >= 5), (red - blue >= 20) & (green - blue >= 10)
+
+        # 모양 기준을 보정한 외형은 원본의 파랑/금색 위치를 각각 현재 native 색상으로 확인한다.
+        return all(
+            reference.any() and float(current[reference].mean()) >= minimum for current, reference in zip(bands(patch), bands(template))
+        )
 
     def _observe(self, frame, platform, state):
         if frame.shape != (1140, 1922, 3):
@@ -93,21 +107,23 @@ class SummonerAppearanceObserver:
         patch = frame[top:bottom, left:right]
         if patch.shape[0] < h or patch.shape[1] < w:
             return None
-        # 반해상도는 후보 제안만 맡고 모든 승인 점수는 현재 원본 RGB에서 구한다.
-        coarse = cv.resize(patch, None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
+        # 반해상도 명암은 후보만 제안한다. 모든 승인/복수 몸체 검사는 현재 원본 색상에서 한다.
+        coarse = cv.resize(cv.cvtColor(patch, cv.COLOR_BGR2GRAY), None, fx=0.5, fy=0.5, interpolation=cv.INTER_AREA)
         scores = cv.matchTemplate(coarse, proposal, cv.TM_CCOEFF_NORMED)
         found = []
         ph, pw = proposal.shape[:2]
         for _ in range(16):
             _, coarse_score, _, (cx, cy) = cv.minMaxLoc(scores)
-            if coarse_score < 0.65:
+            if coarse_score < rule.get("proposal_threshold", 0.65):
                 break
             x0, y0 = max(0, cx * 2 - 3), max(0, cy * 2 - 3)
             x1, y1 = min(patch.shape[1], cx * 2 + w + 4), min(patch.shape[0], cy * 2 + h + 4)
             native = patch[y0:y1, x0:x1]
             if native.shape[0] >= h and native.shape[1] >= w:
                 _, score, _, (x, y) = cv.minMaxLoc(cv.matchTemplate(native, template, cv.TM_CCOEFF_NORMED))
-                if score >= rule["threshold"]:
+                if score >= rule["threshold"] and SummonerAppearanceObserver._blue_gold_matches(
+                    native[y : y + h, x : x + w], template, rule.get("minimum_blue_gold_agreement")
+                ):
                     found.append((score, x0 + x, y0 + y))
             scores[max(0, cy - ph) : cy + ph + 1, max(0, cx - pw) : cx + pw + 1] = -1
         else:
@@ -119,6 +135,12 @@ class SummonerAppearanceObserver:
         if score < rule["threshold"]:
             return None
         if any(abs(x - other_x) > w or abs(y - other_y) > h for _, other_x, other_y in found):
+            return _AMBIGUOUS_APPEARANCE
+        # 축소 격자 위상/몸체 밖 배경 때문에 두 번째 몸체의 후보만 누락될 수 있다.
+        # 승인된 부위에 한해서 원본 색상으로 떨어진 복수 몸체를 다시 거부한다.
+        uniqueness = cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED)
+        uniqueness[max(0, y - h) : y + h + 1, max(0, x - w) : x + w + 1] = -1
+        if cv.minMaxLoc(uniqueness)[1] >= rule["threshold"]:
             return _AMBIGUOUS_APPEARANCE
         x, y = x + left, y + top
         point = (x + dx, y + dy)
@@ -175,8 +197,10 @@ def run_platform_encounter(
     worker = threading.Thread(target=watchdog, name="summoner-encounter-watchdog", daemon=True)
     worker.start()
     first_nova, missing_since, last, last_sequence = None, None, None, None
+    platform_seen, platform_missing_since = False, None
     prelude, saved, last_saved = deque(maxlen=4), 0, float("-inf")
     alive_frame, first_corpse_frame = None, None
+    tentative_corpse_frame, tentative_followup_frame = None, None
     approach_frame_pending = False
     observations = ThreadPoolExecutor(max_workers=3, thread_name_prefix="summoner-observation")
     probe = (
@@ -205,6 +229,8 @@ def run_platform_encounter(
             acquired = clock()
             last = capture.grab().frame
             last_sequence = sequence
+            if tentative_corpse_frame is not None and tentative_followup_frame is None:
+                tentative_followup_frame = (sequence, acquired, last)
             prelude.append((sequence, acquired, last))
             if sequence == 0:
                 retain("encounter-before.png", last, sequence, acquired, "initial")
@@ -269,6 +295,16 @@ def run_platform_encounter(
             )
             now = clock()
             row["processed_at"] = now
+            fresh_player = player.point is not None and 0 <= now - acquired < 0.25
+            if platform is not None and fresh_player:
+                platform_seen, platform_missing_since = True, None
+            elif platform_seen and platform is None and fresh_player:
+                platform_missing_since = now if platform_missing_since is None else platform_missing_since
+                row["platform_reacquisition_seconds"] = now - platform_missing_since
+                if now - platform_missing_since >= 6:
+                    held.release()
+                    row["action"] = "platform_reacquisition_timeout"
+                    break
             if life_tracker is not None:
                 row["life"] = life_tracker.observe(target, corpse, platform, sequence=sequence, acquired_at=acquired, now=now)
                 if row["life"]["state"] == "alive":
@@ -276,6 +312,8 @@ def run_platform_encounter(
                     first_corpse_frame = None
                 if row["life"].get("first_dead_sequence") == sequence:
                     first_corpse_frame = (sequence, acquired, last)
+                    if tentative_corpse_frame is None:
+                        tentative_corpse_frame = first_corpse_frame
                 if row["life"]["state"] == "dead":
                     held.release()
                     corpse_sequence, corpse_at, corpse_image = first_corpse_frame
@@ -295,16 +333,29 @@ def run_platform_encounter(
                 retain("encounter-combat-{:03d}.png".format(sequence), last, sequence, acquired, "combat")
                 saved += 1
                 last_saved = acquired
-            if player.point is None or goal is None or not 0 <= now - acquired < 0.25:
+            hostile = None
+            if fresh_player and platform_seen and platform is None and probe is not None:
+                # 녹색 효과가 없어도 기존 근접 격자를 호버할 수 있다. 공격은 현재 커서·새 적 패널만 승인한다.
+                if probe.pending is None:
+                    held.release()
+                proposals = nearby_actor_proposals(last, player.point)
+                hostile = probe.observe(last, player.point, acquired, points=proposals or None)
+                row.update(
+                    current_defense_proposals=proposals,
+                    current_defense_source="current_actor_effects" if proposals else "current_near_hover_grid",
+                    hostile_panel=None if hostile is None else asdict(hostile),
+                )
+            if not fresh_player or (goal is None and hostile is None):
                 held.release()
                 missing_since = now if missing_since is None else missing_since
-                if now - missing_since >= 1:
+                missing_limit = 6 if fresh_player and platform_seen and platform is None else 1
+                row["missing_evidence_limit"] = missing_limit
+                if now - missing_since >= missing_limit:
                     break
                 continue
             missing_since = None
-            if near_ground(goal, player.point):
-                hostile = None
-                if target is None and probe is not None:
+            if hostile is not None or near_ground(goal, player.point):
+                if target is None and hostile is None and probe is not None:
                     if probe.pending is None:
                         held.release()
                     hostile = probe.observe(last, player.point, acquired)
@@ -324,6 +375,7 @@ def run_platform_encounter(
                     last_saved = acquired
                 first_nova = now if first_nova is None else first_nova
                 if now - first_nova >= 6:
+                    row.update(action="nova_window_expired", nova_window_seconds=now - first_nova)
                     break
                 held.apply(
                     FieldDirective(
@@ -385,6 +437,16 @@ def run_platform_encounter(
         worker.join(timeout=1)
         held.close()
         result["nova_dispatches"] = held.snapshot()["dispatches"][profile.actions.primary_attack_skill_key]
+        if not result.get("kill_confirmed"):
+            # 단발 시체 양성의 직후 미검출을 진단하되 사망 증거와 구분하고 마지막 화면 자리를 남긴다.
+            for name, witness, phase in (
+                ("encounter-tentative-corpse.png", tentative_corpse_frame, "tentative"),
+                ("encounter-tentative-followup.png", tentative_followup_frame, "unconfirmed_followup"),
+            ):
+                if witness is not None and saved < 23:
+                    witness_sequence, witness_at, witness_frame = witness
+                    retain(name, witness_frame, witness_sequence, witness_at, phase)
+                    saved += 1
         result["evidence_frames"] = saved + int(last is not None)
         if last is not None:
             retain("encounter-after.png", last, last_sequence, acquired, "final")

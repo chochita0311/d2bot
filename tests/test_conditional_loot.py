@@ -40,6 +40,142 @@ class LootBackend(DryFieldInput):
 
 
 class ConditionalLootTests(unittest.TestCase):
+    def test_low_resources_preempt_scan_and_off_restoration_with_one_recovery_or_immediate_exit(self):
+        for phase in ("scan", "restore"):
+            for recovered in (True, False):
+                with self.subTest(phase=phase, recovered=recovered):
+                    self.setUp()
+                    calls, restored = [], [False]
+                    valid = self.hud.observe.return_value
+                    low = SimpleNamespace(life=SimpleNamespace(ratio=0.2), mana=SimpleNamespace(ratio=None), belt_visibility="closed")
+
+                    def recover(frame, reading, acquired):
+                        calls.append((reading, acquired))
+                        self.assertIs(low, reading)
+                        self.assertLess(self.now[0] - acquired, 0.25)
+                        restored[0] = recovered
+                        return recovered
+
+                    controller = self.controller(recover_resources=recover)
+
+                    def observe(frame):
+                        if controller.labels_state == "on" and not restored[0]:
+                            if phase == "scan" or self.scanner.scan_frame.call_count >= 2:
+                                return low
+                        return valid
+
+                    self.hud.observe.side_effect = observe
+                    if recovered:
+                        result = controller.after_combat()
+                        self.assertEqual("resource_recovered" if phase == "scan" else "inspection_complete", result["status"])
+                        self.assertTrue(result["labels_off_sent"])
+                    else:
+                        with self.assertRaisesRegex(RuntimeError, "^resource_low$"):
+                            controller.after_combat()
+                        self.assertTrue(controller.resource_exit_required)
+                    self.assertEqual(1, len(calls))
+                    self.assertNotIn(("press", "f2"), self.backend.events)
+                    self.assertNotIn(("click",), self.backend.events)
+
+    def test_hud_reobservation_rejects_fresh_positive_at_exact_read_deadline(self):
+        for elapsed, permitted in ((0.749, True), (0.75, False)):
+            with self.subTest(elapsed=elapsed):
+                self.setUp()
+                controller = self.controller()
+                started, calls = self.now[0], [0]
+                valid = self.hud.observe.return_value
+                unknown = SimpleNamespace(life=SimpleNamespace(ratio=None), mana=valid.mana, belt_visibility="closed")
+
+                def grab():
+                    calls[0] += 1
+                    self.now[0] = started + (0.01 if calls[0] == 1 else elapsed)
+                    return SimpleNamespace(frame=self.frame)
+
+                self.capture.grab.side_effect = grab
+                self.hud.observe.side_effect = [unknown, valid]
+                self.stop.wait = lambda seconds: self.now.__setitem__(0, started + elapsed - 0.01)
+                if permitted:
+                    frame, acquired = controller._read()
+                    self.assertIs(frame, self.frame)
+                    self.assertLess(self.now[0] - acquired, 0.25)
+                else:
+                    with self.assertRaisesRegex(RuntimeError, "observation_unverified"):
+                        controller._read()
+                self.assertFalse(self.backend.events)
+
+    def test_transient_hud_loss_waits_without_input_before_scan_or_off_restoration(self):
+        for phase in ("scan", "restore"):
+            with self.subTest(phase=phase):
+                self.setUp()
+                controller = self.controller()
+                valid = self.hud.observe.return_value
+                unknown = SimpleNamespace(life=SimpleNamespace(ratio=None), mana=valid.mana, belt_visibility="closed")
+                missing, observed_inputs = [0], []
+
+                def observe(frame):
+                    toggled = list(self.backend.events).count(("press", "alt")) == 1
+                    due = self.scanner.scan_frame.call_count >= 2 if phase == "restore" else True
+                    if toggled and due and missing[0] < 2:
+                        missing[0] += 1
+                        observed_inputs.append(tuple(self.backend.events))
+                        return unknown
+                    return valid
+
+                self.hud.observe.side_effect = observe
+                result = controller.after_combat()
+                self.assertEqual("inspection_complete", result["status"])
+                self.assertTrue(result["movement_allowed"])
+                self.assertEqual(2, missing[0])
+                self.assertEqual(observed_inputs[0], observed_inputs[1])
+                self.assertIsNotNone(controller.last_hud_failure[1]["recovered_at"])
+                self.assertEqual(phase == "restore", controller.last_hud_failure[1]["restoring"])
+                self.assertNotIn(("press", "f2"), self.backend.events)
+                self.assertFalse(result["clicks"])
+
+    def test_hud_reobservation_preserves_failure_deadlines_stop_focus_and_resource_guards(self):
+        for condition in ("persistent", "low", "stale", "focus", "stop", "buff", "scan"):
+            with self.subTest(condition=condition):
+                self.setUp()
+                controller = self.controller(max_scan_seconds=0.1 if condition == "scan" else 3)
+                valid, reads = self.hud.observe.return_value, [0]
+                unknown = SimpleNamespace(life=SimpleNamespace(ratio=None), mana=valid.mana, belt_visibility="closed")
+
+                def observe(frame):
+                    if list(self.backend.events).count(("press", "alt")) != 1:
+                        return valid
+                    reads[0] += 1
+                    if condition == "stale":
+                        self.now[0] += 0.25
+                    if condition == "persistent" or reads[0] == 1:
+                        return unknown
+                    if condition == "low":
+                        return SimpleNamespace(life=SimpleNamespace(ratio=0.1), mana=valid.mana, belt_visibility="closed")
+                    if condition == "focus":
+                        self.focus = False
+                    if condition == "stop":
+                        self.stop.set()
+                    if condition == "buff":
+                        controller.deadline_supplier = lambda: self.now[0]
+                    return valid
+
+                self.hud.observe.side_effect = observe
+                result = controller.after_combat()
+                expected = dict(
+                    persistent="observation_unverified",
+                    low="resource_low",
+                    stale="screen_stale",
+                    focus="focus_lost",
+                    stop="stopped",
+                    buff="buff_renewal_due",
+                    scan="scan_deadline",
+                )
+                self.assertEqual(expected[condition], result["status"])
+                self.assertNotIn(("press", "f2"), self.backend.events)
+                self.assertFalse(result["clicks"])
+                if condition == "persistent":
+                    self.assertLess(self.now[0], 1.7)
+                    self.assertFalse(result["movement_allowed"])
+
     def test_native_parallel_scan_preserves_configured_priority_and_exact_coordinates(self):
         scanner = LootPickupSession(load_config(Path("config")))
         candidates = scanner._build_candidates()
@@ -173,7 +309,11 @@ class ConditionalLootTests(unittest.TestCase):
         self.assertTrue(controller.movement_allowed)
 
     def test_label_reconfirmation_is_reused_for_off_without_extending_teleport_frame_age(self):
-        for capture_seconds, scan_seconds, permitted in ((0.12, 0.05, True), (0.15, 0.06, False)):
+        for capture_seconds, scan_seconds, off_seconds, permitted in (
+            (0.12, 0.05, 0, True),
+            (0.15, 0.06, 0, True),
+            (0.15, 0.06, 0.08, False),
+        ):
             with self.subTest(permitted=permitted):
                 self.setUp()
                 controller = self.controller()
@@ -194,6 +334,8 @@ class ConditionalLootTests(unittest.TestCase):
                     return self.hit(x=700 if scans[0] <= 2 else 850) if scans[0] <= 4 else None
 
                 def record(key):
+                    if key == "alt" and list(self.backend.events).count(("press", "alt")) == 1:
+                        self.now[0] += off_seconds
                     if key == "f2":
                         request_ages.append(self.now[0] - reconfirmed[0])
                     press(key)
@@ -207,9 +349,47 @@ class ConditionalLootTests(unittest.TestCase):
                 self.assertEqual("click_unconfirmed" if permitted else "screen_stale", result["status"])
                 self.assertEqual("off", result["labels_state"])
                 if permitted:
-                    self.assertAlmostEqual(0.22, request_ages[0])
+                    self.assertAlmostEqual(capture_seconds + scan_seconds, request_ages[0])
                 else:
                     self.assertIsNone(result["teleports"][0]["requested_at"])
+
+    def test_remaining_item_pointer_settle_preserves_stop_buff_and_actual_fifty_ms(self):
+        for condition in ("normal", "stop", "buff_due"):
+            with self.subTest(condition=condition):
+                self.setUp()
+                controller = self.controller()
+                self.scanner.scan_frame.side_effect = [self.hit(), self.hit(), self.hit(x=850), self.hit(x=850), None]
+                move, press, wait = self.backend.move, self.backend.press, self.stop.wait
+                prepared_at, request_at = [None], []
+
+                def prepare(x, y):
+                    move(x, y)
+                    if prepared_at[0] is None:
+                        prepared_at[0] = self.now[0]
+
+                def record(key):
+                    if key == "f2":
+                        request_at.append(self.now[0])
+                    press(key)
+
+                def settling(seconds):
+                    if prepared_at[0] is not None and not request_at:
+                        if condition == "stop":
+                            self.stop.set()
+                        elif condition == "buff_due":
+                            controller.deadline_supplier = lambda: self.now[0]
+                    return wait(seconds)
+
+                self.backend.move, self.backend.press, self.stop.wait = prepare, record, settling
+                result = controller.after_combat()
+                if condition == "normal":
+                    self.assertAlmostEqual(0.05, request_at[0] - prepared_at[0])
+                    self.assertEqual(1, len(request_at))
+                    self.assertEqual("click_unconfirmed", result["status"])
+                else:
+                    self.assertFalse(request_at)
+                    self.assertFalse(result["clicks"])
+                    self.assertEqual("stopped" if condition == "stop" else "buff_renewal_due", result["status"])
 
     def test_focus_loss_during_reused_off_toggle_never_sends_teleport_or_repeats_toggle(self):
         controller = self.controller()
@@ -232,16 +412,28 @@ class ConditionalLootTests(unittest.TestCase):
         self.assertEqual(2, toggles[0])
 
     def test_teleport_never_clicks_when_new_label_or_landing_is_unverified(self):
-        for current in (None, self.hit(x=1300)):
-            with self.subTest(current=current):
+        for condition in ("label", "ground_observer", "player", "far"):
+            with self.subTest(condition=condition):
                 self.setUp()
                 controller = self.controller()
+                current = None if condition == "label" else self.hit(x=1300 if condition == "far" else 700)
+                if condition == "ground_observer":
+                    controller.ground_supplier = lambda: None
+                elif condition == "player":
+                    controller.ground_supplier = lambda: SimpleNamespace(observe=lambda *args, **kwargs: GroundReading(None, "pose_lost"))
                 self.scanner.scan_frame.side_effect = [self.hit(), self.hit(), current]
                 result = controller.after_combat()
                 self.assertEqual(1, list(self.backend.events).count(("press", "f2")))
                 self.assertNotIn(("click",), self.backend.events)
                 self.assertFalse(result["clicks"])
                 self.assertEqual("off", result["labels_state"])
+                frame, observation = controller.last_landing_observation
+                self.assertIs(self.frame, frame)
+                self.assertIs(observation, result["teleports"][0]["landing_observation"])
+                self.assertEqual([] if condition == "far" else [condition], observation["missing"])
+                self.assertEqual("not_near_item" if condition == "far" else "unverified", observation["status"])
+                self.assertEqual("pose_lost" if condition == "player" else None, observation["ground_reason"])
+                self.assertGreaterEqual(observation["acquired_at"], result["teleports"][0]["requested_at"] + 0.32)
 
     def test_buff_expiring_during_teleport_preempts_click(self):
         controller = self.controller(deadline_supplier=lambda: 0.3)
@@ -471,7 +663,7 @@ class ConditionalLootIntegrationTests(unittest.TestCase):
                         lambda: True,
                         profile,
                         threading.Event(),
-                        (Mock(reset_events=(), center=None), path),
+                        (Mock(reset_events=(), center=None, observe=Mock(return_value=GroundReading((960, 580), "current"))), path),
                         dict(
                             character_id="flash",
                             field=True,

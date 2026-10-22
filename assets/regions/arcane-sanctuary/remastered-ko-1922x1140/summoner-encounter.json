@@ -514,7 +514,7 @@
         638
       ],
       "sha256": "8bac83fa06b9cb90078bc51f10395777f82c78313eb57ac3c01c65f68d29f029",
-      "threshold": 0.92,
+      "threshold": 0.7,
       "ground_offset": [
         30,
         25
@@ -528,6 +528,302 @@
         "reviewed_by": "codex-visual",
         "reviewed_at": "2026-10-18",
         "basis": "Horizontal corpse left hem direction from GUI72 room02. Wider even-sized 40x24 fold separates the curved robe from the previous right-hem overlap and avoids tiny odd-size coarse aliasing; native .92/current-platform/unique-target/ordered corpse pair unchanged. Original 29x15 proposal failed duplicate-scene validation and was replaced before live use."
+      },
+      "minimum_blue_gold_agreement": 0.75,
+      "proposal_threshold": 0.55,
+      "threshold_review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-21",
+        "previous_native_threshold": 0.92,
+        "previous_proposal_threshold": 0.65,
+        "basis": "Fresh53 unchanged left-hem template at [972,614,1012,638] native .717881/.718719; source aligned blue .832636/gold .934884. Existing half-gray max .584690, so native-only .70+colors still misses the candidate. This part alone uses proposal .55 and native .70 plus >=.75 independent aligned blue/gold; 16-proposal cap/native uniqueness/current platform/two new same-room/generation frames stay required. 110 native scene/alive negatives max .505948, five nonnative skipped. Template bytes/crop/source fingerprints unchanged. No retroactive fresh53 success or death timing."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-front-staff",
+      "path": "templates/encounters/summoner-robe-alive-front-staff.png",
+      "crop": [
+        1170,
+        508,
+        1214,
+        596
+      ],
+      "sha256": "eef321808eaf121bf7f3309ea0ea98f939b915d245bc0fa5fc91694d2b8b2be7",
+      "threshold": 0.92,
+      "ground_offset": [
+        20,
+        110
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-staff.png",
+        "sha256": "1e252f1ac988495d3f33ecdf8d130b3d9db5096c82c29421189778b7cf87d3d5"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review: standing blue/gold staff pose in encounter-before and horizontal same-color left robe hem in encounter-after. Current run did not recognize either pose. Native .92, current platform, unique body and two ordered fresh corpse observations stay required; no death time or fresh completion is inferred."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-left-hem-lit",
+      "path": "templates/encounters/summoner-robe-corpse-left-hem-lit.png",
+      "crop": [
+        972,
+        614,
+        1012,
+        638
+      ],
+      "sha256": "946a9181e80f53b7cb969ada9f8e2d0f8bbc03e811a4c037dcaa6799265bfc41",
+      "threshold": 0.92,
+      "ground_offset": [
+        30,
+        25
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-lit.png",
+        "sha256": "25e776f9566ccf930239d4a0f5cbdcbe79d703fccea91964279efb1c057766dc"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review: standing blue/gold staff pose in encounter-before and horizontal same-color left robe hem in encounter-after. Current run did not recognize either pose. Native .92, current platform, unique body and two ordered fresh corpse observations stay required; no death time or fresh completion is inferred."
+      }
+    },
+    {
+      "id": "summoner-robe-alive-side-fold-robe",
+      "path": "templates/encounters/summoner-robe-alive-side-fold-robe.png",
+      "crop": [
+        516,
+        702,
+        554,
+        763
+      ],
+      "sha256": "d183e60f76b26853289e195fc7d5db205208ea953ba9791657278c6fe7c7996e",
+      "threshold": 0.92,
+      "ground_offset": [
+        21,
+        74
+      ],
+      "appearance": "alive",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-side-fold-robe.png",
+        "sha256": "522c909e5193b26e9cae71a8e33546c17c2ab87f3dceb95a4dd2870f3e2b18c3",
+        "execution_id": "20261020-batch-17-room-01",
+        "source_frame": "encounter-before.png",
+        "source_frame_sha256": "59a0c102da4452d1268c038068881906f3babdc6fb4d3730ad6060974be17cff"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review: standing blue/gold lower robe with a distinct side fold. Current platform, unique body and fresh two-corpse life contract remain required; unrelated poses remain unknown."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-curved-hem",
+      "path": "templates/encounters/summoner-robe-corpse-curved-hem.png",
+      "crop": [
+        494,
+        754,
+        583,
+        780
+      ],
+      "sha256": "9185b04d2a531d4b07b72f8976dabf8a6fdc6dea6f2ea07d6cbfbe3f057c52fe",
+      "threshold": 0.92,
+      "ground_offset": [
+        43,
+        22
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curved-hem.png",
+        "sha256": "7c83b90cbb27933799c23956897e11a7801b2136f6007ce7aa0c8143baff3388",
+        "execution_id": "20261020-batch-17-room-01",
+        "source_frame": "paused-survival-last.png",
+        "source_frame_sha256": "3b05804f6abe30865cbd3e31689d0141a8590f5c6335ab8f2278de17cb38032f"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review: horizontal curved blue/gold hem visible beneath a separate red Hell-clan corpse; crop excludes the overlying red torso. No death time inferred. Current platform, unique body and fresh two-corpse life contract remain required; unrelated poses remain unknown."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-curled-robe",
+      "path": "templates/encounters/summoner-robe-corpse-curled-robe.png",
+      "crop": [
+        874,
+        814,
+        925,
+        844
+      ],
+      "sha256": "fd9366a79f50f61f26bb510e71cfa3c0e090a214375adfcf1837656661c641c1",
+      "threshold": 0.9,
+      "ground_offset": [
+        36,
+        28
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe.png",
+        "sha256": "265eda8cc790c5d269d75d4f06cd77a0d69d41e79354e626812025de976263d2",
+        "execution_id": "20261020-batch-26-room-01",
+        "source_frame": "paused-survival-last.png",
+        "source_frame_sha256": "0f76dd7f7d66423f85d5754ed2ff13189610078c6d78cac25dd70172a6526da4"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review of the same blue/gold Summoner corpse family: curled robe torso visible separately from nearby red corpses and staff. The native crop contains robe texture only. Earlier saved encounter frames do not show a matching body; no dedicated kill or death time is inferred. Current platform, native RGB (latest threshold_review), unique body and two ordered fresh same-room/generation corpse observations remain required."
+      },
+      "threshold_review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "previous_threshold": 0.92,
+        "basis": "Primary visual comparison: unchanged curled blue/gold robe texture in two later read-only current platform captures; no input or inferred earlier death time. Existing crop scores .904398/.906340, .91 fails and .90 accepts. Current platform, native RGB, uniqueness and ordered fresh corpse-pair remain required.",
+        "references": [
+          "references/summoner/platform-corpse-curled-robe-lighting-before.png",
+          "references/summoner/platform-corpse-curled-robe-lighting-after.png"
+        ]
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-curled-lower-fold",
+      "path": "templates/encounters/summoner-robe-corpse-curled-lower-fold.png",
+      "crop": [
+        929,
+        710,
+        967,
+        732
+      ],
+      "sha256": "04236e8b6a977085d21b808b783d68c55cc5c56b3867d020329679fe0b94e432",
+      "threshold": 0.92,
+      "ground_offset": [
+        39,
+        17
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe-moved-before.png",
+        "sha256": "e060c48d6f342419698b0ebb31fa616041e7506d2805f8a73e48138a7caf0120",
+        "execution_id": "20261020-recovery-33",
+        "source_frame": "encounter-after.png",
+        "source_frame_sha256": "957653e3f874c8d7cf7c3e4693ab11895ebc3021577bf435f8ce04b6b6253d74"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-20",
+        "basis": "Primary visual review of the same curled blue/gold corpse after item F2 and current platform approach. Green overlay obscures the old upper crop. This separate native RGB .92 lower-fold appearance excludes that overlay and preserves the same physical corpse ground [968,727]. Replacing the original appearance with its lower crop failed a duplicate-body replay; retain the original .90 appearance and independently verify this .92 pose with both current moved frames, body removal/duplication/opposite-state/wrong-color negatives. No pickup or death time inferred."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-looped-hem",
+      "path": "templates/encounters/summoner-robe-corpse-looped-hem.png",
+      "crop": [
+        810,
+        628,
+        890,
+        678
+      ],
+      "sha256": "64274758a1d81515756e597f0f21a0ebbc2fc03ac523eace945c0d178d01bae3",
+      "threshold": 0.7,
+      "ground_offset": [
+        65,
+        46
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem.png",
+        "sha256": "e98103949b8ec3c21a5dbb5b442d8099829504b1632f263bb2cfd26d1df88ff0",
+        "execution_id": "20261020-fresh-43",
+        "source_frame": "encounter-after.png",
+        "source_frame_sha256": "396d75e433e68a4254643bc54f49b4cbf7a8876ca24c61938333908ad5358a50"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-21",
+        "basis": "Primary visual review on 2026-10-21: a horizontal blue/gold looped robe hem lies separately from nearby red corpses. Existing 15 corpse appearances reject this pose (best body-region score .6817). Reviewed crop contains blue/gold robe only; no death time or cause inferred. Existing native RGB .92, unique body, current platform and two ordered fresh same-room/generation corpse observations remain required; these old calibration views do not retroactively complete fresh43.",
+        "validation_references": [
+          {
+            "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem-combat.png",
+            "sha256": "1c337ad5e2dd943cccd2f600645f4ae2dd62b1ab7ba3c31d4ea1d61b66b90881",
+            "source_sequence": 33,
+            "acquired_at": 31782.796,
+            "native_score": 0.995383
+          }
+        ]
+      },
+      "minimum_blue_gold_agreement": 0.75,
+      "threshold_review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-21",
+        "previous_threshold": 0.92,
+        "basis": "Same source43 looped blue/gold corpse pose with bones over upper robe; root visual review. Existing unchanged 80x50 native template scores .726316/.725547 on independent fresh47 final/followup. Lower shape threshold alone is unsafe for original monochrome source; require independent >=.75 aligned blue and gold agreement. Existing current platform, uniqueness, fresh ordered corpse pair and timing remain required. No retroactive fresh47 success or death time inferred.",
+        "references": [
+          "references/summoner/platform-corpse-looped-hem-bone-cover.png",
+          "references/summoner/platform-corpse-looped-hem-bone-cover-followup.png"
+        ],
+        "negative_native_world_max": 0.630259,
+        "alive_native_world_max": 0.63321
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-overlapped-hem",
+      "path": "templates/encounters/summoner-robe-corpse-overlapped-hem.png",
+      "crop": [
+        754,
+        685,
+        838,
+        707
+      ],
+      "sha256": "8e053ca64aa0db8c3ae216fbefa6319e341b2da0db6100063a4342a1cc1af391",
+      "threshold": 0.92,
+      "ground_offset": [
+        63,
+        17
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-overlapped-hem.png",
+        "sha256": "93aff1eb1e650dc8935731b165ab164ca77a5bd4d7b98bae5e00857339ffc19a",
+        "execution_id": "20261021-fresh-44",
+        "source_frame": "encounter-after.png",
+        "source_frame_sha256": "63ad7098c17c12d481b5906294f4a885f7493b4fadaea1395a859b12c0f31a75"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-21",
+        "basis": "Primary visual review: the exposed blue/gold lower hem beneath overlapping red corpses. The prior 16 corpse rules reject the current body (best lower-band .6432); reducing thresholds is not justified. This separate native RGB .92 crop preserves ground [817,702], current platform, uniqueness and two ordered fresh same-room/generation observations. No earlier death time, cause or retroactive fresh44 success is inferred."
+      }
+    },
+    {
+      "id": "summoner-robe-corpse-curved-lower-fold",
+      "path": "templates/encounters/summoner-robe-corpse-curved-lower-fold.png",
+      "crop": [
+        784,
+        690,
+        853,
+        725
+      ],
+      "sha256": "0fbd1355562d0130740eac76d53246cfb6222b3b122ac7bb5e5faef2ce0e08ba",
+      "threshold": 0.92,
+      "ground_offset": [
+        49,
+        34
+      ],
+      "appearance": "corpse",
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curved-lower-fold.png",
+        "sha256": "dc4e570aa08e7156abf985e5993665139e949f2538dbb58445f0360e21c4d134",
+        "execution_id": "20261021-fresh-51",
+        "source_frame": "encounter-after.png",
+        "source_frame_sha256": "9db1f0ff3d71f2968cbd10dad536be8b5e4f56515a58e94b8814e179c9a82ed8"
+      },
+      "review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-21",
+        "basis": "Exposed blue/gold curved lower fold, excluding nearby mercenary, red corpses and fire. Existing17 native corpse rules miss the final body (best old lower-band .733790); Gaussian blur reaches only .788095 and old aligned blue agreement .428571, so those calibrations were not adopted. Source1.0 and independent combat19 .936584 support this native .92 appearance; both saved frames have current distinct-glyph platform anchors (original row19 checked). Their replay does not prove a new ordered live pair before the original deadline. Native110 scene/alive negatives max .491351. Current platform, native uniqueness, two ordered fresh same-room/generation observations and original timing remain required; no retroactive fresh51 completion, death timing or key pickup inference."
       }
     }
   ],

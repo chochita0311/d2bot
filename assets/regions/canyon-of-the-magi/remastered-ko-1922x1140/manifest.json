@@ -65,12 +65,20 @@
         1922,
         1140
       ],
-      "threshold": 0.92,
+      "threshold": 0.90,
       "sha256": "7b147d7f8d9d0bd64b7b63599676917d076eb0ea43a0d2db33d80fb924e0562f",
       "source": {
         "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/portal-arrival.png",
         "sha256": "85244f290b57d64f347a5dc78ca418eed96ab7f665def857c0c9c2152b3e6bd3",
-        "review": "Reviewed visible south stairs on first portal arrival. Used only for at most two observed approaches when the full waypoint floor is not yet visible; title and HUD required. No arbitrary north coordinate."
+        "review": "Reviewed visible south stairs on first portal arrival. Used only for at most two observed approaches when the full waypoint floor is not yet visible; title and HUD required. No arbitrary north coordinate.",
+        "lighting_replay": {
+          "reference": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/portal-arrival-dark-steps.png",
+          "sha256": "42bb0378d5fe53910990290f506bab8741b05666cde7b0d1240be2482c2b5979",
+          "source_frame_sha256": "9111d8134904a2684a765e1187b960913b38928d15d5edea171d731333099bee",
+          "execution_id": "20261020-recovery-23",
+          "retained_boxes": [[24, 55, 1900, 900]],
+          "review": "Same native stairs at darker portal arrival score .908714; .91 and .92 reject. Only this appearance changes to .90, with no new template. Left/right/whole stair removal and native wrong-region frames stay negative; the full waypoint retains .92. Calibration is an excluded same-room recovery."
+        }
       }
     },
     "waypoint-left-floor": {

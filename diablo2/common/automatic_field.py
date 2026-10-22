@@ -54,8 +54,8 @@ def validate_runtime_permit(proof, now):
 class AutomaticBuffDriver:
     """현재 안전 관찰과 실제 시전 요청 시각으로 버프를 실행한다."""
 
-    # 1초 안정 관찰과 W→A→A→S의 실제 요청 지연을 갱신 시한 전에 확보한다.
-    PREPARATION_LEAD_SECONDS = 4.0
+    # 안정 관찰과 마지막 무기 복귀 W까지의 실제 요청 지연을 갱신 시한 전에 확보한다.
+    PREPARATION_LEAD_SECONDS = 5.0
 
     def __init__(self, profile, guard_factory, dispatch, observe, clear_hostiles, stop, *, clock=time.monotonic):
         self.profile = profile

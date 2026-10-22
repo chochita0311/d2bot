@@ -139,17 +139,17 @@ class AutomaticFieldTests(unittest.TestCase):
         self.assertEqual([153], result["deadlines"])
         self.assertEqual("not_independently_verified", result["effect_status"])
         self.assertFalse(result["buff"]["effect_verified"])
-        self.assertEqual(149, result["preparation_at"])
-        self.now = 148.999
+        self.assertEqual(148, result["preparation_at"])
+        self.now = 147.999
         self.assertFalse(driver.due())
-        self.now = 149
+        self.now = 148
         self.assertTrue(driver.due())
         renewed = driver.execute()
-        self.assertEqual([292], renewed["deadlines"])
+        self.assertEqual([291], renewed["deadlines"])
         self.assertEqual(153, renewed["previous_deadline"])
         self.assertEqual(["dispatch", "dispatch"], self.events)
 
-    def test_renewal_reserves_stability_and_prefix_time_without_moving_actual_s_deadline(self):
+    def test_renewal_reserves_stability_and_full_sequence_without_moving_actual_s_deadline(self):
         driver = self.driver()
         first = driver.execute()
         previous_deadline = first["deadlines"][0]
@@ -164,6 +164,8 @@ class AutomaticFieldTests(unittest.TestCase):
             requests.append(("w", self.now))
             self.now += 1.9
             requests.append(("s", self.now))
+            self.now += 1.55
+            requests.append(("w", self.now))
             return dict(
                 status="dispatched_unconfirmed",
                 equipment_dispatch_balanced=True,
@@ -175,6 +177,7 @@ class AutomaticFieldTests(unittest.TestCase):
         renewed = driver.execute()
         self.assertLess(requests[0][1], previous_deadline)
         self.assertLess(requests[1][1], previous_deadline)
+        self.assertLess(requests[2][1], previous_deadline)
         self.assertEqual(previous_deadline, renewed["previous_deadline"])
         self.assertEqual([requests[1][1] + 140], renewed["deadlines"])
         self.assertEqual("not_independently_verified", renewed["effect_status"])

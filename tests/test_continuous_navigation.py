@@ -32,6 +32,117 @@ class Enemy:
 
 
 class ContinuousNavigationTests(unittest.TestCase):
+    def test_current_near_threat_dispatch_precedes_path_failure_and_unknown_ground_never_authorizes_it(self):
+        for present in (True, False):
+            with self.subTest(present=present):
+                self.setUp()
+                self.planner[0].observe.return_value = GroundReading(
+                    (960, 580) if present else None, "current" if present else "ground_unverified"
+                )
+                self.hazards.observe.return_value = (Enemy((1000, 600)),)
+                checked = []
+
+                def plan(*args, **kwargs):
+                    checked.append(("down", "f4") in self.backend.events)
+                    self.at += 0.15
+                    raise RuntimeError("ground_ambiguous")
+
+                self.run_interval(seconds=1, plan=plan)
+                self.assertTrue(checked)
+                self.assertTrue(all(value == present for value in checked))
+                if not present:
+                    self.hazards.observe.assert_not_called()
+
+    def test_hover_recheck_capture_waits_only_remaining_settle_and_preserves_current_body_stop_and_buff(self):
+        from diablo2.runs.summoner.scene_vision import HostileTarget
+
+        for condition in ("normal", "gone", "stop", "buff"):
+            with self.subTest(condition=condition):
+                self.setUp()
+                stopped, waits = [False], []
+
+                def wait(seconds):
+                    waits.append(seconds)
+                    self.at += seconds + 1e-8
+                    if condition == "stop":
+                        stopped[0] = True
+
+                stop = SimpleNamespace(is_set=lambda: stopped[0], wait=wait, set=lambda: stopped.__setitem__(0, True))
+                target = Mock()
+                target.observe.side_effect = lambda frame: (
+                    HostileTarget("hostile-target", (800, 80, 1100, 110), None) if self.backend.pointer == (1120, 520) else None
+                )
+
+                def grab():
+                    self.at += 0.01
+                    self.count += 1
+                    return SimpleNamespace(frame=self.frame)
+
+                def plan(*args, **kwargs):
+                    self.at += 0.01
+                    return self.plan(*args, **kwargs)
+
+                self.capture.grab.side_effect = grab
+                with patch(
+                    "diablo2.runs.summoner.continuous_navigation.threading", SimpleNamespace(Event=threading.Event, Thread=Mock())
+                ), patch(
+                    "diablo2.runs.summoner.continuous_navigation.nearby_actor_proposals",
+                    side_effect=lambda *args: () if condition == "gone" and self.count >= 2 else ((1120, 520),),
+                ):
+                    options = dict(
+                        seconds=1, target_vision=target, plan=plan, stop=stop, buff_expires_at=0.04 if condition == "buff" else 100
+                    )
+                    if condition == "stop":
+                        with self.assertRaisesRegex(RuntimeError, "continuous navigation interrupted"):
+                            self.run_interval(**options)
+                    else:
+                        result = self.run_interval(**options)
+                self.assertTrue(waits)
+                self.assertTrue(all(0 < seconds <= 0.05 + 1e-9 for seconds in waits))
+                self.assertEqual(condition == "normal", ("down", "f4") in self.backend.events)
+                rows = [] if condition == "stop" else result["continuous_frames"]
+                if condition == "normal":
+                    self.assertTrue(rows[1]["nearby_hover_confirmed"])
+                    self.assertGreaterEqual(rows[1]["acquired_at"], rows[0]["hover_capture_ready_at"])
+                if condition == "buff":
+                    self.assertAlmostEqual(0.04, self.at)
+
+    def test_hover_panel_without_current_near_body_ends_nova_but_present_body_keeps_six_second_limit(self):
+        from diablo2.runs.summoner.scene_vision import HostileTarget
+
+        for condition in ("lost", "shifted", "present"):
+            with self.subTest(condition=condition):
+                self.setUp()
+                target = Mock()
+                target.observe.side_effect = lambda frame: (
+                    HostileTarget("hostile-target", (800, 80, 1100, 110), None) if self.backend.pointer == (1120, 520) else None
+                )
+
+                def proposals(frame, player):
+                    if self.count <= 6 or condition == "present":
+                        return ((1120, 520),)
+                    return ((1240, 520),) if condition == "shifted" else ()
+
+                loot = Mock(movement_allowed=True)
+                loot.after_combat.return_value = dict(status="inspection_complete", clicks=[], teleports=[], labels_state="off")
+
+                def near_route(*args, **kwargs):
+                    _, ground, view = self.plan(*args, **kwargs)
+                    return PathChoice((1050, 590), "near_route_floor"), ground, view
+
+                with patch("diablo2.runs.summoner.continuous_navigation.nearby_actor_proposals", side_effect=proposals):
+                    result = self.run_interval(seconds=8, target_vision=target, loot_controller=loot, plan=near_route)
+                self.assertIn(("down", "f4"), self.backend.events)
+                if condition == "present":
+                    self.assertEqual("nova_target_requires_review", result["continuous_status"])
+                    loot.after_combat.assert_not_called()
+                else:
+                    self.assertEqual("interval_complete", result["continuous_status"])
+                    loot.after_combat.assert_called_once()
+                    rows = result["continuous_frames"]
+                    self.assertTrue(any(row.get("action") == "post_combat_loot_inspection" for row in rows))
+                    self.assertFalse(any(row.get("nearby_hover_confirmed") for row in rows if row["index"] >= 6))
+
     def test_occluded_terminal_defends_confirmed_body_hover_measured_from_near_ground(self):
         terminal, target = Mock(), Mock()
         terminal.observe.side_effect = lambda frame: (
@@ -374,6 +485,7 @@ class ContinuousNavigationTests(unittest.TestCase):
         self.hazards.observe.return_value = ()
         self.hover.observe.return_value = ()
         self.planner = (Mock(reset_events=(), center=None), self.path)
+        self.planner[0].observe.return_value = GroundReading((960, 580), "current")
 
     def plan(self, *args, **kwargs):
         view = PathView(1, 0, self.at, (1922, 1140), (0, 0, 1920, 896), (960, 580), 8, np.ones((112, 240), bool))
@@ -396,7 +508,7 @@ class ContinuousNavigationTests(unittest.TestCase):
                 self.backend,
                 kwargs.pop("focused", lambda: True),
                 self.profile,
-                threading.Event(),
+                kwargs.pop("stop", threading.Event()),
                 self.planner,
                 self.proof,
                 seconds,
@@ -585,6 +697,51 @@ class ContinuousNavigationTests(unittest.TestCase):
         terminal.observe.assert_not_called()
         self.assertEqual("north_segment_observed", result["status"])
 
+    def test_terminal_approach_waits_before_capture_and_keeps_stop_and_deadline_vetoes(self):
+        for condition in ("normal", "stop", "deadline"):
+            with self.subTest(condition=condition):
+                self.setUp()
+                terminal = Mock()
+                terminal.observe.return_value = TerminalReading("nonboss_chest_trio", (1700, 600), (), ())
+                self.path.choose.return_value = PathChoice((1700, 600), "current_terminal_floor")
+                stop, waits = threading.Event(), []
+
+                def wait(seconds):
+                    waits.append(seconds)
+                    self.at += seconds
+                    if condition == "stop":
+                        stop.set()
+                    return stop.is_set()
+
+                stop.wait = wait
+
+                def slow_plan(*args, **kwargs):
+                    self.at += 0.11
+                    return self.plan(*args, **kwargs)
+
+                if condition == "stop":
+                    with self.assertRaisesRegex(RuntimeError, "interrupted"):
+                        self.run_interval(seconds=2, terminal_vision=terminal, plan=slow_plan, stop=stop)
+                else:
+                    result = self.run_interval(
+                        seconds=2,
+                        terminal_vision=terminal,
+                        plan=slow_plan,
+                        stop=stop,
+                        buff_expires_at=0.65 if condition == "deadline" else None,
+                    )
+                    if condition == "normal":
+                        rows = result["continuous_frames"]
+                        prepared = next(i for i, row in enumerate(rows) if row["action"] == "terminal_approach_pointer_settling")
+                        self.assertEqual("terminal_approach_cast", rows[prepared + 1]["action"])
+                        self.assertGreaterEqual(rows[prepared + 1]["acquired_at"], rows[prepared]["approach_capture_ready_at"])
+                        self.assertAlmostEqual(0.21, rows[prepared + 1]["approach_dispatch"]["frame_age_seconds"])
+                    else:
+                        self.assertAlmostEqual(0.65, self.at)
+                self.assertTrue(waits)
+                self.assertTrue(all(0 < seconds <= 0.05 + 1e-9 for seconds in waits))
+                self.assertEqual(condition == "normal", ("press", "f2") in self.backend.events)
+
     def test_slow_terminal_approach_prepares_pointer_then_casts_from_fresh_frame(self):
         terminal = Mock()
         terminal.observe.return_value = TerminalReading("nonboss_chest_trio", (1700, 600), (), ())
@@ -597,11 +754,11 @@ class ContinuousNavigationTests(unittest.TestCase):
             self.at += 0.11
             return self.plan(*args, **kwargs)
 
-        with patch("diablo2.runs.summoner.continuous_navigation.nearby_actor_proposals") as proposals, patch(
+        with patch("diablo2.runs.summoner.continuous_navigation.nearby_actor_proposals", return_value=()) as proposals, patch(
             "diablo2.runs.summoner.continuous_navigation.NearbyHostileProbe", return_value=nearby
         ):
             result = self.run_interval(seconds=3, terminal_vision=terminal, target_vision=target, plan=slow_plan)
-        proposals.assert_not_called()
+        self.assertTrue(proposals.called)
         nearby.observe.assert_not_called()
         actions = [row["action"] for row in result["continuous_frames"]]
         self.assertIn("terminal_approach_pointer_settling", actions)
@@ -613,7 +770,7 @@ class ContinuousNavigationTests(unittest.TestCase):
         self.assertAlmostEqual(0.21, cast["approach_dispatch"]["frame_age_seconds"])
 
     def test_current_three_static_parts_can_prepare_approach_but_cannot_approve_arrival_without_background(self):
-        for obstruction in (None, "partial", "moving", "identity", "gap", "near"):
+        for obstruction in (None, "partial", "moving", "identity", "identity_verified", "gap", "near"):
             with self.subTest(obstruction=obstruction):
                 self.setUp()
                 terminal = Mock()
@@ -624,6 +781,7 @@ class ContinuousNavigationTests(unittest.TestCase):
                     (0.99, 0.99, 0.99),
                     ("one", "two", "three"),
                     current_parts=(True, True, True),
+                    visible_fractions=(1, 1, 1),
                 )
 
                 def observe(frame):
@@ -633,12 +791,15 @@ class ContinuousNavigationTests(unittest.TestCase):
                         return replace(
                             full, evidence_boxes=tuple(tuple(value + self.count * 3 for value in box) for box in full.evidence_boxes)
                         )
-                    if obstruction == "identity":
+                    if obstruction in ("identity", "identity_verified"):
                         return replace(full, part_ids=(str(self.count), "two", "three"))
                     return full
 
                 terminal.observe.side_effect = observe
                 terminal.confirm_relocalized_parts.return_value = None
+                terminal.confirm_static_parts.side_effect = (
+                    lambda frame, reference: reference if obstruction == "identity_verified" else None
+                )
                 self.path.choose.return_value = PathChoice((1700, 600), "current_terminal_floor")
 
                 def plan(*args, **kwargs):
@@ -652,9 +813,9 @@ class ContinuousNavigationTests(unittest.TestCase):
                     plan=plan,
                     motion=lambda *args, **kwargs: CameraMotion(None, 0, "correspondence_insufficient"),
                 )
-                self.assertEqual(obstruction is None, ("press", "f2") in self.backend.events)
+                self.assertEqual(obstruction in (None, "identity_verified"), ("press", "f2") in self.backend.events)
                 self.assertNotEqual("wing_end_observed", result["status"])
-                if obstruction is None:
+                if obstruction in (None, "identity_verified"):
                     self.assertTrue(any(row["terminal_approach_displacement"] == (0, 0) for row in result["continuous_frames"]))
 
     def test_known_distant_terminal_still_fights_current_near_hostile(self):
@@ -924,6 +1085,47 @@ class ContinuousNavigationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_live_continuation(old, "north", None, self.at + 0.1)
 
+    def test_slow_loot_restarts_stuck_observation_before_new_route_casts_but_preserves_real_retry(self):
+        for moved in (False, True):
+            with self.subTest(moved=moved):
+                self.setUp()
+                self.hazards.observe.side_effect = lambda *args, **kwargs: (Enemy((1000, 600)),) if 3 <= self.count <= 5 else ()
+                loot = Mock(movement_allowed=True)
+                finished = []
+
+                def scan(**kwargs):
+                    self.at += 2.2
+                    finished.append(self.at)
+                    return dict(
+                        status="click_unconfirmed" if moved else "inspection_complete",
+                        clicks=[{}] if moved else [],
+                        teleports=[{}] if moved else [],
+                        labels_state="off",
+                        movement_allowed=True,
+                        ended_at=self.at,
+                    )
+
+                loot.after_combat.side_effect = scan
+                returned = []
+
+                def motion(*args, **kwargs):
+                    if finished and not returned:
+                        returned.append(self.at)
+                        return CameraMotion((58, 87) if moved else (0, 0), 20, "current_after_loot")
+                    return CameraMotion((0, 0), 20, "verified")
+
+                result = self.run_interval(seconds=7, loot_controller=loot, motion=motion)
+                rows = result["continuous_frames"]
+                inspected = next(i for i, row in enumerate(rows) if row["action"] == "post_combat_loot_inspection")
+                first = rows[inspected + 1]
+                self.assertNotEqual("stuck_hold", first["action"])
+                self.assertNotIn("recovery", first)
+                retries = [row for row in rows[inspected + 1 :] if row.get("recovery")]
+                self.assertTrue(retries)
+                self.assertGreaterEqual(retries[0]["acquired_at"] - first["acquired_at"] + 1e-9, 2)
+                self.assertGreater(retries[0]["preflight_input"]["dispatches"]["f2"], first["preflight_input"]["dispatches"]["f2"])
+                loot.after_combat.assert_called_once()
+
     def test_terminal_occlusion_holds_input_until_fresh_settled_reacquisition(self):
         terminal = Mock()
         terminal.observe.side_effect = lambda frame: (
@@ -984,13 +1186,36 @@ class ContinuousNavigationTests(unittest.TestCase):
                 automap.visible.side_effect = lambda *args: tabs() != 1
                 with patch("diablo2.common.supervised_field.resource_guard", return_value=None):
                     result = self.run_interval(
-                        seconds=4, return_from="north", hub_vision=hub, automap_vision=automap, panels_open=lambda frame: False
+                        seconds=10, return_from="north", hub_vision=hub, automap_vision=automap, panels_open=lambda frame: False
                     )
                 self.assertNotEqual("hub_arrived", result["status"])
                 self.assertNotIn(("down", "f2"), self.backend.events)
                 if recovered is None:
-                    self.assertEqual("central_map_inspection_timeout", result["continuous_status"])
+                    self.assertEqual("central_reacquisition_required", result["continuous_status"])
+                    self.assertEqual("timeout_then_normal_reacquisition", result["central_map_inspection"]["outcome"])
                     self.assertEqual(2, tabs())
+
+    def test_expired_central_map_inspection_requires_new_full_hub_and_full_dwell_after_restore(self):
+        hub, automap = Mock(), Mock()
+        tabs = lambda: list(self.backend.events).count(("press", "tab"))
+        hub.observe.side_effect = lambda frame: (960, 580) if self.count <= 2 or tabs() == 2 else None
+        hub.last_evidence = dict(kind="blue_pair_and_floor_ornaments", parts=[dict(id="right"), dict(id="lower")])
+        hub.confirm_static_pair.return_value = None
+        hub.current_pair_near.return_value = None
+        automap.visible.side_effect = lambda *args: tabs() != 1
+        with patch("diablo2.common.supervised_field.resource_guard", return_value=None):
+            result = self.run_interval(
+                seconds=5, return_from="north", hub_vision=hub, automap_vision=automap, panels_open=lambda frame: False
+            )
+        inspection = result["central_map_inspection"]
+        self.assertEqual("hub_arrived", result["status"])
+        self.assertEqual("timeout_then_normal_reacquisition", inspection["outcome"])
+        self.assertEqual("on_observed", inspection["status"])
+        self.assertEqual(2, tabs())
+        final = result["continuous_frames"][-1]
+        self.assertGreater(final["acquired_at"], inspection["restored_at"])
+        self.assertGreaterEqual(final["arrival_hold_seconds"], 0.32)
+        self.assertFalse(any(event[0] == "down" for event in self.backend.events))
 
     def test_central_map_hide_requires_current_on_map_stationarity_no_panel_and_no_threat(self):
         for obstruction in ("map", "motion", "panel", "hostile", "not_acquired"):
@@ -1621,7 +1846,7 @@ class ContinuousNavigationTests(unittest.TestCase):
         self.planner[0].observe.return_value = GroundReading((960, 580), "current")
         with self.assertRaisesRegex(RuntimeError, "central_waypoint"):
             self.run_interval(seconds=2, hub_vision=hub)
-        self.assertEqual([("move", 24, 24)], list(self.backend.events))
+        self.assertEqual([("move", 961, 24)], list(self.backend.events))
 
     def test_outbound_rechecks_fresh_central_after_buff_occlusion_before_any_cast(self):
         for point in ((960, 503), (960, 470)):
@@ -1632,13 +1857,13 @@ class ContinuousNavigationTests(unittest.TestCase):
                 if point == (960, 470):
                     with self.assertRaisesRegex(RuntimeError, "central_waypoint"):
                         self.run_interval(seconds=2, hub_vision=hub)
-                    self.assertEqual([("move", 24, 24)], list(self.backend.events))
+                    self.assertEqual([("move", 961, 24)], list(self.backend.events))
                     continue
                 result = self.run_interval(seconds=2, hub_vision=hub)
                 self.assertTrue(result["central_departure_observed"])
                 self.assertEqual(3, sum(row["action"] == "outbound_central_reacquire_hold" for row in result["continuous_frames"]))
                 self.assertIn(("down", "f2"), self.backend.events)
-                self.assertEqual(("move", 24, 24), self.backend.events[0])
+                self.assertEqual(("move", 961, 24), self.backend.events[0])
 
     def test_fresh_supervised_outbound_wing_can_resume_after_central_waypoint(self):
         hub = Mock()
@@ -1707,7 +1932,7 @@ class ContinuousNavigationTests(unittest.TestCase):
         self.path.choose.return_value = PathChoice((1048, 531), "outside_grid_rounding")
         result = self.run_interval(seconds=2, return_from="north", hub_vision=hub)
         self.assertEqual("central_approach_floor_unverified", result["continuous_status"])
-        self.assertEqual([("move", 24, 24)], list(self.backend.events))
+        self.assertEqual([("move", 961, 24)], list(self.backend.events))
 
     def test_hub_approach_casts_from_original_frame_before_hover_changes_floor_candidates(self):
         hub = Mock()
@@ -1726,11 +1951,11 @@ class ContinuousNavigationTests(unittest.TestCase):
         hub = Mock()
         hub.observe.side_effect = lambda frame: (960, 580) if ("press", "f2") in self.backend.events else (959, 475)
         self.path.choose.side_effect = lambda *args, **kwargs: PathChoice(
-            (1044, 531) if self.backend.pointer == (24, 24) else (1048, 531), "current_floor"
+            (1044, 531) if self.backend.pointer == (961, 24) else (1048, 531), "current_floor"
         )
         result = self.run_interval(seconds=2, return_from="north", hub_vision=hub)
         self.assertEqual("hub_arrived", result["status"])
-        self.assertEqual(1, list(self.backend.events).count(("move", 24, 24)))
+        self.assertEqual(1, list(self.backend.events).count(("move", 961, 24)))
         clear = next(row for row in result["continuous_frames"] if row["action"] == "central_floor_pointer_clear")
         cast = next(row for row in result["continuous_frames"] if row["action"] == "central_approach_cast")
         self.assertGreater(cast["acquired_at"], clear["acquired_at"])
@@ -1742,6 +1967,99 @@ class ContinuousNavigationTests(unittest.TestCase):
         result = self.run_interval(seconds=3, return_from="north", hub_vision=hub)
         self.assertEqual("central_approach_landing_unconfirmed", result["continuous_status"])
         self.assertEqual(1, list(self.backend.events).count(("press", "f2")))
+
+    def test_current_background_landing_clears_pending_cast_when_hub_is_near_or_temporarily_missing(self):
+        for missing in (True, False):
+            with self.subTest(missing=missing):
+                self.setUp()
+                hub, first_after_cast = Mock(), [None]
+                hub.confirm_static_pair.return_value = None
+
+                def landing_frame():
+                    casts = list(self.backend.events).count(("press", "f2"))
+                    if casts == 1 and first_after_cast[0] is None:
+                        first_after_cast[0] = self.count
+                    return casts == 1 and self.count == first_after_cast[0]
+
+                def observe(frame):
+                    casts = list(self.backend.events).count(("press", "f2"))
+                    hub.last_evidence = dict(kind="blue_pair_and_floor_ornaments")
+                    if casts == 0:
+                        return (1450, 547)
+                    if casts >= 2:
+                        return (960, 580)
+                    if landing_frame():
+                        return None if missing else (960, 678)
+                    hub.last_evidence = dict(kind="recent_floor_and_current_blue_pair", current_floor_parts=[])
+                    return (960, 474)
+
+                hub.observe.side_effect = observe
+                self.path.choose.side_effect = lambda *args, **kwargs: PathChoice(
+                    (1446, 635) if ("press", "f2") not in self.backend.events else (960, 500), "current_floor"
+                )
+                result = self.run_interval(
+                    seconds=4,
+                    return_from="north",
+                    hub_vision=hub,
+                    motion=lambda *args, **kwargs: CameraMotion((546, 190) if landing_frame() else (0, 0), 24, "test"),
+                )
+                self.assertEqual("hub_arrived", result["status"])
+                self.assertEqual(2, list(self.backend.events).count(("press", "f2")))
+                landing = next(row for row in result["continuous_frames"] if row.get("hub_landing_confirmed"))
+                self.assertEqual("current_background_displacement", landing["hub_landing_confirmed"])
+                self.assertNotEqual("hub_arrived", landing.get("status"))
+                if missing:
+                    self.assertIsNone(landing["hub_point"])
+
+    def test_two_current_full_hub_frames_confirm_large_landing_before_another_safe_approach(self):
+        for condition in (
+            "current_full",
+            "tracked_pair",
+            "tracked_origin",
+            "small_shift",
+            "unstable",
+            "missing_motion",
+            "interrupted_pair",
+        ):
+            with self.subTest(condition=condition):
+                self.setUp()
+                hub = Mock()
+                hub.last_evidence = dict(
+                    kind="recent_floor_and_current_blue_pair" if condition == "tracked_origin" else "blue_pair_and_floor_ornaments"
+                )
+                hub.confirm_static_pair.return_value = None
+
+                def observe(frame):
+                    casts = list(self.backend.events).count(("press", "f2"))
+                    if casts == 0:
+                        return (1450, 547)
+                    if casts >= 2:
+                        return (960, 580)
+                    if condition == "interrupted_pair" and self.count % 2:
+                        return None
+                    hub.last_evidence = dict(
+                        kind="recent_floor_and_current_blue_pair" if condition == "tracked_pair" else "blue_pair_and_floor_ornaments"
+                    )
+                    if condition == "small_shift":
+                        return (1420, 547)
+                    return (960 + (self.count % 2) * 10 if condition == "unstable" else 960, 474)
+
+                hub.observe.side_effect = observe
+                self.path.choose.side_effect = lambda *args, **kwargs: PathChoice(
+                    (1446, 635) if ("press", "f2") not in self.backend.events else (960, 500), "current_floor"
+                )
+                motion = lambda *args, **kwargs: CameraMotion(
+                    None if condition == "missing_motion" and ("press", "f2") in self.backend.events else (0, 0), 24, "test"
+                )
+                result = self.run_interval(seconds=4, return_from="north", hub_vision=hub, motion=motion)
+                if condition == "current_full":
+                    self.assertEqual("hub_arrived", result["status"])
+                    self.assertEqual(2, list(self.backend.events).count(("press", "f2")))
+                    landing = next(row for row in result["continuous_frames"] if row.get("hub_landing_confirmed"))
+                    self.assertGreater(np.linalg.norm(np.array(landing["hub_point"]) - np.array(landing["ground"]["point"])), 100)
+                else:
+                    self.assertNotEqual("hub_arrived", result["status"])
+                    self.assertEqual(1, list(self.backend.events).count(("press", "f2")))
 
     def test_hub_approach_pointer_delay_does_not_refresh_original_frame_age(self):
         hub = Mock()
@@ -1807,12 +2125,12 @@ class ContinuousNavigationTests(unittest.TestCase):
         released = events.index(("up", "f2"))
         self.assertNotIn(("down", "f2"), events[released + 1 :])
         self.assertNotIn(("press", "f2"), events)
-        self.assertEqual(1, events.count(("move", 24, 24)))
+        self.assertEqual(1, events.count(("move", 961, 24)))
 
     def test_hub_hover_clear_requires_new_current_evidence_before_arrival(self):
         hub = Mock()
         hub.observe.side_effect = lambda frame: (
-            (1200, 600) if self.count == 3 else (960, 580) if self.backend.pointer == (24, 24) else None
+            (1200, 600) if self.count == 3 else (960, 580) if self.backend.pointer == (961, 24) else None
         )
         result = self.run_interval(seconds=3, return_from="north", hub_vision=hub)
         self.assertEqual("hub_arrived", result["status"])
@@ -1822,7 +2140,7 @@ class ContinuousNavigationTests(unittest.TestCase):
         self.assertEqual((960, 580), rows[cleared + 1]["hub_point"])
         self.assertGreater(rows[cleared + 1]["acquired_at"], rows[cleared]["acquired_at"])
         events = list(self.backend.events)
-        moved = events.index(("move", 24, 24))
+        moved = events.index(("move", 961, 24))
         self.assertNotIn(("down", "f2"), events[moved + 1 :])
         self.assertNotIn(("press", "f2"), events[moved + 1 :])
 

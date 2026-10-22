@@ -172,10 +172,14 @@ class RecordingInput:
 
 
 def resource_guard(reading, policy):
+    # 한쪽 숫자가 가려져도 현재 읽힌 위험 비율을 미확인 대기 뒤로 미루지 않는다.
+    if any(
+        ratio is not None and ratio < limit
+        for ratio, limit in ((reading.life.ratio, policy.life_potion_below), (reading.mana.ratio, policy.mana_potion_below))
+    ):
+        return "resource_low"
     if reading.belt_visibility != "closed" or reading.life.ratio is None or reading.mana.ratio is None:
         return "observation_unverified"
-    if reading.life.ratio < policy.life_potion_below or reading.mana.ratio < policy.mana_potion_below:
-        return "resource_low"
     if getattr(reading, "mercenary_status", None) == "unverified":
         return "mercenary_unverified"
     return None

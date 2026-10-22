@@ -854,6 +854,24 @@
     },
     "layout_tent": {
       "file": "../../../regions/rogue-encampment/remastered-ko-window/templates/layout-tent.png",
+      "variants": [
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/layout-tent-automap.png"
+      ],
+      "variant_asset_sha256": {
+        "../../../regions/rogue-encampment/remastered-ko-window/templates/layout-tent-automap.png": "9ba536c1a8b1ae2e12710342bb761d252eec61a583b79b7a9e9cb505db023a06"
+      },
+      "variant_sources": [
+        {
+          "file": "assets/regions/rogue-encampment/remastered-ko-window/references/tent-flag-automap.png",
+          "sha256": "3759b54966212deee031230fd96943fcfc6955acab294e7059a6ad9f22ee9f09",
+          "crop": [791, 88, 872, 163],
+          "canvas_box": [770, 70, 900, 190],
+          "source_run": "20261020-batch-05-room-01",
+          "source_frame": "004-act1_moving.png",
+          "source_frame_sha256": "5046f348905a739d88a409eb9916ce2ae69a07e44bc2fcb257471f275aa607bd",
+          "review": "Current spawn tent flag before the first movement, after automap ON. Same scene matched existing flag .832768 before Tab but .747329 afterwards. Existing .82 threshold and bounded route remain unchanged. OS chrome, HUD and account identifiers excluded from retained reference."
+        }
+      ],
       "search": [
         730,
         60,

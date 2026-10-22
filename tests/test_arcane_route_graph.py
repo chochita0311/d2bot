@@ -11,6 +11,79 @@ from diablo2.runs.summoner.terrain_patterns import TerrainLanding
 
 
 class ArcaneRouteGraphTests(unittest.TestCase):
+    def test_saved_return_corner_keeps_safe_short_goal_instead_of_opposite_loop(self):
+        from diablo2.runs.summoner.navigation_execution import load_arcane_step_planner
+        from diablo2.runs.summoner.steering import floor_supports_aim
+
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/return-portal-corner-short-goal.png"
+        )
+        _, path = load_arcane_step_planner(automap=True)
+        path.teleport["preferred_distance"] = path.teleport["maximum_distance"]
+        view = path.observe(
+            cv.imread(str(source)), sequence=1, generation=0, captured_at=1, viewport=(242, 55, 1682, 900), anchor=(962, 580)
+        )
+        graph = ArcaneRouteGraph()
+        graph.observe(None, view.anchor, None, 1)
+        graph.entry, graph.exit_intent = "west", "east"
+        choice = graph.choose(path, view, "south", 1, prefer_goal_exit=True)
+        self.assertEqual("graph_observed_exit_south", choice.reason)
+        self.assertEqual((798, 651), choice.aim)
+        self.assertTrue(floor_supports_aim(view, choice.aim, path.teleport["clearance_pixels"]))
+        self.assertLess(np.linalg.norm(np.asarray(choice.aim) - view.anchor), 200)
+        self.assertEqual("graph_frame_stale", graph.choose(path, view, "south", 1.25, prefer_goal_exit=True).reason)
+
+    def test_return_keeps_goal_at_current_clearance_bound_without_failed_or_outbound_exceptions(self):
+        for returning, failed, point, expected in (
+            (True, False, (640, 520), "south"),
+            (True, False, (640, 519), "south"),
+            (True, False, (736, 400), "south"),
+            (True, False, (737, 400), "east"),
+            (True, True, (640, 520), "east"),
+            (True, True, (736, 400), "east"),
+            (False, False, (640, 520), "east"),
+        ):
+            with self.subTest(returning=returning, failed=failed, point=point):
+                path, graph = self.path(), ArcaneRouteGraph()
+                path.teleport.update(maximum_distance=800, preferred_distance=800)
+                graph.observe(None, (800, 400), None, 1)
+                graph.failed_exits[(0, 0, "south")] = int(failed)
+                view = self.view(path, [(1300, 650)], 1)
+                landing = TerrainLanding("stairs-descend-south", point, 0.97, (600, 480, 680, 560))
+                choice = graph.choose(path, view, "south", 1, landings=(landing,), prefer_goal_exit=returning)
+                self.assertEqual("graph_observed_exit_" + expected, choice.reason)
+                self.assertEqual(400, graph.port_selection["minimum_wide"])
+                self.assertEqual(64 if returning else 400, graph.port_selection["goal_minimum_wide"])
+                if expected == "south":
+                    self.assertEqual(point, choice.aim)
+                else:
+                    self.assertNotIn("south", graph.port_selection["eligible_ports"])
+        # 별도 계단 후보뿐 아니라 현재 32px 여유 바닥의 짧은 복귀 출구도 보존한다.
+        path, graph = self.path(), ArcaneRouteGraph()
+        path.teleport.update(maximum_distance=800, preferred_distance=800)
+        graph.observe(None, (800, 400), None, 1)
+        view = self.view(path, [(600, 500), (1300, 650)], 1)
+        choice = graph.choose(path, view, "south", 1, prefer_goal_exit=True)
+        self.assertEqual("graph_observed_exit_south", choice.reason)
+        self.assertTrue(200 <= np.linalg.norm(np.asarray(choice.aim) - view.anchor) < 400)
+
+    def test_return_prefers_current_goal_exit_over_unvisited_sides_but_preserves_failures(self):
+        for returning, failed, expected in ((False, False, "west"), (True, False, "south"), (True, True, "west")):
+            with self.subTest(returning=returning, failed=failed):
+                path, graph = self.path(), ArcaneRouteGraph()
+                graph.observe(None, (800, 400), None, 1)
+                graph.traversed[(0, 0, "south")] = 2
+                graph.failed_exits[(0, 0, "south")] = int(failed)
+                view = self.view(path, [(300, 650), (300, 150)], 1)
+                choice = graph.choose(path, view, "south", 1, prefer_goal_exit=returning)
+                self.assertEqual("graph_observed_exit_" + expected, choice.reason)
+        graph.pending_exit = "west"
+        graph.failed_exits.clear()
+        self.assertEqual("graph_observed_exit_south", graph.choose(path, view, "south", 1, prefer_goal_exit=True).reason)
+        no_goal = self.view(path, [(300, 150)], 1)
+        self.assertEqual("graph_observed_exit_west", graph.choose(path, no_goal, "south", 1, prefer_goal_exit=True).reason)
+
     def test_saved_stair_edge_uses_a_fresh_observed_entry_after_failed_side_landing(self):
         from diablo2.runs.summoner.navigation_execution import load_arcane_step_planner
 

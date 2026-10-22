@@ -44,6 +44,7 @@ class ArcaneRouteGraph:
         self.started, self.last_seen, self.reference_cursor = False, float("-inf"), 0
         self.entry, self.kind, self.reason = None, "unobserved", "unobserved"
         self.ports, self.relocalizations = {}, 0
+        self.port_selection = None
         self.traversed, self.pending_exit = {}, None
         self.exit_intent = None
         self.pending_retreat = None
@@ -175,9 +176,12 @@ class ArcaneRouteGraph:
             self.blocked.append((self.chart, tuple(world + target - player for world, target, player in zip(self.position, aim, anchor))))
             self.blocked = self.blocked[-48:]
 
-    def choose(self, path, view, wing, now, *, excluded=(), landings=(), hub=None):
+    def choose(self, path, view, wing, now, *, excluded=(), landings=(), hub=None, prefer_goal_exit=False):
         if not 0 <= now - view.captured_at < 0.25:
             return PathChoice(None, "graph_frame_stale")
+        self.port_selection = dict(
+            captured_at=view.captured_at, anchor=tuple(view.anchor), wing=wing, prefer_goal_exit=bool(prefer_goal_exit), eligible_ports=None
+        )
         if hub is not None and _distance(hub, view.anchor) <= 400:
             # 실물 중앙에서는 방문 회피보다 지정 날개가 우선이다. 순환해 돌아와도 다른 날개를 탐색하지 않는다.
             choice = path.choose(view, wing, heading=HEADINGS[wing], excluded=excluded)
@@ -267,11 +271,22 @@ class ArcaneRouteGraph:
         # 좁은 꺾임에 짧은 후보만 보일 때는 그대로 보존하고 실제 이동으로 다시 확인한다.
         minimum_wide = min(path.teleport["maximum_distance"], max(200, path.teleport.get("preferred_distance", 240) * 0.5))
         wide = {name: choice for name, choice in ports.items() if _distance(choice.aim, view.anchor) >= minimum_wide}
+        forward_failed = self.failed_exits.get((self.chart, self.current_place, wing), 0) if self.localized else 0
+        goal_minimum_wide = min(minimum_wide, path.teleport["clearance_pixels"] * 2)
+        # 복귀 목표의 현재 안전 발판은 기존 최소 출구 거리부터 보존한다.
+        # 짧은 꺾임을 긴 반대 출구 때문에 버려 같은 발판을 순환하지 않게 한다.
+        if (
+            wide
+            and prefer_goal_exit
+            and wing in ports
+            and not forward_failed
+            and _distance(ports[wing].aim, view.anchor) >= goal_minimum_wide
+        ):
+            wide[wing] = ports[wing]
         if wide:
             ports = wide
         # 현재 넓은 전진 출구가 실패하지 않았으면 방문 횟수만으로 정반대 후진을 고르지 않는다.
         # 전진이 안 보이거나 실제 실패한 국소 꺾임에서는 반대 방향도 보존한다.
-        forward_failed = self.failed_exits.get((self.chart, self.current_place, wing), 0) if self.localized else 0
         if wing in ports and not forward_failed:
             ports.pop(OPPOSITE[wing], None)
         # 지형 대응이 끊겨도 조향 의도를 실제 진입 방향으로 바꾸지 않는다.
@@ -282,6 +297,18 @@ class ArcaneRouteGraph:
             reverse = OPPOSITE[self.exit_intent]
             if reverse != wing and not intent_failed:
                 ports.pop(reverse, None)
+        # 관찰된 출구와 필터 뒤 후보를 구분해 복귀 우회가 실제 선택인지 진단한다.
+        self.port_selection.update(
+            eligible_ports=tuple(sorted(ports)),
+            minimum_wide=minimum_wide,
+            goal_minimum_wide=goal_minimum_wide if prefer_goal_exit else minimum_wide,
+            forward_failed=forward_failed,
+        )
+        # 중앙 복귀는 새 옆길 탐색보다 현재 충분히 떨어진 실패하지 않은 목표 방향을 우선한다.
+        # 관찰되지 않은 출구나 실제 실패 방향을 복구하는 예외는 만들지 않는다.
+        if prefer_goal_exit and wing in ports and not forward_failed:
+            self.pending_exit = wing
+            ports = {wing: ports[wing]}
         # 같은 발판에서 실제로 나갔던 출구를 계속 순환하지 않는다. 목표 방향은
         # 같은 사용 횟수끼리의 우선순위이며, 시전 중에는 관측된 출구 의도를 유지한다.
         if self.pending_exit not in ports:
@@ -325,6 +352,7 @@ class ArcaneRouteGraph:
             entry=self.entry,
             kind=self.kind,
             ports=self.ports,
+            port_selection=None if self.port_selection is None else dict(self.port_selection),
             reason=self.reason,
             relocalizations=self.relocalizations,
             references=len(self.references),

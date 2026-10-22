@@ -15,15 +15,28 @@ class EmergencyResourceRecovery:
     def active(self):
         return not self.stop.is_set() and self.focused()
 
-    def _wait(self, deadline, accept, observe=None):
+    def _wait(self, deadline, accept, observe=None, protect_resources=False):
         while self.clock() < deadline and self.active():
             acquired = self.clock()
             frame = self.capture.grab().frame
             reading = self.hud.observe(frame)
             if observe is not None:
                 observe(frame, reading, acquired)
-            if 0 <= self.clock() - acquired < 0.25 and self.active() and accept(reading):
-                return frame, reading, acquired
+            now = self.clock()
+            if now >= deadline:
+                return None
+            if 0 <= now - acquired < 0.25 and self.active():
+                if protect_resources and any(
+                    ratio is not None and ratio < limit
+                    for ratio, limit in (
+                        (reading.life.ratio, self.policy.life_potion_below),
+                        (reading.mana.ratio, self.policy.mana_potion_below),
+                    )
+                ):
+                    self._belt_resource_low = True
+                    return None
+                if accept(reading):
+                    return frame, reading, acquired
             self.stop.wait(0.02)
         return None
 
@@ -32,7 +45,12 @@ class EmergencyResourceRecovery:
             return False
         record = dict(started_at=self.clock(), observed_at=acquired, status="unconfirmed", potion_requests=0)
         self.records.append(record)
-        if not self.active() or not 0 <= self.clock() - acquired < 0.25 or resource_guard(reading, self.policy) != "resource_low":
+        if (
+            not self.active()
+            or not 0 <= self.clock() - acquired < 0.25
+            or reading.belt_visibility != "closed"
+            or resource_guard(reading, self.policy) != "resource_low"
+        ):
             record["status"] = "precondition_unverified"
             return False
         before = (reading.life.ratio, reading.mana.ratio)
@@ -51,7 +69,8 @@ class EmergencyResourceRecovery:
             return False
         prefix = "resource-recovery-{:02d}".format(len(self.records))
         self.evidence.append((prefix + "-before.png", frame))
-        deadline, opened, closed = self.clock() + 3, False, False
+        deadline, opened, closed, last_belt = self.clock() + 3, False, False, []
+        self._belt_resource_low = False
         try:
             self.backend.press(column.key)
             record.update(potion_requests=1, requested_at=self.clock(), column=column.column, key=column.key)
@@ -60,7 +79,7 @@ class EmergencyResourceRecovery:
                 ratios = (value.life.ratio, value.mana.ratio)
                 limits = (self.policy.life_potion_below, self.policy.mana_potion_below)
                 return value.belt_visibility == "closed" and all(
-                    after is not None and after >= limit and (prior >= limit or after > prior)
+                    after is not None and after >= limit and (prior is None or prior >= limit or after > prior)
                     for after, prior, limit in zip(ratios, before, limits)
                 )
 
@@ -74,7 +93,6 @@ class EmergencyResourceRecovery:
                 return False
             self.backend.press(self.policy.belt_toggle_key)
             opened = True
-            last_belt = []
 
             def remember_belt(frame, reading, acquired):
                 last_belt[:] = [(frame, reading, acquired)]
@@ -83,9 +101,10 @@ class EmergencyResourceRecovery:
                 min(deadline, self.clock() + 0.75),
                 lambda value: value.belt_visibility == "expanded" and value.belt_contents(self.policy) is not None,
                 observe=remember_belt,
+                protect_resources=True,
             )
             if current is None:
-                record["status"] = "belt_reconciliation_unconfirmed"
+                record["status"] = "resource_low_during_belt" if self._belt_resource_low else "belt_reconciliation_unconfirmed"
                 if last_belt:
                     failed_frame, failed_reading, failed_at = last_belt[0]
                     self.evidence.append((prefix + "-belt-unverified.png", failed_frame))
@@ -93,6 +112,8 @@ class EmergencyResourceRecovery:
                         observed_at=failed_at,
                         visibility=failed_reading.belt_visibility,
                         status=failed_reading.belt_status,
+                        life_ratio=failed_reading.life.ratio,
+                        mana_ratio=failed_reading.mana.ratio,
                         slots=[asdict(slot) for slot in failed_reading.slots],
                     )
                 return False
@@ -108,12 +129,22 @@ class EmergencyResourceRecovery:
             record.update(status="recovery_error", error=str(error))
             return False
         finally:
-            if opened and self.active():
-                current = self._wait(min(deadline, self.clock() + 0.5), lambda value: value.belt_visibility in ("closed", "expanded"))
-                if current is not None and current[1].belt_visibility == "expanded":
+            if opened and self.active() and self.clock() < deadline:
+                # 같은 현재 펼침 관측으로 닫아 추가 촬영 동안 위험에 노출되지 않게 한다.
+                current = last_belt[0] if last_belt and 0 <= self.clock() - last_belt[0][2] < 0.25 else None
+                if current is None or current[1].belt_visibility not in ("closed", "expanded"):
+                    current = self._wait(min(deadline, self.clock() + 0.5), lambda value: value.belt_visibility in ("closed", "expanded"))
+                if (
+                    current is not None
+                    and current[1].belt_visibility == "expanded"
+                    and self.active()
+                    and self.clock() < deadline
+                    and 0 <= self.clock() - current[2] < 0.25
+                ):
                     self.backend.press(self.policy.belt_toggle_key)
                     current = self._wait(min(deadline, self.clock() + 0.5), lambda value: value.belt_visibility == "closed")
                 closed = current is not None and current[1].belt_visibility == "closed" and resource_guard(current[1], self.policy) is None
+                record["belt_visibility_closed"] = current is not None and current[1].belt_visibility == "closed"
             record["belt_closed_verified"] = closed
             record["ended_at"] = self.clock()
         if not closed or record.get("potions_remaining", 0) == 0:

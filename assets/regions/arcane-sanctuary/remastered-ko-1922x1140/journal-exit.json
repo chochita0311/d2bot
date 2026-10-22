@@ -68,5 +68,35 @@
       },
       "review": "Closed front page, no rune/glow background. Explicit platform-ground offset retains the same [988.5,454] landmark as the legacy full journal in this source, independent of crop dimensions."
     }
-  ]
+  ],
+  "portal_hover": {
+    "path": "templates/objective/canyon-portal-hover-label.png",
+    "crop": [
+      925,
+      497,
+      1115,
+      523
+    ],
+    "sha256": "5e347e5bd90c8f0518dea0768e1ed1fa2ee647f4580838c453412d0a31fbbe84",
+    "threshold": 0.92,
+    "red_support_box": [
+      -40,
+      26,
+      230,
+      286
+    ],
+    "minimum_red_pixels": 900,
+    "dark_core_box": [
+      65,
+      50,
+      125,
+      150
+    ],
+    "minimum_dark_fraction": 0.6,
+    "source": {
+      "path": "references/summoner/journal-portal-hover.png",
+      "sha256": "f64affcf5f4f164a09d63ede775fda95b96b4b544b1969dfb44b2ffedc3ce14a"
+    },
+    "review": "Current Korean Canyon destination hover label above the red/white portal. Label at native .92 plus same-frame original strong-red support900 and dark core.60; label alone, removed text, duplicate destinations and unrelated fields must not authorize entry. Click the current object label after next-frame cursor settlement."
+  }
 }

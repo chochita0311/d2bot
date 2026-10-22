@@ -17,8 +17,102 @@
       "source_sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5",
       "review": "Shared Korean area-title crop, visually reviewed; no character identity or equipment. Title position may move with additional automap information. Positive title evidence only, not absence-based OFF proof.",
       "variants": [
-        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-light-floor-window.png"
-      ]
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-light-floor-window.png",
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-marker-overlap-window.png",
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-stone-underlay-window.png"
+      ],
+      "marker_overlap_reference": {
+        "path": "../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-marker-overlap.png",
+        "canvas_box": [
+          1775,
+          100,
+          1900,
+          135
+        ],
+        "template_crop": [
+          1178,
+          70,
+          1246,
+          85
+        ],
+        "template_reference_size": [
+          1267,
+          753
+        ],
+        "source_execution": "20261020-batch-09-room-01",
+        "source_frame": "runtime-title-unverified.png",
+        "review": "Current Korean Arcane title under a gold automap marker; whole-title and each of three co-located letter parts must meet unchanged .86. Retained reference is title-only with all other native pixels zero. Removing any full third, a missing title or another reviewed area remains negative.",
+        "sha256": "1ec6ba73a9eedc2c893a106f2a5150e4392d3f184018933db32e26d1c9fdc7e4",
+        "template_sha256": "8f7c6e2219ca0925288b443c91f670c4f5d4497300554e41dbb64c48273e1bac",
+        "source_frame_sha256": "060180abe6373b307963a722cdc4ad0495224952bdd1fc30f6f6165ff90f3a1e"
+      },
+      "variant_required_parts": {
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-marker-overlap-window.png": [
+          [
+            0,
+            0,
+            22,
+            15
+          ],
+          [
+            22,
+            0,
+            45,
+            15
+          ],
+          [
+            45,
+            0,
+            68,
+            15
+          ]
+        ],
+        "../../regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-stone-underlay-window.png": [
+          [
+            0,
+            0,
+            22,
+            15
+          ],
+          [
+            22,
+            0,
+            45,
+            15
+          ],
+          [
+            45,
+            0,
+            68,
+            15
+          ]
+        ]
+      },
+      "stone_underlay_reference": {
+        "path": "../../regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-stone-underlay.png",
+        "canvas_box": [
+          1775,
+          100,
+          1900,
+          135
+        ],
+        "template_crop": [
+          1178,
+          70,
+          1246,
+          85
+        ],
+        "template_reference_size": [
+          1267,
+          753
+        ],
+        "source_execution": "20261021-fresh-55",
+        "source_frame": "runtime-title-unverified.png",
+        "sha256": "0c7c54f7b871754dfe89e45eafe7c5c8cb648dc0979e580858148fa530449d19",
+        "template_sha256": "94d9766183fcae1cfafbd3925b096778c77f169c777bd1757053b7859ab25c55",
+        "source_frame_sha256": "cded53fd120b3e0559c991a290615c3ce0f88fac123f986027a6380e98db092b",
+        "review": "Current Korean title over gray-stone floor. Existing best .803 occurs at the wrong position; threshold reduction/top-hat experiments were not adopted. Whole-title and all three current letter parts each retain .86. Third-letter removal alone can score .938 without the required-parts guard, so missing parts must reject. No current title inferred from old map state, no retroactive fresh55 success."
+      }
     },
     "canyon_of_the_magi": {
       "file": "../../regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/area-canyon.png",

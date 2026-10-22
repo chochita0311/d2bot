@@ -10,6 +10,7 @@ import cv2 as cv
 import numpy as np
 
 from diablo2.common.survival import CharacterSurvivalPolicy, ObservationStamp, SafetyObservation
+from diablo2.common.label_occlusion import label_occlusion_mask, visible_template_peak
 
 
 DEFAULT_ASSETS = Path(__file__).resolve().parents[2] / "assets/ui/survival"
@@ -235,6 +236,9 @@ class SurvivalHudObserver:
             self.mercenary_portrait = cv.cvtColor(self._load_image(portrait["template"]), cv.COLOR_BGR2GRAY)
             if self.mercenary_portrait.shape != shape:
                 raise ValueError("Mercenary portrait dimensions must match its box")
+            visible = portrait["minimum_visible"]
+            if isinstance(visible, bool) or not isinstance(visible, (int, float)) or not 0.5 <= visible <= 1:
+                raise ValueError("Reviewed mercenary visible face fraction required")
 
     def _box_shape(self, box) -> tuple[int, int]:
         if len(box) != 4 or any(type(value) is not int for value in box):
@@ -428,6 +432,13 @@ class SurvivalHudObserver:
             reference = self.manifest["mercenary_portrait"]
             face = cv.cvtColor(self._crop(frame, reference["box"]), cv.COLOR_BGR2GRAY)
             score = float(cv.matchTemplate(face, self.mercenary_portrait, cv.TM_CCOEFF_NORMED)[0, 0])
+            if math.isfinite(score) and score < reference["minimum_score"]:
+                # ALT 글자에 가린 픽셀을 채우지 않고 현재 남은 얼굴만 같은 기준으로 비교한다.
+                visible = self._crop(label_occlusion_mask(frame), reference["box"]) == 0
+                if not visible.all():
+                    score, _, _ = visible_template_peak(
+                        face, self.mercenary_portrait, visible, minimum_visible=reference["minimum_visible"]
+                    )
             if math.isfinite(score) and score >= reference["minimum_score"]:
                 status = "observed"
         # 현재 초상화 일치만 보고한다. 미검출은 사망 판정이나 부활 요청이 아니다.

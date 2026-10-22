@@ -10,6 +10,8 @@ Payload modules such as Summoner Run should resolve the run profile they need di
 
 ## run_profiles.<name>
 
+Summoner 개발 검증 순서는 북쪽 단독10연속→같은 방 북남 조합10회→동쪽 단독10회→북동남 통합→북동남서다. 이 단계/집계 조건은 [통합 run](../../docs/plans/run/run-20261009-07-summoner-live-integration.md#development-resume-20261020)이 소유하며 현재 JSON에 통합 순서가 구현됐다는 뜻은 아니다. 정비/TP/아카라 보급은 현재 시험에 추가하지 않는다. 공격은ON을 유지하고 경로상 실제 근접 위협만 필요한 만큼 처리한다.
+
 - `name`: internal profile id.
 - `goal`: short summary of the run.
 - `description`: longer explanation.

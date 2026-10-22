@@ -2,7 +2,7 @@ import threading
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import cv2 as cv
 import numpy as np
@@ -18,6 +18,207 @@ from tests.test_conditional_loot import FakeStop
 
 
 class SummonerEncounterTests(unittest.TestCase):
+    def test_unconfirmed_single_corpse_keeps_candidate_and_immediate_followup_within_evidence_budget(self):
+        now, frames = [1.0], []
+        capture, hud, appearance, objective = Mock(target=dict(left=0, top=0)), Mock(), Mock(), Mock()
+
+        def grab():
+            now[0] += 0.1
+            frame = SimpleNamespace(shape=(1140, 1922, 3), sequence=len(frames))
+            frames.append(frame)
+            return SimpleNamespace(frame=frame)
+
+        capture.grab.side_effect = grab
+        hud.observe.return_value = SimpleNamespace(
+            life=ResourceReading(900, 1000), mana=ResourceReading(900, 1000), belt_visibility="closed"
+        )
+        platform = SimpleNamespace(ground_point=(1000, 600), evidence_kind="reviewed_platform")
+        objective.observe.return_value = platform
+        appearance.observe.side_effect = lambda frame, _: (
+            SummonerAppearance((980, 500, 1010, 560), (1000, 600), 0.95) if frame.sequence < 10 else None
+        )
+        appearance.observe_corpse.side_effect = lambda frame, _: (
+            SummonerAppearance((980, 590, 1020, 620), (1000, 600), 0.99, "corpse", "reviewed-corpse")
+            if frame.sequence in (55, 80)
+            else None
+        )
+        ground = SimpleNamespace(observe=lambda *args, **kwargs: GroundReading((962, 580), "test"))
+        profile = SimpleNamespace(
+            survival=SimpleNamespace(life_potion_below=0.5, mana_potion_below=0.1),
+            actions=SimpleNamespace(movement_skill_key="f2", primary_attack_skill_key="f4"),
+        )
+        evidence, backend = [], DryFieldInput()
+        result = run_platform_encounter(
+            capture,
+            hud,
+            backend,
+            lambda: True,
+            profile,
+            FakeStop(now),
+            (ground, Mock()),
+            objective,
+            appearance,
+            buff_expires_at=100,
+            reference_seconds=0.01,
+            evidence=evidence,
+            clock=lambda: now[0],
+            emit=lambda _: None,
+            life_tracker=SummonerLifeTracker("flash", "single-corpse"),
+        )
+        self.assertEqual("kill_unconfirmed", result["status"])
+        self.assertFalse(result.get("kill_confirmed", False))
+        self.assertTrue(all(row["life"]["state"] != "dead" for row in result["observations"]))
+        saved = dict(evidence)
+        self.assertIs(frames[55], saved["encounter-tentative-corpse.png"])
+        self.assertIs(frames[56], saved["encounter-tentative-followup.png"])
+        self.assertIs(frames[-1], saved["encounter-after.png"])
+        self.assertNotIn("encounter-first-corpse.png", saved)
+        self.assertEqual(24, result["evidence_frames"])
+        self.assertEqual(len(evidence), result["evidence_frames"])
+        self.assertNotIn(("press", "f2"), backend.events)
+        rows = {row["file"]: row for row in result["evidence"]}
+        self.assertEqual(
+            (55, "tentative"), (rows["encounter-tentative-corpse.png"]["sequence"], rows["encounter-tentative-corpse.png"]["phase"])
+        )
+        self.assertEqual(56, rows["encounter-tentative-followup.png"]["sequence"])
+
+    def test_curled_corpse_lighting_adjusts_only_reviewed_pose_and_requires_new_pair(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        rule = next(rule for rule, _, _ in observer.parts if rule["id"] == "summoner-robe-corpse-curled-robe")
+        self.assertEqual(0.90, rule["threshold"])
+        tracker, states = SummonerLifeTracker("flash", "curled-lighting"), []
+        for sequence, suffix in enumerate(("before", "after")):
+            frame = cv.imread(str(owner / ("platform-corpse-curled-robe-lighting-" + suffix + ".png")))
+            platform = objective.observe(frame)
+            self.assertIsNotNone(platform)
+            rule["threshold"] = 0.91
+            self.assertIsNone(observer.observe_corpse(frame, platform))
+            rule["threshold"] = 0.90
+            corpse = observer.observe_corpse(frame, platform)
+            self.assertEqual((910, 842), corpse.ground)
+            self.assertGreaterEqual(corpse.score, 0.90)
+            self.assertLess(corpse.score, 0.91)
+            states.append(
+                tracker.observe(None, corpse, platform, sequence=sequence, acquired_at=1 + sequence, now=1.01 + sequence)["state"]
+            )
+        self.assertEqual(["unknown", "dead"], states)
+
+    def test_platform_loss_defends_from_current_near_hover_and_requires_new_corpse_pair(self):
+        for condition in ("recover", "no_candidates", "no_panel", "unseen", "pose_lost"):
+            with self.subTest(condition=condition):
+                now, count = [1.0], [0]
+                capture, hud, objective, appearance, target = Mock(target=dict(left=0, top=0)), Mock(), Mock(), Mock(), Mock()
+                backend = DryFieldInput()
+
+                def grab():
+                    now[0] += 0.1
+                    count[0] += 1
+                    return SimpleNamespace(frame=np.zeros((1140, 1922, 3), np.uint8))
+
+                capture.grab.side_effect = grab
+                hud.observe.return_value = SimpleNamespace(
+                    life=ResourceReading(900, 1000), mana=ResourceReading(900, 1000), belt_visibility="closed"
+                )
+                platform = SimpleNamespace(ground_point=(1000, 600), evidence_kind="reviewed_platform", rune_boxes=((800, 300, 1200, 450),))
+                objective.observe.side_effect = lambda frame: (
+                    platform if condition != "unseen" and (count[0] <= 3 or condition == "recover" and count[0] >= 20) else None
+                )
+                appearance.observe.return_value = None
+                appearance.observe_corpse.side_effect = lambda frame, current: (
+                    SummonerAppearance((1000, 680, 1050, 710), (1040, 700), 0.99, "corpse", "reviewed-corpse")
+                    if current is not None and count[0] >= 20
+                    else None
+                )
+                target.observe.side_effect = lambda frame: (
+                    HostileTarget("hostile-target", (800, 80, 1100, 110), None) if condition != "no_panel" and count[0] <= 9 else None
+                )
+                ground = SimpleNamespace(
+                    observe=lambda *args, **kwargs: GroundReading(None if condition == "pose_lost" and count[0] > 3 else (962, 580), "test")
+                )
+                profile = SimpleNamespace(
+                    survival=SimpleNamespace(life_potion_below=0.5, mana_potion_below=0.1),
+                    actions=SimpleNamespace(movement_skill_key="f2", primary_attack_skill_key="f4"),
+                )
+                with patch(
+                    "diablo2.runs.summoner.encounter_execution.nearby_actor_proposals",
+                    return_value=() if condition in ("no_candidates", "no_panel") else ((882, 450),),
+                ):
+                    result = run_platform_encounter(
+                        capture,
+                        hud,
+                        backend,
+                        lambda: True,
+                        profile,
+                        FakeStop(now),
+                        (ground, Mock()),
+                        objective,
+                        appearance,
+                        buff_expires_at=100,
+                        reference_seconds=0.01,
+                        evidence=[],
+                        clock=lambda: now[0],
+                        emit=lambda _: None,
+                        life_tracker=SummonerLifeTracker("flash", "reacquisition-room"),
+                        target_observer=target,
+                    )
+                self.assertNotIn(("press", "f2"), backend.events)
+                missing = [row for row in result["observations"] if row.get("platform_anchor") is None]
+                defended = [row for row in missing if row.get("action") == "nova_on_current_hostile_panel"]
+                if condition == "recover":
+                    self.assertTrue(defended)
+                    self.assertTrue(all(row["current_defense_proposals"] and row["hostile_panel"] for row in defended))
+                    self.assertTrue(result["kill_confirmed"])
+                    self.assertEqual("current_platform_corpse_pair", result["life_confirmation"]["confirmation_kind"])
+                    self.assertGreaterEqual(result["life_confirmation"]["first_dead_sequence"], 19)
+                    self.assertTrue(all(row["life"]["state"] == "unknown" for row in missing))
+                else:
+                    if condition == "no_candidates":
+                        self.assertTrue(defended)
+                        self.assertTrue(all(row["current_defense_source"] == "current_near_hover_grid" for row in defended))
+                        self.assertTrue(all(not row["current_defense_proposals"] and row["hostile_panel"] for row in defended))
+                    else:
+                        self.assertFalse(defended)
+                    if condition == "no_panel":
+                        self.assertNotIn(("down", "f4"), backend.events)
+                    self.assertEqual("kill_unconfirmed", result["status"])
+                    if condition in ("no_candidates", "no_panel"):
+                        self.assertGreaterEqual(missing[-1]["platform_reacquisition_seconds"], 6)
+                    else:
+                        self.assertLess(now[0] - 1, 2)
+
+    def test_gray_proposal_cannot_replace_native_color_appearance(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        for state, name, box in (
+            ("alive", "platform-alive-side-fold-robe.png", (516, 702, 554, 763)),
+            ("corpse", "platform-corpse-curved-hem.png", (494, 754, 583, 780)),
+            ("corpse", "platform-corpse-curled-robe.png", (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-lighting-before.png", (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-lighting-after.png", (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-moved-before.png", (929, 710, 967, 732)),
+            ("corpse", "platform-corpse-curled-robe-moved-after.png", (929, 710, 967, 732)),
+            ("corpse", "platform-corpse-looped-hem.png", (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-followup.png", (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-combat.png", (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-bone-cover.png", (839, 614, 919, 664)),
+            ("corpse", "platform-corpse-looped-hem-bone-cover-followup.png", (839, 614, 919, 664)),
+            ("corpse", "platform-corpse-overlapped-hem.png", (754, 685, 838, 707)),
+            ("corpse", "platform-corpse-overlapped-hem-followup.png", (754, 685, 838, 707)),
+            ("corpse", "platform-corpse-curved-lower-fold.png", (784, 690, 853, 725)),
+            ("corpse", "platform-corpse-left-hem-front-lighting.png", (972, 614, 1012, 638)),
+            ("corpse", "platform-corpse-left-hem-front-lighting-followup.png", (972, 614, 1012, 638)),
+        ):
+            with self.subTest(state=state):
+                frame = cv.imread(str(owner / name))
+                observe = observer.observe if state == "alive" else observer.observe_corpse
+                self.assertIsNotNone(observe(frame, objective.observe(frame)))
+                left, top, right, bottom = box
+                original_gray = cv.cvtColor(frame[top:bottom, left:right], cv.COLOR_BGR2GRAY)
+                frame[top:bottom, left:right] = cv.cvtColor(original_gray, cv.COLOR_GRAY2BGR)
+                self.assertTrue(np.array_equal(original_gray, cv.cvtColor(frame[top:bottom, left:right], cv.COLOR_BGR2GRAY)))
+                self.assertIsNone(observe(frame, objective.observe(frame)))
+
     def test_unverified_mercenary_stops_before_platform_movement_or_attack(self):
         capture, hud, objective, appearance = Mock(), Mock(), Mock(), Mock()
         capture.grab.return_value = SimpleNamespace(frame=np.zeros((1140, 1922, 3), np.uint8))
@@ -72,6 +273,26 @@ class SummonerEncounterTests(unittest.TestCase):
             ("corpse", "platform-corpse-front-hem-followup.png", (1002, 639), (1000, 616, 1034, 632)),
             ("corpse", "platform-corpse-left-hem.png", (1002, 639), (972, 614, 1012, 638)),
             ("corpse", "platform-corpse-left-hem-followup.png", (1002, 639), (972, 614, 1012, 638)),
+            ("alive", "platform-alive-front-staff.png", (1190, 618), (1170, 508, 1214, 596)),
+            ("corpse", "platform-corpse-left-hem-lit.png", (1002, 639), (972, 614, 1012, 638)),
+            ("corpse", "platform-corpse-left-hem-lit-followup.png", (1002, 639), (972, 614, 1012, 638)),
+            ("alive", "platform-alive-side-fold-robe.png", (537, 776), (516, 702, 554, 763)),
+            ("corpse", "platform-corpse-curved-hem.png", (537, 776), (494, 754, 583, 780)),
+            ("corpse", "platform-corpse-curled-robe.png", (910, 842), (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-lighting-before.png", (910, 842), (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-lighting-after.png", (910, 842), (874, 814, 925, 844)),
+            ("corpse", "platform-corpse-curled-robe-moved-before.png", (968, 727), (929, 710, 967, 732)),
+            ("corpse", "platform-corpse-curled-robe-moved-after.png", (968, 727), (929, 710, 967, 732)),
+            ("corpse", "platform-corpse-looped-hem.png", (875, 674), (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-followup.png", (875, 674), (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-combat.png", (875, 674), (810, 628, 890, 678)),
+            ("corpse", "platform-corpse-looped-hem-bone-cover.png", (904, 660), (839, 614, 919, 664)),
+            ("corpse", "platform-corpse-looped-hem-bone-cover-followup.png", (904, 660), (839, 614, 919, 664)),
+            ("corpse", "platform-corpse-overlapped-hem.png", (817, 702), (754, 685, 838, 707)),
+            ("corpse", "platform-corpse-overlapped-hem-followup.png", (817, 702), (754, 685, 838, 707)),
+            ("corpse", "platform-corpse-curved-lower-fold.png", (833, 724), (784, 690, 853, 725)),
+            ("corpse", "platform-corpse-left-hem-front-lighting.png", (1002, 639), (972, 614, 1012, 638)),
+            ("corpse", "platform-corpse-left-hem-front-lighting-followup.png", (1002, 639), (972, 614, 1012, 638)),
         ):
             with self.subTest(state=state, name=name):
                 frame = cv.imread(str(owner / name))
@@ -178,6 +399,76 @@ class SummonerEncounterTests(unittest.TestCase):
     def test_corpse_right_bands_executor_confirms_after_camera_and_lighting_change(self):
         owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
         frames = [cv.imread(str(owner / ("platform-corpse-lower-band-lighting-" + stage + ".png"))) for stage in ("before", "after")]
+        self.check_entry_corpse_executor(frames)
+
+    def test_current_lit_left_hem_uses_separate_fresh_corpse_observations(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frames = [cv.imread(str(owner / ("platform-corpse-left-hem-lit" + suffix + ".png"))) for suffix in ("", "-followup")]
+        self.check_entry_corpse_executor(frames)
+
+    def test_looped_corpse_executor_requires_two_current_followup_observations(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frames = [cv.imread(str(owner / ("platform-corpse-looped-hem" + suffix + ".png"))) for suffix in ("-combat", "")]
+        self.check_entry_corpse_executor(frames)
+
+    def test_looped_pose_calibration_requires_native_blue_and_gold_separately(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frame = cv.imread(str(owner / "platform-corpse-looped-hem.png"))
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        rule, template, _ = next(part for part in observer.parts if part[0]["id"] == "summoner-robe-corpse-looped-hem")
+        self.assertEqual(0.70, rule["threshold"])
+        self.assertEqual(0.75, rule["minimum_blue_gold_agreement"])
+        blue, green, red = (channel.astype("int16") for channel in cv.split(template))
+        for band in ((blue - red >= 15) & (blue - green >= 5), (red - blue >= 20) & (green - blue >= 10)):
+            with self.subTest(pixels=int(band.sum())):
+                changed = frame.copy()
+                patch = changed[628:678, 810:890]
+                gray = cv.cvtColor(cv.cvtColor(patch, cv.COLOR_BGR2GRAY), cv.COLOR_GRAY2BGR)
+                patch[band] = gray[band]
+                self.assertGreater(float(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED)[0, 0]), 0.70)
+                self.assertIsNone(observer.observe_corpse(changed, objective.observe(changed)))
+
+    def test_looped_pose_bone_cover_calibration_still_requires_two_current_frames(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frames = [cv.imread(str(owner / ("platform-corpse-looped-hem-bone-cover" + suffix + ".png"))) for suffix in ("", "-followup")]
+        self.check_entry_corpse_executor(frames)
+
+    def test_overlapped_corpse_requires_clean_current_pair_and_rejects_obscured_combat(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        combat = cv.imread(str(owner / "platform-corpse-overlapped-hem-combat-unverified.png"))
+        platform = objective.observe(combat)
+        self.assertIsNotNone(platform)
+        self.assertIsNone(observer.observe_corpse(combat, platform))
+        frames = [cv.imread(str(owner / ("platform-corpse-overlapped-hem" + suffix + ".png"))) for suffix in ("", "-followup")]
+        self.check_entry_corpse_executor(frames)
+
+    def test_curved_lower_fold_still_requires_current_platform_and_two_new_captures(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frame = cv.imread(str(owner / "platform-corpse-curved-lower-fold.png"))
+        combat = cv.imread(str(owner / "platform-corpse-curved-lower-fold-combat.png"))
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        platform = objective.observe(frame)
+        corpse = observer.observe_corpse(frame, platform)
+        self.assertIsNotNone(corpse)
+        self.assertEqual("summoner-robe-corpse-curved-lower-fold", corpse.asset_id)
+        self.assertIsNone(observer.observe_corpse(combat, None))
+        appearance = observer.observe_corpse(combat, objective.observe(combat))
+        self.assertGreater(appearance.score, 0.92)
+        self.check_entry_corpse_executor([combat, frame])
+
+    def test_left_hem_calibration_keeps_color_and_native_checks_after_lower_proposal(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner"
+        frames = [cv.imread(str(owner / ("platform-corpse-left-hem-front-lighting" + suffix + ".png"))) for suffix in ("", "-followup")]
+        observer, objective = SummonerAppearanceObserver(), ArcaneObjectiveObserver()
+        rule, _, _ = next(part for part in observer.parts if part[0]["id"] == "summoner-robe-corpse-left-hem")
+        self.assertEqual(0.70, rule["threshold"])
+        self.assertEqual(0.75, rule["minimum_blue_gold_agreement"])
+        self.assertEqual(0.55, rule["proposal_threshold"])
+        for frame in frames:
+            self.assertIsNotNone(observer.observe_corpse(frame, objective.observe(frame)))
+        rule["proposal_threshold"] = 0.65
+        self.assertIsNone(observer.observe_corpse(frames[0], objective.observe(frames[0])))
         self.check_entry_corpse_executor(frames)
 
     def check_entry_corpse_executor(self, frames):

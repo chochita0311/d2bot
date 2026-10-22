@@ -23,7 +23,7 @@ class NearbyHostileProbeTests(unittest.TestCase):
                 self.assertIsNone(probe.observe(frame, (962, 580), 10, points=(point,)))
                 now[0] = 10.1
                 player = (500, 580) if condition == "moved_player" else (962, 580)
-                result = probe.observe(frame, player, 10.1, points=())
+                result = probe.observe(frame, player, 10.1, points=(point,))
                 self.assertEqual(condition == "confirmed", result is target)
                 if condition == "distant_ground":
                     backend.move.assert_not_called()
@@ -56,7 +56,24 @@ class NearbyHostileProbeTests(unittest.TestCase):
         self.assertEqual(2, backend.move.call_count)
         observer.observe.return_value = object()
         now[0] = 10.61
-        self.assertIsNotNone(probe.observe(frame, (962, 580), 10.61, points=()))
+        self.assertIsNotNone(probe.observe(frame, (962, 580), 10.61, points=points))
+
+    def test_still_visible_panel_needs_current_near_proposal_at_original_ground(self):
+        for points in ((), ((1240, 520),), ((1450, 520),), ((1120, 520),)):
+            with self.subTest(points=points):
+                now = [10.0]
+                backend, observer = Mock(), Mock()
+                backend.pointer_matches.return_value = True
+                target = object()
+                observer.observe.return_value = target
+                probe = NearbyHostileProbe(observer, backend, (0, 0), clock=lambda: now[0])
+                frame = SimpleNamespace(shape=(1140, 1922, 3))
+                probe.observe(frame, (962, 580), 10, points=((1120, 520),))
+                now[0] = 10.1
+                result = probe.observe(frame, (962, 580), 10.1, points=points)
+                self.assertEqual(points == ((1120, 520),), result is target)
+                if result is None:
+                    observer.observe.assert_not_called()
         backend.key_down.assert_not_called()
 
     def test_current_hover_panel_is_required_after_move_and_never_reused_when_missing(self):

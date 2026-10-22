@@ -23,6 +23,90 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SurvivalVisionTests(unittest.TestCase):
+    def test_one_current_low_ratio_preempts_other_unreadable_resource_or_belt_without_inventing_values(self):
+        reading = self.observer.observe(self.reference("closed"))
+        for life, mana in ((ResourceReading(49, 100), ResourceReading()), (ResourceReading(), ResourceReading(9, 100))):
+            for visibility in ("closed", "unknown", "expanded"):
+                current = replace(reading, life=life, mana=mana, belt_visibility=visibility)
+                self.assertEqual("resource_low", resource_guard(current, self.policy))
+        for life, mana in ((ResourceReading(50, 100), ResourceReading()), (ResourceReading(), ResourceReading(10, 100))):
+            self.assertEqual("observation_unverified", resource_guard(replace(reading, life=life, mana=mana), self.policy))
+
+    def test_current_empty_base_row_is_not_guessed_from_upper_cells_or_confused_with_potion_or_scroll(self):
+        entry = next(
+            value for value in self.observer.manifest["belt_only_references"] if value["path"] == "references/field-belt-empty-column1.png"
+        )
+        # 벨트만 검증하는 합성이며 이 HUD 숫자가 같은 전투 화면의 관측이라는 뜻은 아니다.
+        frame = self.reference("closed")
+        left, top, right, bottom = entry["canvas_box"]
+        frame[top:bottom, left:right] = cv.imread(str(DEFAULT_ASSETS / entry["path"]))
+        old = SurvivalHudObserver()
+        old.items["empty"] = old.items["empty"][:-1]
+        self.assertIsNone(old.observe(frame).belt_contents(self.policy))
+        reading = self.observer.observe(frame)
+        self.assertEqual(
+            {1: (None, 0), 2: ("purple_potion", 4), 3: ("purple_potion", 4), 4: ("town_portal_scroll", 4)},
+            reading.belt_contents(self.policy),
+        )
+        self.assertEqual(0.075, self.observer.manifest["matching"]["item_distance"])
+        self.assertEqual(0.025, self.observer.manifest["matching"]["item_margin"])
+        for kind, name in (("purple_potion", "purple-base.png"), ("town_portal_scroll", "scroll-base.png")):
+            changed = frame.copy()
+            changed[1060:1117, 1088:1148] = cv.imread(str(DEFAULT_ASSETS / name))
+            slot = self.observer._slot_reading(changed, 4, 1)
+            self.assertEqual(kind, slot.kind)
+        changed[1060:1117, 1088:1148] = 255
+        self.assertIsNone(self.observer._slot_reading(changed, 4, 1).kind)
+
+    def test_mercenary_score_accepts_lit_current_face_and_rejects_missing_face_parts(self):
+        observer = SurvivalHudObserver(observe_mercenary=True)
+        portrait = observer.manifest["mercenary_portrait"]
+        self.assertEqual(0.92, portrait["minimum_score"])
+        self.assertEqual(0.5, portrait["minimum_visible"])
+        frame = self.reference("closed")
+        left, top, right, bottom = portrait["box"]
+        for name in ("mercenary-face-act2-lit.png", "mercenary-face-combat-background-lit.png"):
+            native = cv.imread(str(DEFAULT_ASSETS / "references" / name))
+            frame[top:bottom, left:right] = native
+            self.assertEqual("observed", observer.observe(frame).mercenary_status)
+            for rows in (slice(top, bottom), slice(top, top + 27), slice(top + 27, bottom)):
+                with self.subTest(name=name, rows=rows):
+                    changed = frame.copy()
+                    changed[rows, left:right] = 0
+                    self.assertEqual("unverified", observer.observe(changed).mercenary_status)
+
+    def test_current_portal_glow_digit_keeps_same_frame_pair_and_unknown_negatives(self):
+        frame = self.reference("field-mana-portal-outline")
+        reading = self.observer.observe(frame)
+        self.assertEqual((1580, 1580), (reading.life.current, reading.life.maximum))
+        self.assertEqual((928, 1543, "read_outlined"), (reading.mana.current, reading.mana.maximum, reading.mana.reason))
+        self.assertEqual(0.72, self.observer.manifest["matching"]["glyph_score"])
+        self.assertEqual(0.08, self.observer.manifest["matching"]["glyph_margin"])
+        left, top, right, bottom = self.observer._resource_box(frame, "mana")
+        for color in (0, 185, 255):
+            changed = frame.copy()
+            changed[top:bottom, left:right] = color
+            self.assertIsNone(self.observer.observe(changed).mana.ratio)
+
+    def test_current_label_occlusion_requires_half_of_same_native_mercenary_face(self):
+        observer = SurvivalHudObserver(observe_mercenary=True)
+        portrait = observer.manifest["mercenary_portrait"]
+        frame = cv.imread(str(DEFAULT_ASSETS / portrait["label_occlusion_reference"]["path"]))
+        self.assertEqual("observed", observer.observe(frame).mercenary_status)
+        left, top, right, bottom = portrait["box"]
+        for mode in ("face_removed", "upper_face_missing", "wrong_face", "fully_covered"):
+            with self.subTest(mode=mode):
+                changed = frame.copy()
+                if mode == "face_removed":
+                    changed[top:bottom, left:right] = 0
+                elif mode == "upper_face_missing":
+                    changed[top : top + 25, left:right] = 0
+                elif mode == "wrong_face":
+                    changed[top : top + 25, left:right] = cv.imread(str(DEFAULT_ASSETS / "references/mercenary-face-absent.png"))[:25]
+                else:
+                    changed[top:bottom, left:right] = 255
+                self.assertEqual("unverified", observer.observe(changed).mercenary_status)
+
     def test_mercenary_portrait_is_opt_in_current_face_only_and_absence_is_unverified(self):
         observer = SurvivalHudObserver(observe_mercenary=True)
         portrait = observer.manifest["mercenary_portrait"]
@@ -42,6 +126,8 @@ class SurvivalVisionTests(unittest.TestCase):
         self.assertEqual("unverified", observer.observe(frame[:1000]).mercenary_status)
         low = replace(reading, life=ResourceReading(1, 1000))
         self.assertEqual("resource_low", resource_guard(low, self.policy))
+        low_mana = replace(reading, life=ResourceReading(1474, 1580), mana=ResourceReading(117, 1543), mercenary_status="unverified")
+        self.assertEqual("resource_low", resource_guard(low_mana, self.policy))
 
     def test_three_current_empty_cells_reconcile_without_guessing_unreadable_or_hidden_slots(self):
         frame = self.reference("town-belt-three-empty-column1")

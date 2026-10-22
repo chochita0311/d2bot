@@ -40,6 +40,7 @@ class ArcaneHubVisionTests(unittest.TestCase):
             ("hub/distant-effects.png", (500, 822)),
             ("navigation/stairs-hostile-effects-no-waypoint.png", None),
             ("hub/actor-occluded.png", (961, 503)),
+            ("hub/return-single-ornament.png", None),
         )
         for name, expected in cases:
             path = owner / name
@@ -130,6 +131,35 @@ class ArcaneHubVisionTests(unittest.TestCase):
     def track(self, tracker, frame, at, motion=(0, 0)):
         point = self.vision.observe(frame)
         return tracker.update(frame, point, self.vision.last_evidence, at, motion)
+
+    def test_merged_current_blue_and_one_native_part_only_retain_recent_static_full_hub(self):
+        owner = Path(__file__).resolve().parents[1] / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub"
+        partial = cv.imread(str(owner / "merged-pair-one-ornament.png"))
+        full = cv.imread(str(owner / "left-floor-return.png"))
+        self.assertIsNone(self.vision.observe(partial))
+        self.assertEqual((961, 503), self.vision.current_pair_near(partial, (962, 578)))
+        tracker = HubStabilityTracker(self.vision)
+        self.assertEqual((None, None), self.track(tracker, partial, 0))
+        self.assertEqual((961, 503), self.track(tracker, full, 1)[0])
+        point, evidence = self.track(tracker, partial, 1.4)
+        self.assertEqual((961, 503), point)
+        self.assertEqual(1, evidence["reference_observed_at"])
+        self.assertEqual((None, None), self.track(tracker, partial, 3.01))
+        for mode in ("ornament", "left_blue", "right_blue", "moving", "unknown_motion"):
+            with self.subTest(mode=mode):
+                tracker = HubStabilityTracker(self.vision)
+                self.track(tracker, full, 1)
+                changed = partial.copy()
+                motion = (0, 0)
+                if mode == "ornament":
+                    changed[420:480, 790:880] = 0
+                elif mode == "left_blue":
+                    changed[420:490, 880:940] = 0
+                elif mode == "right_blue":
+                    changed[420:490, 980:1040] = 0
+                else:
+                    motion = None if mode == "unknown_motion" else (2, 0)
+                self.assertEqual((None, None), self.track(tracker, changed, 1.4, motion))
 
     def test_static_pair_needs_recent_full_reference_and_never_extends_its_age(self):
         tracker = HubStabilityTracker(self.vision)

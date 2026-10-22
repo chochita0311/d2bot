@@ -469,6 +469,7 @@ def maintain_paused_field(
                         else:
                             held.release()
                             guard_report["defense_status"] = "near_hostile_requires_review"
+                            raise RuntimeError("near_hostile_requires_review")
                     else:
                         held.release()
                         attack_dispatches = held.snapshot()["dispatches"].get(profile.actions.primary_attack_skill_key, 0)
@@ -726,36 +727,77 @@ def enter_arcane(session, difficulty, emit, *, resume_town=False, stop=None):
         raise RuntimeError("Arcane entry did not pass: {}".format(session.last_result))
 
 
-def exit_to_character(session, capture, focused, stop, vision):
-    """현재 배치의 마을 실행기 표식으로 종료 화면까지 확인한다."""
+def exit_to_character(capture, focused, stop, vision, backend, *, evidence, diagnostics=None, clock=time.monotonic):
+    """현재 메뉴와 실제 커서를 확인해 필드 backend로 즉시 종료를 요청한다."""
+    diagnostics = {} if diagnostics is None else diagnostics
+    diagnostics.update(started_at=clock(), observations=0)
+    retained = None
 
-    def guard():
+    def guard(acquired=None):
         if stop.is_set() or not focused():
             raise RuntimeError("safe exit interrupted or unfocused")
+        if acquired is not None and not 0 <= clock() - acquired < 0.25:
+            raise RuntimeError("safe exit frame stale")
 
-    def wait_for(names, seconds):
-        deadline = time.monotonic() + seconds
-        while time.monotonic() < deadline:
-            guard()
-            frame = capture.grab().frame
-            gray = vision.normalize(frame)
-            matches = [vision.find(gray, name) for name in names]
-            if all(match is not None for match in matches):
-                return matches, frame
-            stop.wait(0.05)
-        raise RuntimeError("safe exit state unverified: " + ",".join(names))
+    def read(name):
+        nonlocal retained
+        guard()
+        acquired = clock()
+        frame = capture.grab().frame
+        if retained is None:
+            retained = len(evidence)
+            evidence.append(("safe-exit-last.png", frame))
+        else:
+            evidence[retained] = ("safe-exit-last.png", frame)
+        match = vision.find(vision.normalize(frame), name)
+        diagnostics.update(observations=diagnostics["observations"] + 1, last_acquired_at=acquired, phase=name)
+        guard(acquired)
+        return frame, acquired, match
 
     guard()
-    session._town_loop = True
-    session._town_guard = guard
-    session._last_pointer = None
-    session._press_key("esc")
-    matches, frame = wait_for(("save_exit",), 8)
-    match = matches[0]
-    x = round(match["x"] * frame.shape[1] / 1267)
-    y = round(match["y"] * frame.shape[0] / 753)
-    session._click_relative(capture, (x, y))
-    wait_for(("play",), 20)
+    menu_deadline = diagnostics["started_at"] + 8
+    diagnostics["escape_requested_at"] = clock()
+    backend.press("esc")
+    prepared, prepared_at = None, None
+    while clock() < menu_deadline:
+        if prepared_at is not None:
+            remaining = min(prepared_at + 0.05, menu_deadline) - clock()
+            if remaining > 0:
+                stop.wait(remaining)
+        frame, acquired, match = read("save_exit")
+        if clock() >= menu_deadline:
+            break
+        if match is None:
+            stop.wait(0.05)
+            continue
+        point = (round(match["x"] * frame.shape[1] / 1267), round(match["y"] * frame.shape[0] / 753))
+        aim = frame_to_desktop(capture, point)
+        if prepared is None or math.hypot(*(a - b for a, b in zip(aim, prepared))) > 3:
+            guard(acquired)
+            backend.move(*aim)
+            prepared, prepared_at = aim, clock()
+            diagnostics.update(menu_point=point, pointer_requested_at=prepared_at)
+            continue
+        if acquired - prepared_at < 0.05:
+            continue
+        if not backend.pointer_matches(aim):
+            raise RuntimeError("safe exit pointer unverified")
+        guard(acquired)
+        diagnostics["click_requested_at"] = clock()
+        backend.click()
+        break
+    else:
+        raise RuntimeError("safe exit state unverified: save_exit")
+    if "click_requested_at" not in diagnostics:
+        raise RuntimeError("safe exit state unverified: save_exit")
+    selection_deadline = clock() + 20
+    while clock() < selection_deadline:
+        _, acquired, match = read("play")
+        if match is not None and clock() < selection_deadline:
+            diagnostics.update(status="character_select_observed", selected_at=acquired)
+            return
+        stop.wait(0.05)
+    raise RuntimeError("safe exit state unverified: play")
 
 
 def return_to_act1_and_exit(session, capture, focused, stop, vision, *, evidence, emit=print, destination="arcane"):
@@ -999,7 +1041,17 @@ def run_once(
     terminal_vision = ArcaneTerminalObserver() if continuous else None
     objective_vision = ArcaneObjectiveObserver() if continuous else None
 
+    def save_report():
+        pending = output / "report.json.pending"
+        pending.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=_json_scalar), encoding="utf-8")
+        pending.replace(output / "report.json")
+
     def pause_field():
+        # 생존 감시 대기 중에도 실패 지점을 읽을 수 있게 남긴다. 이미지는 최종 정리에서 저장한다.
+        report["input_events"] = [] if backend is None else backend.events
+        report["evidence_write_status"] = "pending"
+        save_report()
+
         def renew_paused():
             nonlocal buff_expires_at
             record = automatic_driver.execute()
@@ -1076,6 +1128,7 @@ def run_once(
             panels_open,
             deadline_supplier=lambda: buff_expires_at,
             ground_supplier=lambda: planner[0],
+            recover_resources=recover_resources,
             cast_reference_seconds=estimate.frames / 25.0,
         )
         report["item_label_policy"] = "off_while_moving_on_for_post_combat_scan"
@@ -1270,6 +1323,8 @@ def run_once(
                     buff_expires_at=buff_expires_at,
                 )
             report["status"] = report["navigation"]["status"]
+            if report["navigation"].get("continuous_status") == "nova_target_requires_review":
+                raise RuntimeError("near_hostile_requires_review")
             progress = dict(report["navigation"])
             progress.pop("status", None)
             if continuous and report["navigation"].get("continuous_status") == "buff_renewal_due":
@@ -1385,13 +1440,21 @@ def run_once(
         report["errors"].append(str(exc))
         emit("SUMMONER_STOP: " + str(exc))
         failure = str(exc)
+        # 갱신 준비의 지역 미확인도 버프를 유지할 수 없으므로 재대기보다 현재 메뉴로 종료한다.
+        immediate_exit_failures = (
+            "resource_low",
+            "paused_hud_unverified",
+            "near_hostile_requires_review",
+            "current Arcane title unverified",
+            "mercenary_unverified",
+        )
         if failure == "mercenary_unverified":
-            # NPC 정비를 추측하지 않으며 감독자가 기존 return으로 같은 방을 복구한다.
-            stop.set()
+            # 초상화 실패는 현재 메뉴로 종료한다. 내부 중단으로 종료까지 막아 필드에 남기지 않는다.
             report["operator_review_required"] = "mercenary_portrait_unverified"
-            emit("MERCENARY_UNVERIFIED: inputs stopped; current portrait absent or obscured; supervised return required")
+            report["field_retained"] = True
+            emit("MERCENARY_UNVERIFIED: current portrait absent or obscured; request safe exit before operator review")
         # 명시적 중단이나 포커스 상실 뒤에는 종료 입력도 보내지 않는다.
-        if continuous and failure not in ("resource_low", "paused_hud_unverified"):
+        if continuous and failure not in immediate_exit_failures:
             report["field_retained"] = True
             emit("FIELD_PAUSED: inputs released; no room exit during navigation training")
             if (
@@ -1413,7 +1476,7 @@ def run_once(
                     failure = str(guard_error)
                     report["errors"].append("paused guard: " + failure)
         if (
-            (not continuous or failure in ("resource_low", "paused_hud_unverified"))
+            (not continuous or failure in immediate_exit_failures)
             and capture is not None
             and backend is not None
             and not stop.is_set()
@@ -1422,7 +1485,8 @@ def run_once(
             try:
                 session._last_pointer = None
 
-                exit_to_character(session, capture, focused, stop, town_vision)
+                report["safe_exit_attempt"] = {}
+                exit_to_character(capture, focused, stop, town_vision, backend, evidence=evidence, diagnostics=report["safe_exit_attempt"])
                 report["safe_exit"] = "character_select_observed"
                 report["field_retained"] = False
             except Exception as exit_error:
@@ -1433,6 +1497,14 @@ def run_once(
         if loot_controller is not None:
             report["loot_scans"] = list(loot_controller.records)
             report["item_labels_final"] = loot_controller.labels_state
+            if loot_controller.last_hud_failure is not None:
+                frame, metadata = loot_controller.last_hud_failure
+                report["loot_hud_reacquisition"] = metadata
+                evidence.append(("loot-hud-unverified-last.png", frame))
+            if loot_controller.last_landing_observation is not None:
+                frame, metadata = loot_controller.last_landing_observation
+                report["loot_landing_observation"] = metadata
+                evidence.append(("loot-landing-last.png", frame))
         if camera_ground is not None:
             report.setdefault("camera_projection", {}).update(
                 calibrations=camera_ground.calibrations,
@@ -1449,11 +1521,6 @@ def run_once(
         if capture is not None:
             capture.close()
         report["input_events"] = [] if backend is None else backend.events
-
-        def save_report():
-            pending = output / "report.json.pending"
-            pending.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=_json_scalar), encoding="utf-8")
-            pending.replace(output / "report.json")
 
         # 이미지 직렬화 중 재중단돼도 입력/판정 보고서를 남기고 불완전한 이미지 보관 상태를 명시한다.
         report["evidence_write_status"] = "in_progress"

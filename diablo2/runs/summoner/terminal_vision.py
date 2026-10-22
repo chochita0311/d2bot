@@ -37,6 +37,7 @@ class TerminalStabilityTracker:
         self.approach, self.approach_only = None, False
         self.landmark_relocalized = False
         self.previous_current_full, self.approach_displacement = None, None
+        self.previous_current_frame = None
         self.approach_static_pairs = 0
 
     def reset(self):
@@ -44,6 +45,7 @@ class TerminalStabilityTracker:
         self.approach, self.approach_only = None, False
         self.landmark_relocalized = False
         self.previous_current_full, self.approach_displacement = None, None
+        self.previous_current_frame = None
         self.approach_static_pairs = 0
 
     def require_relocalization(self):
@@ -51,12 +53,13 @@ class TerminalStabilityTracker:
         self.approach = None
         self.landmark_relocalized = True
         self.previous_current_full, self.approach_displacement = None, None
+        self.previous_current_frame = None
         self.approach_static_pairs = 0
 
     def update(self, frame, reading, acquired_at, displacement):
         self.approach = None
         self.approach_displacement = None
-        previous = self.previous_current_full
+        previous, previous_frame = self.previous_current_full, self.previous_current_frame
         self.previous_current_full = (
             (reading, acquired_at)
             if reading is not None
@@ -65,13 +68,24 @@ class TerminalStabilityTracker:
             and reading.current_parts == (True, True, True)
             else None
         )
+        self.previous_current_frame = frame.copy() if self.previous_current_full is not None else None
         if previous is not None and self.previous_current_full is not None:
             before, before_at = previous
-            if 0 < acquired_at - before_at < 0.25 and before.kind == reading.kind and before.part_ids == reading.part_ids:
-                shifts = [(current[0] - old[0], current[1] - old[1]) for old, current in zip(before.evidence_boxes, reading.evidence_boxes)]
-                if all(math.hypot(*shift) < 2 for shift in shifts):
-                    # 접근 준비만 보조한다. 실제 도착에는 별도 배경 정지가 계속 필요하다.
-                    self.approach_displacement = tuple(sum(shift[axis] for shift in shifts) / 3 for axis in (0, 1))
+            if 0 < acquired_at - before_at < 0.25 and before.kind == reading.kind:
+                if before.part_ids != reading.part_ids:
+                    # 외형 ID가 바뀌어도 현재 세 외형이 직전 실제 화면에서 모두 확인돼야 같은 정지 대응이다.
+                    before = self.observer.confirm_static_parts(previous_frame, reading)
+                    if before is not None and (
+                        len(before.visible_fractions) != 3 or any(value != 1.0 for value in before.visible_fractions)
+                    ):
+                        before = None
+                if before is not None and all(before.current_parts):
+                    shifts = [
+                        (current[0] - old[0], current[1] - old[1]) for old, current in zip(before.evidence_boxes, reading.evidence_boxes)
+                    ]
+                    if all(math.hypot(*shift) < 2 for shift in shifts):
+                        # 접근 준비만 보조한다. 실제 도착에는 별도 배경 정지가 계속 필요하다.
+                        self.approach_displacement = tuple(sum(shift[axis] for shift in shifts) / 3 for axis in (0, 1))
         self.approach_static_pairs = self.approach_static_pairs + 1 if self.approach_displacement is not None else 0
         if reading is not None:
             self.reference = reading if len(reading.part_ids) == 3 else None
@@ -127,6 +141,30 @@ class TerminalStabilityTracker:
         )
 
 
+# 아래20px는 HUD 생명/마나 검색 띠 사이만 관찰한다. 입력 가능한 월드 범위는 바꾸지 않는다.
+TERMINAL_OBSERVATION_BOTTOM = 920
+TERMINAL_LOWER_STRIP = (650, 1290)
+
+
+def _landmark_box_visible(box):
+    left, top, right, bottom = box
+    return (
+        24 <= left < right <= 1900
+        and 55 <= top < bottom <= TERMINAL_OBSERVATION_BOTTOM
+        and (bottom <= 900 or TERMINAL_LOWER_STRIP[0] <= left < right <= TERMINAL_LOWER_STRIP[1])
+    )
+
+
+def _terminal_image(frame, encoding):
+    if encoding == "gray":
+        return cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    if encoding == "soft_gold":
+        blue, green, red = cv.split(frame)
+        gold = cv.min(cv.subtract(red, green), cv.subtract(green, blue))
+        return cv.GaussianBlur(cv.convertScaleAbs(gold, alpha=5), (3, 3), 0.8)
+    raise ValueError("reviewed terminal encoding required")
+
+
 class ArcaneTerminalObserver:
     """검토한 세 근거의 종착 배치를 찾는다. 적 미검출이나 일반 바닥을 빈 끝으로 쓰지 않는다."""
 
@@ -157,11 +195,15 @@ class ArcaneTerminalObserver:
             if path not in self.native_parts:
                 raise ValueError("reviewed chest appearance required")
             rule, native = self.native_parts[path]
+            if rule.get("encoding", "gray") != "gray":
+                raise ValueError("floor encoding cannot enter chest composition")
             self.chest_parts.append((rule, native, cv.resize(native, None, fx=0.5, fy=0.5)))
         for path in data.get("chest_detail_parts", []):
             if path not in self.native_parts or path in data.get("chest_parts", []):
                 raise ValueError("separate reviewed chest detail required")
             rule, native = self.native_parts[path]
+            if rule.get("encoding", "gray") != "gray":
+                raise ValueError("floor encoding cannot enter chest composition")
             minimum = data.get("chest_detail_minimum_scores", {}).get(path, 0.92)
             if not 0.91 <= minimum <= 1 or rule["threshold"] < minimum:
                 raise ValueError("chest detail native score below reviewed minimum")
@@ -175,11 +217,21 @@ class ArcaneTerminalObserver:
             path = (manifest.parent / rule["path"]).resolve()
             if path.parent not in (owner, owner / "templates/terminal") or not 0.9 <= rule["threshold"] <= 1:
                 raise ValueError("terminal part outside reviewed owner or score")
-            image = cv.imread(str(path), cv.IMREAD_GRAYSCALE)
+            encoding = rule.get("encoding", "gray")
+            if encoding not in ("gray", "soft_gold"):
+                raise ValueError("reviewed terminal encoding required")
+            image = cv.imread(str(path), cv.IMREAD_GRAYSCALE if encoding == "gray" else cv.IMREAD_COLOR)
+            if image is not None and encoding == "soft_gold":
+                image = _terminal_image(image, encoding)
             if image is None or min(image.shape) < 20 or float(image.std()) < 5:
                 raise ValueError("positive textured terminal part required")
             parts.append((rule, image, cv.resize(image, None, fx=0.5, fy=0.5)))
         return parts
+
+    def _images(self, frame, part_ids=None):
+        names = self.native_parts if part_ids is None else part_ids
+        encodings = {"gray"} | {self.native_parts[name][0].get("encoding", "gray") for name in names}
+        return {encoding: _terminal_image(frame, encoding) for encoding in encodings}
 
     def observe(self, frame):
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
@@ -206,12 +258,13 @@ class ArcaneTerminalObserver:
         return self.previous_full
 
     def _observe_full(self, frame):
-        gray = cv.cvtColor(frame[55:900, 24:1900], cv.COLOR_BGR2GRAY)
-        small = cv.resize(gray, None, fx=0.5, fy=0.5)
-        occluded = label_occlusion_mask(frame)[55:900, 24:1900]
+        images = self._images(frame[55:TERMINAL_OBSERVATION_BOTTOM, 24:1900])
+        views = {encoding: (image, cv.resize(image, None, fx=0.5, fy=0.5)) for encoding, image in images.items()}
+        gray, small = views["gray"]
+        occluded = label_occlusion_mask(frame)[55:TERMINAL_OBSERVATION_BOTTOM, 24:1900]
         # 같은 프레임의 공용 외형만 재사용하고 다음 관찰에는 검출 결과를 넘기지 않는다.
         matches = {}
-        groups = self._match_groups(gray, small, self.parts, matches, occluded)
+        groups = self._match_groups(gray, small, self.parts, matches, occluded, views)
         reading = None if groups is None else self._layout(groups, "nonboss_chest_trio", self.parts)
         if reading is not None:
             return reading
@@ -226,11 +279,11 @@ class ArcaneTerminalObserver:
             }.values()
         )
         with ThreadPoolExecutor(max_workers=3) as pool:
-            results = pool.map(lambda part: self._match_part(gray, small, part, occluded), remaining)
+            results = pool.map(lambda part: self._match_part(*views[part[0].get("encoding", "gray")], part, occluded), remaining)
             for part, found in zip(remaining, results):
                 matches[(part[0]["path"], part[0]["threshold"])] = found
         for kind, parts in self.alternate_layouts:
-            groups = self._match_groups(gray, small, parts, matches, occluded)
+            groups = self._match_groups(gray, small, parts, matches, occluded, views)
             reading = None if groups is None else self._layout(groups, kind, parts)
             if reading is not None:
                 return reading
@@ -260,14 +313,15 @@ class ArcaneTerminalObserver:
     def confirm_static_parts(self, frame, reference):
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed terminal frame required")
-        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        images = self._images(frame, reference.part_ids)
         scores, current, fractions, boxes = [], [], [], []
         occluded = label_occlusion_mask(frame)
         for name, box in zip(reference.part_ids, reference.evidence_boxes):
             rule, template = self.native_parts[name]
+            gray = images[rule.get("encoding", "gray")]
             x0, y0, x1, y1 = box
             left, top = max(24, x0 - 3), max(55, y0 - 3)
-            patch = gray[top : min(900, y1 + 3), left : min(1900, x1 + 3)]
+            patch = gray[top : min(TERMINAL_OBSERVATION_BOTTOM, y1 + 3), left : min(1900, x1 + 3)]
             score, location = -1, (0, 0)
             if min(patch.shape) > 0 and all(a >= b for a, b in zip(patch.shape, template.shape)):
                 _, score, _, location = cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))
@@ -276,11 +330,11 @@ class ArcaneTerminalObserver:
                 mask = occluded[top : top + patch.shape[0], left : left + patch.shape[1]]
                 if np.any(mask):
                     score, location, fraction = visible_template_peak(patch, template, mask == 0)
-            matched = score >= rule["threshold"]
+            x, y = left + location[0], top + location[1]
+            matched = score >= rule["threshold"] and _landmark_box_visible((x, y, x + template.shape[1], y + template.shape[0]))
             current.append(matched)
             scores.append(score if matched else None)
             fractions.append(fraction if matched else None)
-            x, y = left + location[0], top + location[1]
             boxes.append((x, y, x + template.shape[1], y + template.shape[0]) if matched else box)
         if len(current) != 3 or sum(current) < 2:
             return None
@@ -297,16 +351,17 @@ class ArcaneTerminalObserver:
         """검증된 배경 변위의 국소 탐색에서 현재 부위를 재확인한다. 이 결과는 도착을 승인하지 않는다."""
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed terminal frame required")
-        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        images = self._images(frame, reference.part_ids)
         occluded = label_occlusion_mask(frame)
         shift = tuple(-value for value in displacement)
         boxes, scores, current, fractions, corrections = [], [], [], [], []
         for name, box in zip(reference.part_ids, reference.evidence_boxes):
             rule, template = self.native_parts[name]
+            gray = images[rule.get("encoding", "gray")]
             predicted = tuple(int(round(value + shift[axis % 2])) for axis, value in enumerate(box))
             x0, y0, x1, y1 = predicted
             left, top = max(24, x0 - 8), max(55, y0 - 8)
-            patch = gray[top : max(55, min(900, y1 + 8)), left : max(24, min(1900, x1 + 8))]
+            patch = gray[top : max(55, min(TERMINAL_OBSERVATION_BOTTOM, y1 + 8)), left : max(24, min(1900, x1 + 8))]
             score, fraction, location = -1, 0, (0, 0)
             if min(patch.shape) > 0 and all(a >= b for a, b in zip(patch.shape, template.shape)):
                 _, score, _, location = cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))
@@ -314,12 +369,12 @@ class ArcaneTerminalObserver:
                 mask = occluded[top : top + patch.shape[0], left : left + patch.shape[1]]
                 if score < rule["threshold"] and np.any(mask):
                     score, location, fraction = visible_template_peak(patch, template, mask == 0)
-            matched = score >= rule["threshold"]
+            x, y = left + location[0], top + location[1]
+            matched = score >= rule["threshold"] and _landmark_box_visible((x, y, x + template.shape[1], y + template.shape[0]))
             current.append(matched)
             scores.append(float(score) if matched else None)
             fractions.append(float(fraction) if matched else None)
             if matched:
-                x, y = left + location[0], top + location[1]
                 corrections.append((x - x0, y - y0))
                 boxes.append((x, y, x + template.shape[1], y + template.shape[0]))
             else:
@@ -343,13 +398,14 @@ class ArcaneTerminalObserver:
         """과거의 전체 배치와 현재 서로 다른 두 부위의 공통 이동을 대조한다. 접근 전용이다."""
         if frame.dtype != np.uint8 or frame.shape != (1140, 1922, 3):
             raise ValueError("native reviewed terminal frame required")
-        gray = cv.cvtColor(frame[55:900, 24:1900], cv.COLOR_BGR2GRAY)
-        small = cv.resize(gray, None, fx=0.5, fy=0.5)
-        occluded = label_occlusion_mask(frame)[55:900, 24:1900]
+        images = self._images(frame[55:TERMINAL_OBSERVATION_BOTTOM, 24:1900], reference.part_ids)
+        views = {encoding: (image, cv.resize(image, None, fx=0.5, fy=0.5)) for encoding, image in images.items()}
+        gray, small = views["gray"]
+        occluded = label_occlusion_mask(frame)[55:TERMINAL_OBSERVATION_BOTTOM, 24:1900]
         matches, groups = {}, []
         for name in reference.part_ids:
             rule, native = self.native_parts[name]
-            found = self._match_groups(gray, small, ((rule, native, cv.resize(native, None, fx=0.5, fy=0.5)),), matches, occluded)
+            found = self._match_groups(gray, small, ((rule, native, cv.resize(native, None, fx=0.5, fy=0.5)),), matches, occluded, views)
             groups.append([] if found is None else found[0])
         candidates = []
         for first, second in itertools.combinations(range(len(groups)), 2):
@@ -383,7 +439,7 @@ class ArcaneTerminalObserver:
         )
 
     @staticmethod
-    def _match_groups(gray, small, parts, matches, occluded):
+    def _match_groups(gray, small, parts, matches, occluded, views=None):
         groups = []
         for rule, native, template in parts:
             key = (rule["path"], rule["threshold"])
@@ -392,7 +448,8 @@ class ArcaneTerminalObserver:
                     return None
                 groups.append(matches[key])
                 continue
-            found = ArcaneTerminalObserver._match_part(gray, small, (rule, native, template), occluded)
+            current, reduced = (gray, small) if views is None else views[rule.get("encoding", "gray")]
+            found = ArcaneTerminalObserver._match_part(current, reduced, (rule, native, template), occluded)
             matches[key] = found
             if not found:
                 return None
@@ -419,7 +476,8 @@ class ArcaneTerminalObserver:
                 if exact >= rule["threshold"]:
                     left, top = 24 + x0 + dx, 55 + y0 + dy
                     box = (left, top, left + width, top + height)
-                    found.append((box, float(exact), 1.0))
+                    if _landmark_box_visible(box):
+                        found.append((box, float(exact), 1.0))
             scores[max(0, y - height // 2) : y + height // 2 + 1, max(0, x - width // 2) : x + width // 2 + 1] = -1
         if np.any(occluded) and len(found) < 4:
             found.extend(ArcaneTerminalObserver._occluded_matches(gray, coarse_scores, rule, native, occluded, found))
@@ -443,7 +501,7 @@ class ArcaneTerminalObserver:
                     left, top = 24 + x0 + dx, 55 + y0 + dy
                     box = (left, top, left + width, top + height)
                     previous = full_matches + found
-                    if not any(math.hypot(left - old[0][0], top - old[0][1]) < 10 for old in previous):
+                    if _landmark_box_visible(box) and not any(math.hypot(left - old[0][0], top - old[0][1]) < 10 for old in previous):
                         found.append((box, exact, fraction))
             scores[max(0, y - height // 2) : y + height // 2 + 1, max(0, x - width // 2) : x + width // 2 + 1] = -1
         return found

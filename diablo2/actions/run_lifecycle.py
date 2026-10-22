@@ -57,7 +57,6 @@ class RunLifecycleSession:
     MOVE_SLEEP = (0.015, 0.035)
     CLICK_SETTLE = (0.05, 0.09)
     ACTION_SLEEP = (0.16, 0.3)
-    FOCUS_SLEEP = (0.12, 0.2)
     TOWN_POINTER_SETTLE_SECONDS = 0.08
     TOWN_HOVER_SETTLE_SECONDS = 0.06
 
@@ -423,11 +422,8 @@ class RunLifecycleSession:
             return
         if not focus_window(window):
             raise RuntimeError("Could not bring the Diablo window to the foreground from the control panel.")
-        center_x = window.left + window.width // 2
-        center_y = window.top + window.height // 2
-        self._move_absolute(capture, center_x, center_y)
-        self._last_pointer = (center_x, center_y)
-        self._sleep_range(*self.FOCUS_SLEEP)
+        # 포커스 확보는 조준이 아니다. 다음 현재 화면의 실제 목표로 바로 이동한다.
+        self._last_pointer = tuple(pydirectinput.position())
 
     def _wait_for_template(
         self,

@@ -36,6 +36,8 @@ Act 2 복귀는 도착 지역과 HUD, 발판 주변의 고정 지형 단서, 근
 
 SendInput 뒤 커서 위치는 최대80ms 동안 재관찰한다. 이동을 재전송하지 않으며, 목표3픽셀 이내에 오지 않거나 중단/포커스/창 변화가 생기면 클릭하지 않는다. 성역은 지역 제목/HUD와 중앙 발판의 고정 지형·주변 푸른 효과를 함께 찾고 최신 위치로 접근한다. NPC 대화 복구는 마을에만 적용한다.
 
+Summoner 마감의 선택적 성역 지도 검사는 OFF에서1.5초 안 현재 native 전체WP를 요구한다. 만료되면 현재 HUD/패널 없음에서 ON 복원1회를 요청하고, 기존 도착 판독 시한을 유지하며 복원 요청부터 최대6초 새 ON 제목/전체WP를 다시 확인한다. 한 문양/축소 불꽃 쌍만으로 클릭하지 않으며 재숨김은 없다. 복원 후 WP 재클릭도 새 ON 제목/전체 native 근거를 요구하고 Act1에서 다시 토글하지 않는다. 이 경로의 실제 결과는 [통합 run](../plans/run/run-20261009-07-summoner-live-integration.md#development-resume-20261020)이 소유한다.
+
 ## 데이터와 캘리브레이션
 
 - 공용 UI 템플릿/manifest: `assets/ui/town-loop/remastered-ko-window/`. 원래 crop·변형·검색 영역·threshold·click offset은 보존한다.

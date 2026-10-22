@@ -316,6 +316,21 @@ class TownLoopContractTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "did not settle"):
             self.step(4.2, "hud", "area_act2")
 
+    def test_current_tent_flag_with_automap_preserves_layout_without_lowering_threshold(self):
+        vision = TownLoopVision()
+        root = Path(__file__).resolve().parents[1] / "assets/regions"
+        frame = cv.imread(str(root / "rogue-encampment/remastered-ko-window/references/tent-flag-automap.png"))
+        self.assertEqual(0.82, vision.manifest["templates"]["layout_tent"]["threshold"])
+        found = vision.find(vision.normalize(frame), "layout_tent")
+        self.assertIsNotNone(found)
+        self.assertGreater(found["score"], 0.99)
+        frame[88:163, 791:872] = 0
+        self.assertIsNone(vision.find(vision.normalize(frame), "layout_tent"))
+        for name in ("town-baseline.jpg", "palace-settled-main.png", "waypoint-panel-window.png"):
+            with self.subTest(name=name):
+                other = cv.imread(str(root / "lut-gholein/remastered-ko-window/references" / name))
+                self.assertIsNone(vision.find(vision.normalize(other), "layout_tent"))
+
     def test_positive_palace_recovery_is_one_approach_not_unbounded_spawn_search(self):
         self.planner.data.update(phase="act1_spawn", started=0, deadline=30)
         action = self.step(1, "hud", "area_act2", "layout_act2_palace")
@@ -393,8 +408,82 @@ class TownLoopContractTests(unittest.TestCase):
                 else:
                     self.assertEqual("tab", action["key"])
                     self.assertIsNone(self.step(0.2, "hud"))
-                    with self.assertRaisesRegex(RuntimeError, "Current Arcane waypoint missing"):
-                        self.step(1.5, "hud", "world_arcane_waypoint")
+                    restored = self.step(1.5, "hud", "world_arcane_waypoint")
+                    self.assertEqual("tab", restored["key"])
+                    self.assertEqual("restore_for_reacquisition", self.planner.data["arcane_map_inspection"]["status"])
+                    # 복원 요청만으로 ON/전체 중앙을 승인하거나 다시 숨기지 않는다.
+                    self.assertIsNone(self.step(1.6, "hud", "world_arcane_waypoint"))
+                    self.assertIsNone(self.step(1.7, "hud", "area_arcane", "world_arcane_waypoint"))
+                    self.assertEqual("on_reacquiring", self.planner.data["arcane_map_inspection"]["status"])
+                    with self.assertRaisesRegex(RuntimeError, "Current Arcane waypoint missing after bounded"):
+                        self.step(7.5, "hud", "area_arcane", "world_arcane_waypoint")
+
+    def test_arcane_hidden_timeout_cannot_restore_without_current_hud_or_with_a_panel(self):
+        for obstruction in ("hud", "waypoint_header", "save_exit", "npc_cancel"):
+            with self.subTest(obstruction=obstruction):
+                self.setUp()
+                self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+                self.planner = TownLoopPlanner(self.vision, destination="arcane", inspect_arcane_map=True)
+                self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
+                self.assertEqual("tab", self.step(0, "hud", "area_arcane")["key"])
+                names = [] if obstruction == "hud" else ["hud", obstruction]
+                with self.assertRaisesRegex(RuntimeError, "restoration requires current HUD"):
+                    self.step(1.5, *names)
+                self.assertEqual("hidden", self.planner.data["arcane_map_inspection"]["status"])
+
+    def test_arcane_restoration_deadline_rejects_even_a_current_full_hub_at_six_seconds(self):
+        for now in (7.499, 7.5):
+            with self.subTest(now=now):
+                self.setUp()
+                self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+                self.planner = TownLoopPlanner(self.vision, destination="arcane", inspect_arcane_map=True)
+                self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
+                self.step(0, "hud", "area_arcane")
+                self.step(1.5, "hud")
+                original = self.vision.find
+
+                def native(frame, name):
+                    result = original(frame, name)
+                    if name == "world_arcane_waypoint" and result:
+                        result["evidence"] = "current_native_hub"
+                    return result
+
+                self.vision.find = native
+                if now < 7.5:
+                    self.assertEqual("click", self.step(now, "hud", "area_arcane", "world_arcane_waypoint")["kind"])
+                else:
+                    with self.assertRaisesRegex(RuntimeError, "missing after bounded"):
+                        self.step(now, "hud", "area_arcane", "world_arcane_waypoint")
+
+    def test_arcane_return_after_map_restoration_requires_fresh_native_hub_and_keeps_original_deadline(self):
+        self.vision.templates = {"area_arcane": None, "world_arcane_waypoint": None}
+        self.planner = TownLoopPlanner(self.vision, destination="arcane", inspect_arcane_map=True)
+        self.planner.data.update(phase="destination_arrival", started=0, deadline=30)
+        self.assertEqual("tab", self.step(0, "hud", "area_arcane")["key"])
+        inspection_deadline = self.planner.data["deadline"]
+        self.assertEqual("tab", self.step(1.5, "hud")["key"])
+        original = self.vision.find
+
+        def native(frame, name):
+            result = original(frame, name)
+            if name == "world_arcane_waypoint" and result:
+                result["evidence"] = "current_native_hub"
+            return result
+
+        self.vision.find = native
+        self.assertIsNone(self.step(1.6, "hud", "world_arcane_waypoint"))
+        self.assertEqual(inspection_deadline, self.planner.data["deadline"])
+        action = self.step(1.7, "hud", "area_arcane", "world_arcane_waypoint")
+        self.assertEqual("click", action["kind"])
+        inspection = self.planner.data["arcane_map_inspection"]
+        self.assertEqual("on_native_reacquired", inspection["status"])
+        self.assertEqual(1.7, inspection["restored_at"])
+        self.assertIsNone(self.step(2.5, "hud", "world_arcane_waypoint"))
+        self.assertEqual("click", self.step(2.6, "hud", "area_arcane", "world_arcane_waypoint")["kind"])
+        self.step(3.5, "hud", "waypoint_header", "list_act2")
+        self.step(4, "hud", "waypoint_header", "list_act1")
+        self.assertIsNone(self.step(5, "hud"))
+        self.assertEqual("esc", self.step(6, "hud", "area_act1")["key"])
 
     def test_arcane_positive_area_without_waypoint_calibration_cannot_start(self):
         self.vision.templates = {"area_arcane": None}
@@ -510,6 +599,20 @@ class TownLoopContractTests(unittest.TestCase):
             backend.click.assert_not_called()
         self.assertEqual(session._last_pointer, (2787, 1097))
         self.assertEqual(session._town_guard.call_count, 2)
+
+    def test_focusing_records_current_pointer_without_a_center_move_or_delay(self):
+        session = RunLifecycleSession.__new__(RunLifecycleSession)
+        session.capture_config = Mock()
+        session._move_absolute, session._sleep_range = Mock(), Mock()
+        window = Mock()
+        with patch("diablo2.actions.run_lifecycle.resolve_window_from_config", return_value=window), patch(
+            "diablo2.actions.run_lifecycle.focus_window", return_value=True
+        ) as focus, patch("diablo2.actions.run_lifecycle.pydirectinput.position", return_value=(200, 300)):
+            session._focus_game_window(Mock())
+        focus.assert_called_once_with(window)
+        self.assertEqual((200, 300), session._last_pointer)
+        session._move_absolute.assert_not_called()
+        session._sleep_range.assert_not_called()
 
     def test_persistent_pointer_mismatch_and_stop_never_admit_click(self):
         session = RunLifecycleSession.__new__(RunLifecycleSession)

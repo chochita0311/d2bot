@@ -167,7 +167,7 @@ class ArcaneHubObserver:
         )
         return point
 
-    def _match_floor(self, gray, candidate):
+    def _match_floor(self, gray, candidate, *, minimum_parts=None):
         by_part, tolerance = {}, self.rules["location_tolerance"]
         for rule, template in self.parts:
             x, y = (int(round(value)) for value in np.array(candidate) + rule["offset"])
@@ -184,7 +184,7 @@ class ArcaneHubObserver:
                     # 같은 실제 문양의 다른 검토 포즈는 독립 근거로 중복 계산하지 않는다.
                     by_part[rule["id"]] = (point, float(score), rule["id"])
         matches = list(by_part.values())
-        if len(matches) < self.rules["minimum_parts"]:
+        if len(matches) < (self.rules["minimum_parts"] if minimum_parts is None else minimum_parts):
             return None
         center = tuple(int(round(v)) for v in np.median([item[0] for item in matches], axis=0))
         if all(math.hypot(*(a - b for a, b in zip(item[0], center))) <= tolerance for item in matches):
@@ -209,7 +209,7 @@ class ArcaneHubObserver:
                     max(0, y - image.shape[0] // 2) : y + image.shape[0] // 2 + 1,
                     max(0, x - image.shape[1] // 2) : x + image.shape[1] // 2 + 1,
                 ] = -1
-                matched = self._match_floor(gray, (24 + x * 2 - rule["offset"][0], 55 + y * 2 - rule["offset"][1]))
+                matched = self._match_floor(gray, (24 + x * 2 - rule["offset"][0], 55 + y * 2 - rule["offset"][1]), minimum_parts=1)
                 if matched is None or not any(item[2] == rule["id"] for item in matched[1]):
                     continue
                 center, _ = matched
@@ -222,8 +222,14 @@ class ArcaneHubObserver:
                     patch = blue_mask[max(0, by - radius) : by + radius + 1, max(0, bx - radius) : bx + radius + 1]
                     counts.append(cv.countNonZero(patch))
                 if all(count >= pair["minimum_area"] for count in counts):
-                    found.append(matched)
-                    self.last_pair_points.append(tuple(float(value) for value in center))
+                    # 한 현재 문양/양쪽 청색은 기존 정지 추적의 후보만 제공한다. 새 WP 승인은 여전히 두 문양이다.
+                    if len(matched[1]) >= self.rules["minimum_parts"]:
+                        found.append(matched)
+                    if not any(
+                        math.hypot(*(a - b for a, b in zip(center, previous))) <= self.rules["location_tolerance"]
+                        for previous in self.last_pair_points
+                    ):
+                        self.last_pair_points.append(tuple(float(value) for value in center))
         return found
 
     def confirm_static_pair(self, frame, reference):

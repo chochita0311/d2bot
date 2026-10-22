@@ -214,16 +214,18 @@
     "Native remastered layout only",
     "Two blue braziers plus two independent floor ornaments required",
     "Current proximity and post-release settling checked by movement engine",
-    "Merged animated blue effects may use two current floor ornaments and blue pixels in two distinct expected brazier patches; no past match scores"
+    "Merged animated blue effects may use two current floor ornaments and blue pixels in two distinct expected brazier patches; no past match scores",
+    "One native seed ornament and both current blue patches provide only a current pair candidate for the existing recent-full static tracker or reacquisition wait; never a new full waypoint"
   ],
   "floor_seed_ids": [
     "right",
     "upper",
-    "left-tip"
+    "left-tip",
+    "upper-left"
   ],
   "floor_seed_source": {
     "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-brazier-town-finish.png",
     "sha256": "6eafa647e92b4117deb0c26c48e1f153352849539725c3013467579129c32786",
-    "review": "Current floor-only candidate proposal may start from right, upper or left-tip reviewed ornaments. Approval still needs two distinct native .8 ornaments, <=8px agreement and two separate expected current blue patches of at least45 pixels. Duplicate seed proposals at the same center count once. Merged-dim-brazier replay remains unknown because the right blue patch is insufficient. Town finish may consume this native current hub producer through its injected observer; no past arrival is reused."
+    "review": "Current floor-only candidate proposal may start from right, upper, left-tip or upper-left reviewed ornaments. New full approval still needs two distinct native .8 ornaments, <=8px agreement and two separate expected current blue patches of at least45 pixels. One current native ornament with both blue patches may propose only a current pair, consumed by the existing static tracker with prior full proof <=2 seconds old and known motion <2px; it never refreshes the full-proof age. Duplicate current pair proposals within8px count once. Merged-dim-brazier replay remains unknown because the right blue patch is insufficient. Town finish consumes only a full current hub from observe; no past arrival is reused."
   }
 }

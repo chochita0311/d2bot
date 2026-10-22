@@ -48,7 +48,7 @@
     }
   ],
   "limits": [
-    "Reviewed chest terminal appearances and two floor views, not all wing endings or independent-room accuracy",
+    "Reviewed terminal appearances and explicitly declared floor encodings, not all wing endings or independent-room accuracy",
     "No Summoner or journal detector",
     "Three spatially distinct parts and non-collinear layout required; repeated appearances cannot double-count one object; no enemy-absence inference"
   ],
@@ -399,7 +399,7 @@
             1012,
             483
           ],
-          "threshold": 0.92,
+          "threshold": 0.91,
           "sha256": "57e0534d9f68f234ffbf18a1862dc6863c2e203422535bb6422ca095f3064fcb"
         },
         {
@@ -1363,6 +1363,203 @@
         "source_frame_sha256": "626ca439b53ed230a4e99c2bd750b13a3e1cf5a488e4d772db2e18b88e64afe6",
         "review": "Primary visual review 2026-10-18: separate left small box, upper right arched chest front, and lower engraved floor spoke remain in native world ROI when the lower arched body clips y900. Require all three current native .92 parts, separate locations/non-collinear geometry and current settled near arrival. No body/detail pool expansion or existing threshold change. Removing any selected physical landmark must reject; hidden left chest remains unknown."
       }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-dark-arched-chest-left",
+          "path": "templates/terminal/dark-arched-chest-left.png",
+          "crop": [
+            748,
+            646,
+            812,
+            696
+          ],
+          "threshold": 0.92,
+          "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "terminal-engraved-stone-plate",
+          "path": "templates/terminal/engraved-stone-plate.png",
+          "crop": [
+            1065,
+            660,
+            1111,
+            700
+          ],
+          "threshold": 0.91,
+          "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-pair-engraved-plate.png",
+        "sha256": "03ee7ac9fcf6555331b95616a631c63731d7b0c9ac3e86bb31998171ddee9643",
+        "followup_reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-pair-engraved-plate-followup.png",
+        "followup_sha256": "426438e9361b93e09e2bb76a74fdb5000ee5a587c8d06e166cce59ee93bf104d",
+        "review": "Two current distinct arched chests at .92 and separate current engraved stone plate at its existing .91. Body/plate sources reused, no new template or lowered threshold. Missing any entire physical landmark must reject; corpse-covered small chest is not inferred."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        },
+        {
+          "id": "terminal-metal-chest-lit-face",
+          "path": "templates/terminal/metal-chest-lit-face.png",
+          "crop": [
+            1091,
+            674,
+            1140,
+            701
+          ],
+          "threshold": 0.92,
+          "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+        },
+        {
+          "id": "terminal-engraved-stone-plate",
+          "path": "templates/terminal/engraved-stone-plate.png",
+          "crop": [
+            1065,
+            660,
+            1111,
+            700
+          ],
+          "threshold": 0.91,
+          "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-metal-pair-engraved-plate-hidden.png",
+        "sha256": "c03424e2b167aa9a8edab117695a42925a98bd58387f374f21d86933e7d2f721",
+        "followup_reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-metal-pair-engraved-plate-followup.png",
+        "followup_sha256": "96c133e30d0986afa924bfb2960cc0adbfeb6a4741be1e35242e7cbd7773aebe",
+        "review": "Two current distinct lower square/left metal chests and independent engraved stone plate remain visible while the upper square is effect/corpse-covered. Reuse existing chest .92 and plate .91 in one three-landmark layout; no new template, lower threshold or 6/19 pool expansion. Field-only native replay; fresh-room completion is not established."
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "metal-chest-dark-northwest-face",
+          "path": "templates/terminal/metal-chest-dark-northwest-face.png",
+          "crop": [
+            428,
+            598,
+            463,
+            629
+          ],
+          "threshold": 0.92,
+          "sha256": "bd88cafdc474cfd565d859704b6af2f8c119644232da27eef73b781e4417a331"
+        },
+        {
+          "id": "metal-chest-dark-southeast-face",
+          "path": "templates/terminal/metal-chest-dark-southeast-face.png",
+          "crop": [
+            1070,
+            615,
+            1101,
+            651
+          ],
+          "threshold": 0.92,
+          "sha256": "b562645392290abe5cbc67570f5abbc3aa5802d35afb714b192184ed709f530e"
+        },
+        {
+          "id": "stone-chest-southeast",
+          "path": "templates/terminal/stone-chest-southeast.png",
+          "crop": [
+            1200,
+            355,
+            1290,
+            431
+          ],
+          "threshold": 0.92,
+          "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-faces.png",
+        "sha256": "d5405048760f5c6aab13b55288fb3e14a7d060651f26673d7cba27aeba074d54",
+        "review": "Three visually distinct metal chests at the current end. Existing left/upper body or detail appearances fail native approval; retain only the exposed dark northwest/southeast front faces, excluding map lines, corpses and surrounding floor. The separately observed lower chest uses existing stone-chest-southeast. Fixed layout only, native .92 and 84..700px/8000px2; no 6/19 pool expansion, original age/proximity/settling unchanged. Field-only replay, not live arrival or evidence of a container interaction. The preceding navigation frame still lacks a threshold-passing lower chest and remains negative. The later paused frame is calibration only, not an earlier arrival.",
+        "preceding_unverified_reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-faces-lower-unverified.png",
+        "preceding_unverified_sha256": "80c4490cd9afa0e7aa82155e13afc823e7f4809bca362a3167e4adef803924c7"
+      }
+    },
+    {
+      "kind": "nonboss_chest_platform",
+      "parts": [
+        {
+          "id": "terminal-square-chest-variant",
+          "path": "templates/terminal/square-chest-variant.png",
+          "crop": [
+            1216,
+            836,
+            1273,
+            888
+          ],
+          "threshold": 0.92,
+          "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+        },
+        {
+          "id": "terminal-dark-arched-chest-right",
+          "path": "templates/terminal/dark-arched-chest-right.png",
+          "crop": [
+            1326,
+            646,
+            1412,
+            724
+          ],
+          "threshold": 0.92,
+          "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+        },
+        {
+          "id": "terminal-gold-filigree-upper-loop",
+          "path": "templates/terminal/gold-filigree-upper-loop.png",
+          "crop": [
+            690,
+            470,
+            855,
+            540
+          ],
+          "encoding": "soft_gold",
+          "threshold": 0.92,
+          "sha256": "b2e5fa7f58b19fc6b9d605a4b7f9a55af1562a457994c63e386f954f930c4dbe"
+        }
+      ],
+      "source": {
+        "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-arched-pair-gold-filigree-covered.png",
+        "sha256": "fe6d81fb94a6ccbe8aa9612c24bf1de0eb3b535ee4af8bdbcbab5d8e94390ef3",
+        "review": "Primary visual review: two exposed separate right chests plus an independent gold floor loop; left chest is covered by mercenary/combat effects in the source and hidden view. Floor-only color encoding retains native .92, three distinct non-collinear current parts, original age/freshness/proximity/settling guards. Same-room lighting replay is not independent-room validation."
+      },
+      "encoding_review": {
+        "part": "terminal-gold-filigree-upper-loop",
+        "formula": "GaussianBlur(clip(min(R-G,G-B)*5,0,255).uint8,3x3,sigma=.8)",
+        "reason": "Same native gold shape under lighting: raw gray followup .861490; soft gold .974153. Chest encodings and body/detail pools unchanged.",
+        "replay": "134 distributed native scenes, six motif positives all from this arrangement with the two existing chests; no other >=.92 motif positive in this sample."
+      }
     }
   ],
   "chest_parts": [
@@ -1408,7 +1605,8 @@
     "review": "Primary visual review: existing dark closed top, separate right metal body, and lower small-box edge identify three objects. Recombine explicitly reviewed chest detail appearances only after existing fixed layouts and six-body fallback miss. All three native .92/unmasked current matches, center separation120..700px and triangle area16000px2 remain required; the stricter120px minimum prevents multiple detail hits on one physical chest, and the larger area rejects collinear physical chests whose different crop centers create a small artificial triangle. Preserve these geometry limits on subsequent current local confirmations. No terrain, shrine, corpse or enemy-absence evidence enters this pool. The previously unknown label-rich north-three-chest-end source visibly contains three separate chests; its unmasked detail matches can now qualify without using label-contaminated templates. Replay is not a fresh room completion."
   },
   "chest_detail_minimum_scores": {
-    "templates/terminal/small-stone-chest-gray-front.png": 0.91
+    "templates/terminal/small-stone-chest-gray-front.png": 0.91,
+    "templates/terminal/square-stone-chest-right.png": 0.91
   },
-  "chest_detail_minimum_scores_review": "Primary visual review 2026-10-18: gray-front .9193 with other two independent chests .9327/.9208 on current hidden frame. Only this reviewed appearance .92 to .91; other parts, pool membership6/19 and composition120px/16000px2 unchanged."
+  "chest_detail_minimum_scores_review": "Primary visual review 2026-10-18: gray-front .9193 with other two independent chests .9327/.9208 on current hidden frame. Only this reviewed appearance .92 to .91; other parts, pool membership6/19 and composition120px/16000px2 unchanged. 2026-10-20: square-stone-chest-right .910683 after approach uses .91; all declared uses of this appearance share .91. Other appearances and6/19 pool/composition120px/16000px2 remain unchanged."
 }

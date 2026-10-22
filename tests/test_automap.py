@@ -13,6 +13,25 @@ from diablo2.common.supervised_field import ensure_automap_on
 
 
 class AutomapTests(unittest.TestCase):
+    def test_stone_underlay_title_requires_all_current_letter_parts(self):
+        root = Path(__file__).resolve().parents[1]
+        frame = cv.imread(
+            str(root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-stone-underlay.png")
+        )
+        observer = AutomapObserver()
+        self.assertTrue(observer.visible(frame, "arcane_sanctuary"))
+        self.assertTrue(observer.last_evidence["template"].endswith("area-title-stone-underlay-window.png"))
+        self.assertEqual(3, len(observer.last_evidence["part_scores"]))
+        self.assertTrue(all(value >= 0.86 for value in observer.last_evidence["part_scores"]))
+        self.assertFalse(observer.visible(frame, "canyon_of_the_magi"))
+        normalized = cv.resize(frame, (1267, 753), interpolation=cv.INTER_AREA)
+        for a, b in ((1178, 1200), (1200, 1223), (1223, 1246), (1178, 1246)):
+            changed = normalized.copy()
+            changed[70:85, a:b] = 0
+            with self.subTest(removed=(a, b)):
+                self.assertFalse(observer.visible(changed, "arcane_sanctuary"))
+                self.assertIsNone(observer.last_evidence)
+
     def test_shared_area_title_survives_gray_map_lines_but_blank_and_other_layout_do_not_pass(self):
         directory = Path(__file__).resolve().parents[1] / "assets/ui/automap"
         manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
@@ -68,6 +87,25 @@ class AutomapTests(unittest.TestCase):
                 removed = cv.resize(normalized, (1267, 753), interpolation=cv.INTER_AREA)
                 removed[70:85, 1178:1246] = 0
                 self.assertFalse(observer.visible(removed, "arcane_sanctuary"))
+
+    def test_marker_overlap_title_requires_all_three_current_letter_parts(self):
+        root = Path(__file__).resolve().parents[1]
+        filename = root / "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-marker-overlap.png"
+        frame = cv.imdecode(np.fromfile(str(filename), np.uint8), cv.IMREAD_COLOR)
+        observer = AutomapObserver()
+        self.assertTrue(observer.visible(frame, "arcane_sanctuary"))
+        self.assertTrue(observer.last_evidence["template"].endswith("area-title-marker-overlap-window.png"))
+        self.assertGreaterEqual(observer.last_evidence["score"], 0.86)
+        self.assertEqual(3, len(observer.last_evidence["part_scores"]))
+        self.assertTrue(all(value >= 0.86 for value in observer.last_evidence["part_scores"]))
+        self.assertFalse(observer.visible(frame, "canyon_of_the_magi"))
+        normalized = cv.resize(frame, (1267, 753), interpolation=cv.INTER_AREA)
+        for a, b in ((1178, 1200), (1200, 1223), (1223, 1246), (1178, 1246)):
+            with self.subTest(removed=(a, b)):
+                removed = normalized.copy()
+                removed[70:85, a:b] = 0
+                self.assertFalse(observer.visible(removed, "arcane_sanctuary"))
+                self.assertIsNone(observer.last_evidence)
 
     def test_gold_title_mask_rejects_retained_act1_and_act2_town_frames(self):
         root = Path(__file__).resolve().parents[1] / "assets/regions"

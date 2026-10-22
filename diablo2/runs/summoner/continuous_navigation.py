@@ -26,6 +26,34 @@ from diablo2.runs.summoner.scene_vision import HubStabilityTracker
 
 OPPOSITE_WINGS = dict(north="south", east="west", south="north", west="east")
 TERMINAL_STATIONARY_REACQUISITION_SECONDS = 6.0
+# 왼쪽 위는 커서의 푸른 효과가 용병 얼굴을 가린다. 기준 프레임의 제목 표시줄 중앙으로 치운다.
+POINTER_CLEAR_POINT = (961, 24)
+HUB_LANDING_MINIMUM_DISPLACEMENT = 64
+
+
+def current_hub_landing(progress, hub, player, evidence, displacement, acquired, sequence):
+    """큰 화면 이동으로 배경 대응이 끊겼으면 현재 전체 WP 두 장의 상대 이동만 확인한다."""
+    origin = progress.get("hub_approach_origin")
+    relative = tuple(a - b for a, b in zip(hub, player))
+    if (
+        origin is None
+        or not 0 < acquired - origin["at"] < 1.5
+        or not isinstance(evidence, dict)
+        or evidence.get("kind") != "blue_pair_and_floor_ornaments"
+        or displacement is None
+        or math.hypot(*displacement) >= 2
+        or math.hypot(*(a - b for a, b in zip(relative, origin["relative"]))) < HUB_LANDING_MINIMUM_DISPLACEMENT
+    ):
+        progress.pop("hub_approach_landing", None)
+        return False
+    previous = progress.get("hub_approach_landing")
+    progress["hub_approach_landing"] = dict(relative=relative, at=acquired, sequence=sequence)
+    return (
+        previous is not None
+        and sequence == previous["sequence"] + 1
+        and 0 < acquired - previous["at"] < 0.25
+        and math.hypot(*(a - b for a, b in zip(relative, previous["relative"]))) < 2
+    )
 
 
 class ArrivalDwell:
@@ -407,26 +435,97 @@ def run_continuous_route(
                         evidence.append((map_inspection_kind + "-map-first-hidden.png", frame))
                     if clock() - inspection["requested_at"] >= 1.5:
                         held.release()
+                        try:
+                            restore_map()
+                        except RuntimeError as exc:
+                            inspection.update(status="restore_unverified", error=str(exc))
+                            status, reason = "field_paused", map_inspection_kind + "_map_restore_unverified"
+                            break
+                        # 숨김 시한은 끝낸다. 복원 뒤 새 전체 근거로 기존 근접/정지를 다시 확인한다.
+                        inspection["outcome"] = "timeout_then_normal_reacquisition"
+                        motion.reset()
                         if map_inspection_kind == "terminal":
-                            try:
-                                restore_map()
-                            except RuntimeError as exc:
-                                inspection.update(status="restore_unverified", error=str(exc))
-                                status, reason = "field_paused", "terminal_map_restore_unverified"
-                                break
-                            # 짧은 가림 검사는 끝낸다. 전투/효과가 걷힌 새 전체 배치는 정상 정지 재획득에서 확인한다.
-                            inspection["outcome"] = "timeout_then_normal_reacquisition"
-                            motion.reset()
                             terminal_tracker.require_relocalization()
                             terminal_arrival.reset()
-                            hub_approach_settle.reset()
                             terminal_missing_since = None
-                            approach_pointer.clear()
-                            steering.aim, last_aim = None, None
-                            emit("TERMINAL_MAP_INSPECTION: ON restored; require fresh terminal in normal bounded reacquisition")
-                            continue
-                        status, reason = "field_paused", map_inspection_kind + "_map_inspection_timeout"
-                        break
+                        else:
+                            hub_tracker.reset()
+                            hub_arrival.reset()
+                            hub_missing_since, hub_near_wait = None, False
+                        hub_approach_settle.reset()
+                        approach_pointer.clear()
+                        steering.aim, last_aim = None, None
+                        emit(
+                            map_inspection_kind.upper()
+                            + "_MAP_INSPECTION: ON restored; require fresh target in normal bounded reacquisition"
+                        )
+                        continue
+                ground = planner[0].observe(frame, captured_at=acquired)
+                if ground.point is not None:
+                    # 지형·출발점 판독보다 현재 발과 근접 위협의 방어를 먼저 처리한다.
+                    observed_pointer = held.snapshot()["pointer"]
+                    observed_aim = desktop_to_frame(capture, observed_pointer) if observed_pointer is not None else last_aim
+                    dangerous = (
+                        pool.submit(hazards.observe, frame, ground.point, acquired, clock(), aim=observed_aim)
+                        if engage_monsters
+                        else pool.submit(tuple)
+                    )
+                    hovering = pool.submit(hover_vision.observe, frame, observed_aim) if observed_aim else pool.submit(tuple)
+                    target = None if not engage_monsters or target_vision is None else target_vision.observe(frame)
+                    candidates, hover = dangerous.result(), hovering.result()
+                    probe_confirmed, probe_pending, proposals = False, False, ()
+                    if nearby_probe is not None and not any(near_ground(candidate.ground, ground.point) for candidate in candidates):
+                        proposals = (
+                            nearby_actor_proposals(frame, ground.point)
+                            if nearby_probe.pending is not None or attack_started is None
+                            else ()
+                        )
+                        if (
+                            (nearby_probe.pending is not None or (proposals and clock() >= nearby_probe.next_proposal_at))
+                            and not stop.is_set()
+                            and focused()
+                            and clock() < deadline
+                        ):
+                            # 색 효과만으로 공격하지 않는다. F2를 먼저 놓고 새 호버 화면의 적 패널을 요구한다.
+                            if held.keys[0] in held.held or held.snapshot()["pending"] == held.keys[0]:
+                                held.release()
+                            probed = nearby_probe.observe(frame, ground.point, acquired, points=proposals)
+                            probe_confirmed = probed is not None
+                            probe_pending = nearby_probe.pending is not None and not probe_confirmed
+                            if probe_confirmed:
+                                target = probed
+                    close = any(near_ground(candidate.ground, ground.point) for candidate in candidates)
+                    # 호버로 옮긴 커서의 패널을 과거 이동 조준 위치에 있는 적으로 해석하지 않는다.
+                    direct_hover_near = (
+                        target is not None
+                        and observed_pointer is not None
+                        and near_ground(observed_aim, ground.point)
+                        and backend.pointer_matches(observed_pointer)
+                    )
+                    close = close or probe_confirmed or direct_hover_near
+                    combat_dispatched_at = None
+                    # 현재 근접 위협은 끝의 전역 탐색이나 배경 대응을 기다리지 않는다.
+                    if close and not stop.is_set() and focused():
+                        ready_at = clock()
+                        if 0 <= ready_at - acquired < 0.25 and ready_at < deadline:
+                            if attack_started is None:
+                                attack_started = ready_at
+                                approach_pointer.clear()
+                                terminal_missing_since, hub_missing_since = None, None
+                                combat_dispatch_baseline = held.snapshot()["dispatches"][held.keys[1]]
+                                emit("NORTH_COMBAT: current nearby hostile -> release F2 -> F4 before route analysis")
+                                evidence.append(("continuous-{:04d}-combat.png".format(offset + sequence), frame))
+                            held.apply(FieldDirective("combat", "current_near_hostile", deadline=min(acquired + 0.25, deadline)), ready_at)
+                            combat_dispatched_at = clock()
+                            timing = dict(acquired_at=acquired, requested_at=combat_dispatched_at, player=ground.point)
+                            progress.setdefault("first_nearby_defense", timing)
+                            progress["last_nearby_defense"] = timing
+                else:
+                    close = False
+                    candidates, hover, proposals = (), (), ()
+                    target, observed_pointer, observed_aim = None, None, None
+                    probe_confirmed, probe_pending, direct_hover_near = False, False, False
+                    combat_dispatched_at = None
                 # 같은 화면의 독립 판독을 겹쳐 이전 F2 임대 안에 새 안전 검사를 마친다.
                 planning_work = pool.submit(
                     plan_arcane_step,
@@ -441,6 +540,7 @@ def run_continuous_route(
                     prefer_frontier=route_memory is None,
                     allow_no_aim=True,
                     excluded=tuple(blocked_aims),
+                    ground_reading=ground,
                 )
                 terminal_work = None if terminal_vision is None or return_from is not None else pool.submit(terminal_vision.observe, frame)
                 objective_work = (
@@ -453,9 +553,11 @@ def run_continuous_route(
                     if not progress.get("hub_acquired"):
                         evidence.append(("hub-first-acquired.png", frame))
                     progress["hub_acquired"] = True
-                    held.release()
+                    if held.keys[0] in held.held or held.snapshot()["pending"] == held.keys[0]:
+                        held.release()
                 if return_from is None and progress.get("terminal_acquired"):
-                    held.release()
+                    if held.keys[0] in held.held or held.snapshot()["pending"] == held.keys[0]:
+                        held.release()
                 objective = None if objective_work is None else objective_work.result()
                 if objective is not None and 0 <= clock() - acquired < 0.25:
                     held.release()
@@ -517,7 +619,13 @@ def run_continuous_route(
                         break
                     continue
                 resumed_wing = proof.get("current_wing") == wing and proof.get("wing_phase") == "outbound"
-                if return_from is None and hub_vision is not None and not resumed_wing and not progress.get("central_departure_observed"):
+                if (
+                    return_from is None
+                    and hub_vision is not None
+                    and not resumed_wing
+                    and not progress.get("central_departure_observed")
+                    and attack_started is None
+                ):
                     if hub_point is None or math.hypot(*(a - b for a, b in zip(ground.point, hub_point))) > 100:
                         held.release()
                         if terminal_work is not None:
@@ -534,7 +642,7 @@ def run_continuous_route(
                         rows.append(row)
                         # 버프 효과·커서 가림 한 화면으로 출발을 실패시키지 않는다. 현재 중앙 확인 전 시전은 금지한다.
                         if not departure_pointer_cleared and not stop.is_set() and focused() and 0 <= clock() - acquired < 0.25:
-                            backend.move(*frame_to_desktop(capture, (24, 24)))
+                            backend.move(*frame_to_desktop(capture, POINTER_CLEAR_POINT))
                             departure_pointer_cleared = True
                             row["pointer_cleared"] = True
                         if clock() - since >= 1.5:
@@ -546,53 +654,12 @@ def run_continuous_route(
                 # 전투/중앙 접근은 아래의 일반 이동 분기를 거치지 않을 수 있다.
                 unavailable_since = None
                 view = replace(view, sequence=sequence)
-                # 경로 기억/배경 대응보다 먼저 같은 새 화면의 현재 조준을 검사한다.
-                # 이미 유지 중인 키만 연장하며 새 조준/해제된 키는 아래 최종 판단이 맡는다.
-                observed_pointer = held.snapshot()["pointer"]
-                observed_aim = desktop_to_frame(capture, observed_pointer) if observed_pointer is not None else last_aim or choice.aim
-                dangerous = (
-                    pool.submit(hazards.observe, frame, ground.point, acquired, clock(), aim=observed_aim)
-                    if engage_monsters
-                    else pool.submit(tuple)
-                )
-                hovering = pool.submit(hover_vision.observe, frame, observed_aim) if observed_aim else pool.submit(tuple)
-                target = None if not engage_monsters or target_vision is None else target_vision.observe(frame)
-                candidates, hover = dangerous.result(), hovering.result()
-                terminal_hint = terminal_work.result() if terminal_work is not None and terminal_work.done() else None
-                probe_confirmed, probe_pending, proposals = False, False, ()
-                if nearby_probe is not None and not any(near_ground(candidate.ground, ground.point) for candidate in candidates):
-                    approaching = terminal_hint is not None if return_from is None else hub_point is not None
-                    proposals = nearby_actor_proposals(frame, ground.point) if attack_started is None and not approaching else ()
-                    if (
-                        (nearby_probe.pending is not None or (proposals and clock() >= nearby_probe.next_proposal_at))
-                        and not stop.is_set()
-                        and focused()
-                        and clock() < deadline
-                    ):
-                        # 색 효과만으로 공격하지 않는다. F2를 먼저 놓고 새 호버 화면의 적 패널을 요구한다.
-                        if held.keys[0] in held.held or held.snapshot()["pending"] == held.keys[0]:
-                            held.release()
-                        probed = nearby_probe.observe(frame, ground.point, acquired, points=proposals)
-                        probe_confirmed = probed is not None
-                        probe_pending = nearby_probe.pending is not None and not probe_confirmed
-                        if probe_confirmed:
-                            target = probed
-                close = any(near_ground(candidate.ground, ground.point) for candidate in candidates)
-                close = close or probe_confirmed or (target is not None and near_ground(last_aim, ground.point))
-                combat_dispatched_at = None
-                # 현재 근접 위협은 끝의 전역 탐색이나 배경 대응을 기다리지 않는다.
-                if close and not stop.is_set() and focused():
-                    ready_at = clock()
-                    if 0 <= ready_at - acquired < 0.25 and ready_at < deadline:
-                        if attack_started is None:
-                            attack_started = ready_at
-                            approach_pointer.clear()
-                            terminal_missing_since, hub_missing_since = None, None
-                            combat_dispatch_baseline = held.snapshot()["dispatches"][held.keys[1]]
-                            emit("NORTH_COMBAT: current nearby hostile -> release F2 -> F4 before route analysis")
-                            evidence.append(("continuous-{:04d}-combat.png".format(offset + sequence), frame))
-                        held.apply(FieldDirective("combat", "current_near_hostile", deadline=min(acquired + 0.25, deadline)), ready_at)
-                        combat_dispatched_at = clock()
+                if observed_aim is None and choice.aim is not None:
+                    # 첫 이동 후보의 착지 주변/호버도 새 지형 계획 뒤 별도로 검사한다.
+                    observed_aim = choice.aim
+                    hover = hover_vision.observe(frame, observed_aim)
+                    if engage_monsters:
+                        candidates = hazards.observe(frame, ground.point, acquired, clock(), aim=observed_aim)
                 terminal = None if terminal_work is None else terminal_work.result()
                 valid_terminal = terminal is not None and terminal.kind in ("nonboss_chest_trio", "nonboss_chest_platform")
                 if valid_terminal and 0 <= clock() - acquired < 0.25:
@@ -608,7 +675,7 @@ def run_continuous_route(
                 if pointer is not None and active["held"] == (held.keys[0],):
                     current_aim = desktop_to_frame(capture, pointer)
                     close = any(near_ground(candidate.ground, ground.point) for candidate in candidates)
-                    close = close or (target is not None and near_ground(current_aim, ground.point))
+                    close = close or direct_hover_near
                     if close or hover:
                         held.release()
                     elif (
@@ -721,6 +788,7 @@ def run_continuous_route(
                     hover=[asdict(c) for c in hover],
                     target=None if target is None else asdict(target),
                     nearby_hover_confirmed=probe_confirmed,
+                    direct_hover_near=direct_hover_near,
                     nearby_hover_pending=probe_pending,
                     nearby_actor_proposals=proposals,
                     combat_preflight_at=combat_dispatched_at,
@@ -770,10 +838,17 @@ def run_continuous_route(
                         break
                     continue
                 close = any(near_ground(candidate.ground, ground.point) for candidate in candidates)
-                close = close or probe_confirmed or (target is not None and near_ground(last_aim, ground.point))
+                close = close or probe_confirmed or direct_hover_near
                 if probe_pending and attack_started is None and not close:
                     held.release()
                     row["action"] = "nearby_hover_probe"
+                    # 새 적 패널을 볼 수 있는 기존 50ms 정착 뒤 다음 화면을 촬영한다.
+                    ready_at = nearby_probe.pending[1] + 0.05
+                    wait_started = clock()
+                    remaining = min(ready_at, deadline) - wait_started
+                    if remaining > 0:
+                        stop.wait(remaining)
+                    row.update(hover_capture_ready_at=ready_at, hover_capture_wait_seconds=clock() - wait_started)
                     continue
                 if close:
                     if attack_started is None:
@@ -835,6 +910,24 @@ def run_continuous_route(
                 if return_from is not None and progress.get("hub_acquired"):
                     stationary_since = None
                     held.release()
+                    if hub_approach_cast_at is not None:
+                        moved = measured.displacement is not None and math.hypot(*measured.displacement) >= 2
+                        landmark_landing = (
+                            not moved
+                            and hub_point is not None
+                            and current_hub_landing(
+                                progress, hub_point, ground.point, hub_evidence, measured.displacement, acquired, offset + sequence - 1
+                            )
+                        )
+                        if moved or landmark_landing:
+                            # 이동 확인은 현재 WP의 가림/근접 분기보다 먼저 소비하며 도착은 별도로 확인한다.
+                            row["hub_landing_confirmed"] = (
+                                "current_background_displacement" if moved else "current_waypoint_relative_displacement"
+                            )
+                            hub_approach_cast_at = None
+                            progress.pop("hub_approach_cast_at", None)
+                            progress.pop("hub_approach_origin", None)
+                            progress.pop("hub_approach_landing", None)
                     if hub_point is None:
                         hub_arrival.reset()
                         hub_approach_settle.reset()
@@ -847,7 +940,7 @@ def run_continuous_route(
                             and focused()
                         ):
                             # 직전 조준의 이름표가 문양을 가릴 수 있다. 클릭/시전 없이 치우고 새 화면을 요구한다.
-                            backend.move(*frame_to_desktop(capture, (24, 24)))
+                            backend.move(*frame_to_desktop(capture, POINTER_CLEAR_POINT))
                             approach_pointer.clear()
                             progress["hub_hover_cleared"] = True
                             row["action"] = "central_reacquire_pointer_clear"
@@ -907,15 +1000,11 @@ def run_continuous_route(
                         continue
                     hub_arrival.reset()
                     if hub_approach_cast_at is not None:
-                        if measured.displacement is not None and math.hypot(*measured.displacement) >= 2:
-                            hub_approach_cast_at = None
-                            progress.pop("hub_approach_cast_at", None)
-                        else:
-                            row["action"] = "central_approach_landing_hold"
-                            if now - hub_approach_cast_at >= 1.5:
-                                status, reason = "field_paused", "central_approach_landing_unconfirmed"
-                                break
-                            continue
+                        row["action"] = "central_approach_landing_hold"
+                        if now - hub_approach_cast_at >= 1.5:
+                            status, reason = "field_paused", "central_approach_landing_unconfirmed"
+                            break
+                        continue
                     row["action"] = "central_approach_settle"
                     # 이전 넓은 시전이 끝난 뒤 현재 중앙 근처의 바닥으로 한 번만 접근한다.
                     if not hub_approach_settle.update(True, measured.displacement, now):
@@ -927,7 +1016,7 @@ def run_continuous_route(
                     approach_limit = max(100, distance - 200) + view.cell_pixels / math.sqrt(2)
                     if remaining is None or remaining >= distance or remaining > approach_limit:
                         if not hub_floor_pointer_cleared and not stop.is_set() and focused() and 0 <= clock() - acquired < 0.25:
-                            backend.move(*frame_to_desktop(capture, (24, 24)))
+                            backend.move(*frame_to_desktop(capture, POINTER_CLEAR_POINT))
                             hub_floor_pointer_cleared = True
                             row["action"] = "central_floor_pointer_clear"
                             continue
@@ -953,6 +1042,13 @@ def run_continuous_route(
                     travel_frames += int(sent)
                     if sent:
                         hub_approach_cast_at = progress["hub_approach_cast_at"] = clock()
+                        if isinstance(hub_evidence, dict) and hub_evidence.get("kind") == "blue_pair_and_floor_ornaments":
+                            progress["hub_approach_origin"] = dict(
+                                relative=tuple(a - b for a, b in zip(hub_point, ground.point)), at=acquired
+                            )
+                        else:
+                            progress.pop("hub_approach_origin", None)
+                        progress.pop("hub_approach_landing", None)
                         hub_floor_pointer_cleared = False
                         hub_approach_settle.reset()
                     continue
@@ -1087,6 +1183,14 @@ def run_continuous_route(
                         if sent:
                             terminal_approach_cast_at = clock()
                             hub_approach_settle.reset()
+                        elif dispatch.get("reason") == "pointer_settling":
+                            # 어차피 쓸 수 없는 이른 화면 대신 기존 50ms 정착 뒤 새 화면을 촬영한다.
+                            ready_at = approach_pointer["requested_at"] + 0.05
+                            wait_started = clock()
+                            remaining = min(ready_at, approach_deadline) - wait_started
+                            if remaining > 0:
+                                stop.wait(remaining)
+                            row.update(approach_capture_ready_at=ready_at, approach_capture_wait_seconds=clock() - wait_started)
                         continue
                 terminal_arrival.reset()
                 # 전투·검사·도착 대기 동안에는 이동하지 않을 출구를 선택해 의도를 바꾸지 않는다.
@@ -1110,6 +1214,7 @@ def run_continuous_route(
                         excluded=tuple(blocked_aims),
                         landings=landings,
                         hub=hub_point if return_from is None else None,
+                        prefer_goal_exit=return_from is not None,
                     )
                     row["route_graph"] = route_memory.summary()
                     if choice.reason.startswith("current_hub_departure_") and last_aim is not None:
@@ -1168,6 +1273,7 @@ def run_continuous_route(
                             excluded=exclusions,
                             landings=landings,
                             hub=hub_point if return_from is None else None,
+                            prefer_goal_exit=return_from is not None,
                         )
                     else:
                         alternate = path.choose(
@@ -1191,6 +1297,9 @@ def run_continuous_route(
                     comparison = current.astype(np.int16)
                 elif comparison is None:
                     comparison = current.astype(np.int16)
+                    # 전투/전리품 검사 뒤 첫 새 화면은 이전 시전·검사 시간을 막힘으로 누적하지 않는다.
+                    last_changed_at = now
+                    last_changed_casts = held.snapshot()["dispatches"][held.keys[0]]
                 # 대응 실패는 정지 증거가 아니다. 바뀌는 화면에서 대응이 끊긴
                 # 넓은 텔레포트를 막힘으로 세지 않고 현재 정지 대응을 요구한다.
                 dispatched = held.snapshot()
@@ -1218,6 +1327,7 @@ def run_continuous_route(
                             excluded=tuple(blocked_aims),
                             landings=landings,
                             hub=hub_point if return_from is None else None,
+                            prefer_goal_exit=return_from is not None,
                         )
                     else:
                         alternate = path.choose(

@@ -1,6 +1,6 @@
 # Planning And Execution Artifacts
 
-현재 Summoner 북쪽 개발 검증은 **연속0/10**이다. 마지막 실제 실행은2026-10-18이며 일지 가림으로 기존 방 복구를 마치지 못한 뒤 사용자가 입력을 중단했다. 새 방3회는 아직 시작하지 않았다. 세션 마감 결과·payload 의미·새 화면에서 재개할 순서는 [통합 run의 세션 인계](run/run-20261009-07-summoner-live-integration.md#session-handoff-20261020)가 소유한다. 실제 게임10연속과 전체30방/27방 수용은 미완료이며 문서·검사 통과와 구분한다.
+현재 Summoner는 단계A·북쪽 단독10연속 정상 마감을 개발 검증한다. 최신 실행은61번 실패 뒤 사람의 시체·장비·용병 복구 확인 대기다. 현재 중단 상태·검증·재개 조건은 [2026-10-22 세션 마감](run/run-20261009-07-summoner-live-integration.md#session-close-20261022)에서 확인한다. 북쪽 단독→북남 조합→동쪽 단독→북동남→북동남서 개발 순서·최신 성공/실패/연속 수·미검증 경계는 [통합 run의 개발 재개](run/run-20261009-07-summoner-live-integration.md#development-resume-20261020)가 소유한다. 실제 게임10연속과 전체30방/27방 수용은 미완료이며 문서·검사 통과와 구분한다.
 
 Use the [shared workflow](../agents/flows/workflow.md) for sequence and approval boundaries, [planning management](../policies/harness/prd-feature-management.md) for scope/status, and the [runner](../agents/operations/runner.md) to start or resume an approved feature. These are the installed harness's owners of the process.
 
@@ -23,7 +23,7 @@ For `docs-content`, an adequate [compact writing contract](../policies/harness/e
 
 현재 실행 이력과 실패·복구·검사 수치는 [Attempt18](run/run-20261009-07-summoner-live-integration.md#현재-attempt18-3런마다-속도경로-보완)에서 관리한다. GUI 연결/공용 자산 정리의 당시 범위는 같은 run의 [Attempt13](run/run-20261009-07-summoner-live-integration.md#attempt13-gui-자동-버프-조건부-alt와-공용-자산-정리), 현재 실행 절차는 [Summoner 안내](../features/summoner-run.md)를 따른다. 이 인덱스에 같은 실행 로그를 중복 누적하지 않는다.
 
-- [Perceptual Arcane navigation](feature/feat-0013-arcane-perceptual-navigation.md): 현재 우선순위는 새 방 북쪽10회 연속 정상 마감과 성공/실패 합계3회마다 보완하는 개발 검증이다. 빈 끝은 중앙WP, 처치 후에는 일지·붉은 포탈·협곡WP를 거쳐 Act 1→방 종료로 마감한다. 이후 동/남/서를 연결한다. 지도ON·검토 viewport 카메라·현재 끝/중앙 부위·F2 유지/넓은 조향·탈부착 근접 노바를 사용한다. 일반 지도 선 해석, 모든 variation 정확도, 먼 적 정리 후 원위치 복귀, 실제 처치/회수와 정상 반복은 미완료다. Act 1 정비 세부 동작만 사용자 요청대로 건너뛴다. Act 2 초기화 준비 방은 완료 수에서 제외하며 최종30방 중27방 조건은 유지한다.
+- [Perceptual Arcane navigation](feature/feat-0013-arcane-perceptual-navigation.md): 현재 우선순위는 새 방 북쪽10회 연속 정상 마감과 성공/실패 합계3회마다 보완하는 개발 검증이다. 빈 끝은 중앙WP, 처치 후에는 일지·붉은 포탈·협곡WP를 거쳐 Act 1→방 종료로 마감한다. 이후 같은 방 북남 조합10회→동쪽 단독10회→북동남→북동남서 순서로 연결하며 방향별 실제 검증과 통합 성공을 구분한다. 지도ON·검토 viewport 카메라·현재 끝/중앙 부위·F2 유지/넓은 조향·탈부착 근접 노바를 사용한다. 일반 지도 선 해석, 모든 variation 정확도, 먼 적 정리 후 원위치 복귀, 실제 처치/회수와 정상 반복은 미완료다. Act 1 정비 세부 동작만 사용자 요청대로 건너뛴다. Act 2 초기화 준비 방은 완료 수에서 제외하며 최종30방 중27방 조건은 유지한다.
 
 - [Automatic buff renewal](feature/feat-0012-automatic-buff-renewal.md): 사용자 지시에 따라 공통 필드 runtime에서 타이머·최신 안전 관찰·프로필 입력·효과 확인을 연결했고 전체 174개 테스트를 통과했다. [Run](run/run-20261009-05-automatic-buff-renewal.md)이 입력 없는 검증과 실제 scene 생산자/감독 갱신의 남은 경계를 소유한다.
 

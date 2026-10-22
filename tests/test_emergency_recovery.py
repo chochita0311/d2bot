@@ -18,6 +18,12 @@ class EmergencyRecoveryTests(unittest.TestCase):
         low = ResourceReading(maximum // 20, maximum)
         high = ResourceReading(maximum * 9 // 10, maximum)
         initial = HudReading("test", "test", high, low, "not_verified_expanded", belt_visibility="closed")
+        if condition in ("partial_life", "partial_unrecovered"):
+            initial = HudReading("test", "test", low, ResourceReading(), "read", belt_visibility="closed")
+        elif condition == "partial_mana":
+            initial = HudReading("test", "test", ResourceReading(), low, "read", belt_visibility="closed")
+        elif condition == "belt_unknown":
+            initial = HudReading("test", "test", low, high, "read", belt_visibility="unknown")
         slots = tuple(
             SlotReading(
                 row,
@@ -43,8 +49,8 @@ class EmergencyRecoveryTests(unittest.TestCase):
             return HudReading(
                 "test",
                 "test",
-                high,
-                low if condition == "no_effect" else high,
+                low if condition == "danger_during_belt" and expanded else high,
+                low if condition == "no_effect" else ResourceReading() if condition == "partial_unrecovered" else high,
                 "slot_unverified" if condition == "unreadable_belt" else "read",
                 slots if expanded else (),
                 "expanded" if expanded else "closed",
@@ -94,6 +100,15 @@ class EmergencyRecoveryTests(unittest.TestCase):
                 self.assertTrue(records[0]["belt_closed_verified"])
                 self.assertEqual(3, len(evidence))
 
+    def test_known_low_resource_can_use_visible_potion_but_requires_both_new_safe_ratios_to_resume(self):
+        for condition in ("partial_life", "partial_mana", "partial_unrecovered", "belt_unknown"):
+            result, events, records, _ = self.exercise(condition)
+            self.assertEqual(condition in ("partial_life", "partial_mana"), result)
+            self.assertEqual(0 if condition == "belt_unknown" else 1, events.count(("press", "1")))
+            if condition == "partial_unrecovered":
+                self.assertEqual("resource_recovery_unconfirmed", records[0]["status"])
+                self.assertNotIn("potions_remaining", records[0])
+
     def test_stale_boundary_or_nonpotion_slots_never_dispatch(self):
         for condition in ("stale", "boundary", "wrong_kind"):
             with self.subTest(condition=condition):
@@ -126,6 +141,17 @@ class EmergencyRecoveryTests(unittest.TestCase):
         self.assertEqual(0, records[0]["potions_remaining"])
         self.assertTrue(records[0]["belt_closed_verified"])
         self.assertEqual(1, events.count(("press", "1")))
+
+    def test_new_low_resources_during_belt_preempt_counts_and_close_from_current_observation(self):
+        result, events, records, evidence = self.exercise("danger_during_belt")
+        self.assertFalse(result)
+        self.assertEqual("resource_low_during_belt", records[0]["status"])
+        self.assertNotIn("potions_remaining", records[0])
+        self.assertTrue(records[0]["belt_visibility_closed"])
+        self.assertEqual(1, events.count(("press", "1")))
+        self.assertEqual(2, events.count(("press", chr(96))))
+        self.assertLess(records[0]["ended_at"], 0.5)
+        self.assertEqual(3, len(evidence))
 
 
 if __name__ == "__main__":

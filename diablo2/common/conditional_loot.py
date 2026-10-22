@@ -44,6 +44,7 @@ class ConditionalLootController:
         deadline_supplier=None,
         potion_count_supplier=None,
         ground_supplier=None,
+        recover_resources=None,
         cast_reference_seconds=0.32,
         max_scan_seconds=3,
         max_scan_frames=12,
@@ -62,10 +63,15 @@ class ConditionalLootController:
         self.clock, self.scanner = clock, scanner if scanner is not None else LootPickupSession(config)
         self.deadline_supplier, self.potion_count_supplier = deadline_supplier, potion_count_supplier
         self.ground_supplier, self.cast_reference_seconds = ground_supplier, cast_reference_seconds
+        self.recover_resources = recover_resources
+        self.resource_exit_required = False
+        self._recovery_attempted = False
         self.max_scan_seconds, self.max_scan_frames, self.max_clicks = max_scan_seconds, max_scan_frames, max_clicks
         self.labels_state, self._prepared = "unknown", False
         self.records = []
         self._combat_ids = []
+        self.last_hud_failure = None
+        self.last_landing_observation = None
 
     @property
     def movement_allowed(self):
@@ -97,19 +103,60 @@ class ConditionalLootController:
             raise _LootAbort("scan_deadline")
 
     def _read(self, *, buff_expires_at=None, scan_deadline=None, restoring=False):
-        self._active()
-        acquired = self.clock()
-        frame = self.capture.grab().frame
-        blocked = resource_guard(self.hud.observe(frame), self.profile.survival)
-        if blocked or self.panels_open(frame):
-            raise _LootAbort(blocked or "panel_open")
-        if restoring:
+        read_deadline, pending = self.clock() + 0.75, None
+        while True:
             self._active()
-            if not 0 <= self.clock() - acquired < 0.25:
-                raise _LootAbort("screen_stale")
-        else:
-            self._guard(acquired, buff_expires_at=buff_expires_at, scan_deadline=scan_deadline)
-        return frame, acquired
+            if pending is not None:
+                if not restoring:
+                    self._guard(buff_expires_at=buff_expires_at, scan_deadline=scan_deadline)
+                if self.clock() >= read_deadline:
+                    raise _LootAbort("observation_unverified")
+            acquired = self.clock()
+            frame = self.capture.grab().frame
+            reading = self.hud.observe(frame)
+            blocked = resource_guard(reading, self.profile.survival)
+            if blocked == "resource_low" and self.recover_resources is not None:
+                self._active()
+                if not 0 <= self.clock() - acquired < 0.25:
+                    raise _LootAbort("screen_stale")
+                if self.panels_open(frame):
+                    raise _LootAbort("panel_open")
+                # 생존 입력은 검사/버프 시한보다 우선한다. 회복 뒤에도 이번 줍기는 중단한다.
+                self.resource_exit_required = True
+                if self._recovery_attempted:
+                    raise _LootAbort("resource_low")
+                self._recovery_attempted = True
+                recovered = self.recover_resources(frame, reading, acquired)
+                self.resource_exit_required = not recovered
+                if restoring and recovered:
+                    continue
+                raise _LootAbort("resource_recovered" if recovered else "resource_low")
+            if self.panels_open(frame) or blocked not in (None, "observation_unverified"):
+                raise _LootAbort(blocked or "panel_open")
+            if restoring:
+                self._active()
+                if not 0 <= self.clock() - acquired < 0.25:
+                    raise _LootAbort("screen_stale")
+            else:
+                self._guard(acquired, buff_expires_at=buff_expires_at, scan_deadline=scan_deadline)
+            if pending is not None and self.clock() >= read_deadline:
+                raise _LootAbort("observation_unverified")
+            if blocked is None:
+                if pending is not None:
+                    pending["recovered_at"] = acquired
+                return frame, acquired
+            # 숫자 가림만 입력 없이 새로 관측한다. 저자원/패널/오래된 화면은 재시도하지 않는다.
+            pending = dict(
+                acquired_at=acquired,
+                life_ratio=reading.life.ratio,
+                mana_ratio=reading.mana.ratio,
+                belt_visibility=reading.belt_visibility,
+                restoring=restoring,
+                deadline=read_deadline,
+                recovered_at=None,
+            )
+            self.last_hud_failure = (frame, pending)
+            self.stop.wait(min(0.02, max(0, read_deadline - self.clock())))
 
     def _toggle(self, target, *, buff_expires_at=None, scan_deadline=None, restoring=False, verified_acquired_at=None):
         if self.labels_state == target:
@@ -199,6 +246,7 @@ class ConditionalLootController:
         return (hit.match.top_left[0] + hit.match.width // 2, hit.match.top_left[1] + hit.match.height // 2)
 
     def after_combat(self, *, buff_expires_at=None, reason="combat_ended_scan", combat_id=None):
+        self._recovery_attempted = False
         result = dict(
             status="inspection_pending", reason=reason, kill_confirmed=False, pickups_confirmed=0, clicks=[], teleports=[], scan_frames=0
         )
@@ -254,6 +302,7 @@ class ConditionalLootController:
                     raise _LootAbort("loot_aim_outside_capture")
                 aim = frame_to_desktop(self.capture, center)
                 self.backend.move(*aim)
+                prepared_at = self.clock()
                 fresh, fresh_at = self._read(buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 reconfirm = [candidate for candidate in self._eligible(candidates, attempted) if candidate.label == hit.label]
                 current = self.scanner.scan_frame(fresh, reconfirm) if reconfirm else None
@@ -275,7 +324,10 @@ class ConditionalLootController:
                 approach = dict(label=hit.label, aim=aim, requested_at=None, dispatch_returned=False)
                 result["teleports"].append(approach)
                 self._toggle("off", buff_expires_at=buff_expires_at, scan_deadline=deadline, verified_acquired_at=fresh_at)
-                self.stop.wait(0.05)
+                # 새 라벨 판독/ALT 전송 동안 이미 지난 커서 정착 시간을 다시 기다리지 않는다.
+                remaining_settle = max(0, prepared_at + 0.05 - self.clock())
+                if remaining_settle:
+                    self.stop.wait(remaining_settle)
                 self._guard(fresh_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 if not self.backend.pointer_matches(aim):
                     raise _LootAbort("loot_aim_unverified")
@@ -287,18 +339,41 @@ class ConditionalLootController:
                 landed, landed_at = self._read(buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 current = self.scanner.scan_frame(landed, reconfirm) if reconfirm else None
                 ground = self.ground_supplier() if self.ground_supplier is not None else None
+                # 착지 판독의 누락 원인을 현재 한 장으로 남긴다. 추가 촬영/입력이나 승인 근거를 만들지 않는다.
+                landing = dict(
+                    acquired_at=landed_at,
+                    processed_at=None,
+                    label=None if current is None else current.label,
+                    item_center=None if current is None else self._center(current),
+                    player=None,
+                    ground_reason=None,
+                    missing=["ground_observer"],
+                    status="unverified",
+                )
+                approach["landing_observation"] = landing
+                self.last_landing_observation = (landed, landing)
                 if ground is None:
                     raise _LootAbort("loot_landing_unverified")
                 prepare = getattr(ground, "prepare_frame", None)
                 if prepare is not None:
                     prepare(landed, landed_at, self.hud.observe(landed), self.focused())
-                player = ground.observe(landed, captured_at=landed_at).point
+                reading = ground.observe(landed, captured_at=landed_at)
+                player = reading.point
+                landing.update(
+                    processed_at=self.clock(),
+                    player=player,
+                    ground_reason=getattr(reading, "reason", None),
+                    missing=(["label"] if current is None else []) + (["player"] if player is None else []),
+                    status="unverified" if current is None or player is None else "proximity_pending",
+                )
                 self._guard(landed_at, buff_expires_at=buff_expires_at, scan_deadline=deadline)
                 if current is None or player is None:
                     raise _LootAbort("loot_landing_unverified")
                 center = self._center(current)
                 if math.hypot((center[0] - player[0]) / 300, (center[1] - player[1]) / 180) > 1:
+                    landing["status"] = "not_near_item"
                     raise _LootAbort("loot_landing_not_near_item")
+                landing["status"] = "current_item_near_player"
                 approach.update(observed_after_at=landed_at, player=player, item_center=center, status="current_item_near_player")
                 aim = frame_to_desktop(self.capture, center)
                 self.backend.move(*aim)
@@ -353,4 +428,7 @@ class ConditionalLootController:
             if result["clicks"] and result["status"] == "inspection_complete":
                 result["status"] = "click_unconfirmed"
             result.update(labels_state=self.labels_state, movement_allowed=self.movement_allowed, ended_at=self.clock())
+        if self.resource_exit_required:
+            # 라벨 복원 실패가 원래 저자원 오류를 일반 경로 보류로 바꾸지 않게 한다.
+            raise RuntimeError("resource_low")
         return result

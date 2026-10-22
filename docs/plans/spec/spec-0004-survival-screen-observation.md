@@ -6,13 +6,17 @@
 - Feature: [FEAT-0005](../feature/feat-0005-survival-screen-observation.md)
 - Parent PRD: [PRD-0004](../prd/prd-0004-summoner-survival-and-buffs.md)
 - Surface / Profile: Python CV·관찰 CLI / `backend-product`
-- Required Evaluators: Contract, Functional; Created / Updated: `2026-10-05`
+- Required Evaluators: Contract, Functional; Created: `2026-10-05`; Updated: `2026-10-22`
 
 ## Sources And Boundary
 
 현재 safe Act 1 town 캡처·펼친 벨트, 기존 HUD 참고 `assets/character/play/status.png`, 기존 마을 reference 화면을 직접 대조한다. shared 자료는 이름 없는 HUD label/digit/item crop와 필요한 replay HUD만 새 owner에 둔다. 전체 새 원본과 diagnostics는 task 세션에만 두고 종료 시 정리한다. 이전 자산은 이동/삭제하지 않는다.
 
 ## Implementation Contract
+
+v17의 `5-portal-outline`은 현재 포탈 빛이 인접한 숫자5의 검토된 외형이다. 기존 외곽선 분리·32×40 binary atlas·glyph .72/차이.08·같은 화면 current/max·범위 거부를 유지한다. 저장 숫자쌍928/1543 재생과 숫자 제거 음성은 실제 다른 방 정확도/획득/마감이 아니다. 현재 최대값을 이전 화면에서 채우지 않는다.
+
+현재 v21의 용병 보완은 opt-in인 기존54×54 native 얼굴 영역의 전체 일치 .92를 우선한다. 전체 미일치 때만 현재 라벨 mask에 가린 픽셀을 제외하고 최소50%의 같은 얼굴 텍스처·동일 .92 상관을 요구한다.61번 얼굴 .923433과 검토 양성6개/음성12개에 근거한 보정이며 별도 runtime 외형은 추가하지 않는다. 이전 v19에서는 가림 없는 .934801 얼굴을 놓친 .95/.94와 음성 최고 .634700의 제한 비교로 당시 .93을 선택했다. 부족/불일치/부재는 `unverified`이며 과거 얼굴이나 체력바/이름으로 대신하지 않는다. UI-only 원본/해시·수치와 v16–21 이력은 survival manifest가 소유하고 실제 실행 결과는 통합 run 개발 재개에서 구분한다. ALT 복원·중단/포커스·자원 조건은 우회하지 않는다.
 
 `diablo2/common/survival_vision.py`는 공통 layout/label/glyph/slot 자료를 로드하고 BGR 프레임에서 관찰을 반환한다. 현 reference 캔버스 1922×1140만 명시적으로 지원하며 크기/두 label의 위치·일치 확인이 없으면 보류한다. 숫자는 current/max와 slash를 모두 읽고 0≤current≤max, max>0를 확인한다. 버프/장비로 최대값이 바뀌어도 같은 프레임에서 읽은 current/max를 사용하며 이전 최대값/비율을 보완값으로 쓰지 않는다. 인식 불명확/모호한 glyph·가림은 null; 색이 없다는 이유로 생명력 0이나 포션 0을 만들지 않는다.
 

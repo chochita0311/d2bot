@@ -2172,6 +2172,773 @@
         1140
       ],
       "review": "Diagnostic only: the character obscures the journal after a safe-floor F2 approach. No journal template, inferred click point, death timing, fresh-room completion or new threshold is derived. OS chrome, HUD and identity overlays are excluded."
+    },
+    {
+      "path": "templates/navigation/area-title-marker-overlap-window.png",
+      "sha256": "8f7c6e2219ca0925288b443c91f670c4f5d4497300554e41dbb64c48273e1bac",
+      "details_owner": "../../../ui/automap/manifest.json",
+      "execution_id": "20261020-batch-09-room-01",
+      "source_frame": "runtime-title-unverified.png",
+      "source_frame_sha256": "060180abe6373b307963a722cdc4ad0495224952bdd1fc30f6f6165ff90f3a1e",
+      "review": "Korean Arcane title only; whole-title plus three co-located letter parts at unchanged .86; no missing title or other-area approval."
+    },
+    {
+      "path": "references/navigation/area-title-marker-overlap.png",
+      "sha256": "1ec6ba73a9eedc2c893a106f2a5150e4392d3f184018933db32e26d1c9fdc7e4",
+      "details_owner": "../../../ui/automap/manifest.json",
+      "execution_id": "20261020-batch-09-room-01",
+      "source_frame": "runtime-title-unverified.png",
+      "source_frame_sha256": "060180abe6373b307963a722cdc4ad0495224952bdd1fc30f6f6165ff90f3a1e",
+      "review": "Korean Arcane title only; whole-title plus three co-located letter parts at unchanged .86; no missing title or other-area approval."
+    },
+    {
+      "path": "references/summoner/platform-alive-front-staff.png",
+      "sha256": "1e252f1ac988495d3f33ecdf8d130b3d9db5096c82c29421189778b7cf87d3d5",
+      "execution_id": "20261020-batch-10-room-01",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "92b3c3f108a18347be0c97218b6f7893481e0831b3babb60ca1459771b09bbba",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "review": "World-only replay or pose crop; no OS chrome, HUD or identity overlays. Details owned by summoner-encounter.json."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-front-staff.png",
+      "sha256": "eef321808eaf121bf7f3309ea0ea98f939b915d245bc0fa5fc91694d2b8b2be7",
+      "execution_id": "20261020-batch-10-room-01",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "92b3c3f108a18347be0c97218b6f7893481e0831b3babb60ca1459771b09bbba",
+      "source_box": [
+        1170,
+        508,
+        1214,
+        596
+      ],
+      "review": "World-only replay or pose crop; no OS chrome, HUD or identity overlays. Details owned by summoner-encounter.json."
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem-lit.png",
+      "sha256": "25e776f9566ccf930239d4a0f5cbdcbe79d703fccea91964279efb1c057766dc",
+      "execution_id": "20261020-batch-10-room-01",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "d1c5f3f568f34c4a800c29870f85be3a184d8bc05e7f84578ce69bb34ff30b4c",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "review": "World-only replay or pose crop; no OS chrome, HUD or identity overlays. Details owned by summoner-encounter.json."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-left-hem-lit.png",
+      "sha256": "946a9181e80f53b7cb969ada9f8e2d0f8bbc03e811a4c037dcaa6799265bfc41",
+      "execution_id": "20261020-batch-10-room-01",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "d1c5f3f568f34c4a800c29870f85be3a184d8bc05e7f84578ce69bb34ff30b4c",
+      "source_box": [
+        972,
+        614,
+        1012,
+        638
+      ],
+      "review": "World-only replay or pose crop; no OS chrome, HUD or identity overlays. Details owned by summoner-encounter.json."
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem-lit-followup.png",
+      "sha256": "e083f0d309f955e5932b08778b26a85cac7d202d2792020cd2208b63fc42ff7f",
+      "execution_id": "20261020-batch-10-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "3fa78d9de0ed67f6af102606e775a363101d99517d7ff22fbcd193d4e392fb43",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "review": "Separate later same-room corpse observation; not used for a template, death time, independent room accuracy or fresh completion."
+    },
+    {
+      "path": "references/summoner/journal-portal-hover.png",
+      "sha256": "f64affcf5f4f164a09d63ede775fda95b96b4b544b1969dfb44b2ffedc3ce14a",
+      "execution_id": "20261020-recovery-11-post-journal",
+      "source_frame": "journal-exit-last.png",
+      "source_frame_sha256": "dd4ac0183e2cc467f04a6779d005e378f6d130769619e7a0c9f343143ce6b2c4",
+      "source_box": [
+        800,
+        350,
+        1200,
+        750
+      ],
+      "review": "Current portal and Korean destination label only; journal-exit.json owns conjunction and thresholds. No fresh-room success or prior-coordinate reuse."
+    },
+    {
+      "path": "templates/objective/canyon-portal-hover-label.png",
+      "sha256": "5e347e5bd90c8f0518dea0768e1ed1fa2ee647f4580838c453412d0a31fbbe84",
+      "execution_id": "20261020-recovery-11-post-journal",
+      "source_frame": "journal-exit-last.png",
+      "source_frame_sha256": "dd4ac0183e2cc467f04a6779d005e378f6d130769619e7a0c9f343143ce6b2c4",
+      "source_box": [
+        925,
+        497,
+        1115,
+        523
+      ],
+      "review": "Current portal and Korean destination label only; journal-exit.json owns conjunction and thresholds. No fresh-room success or prior-coordinate reuse."
+    },
+    {
+      "path": "references/terminal/north-dark-arched-pair-engraved-plate.png",
+      "sha256": "03ee7ac9fcf6555331b95616a631c63731d7b0c9ac3e86bb31998171ddee9643",
+      "execution_id": "20261020-batch-11-room-01",
+      "source_frame": "phase-00-north-outbound-00-terminal-map-first-hidden.png",
+      "source_frame_sha256": "081d87db98d5a97b3664bcf3933086347f8b04e32e11782042c3628128a2bfcc",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "review": "Current two separate arched chest bodies and independent engraved stone plate, excluding the corpse-covered small third chest. Existing body .92 / plate .91; fixed-layout geometry and arrival gates unchanged. No new template or chest-pool addition."
+    },
+    {
+      "path": "references/terminal/north-dark-arched-pair-engraved-plate-followup.png",
+      "sha256": "426438e9361b93e09e2bb76a74fdb5000ee5a587c8d06e166cce59ee93bf104d",
+      "execution_id": "20261020-batch-11-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "71013350baa0f6210a4b624c0646d3548584dfdd803b5320957bbcd9e4da0734",
+      "source_box": [
+        150,
+        55,
+        1660,
+        900
+      ],
+      "review": "Current two separate arched chest bodies and independent engraved stone plate, excluding the corpse-covered small third chest. Existing body .92 / plate .91; fixed-layout geometry and arrival gates unchanged. No new template or chest-pool addition."
+    },
+    {
+      "path": "references/hub/merged-pair-one-ornament.png",
+      "sha256": "a6736a0e931b93358002de72994c68a56f4a55ebd179deaae1e21ed4e82829cf",
+      "execution_id": "20261020-batch-14-room-02",
+      "source_frame": "phase-01-north-return-00-central-map-before.png",
+      "source_frame_sha256": "99d95d08d35ca3b39abcd253bdf328d56b8bee1ae31eb94d04a012f4e6295db2",
+      "source_box": [
+        700,
+        380,
+        1200,
+        650
+      ],
+      "review": "Current floor-only native canvas: upper-left ornament .905571, other native parts below .8; both expected current blue patches remain. Not a full waypoint. One native seed plus both current blue patches may retain a prior full waypoint only inside the existing two-second static tracker. No new template, threshold change, or arrival relaxation."
+    },
+    {
+      "path": "references/terminal/north-square-right-lighting-hidden.png",
+      "sha256": "ba8496ef30df516100b0c890fbf55f1b05f640a14ca3b12811259dbb4de2a6f3",
+      "execution_id": "20261020-batch-15-room-01",
+      "source_frame": "phase-00-north-outbound-01-terminal-map-first-hidden.png",
+      "source_frame_sha256": "1735cea6ba4671e6c18e90c369b49c5e05f396f56085244175ad0da45db6fc2b",
+      "source_box": [
+        600,
+        650,
+        1360,
+        900
+      ],
+      "review": "Three separate current square chests. Clear view is a positive in the existing square-stone three-chest layout after only its existing right appearance changes .92 to .91; actual lower-right native score .910683. Covered followup remains unknown. No new template, fixed layout or chest-pool member; preserve existing geometry and current arrival/proof limits."
+    },
+    {
+      "path": "references/terminal/north-square-right-lighting-covered.png",
+      "sha256": "393eb1c7e9161e54f30e7a2e1f0b64ee95744ac34cd51bcb3fa68de075d43c2e",
+      "execution_id": "20261020-batch-15-room-01",
+      "source_frame": "phase-00-north-outbound-01-continuous-0459-after.png",
+      "source_frame_sha256": "b61fd4173077ae03f9ffcb6cae884bb97c425128d451873a4c8258d98bc98ab1",
+      "source_box": [
+        600,
+        650,
+        1360,
+        900
+      ],
+      "review": "Three separate current square chests. Clear view is a positive in the existing square-stone three-chest layout after only its existing right appearance changes .92 to .91; actual lower-right native score .910683. Covered followup remains unknown. No new template, fixed layout or chest-pool member; preserve existing geometry and current arrival/proof limits."
+    },
+    {
+      "path": "references/summoner/platform-alive-side-fold-robe.png",
+      "sha256": "522c909e5193b26e9cae71a8e33546c17c2ab87f3dceb95a4dd2870f3e2b18c3",
+      "execution_id": "20261020-batch-17-room-01",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "59a0c102da4452d1268c038068881906f3babdc6fb4d3730ad6060974be17cff",
+      "source_box": [
+        120,
+        180,
+        1120,
+        890
+      ],
+      "review": "Primary visual review: standing blue/gold lower robe with a distinct side fold. Field-only source or native pose crop; no UI/private profile data or raw recording dependency."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-alive-side-fold-robe.png",
+      "sha256": "d183e60f76b26853289e195fc7d5db205208ea953ba9791657278c6fe7c7996e",
+      "execution_id": "20261020-batch-17-room-01",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "59a0c102da4452d1268c038068881906f3babdc6fb4d3730ad6060974be17cff",
+      "source_box": [
+        516,
+        702,
+        554,
+        763
+      ],
+      "review": "Primary visual review: standing blue/gold lower robe with a distinct side fold. Field-only source or native pose crop; no UI/private profile data or raw recording dependency."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curved-hem.png",
+      "sha256": "7c83b90cbb27933799c23956897e11a7801b2136f6007ce7aa0c8143baff3388",
+      "execution_id": "20261020-batch-17-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "3b05804f6abe30865cbd3e31689d0141a8590f5c6335ab8f2278de17cb38032f",
+      "source_box": [
+        120,
+        180,
+        1120,
+        890
+      ],
+      "review": "Primary visual review: horizontal curved blue/gold hem visible beneath a separate red Hell-clan corpse; crop excludes the overlying red torso. No death time inferred. Field-only source or native pose crop; no UI/private profile data or raw recording dependency."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-curved-hem.png",
+      "sha256": "9185b04d2a531d4b07b72f8976dabf8a6fdc6dea6f2ea07d6cbfbe3f057c52fe",
+      "execution_id": "20261020-batch-17-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "3b05804f6abe30865cbd3e31689d0141a8590f5c6335ab8f2278de17cb38032f",
+      "source_box": [
+        494,
+        754,
+        583,
+        780
+      ],
+      "review": "Primary visual review: horizontal curved blue/gold hem visible beneath a separate red Hell-clan corpse; crop excludes the overlying red torso. No death time inferred. Field-only source or native pose crop; no UI/private profile data or raw recording dependency."
+    },
+    {
+      "path": "references/terminal/north-square-metal-pair-engraved-plate-hidden.png",
+      "sha256": "c03424e2b167aa9a8edab117695a42925a98bd58387f374f21d86933e7d2f721",
+      "execution_id": "20261020-batch-20-room-01",
+      "source_frame": "phase-00-north-outbound-00-terminal-map-first-hidden.png",
+      "source_frame_sha256": "68c2d1ef57c91aaf89b719769c6427e8fb31cb5f70ea8ec39e0a58e973e75502",
+      "source_box": [
+        120,
+        180,
+        1120,
+        890
+      ],
+      "review": "Two current distinct lower square/left metal chests and independent engraved stone plate remain visible while the upper square is effect/corpse-covered. Reuse existing chest .92 and plate .91 in one three-landmark layout; no new template, lower threshold or 6/19 pool expansion. Field-only native replay; fresh-room completion is not established."
+    },
+    {
+      "path": "references/terminal/north-square-metal-pair-engraved-plate-followup.png",
+      "sha256": "96c133e30d0986afa924bfb2960cc0adbfeb6a4741be1e35242e7cbd7773aebe",
+      "execution_id": "20261020-batch-20-room-01",
+      "source_frame": "phase-00-north-outbound-00-continuous-0237-after.png",
+      "source_frame_sha256": "8e8c756ab097ffceb7b830419a750d00f145429e5863da44f0a21e28f45f1f0d",
+      "source_box": [
+        120,
+        180,
+        1120,
+        890
+      ],
+      "review": "Two current distinct lower square/left metal chests and independent engraved stone plate remain visible while the upper square is effect/corpse-covered. Reuse existing chest .92 and plate .91 in one three-landmark layout; no new template, lower threshold or 6/19 pool expansion. Field-only native replay; fresh-room completion is not established."
+    },
+    {
+      "path": "references/terminal/north-three-chests-lower-observation-edge.png",
+      "sha256": "84028c02061b9f87d4d64b460067186332e9efbd19a74f976c2c54f6b7f5141d",
+      "source_frame": "phase-00-north-outbound-01-continuous-0445-after.png",
+      "source_frame_sha256": "4b0ac5b219800d4c5d82704f10f6fd84a2e3a719060616ec5ac80ef039b65f32",
+      "execution_id": "20261020-batch-22-room-01",
+      "source_box": [
+        600,
+        180,
+        1350,
+        920
+      ],
+      "review": "Current lower metal face .963665 at [1235,890,1284,917] was clipped by observation y900. Existing left small-face .932579 and upper dark-metal-face .983943 form the unchanged 120px/16000px2 detail trio when the visible central strip extends to y920. No new template, threshold, pool member or input-bound change. Extra strip admits only whole landmarks inside x650..1290, between existing HUD resource search bands. Field-only replay; actual approach/arrival remains separate."
+    },
+    {
+      "path": "references/hub/return-single-ornament.png",
+      "sha256": "354f47b59dac6fb78fc9d234423c724fc2a957f39568232e6a115b1e7cbfd218",
+      "source_frame": "room-finish-map-restore-after-error.png",
+      "source_frame_sha256": "16fb976cf83e74c7c7556a7fd1e248fc6f43f5a7065fa3f1d26fc6aae78b1053",
+      "execution_id": "20261020-batch-24-room-02",
+      "source_box": [
+        700,
+        380,
+        1160,
+        650
+      ],
+      "review": "Field-only negative from temporary map-OFF finish failure: current blue pair and right floor ornament .857608 at center [961,503], but no second independent floor ID reaches native .8. Keep unknown; no threshold/template changes. Restore ON once then reacquire two current ornaments before click; source precedes restoration input despite its filename. Replay is not a successful room closure."
+    },
+    {
+      "path": "references/terminal/north-dark-metal-faces-lower-unverified.png",
+      "sha256": "80c4490cd9afa0e7aa82155e13afc823e7f4809bca362a3167e4adef803924c7",
+      "execution_id": "20261020-batch-25-room-01",
+      "source_frame": "phase-00-north-outbound-00-continuous-0297-after.png",
+      "source_frame_sha256": "1588f2ab0ac469d08e949ed0fef41eab4b6ab484ef3f7f59af73ad9b8d08c2d6",
+      "source_box": [
+        390,
+        520,
+        1140,
+        830
+      ],
+      "review": "Field-only negative: the two new exposed upper/left chest faces pass .92, but the lower chest is still effect-covered and its existing full-body score is .531051. Must remain unknown; two current chests do not establish an end."
+    },
+    {
+      "path": "references/terminal/north-dark-metal-faces.png",
+      "sha256": "d5405048760f5c6aab13b55288fb3e14a7d060651f26673d7cba27aeba074d54",
+      "execution_id": "20261020-batch-25-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "5637e7a04f90690f9afa426d8733b1daad2bf5c16aad748ae13c34af0d56d18f",
+      "source_box": [
+        390,
+        520,
+        1140,
+        830
+      ],
+      "review": "Three visually distinct metal chests at the current end. Existing left/upper body or detail appearances fail native approval; retain only the exposed dark northwest/southeast front faces, excluding map lines, corpses and surrounding floor. The separately observed lower chest uses existing stone-chest-southeast. Fixed layout only, native .92 and 84..700px/8000px2; no 6/19 pool expansion, original age/proximity/settling unchanged. Field-only replay, not live arrival or evidence of a container interaction."
+    },
+    {
+      "path": "templates/terminal/metal-chest-dark-northwest-face.png",
+      "sha256": "bd88cafdc474cfd565d859704b6af2f8c119644232da27eef73b781e4417a331",
+      "execution_id": "20261020-batch-25-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "5637e7a04f90690f9afa426d8733b1daad2bf5c16aad748ae13c34af0d56d18f",
+      "source_box": [
+        428,
+        598,
+        463,
+        629
+      ],
+      "review": "Primary visual review: currently exposed textured metal chest front only, no map line, corpse or floor pixels used as landmark. Fixed native .92 three-object layout only; does not enter body/detail composition pools."
+    },
+    {
+      "path": "templates/terminal/metal-chest-dark-southeast-face.png",
+      "sha256": "b562645392290abe5cbc67570f5abbc3aa5802d35afb714b192184ed709f530e",
+      "execution_id": "20261020-batch-25-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "5637e7a04f90690f9afa426d8733b1daad2bf5c16aad748ae13c34af0d56d18f",
+      "source_box": [
+        1070,
+        615,
+        1101,
+        651
+      ],
+      "review": "Primary visual review: currently exposed textured metal chest front only, no map line, corpse or floor pixels used as landmark. Fixed native .92 three-object layout only; does not enter body/detail composition pools."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curled-robe.png",
+      "sha256": "265eda8cc790c5d269d75d4f06cd77a0d69d41e79354e626812025de976263d2",
+      "execution_id": "20261020-batch-26-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "0f76dd7f7d66423f85d5754ed2ff13189610078c6d78cac25dd70172a6526da4",
+      "source_box": [
+        450,
+        250,
+        1450,
+        895
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner corpse family: curled robe torso visible separately from nearby red corpses and staff. The native crop contains robe texture only. Earlier saved encounter frames do not show a matching body; no dedicated kill or death time is inferred. Current platform, native RGB (latest encounter threshold_review), unique body and two ordered fresh same-room/generation corpse observations remain required."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-curled-robe.png",
+      "sha256": "fd9366a79f50f61f26bb510e71cfa3c0e090a214375adfcf1837656661c641c1",
+      "execution_id": "20261020-batch-26-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "0f76dd7f7d66423f85d5754ed2ff13189610078c6d78cac25dd70172a6526da4",
+      "source_box": [
+        874,
+        814,
+        925,
+        844
+      ],
+      "review": "Primary visual review of the same blue/gold Summoner corpse family: curled robe torso visible separately from nearby red corpses and staff. The native crop contains robe texture only. Earlier saved encounter frames do not show a matching body; no dedicated kill or death time is inferred. Current platform, native RGB (latest threshold_review), unique body and two ordered fresh same-room/generation corpse observations remain required."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curled-robe-lighting-before.png",
+      "sha256": "e4f4549323bdbe9f40571c8560f1c4603c04eac6d7526149b33eae0087005f34",
+      "execution_id": "20261020-recovery-30-readonly-lighting",
+      "source_frame": "platform-00.png",
+      "source_frame_sha256": "fba1cd08bc4d8a50661799e8b3d905959fdc8657f39c5bceb451c3c29fa34f35",
+      "source_box": [
+        450,
+        250,
+        1450,
+        895
+      ],
+      "review": "Primary visual comparison: unchanged curled blue/gold robe texture in two later read-only current platform captures; no input or inferred earlier death time. Existing crop scores .904398/.906340, .91 fails and .90 accepts. Current platform, native RGB, uniqueness and ordered fresh corpse-pair remain required."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curled-robe-lighting-after.png",
+      "sha256": "e0477e1b03eb5696db78f9f99c364b5c93c84030f11583adfa87903917687599",
+      "execution_id": "20261020-recovery-30-readonly-lighting",
+      "source_frame": "platform-02.png",
+      "source_frame_sha256": "dd4c824bcc394ecdeee279886a2c2f463a70020a8b216ae8360372feac3e462a",
+      "source_box": [
+        450,
+        250,
+        1450,
+        895
+      ],
+      "review": "Primary visual comparison: unchanged curled blue/gold robe texture in two later read-only current platform captures; no input or inferred earlier death time. Existing crop scores .904398/.906340, .91 fails and .90 accepts. Current platform, native RGB, uniqueness and ordered fresh corpse-pair remain required."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curled-robe-moved-before.png",
+      "sha256": "e060c48d6f342419698b0ebb31fa616041e7506d2805f8a73e48138a7caf0120",
+      "execution_id": "20261020-recovery-33",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "957653e3f874c8d7cf7c3e4693ab11895ebc3021577bf435f8ce04b6b6253d74",
+      "source_box": [
+        450,
+        150,
+        1450,
+        895
+      ],
+      "review": "Primary visual comparison: same curled blue/gold corpse after item F2 and separate current platform approach. Green overlay obscures the original upper crop. A separate native RGB .92 lower-fold appearance from the moved source supplements the original .90 pose. Current platform, uniqueness and ordered fresh corpse-pair remain required; no pickup or death time inferred."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curled-robe-moved-after.png",
+      "sha256": "ab2e45a14b05e4f5c10494e60ce371874dd40a1fd85e99690c73d9e7a6363ee5",
+      "execution_id": "20261020-recovery-33",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "9718296603304fa7efdc6a34e2886909c42c38e9f265e2acf2dd67fa14b71dde",
+      "source_box": [
+        450,
+        150,
+        1450,
+        895
+      ],
+      "review": "Primary visual comparison: same curled blue/gold corpse after item F2 and separate current platform approach. Green overlay obscures the original upper crop. A separate native RGB .92 lower-fold appearance from the moved source supplements the original .90 pose. Current platform, uniqueness and ordered fresh corpse-pair remain required; no pickup or death time inferred."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-curled-lower-fold.png",
+      "sha256": "04236e8b6a977085d21b808b783d68c55cc5c56b3867d020329679fe0b94e432",
+      "execution_id": "20261020-recovery-33",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "957653e3f874c8d7cf7c3e4693ab11895ebc3021577bf435f8ce04b6b6253d74",
+      "source_box": [
+        929,
+        710,
+        967,
+        732
+      ],
+      "review": "Primary visual review of the same curled blue/gold corpse after item F2 and current platform approach. Green overlay obscures the old upper crop. This separate native RGB .92 lower-fold appearance excludes that overlay and preserves the same physical corpse ground [968,727]. Replacing the original appearance with its lower crop failed a duplicate-body replay; retain the original .90 appearance and independently verify this .92 pose with both current moved frames, body removal/duplication/opposite-state/wrong-color negatives. No pickup or death time inferred."
+    },
+    {
+      "path": "references/terminal/north-square-arched-pair-gold-filigree-covered.png",
+      "sha256": "fe6d81fb94a6ccbe8aa9612c24bf1de0eb3b535ee4af8bdbcbab5d8e94390ef3",
+      "execution_id": "20261020-fresh-36",
+      "source_frame": "phase-00-north-outbound-00-continuous-0165-after.png",
+      "source_frame_sha256": "e8e32dc2e485f94db0488091e305042a55a12d992458b040bb7daac6da84111f",
+      "source_box": [
+        24,
+        55,
+        1900,
+        895
+      ],
+      "review": "Primary visual review: two exposed separate right chests plus an independent gold floor loop; left chest is covered by mercenary/combat effects in the source and hidden view. Floor-only color encoding retains native .92, three distinct non-collinear current parts, original age/freshness/proximity/settling guards. Same-room lighting replay is not independent-room validation."
+    },
+    {
+      "path": "references/terminal/north-square-arched-pair-gold-filigree-hidden.png",
+      "sha256": "6b07aed95968c31e5b86cb182e6ed3f22204ed6bf580739463b408dea7b62858",
+      "execution_id": "20261020-fresh-36",
+      "source_frame": "phase-00-north-outbound-00-terminal-map-first-hidden.png",
+      "source_frame_sha256": "885aeb3d0780fd79c7a9b4f0b6d93c9ba8ec17d286a28a2422cadde315234d3d",
+      "source_box": [
+        24,
+        55,
+        1900,
+        895
+      ],
+      "review": "Primary visual review: two exposed separate right chests plus an independent gold floor loop; left chest is covered by mercenary/combat effects in the source and hidden view. Floor-only color encoding retains native .92, three distinct non-collinear current parts, original age/freshness/proximity/settling guards. Same-room lighting replay is not independent-room validation."
+    },
+    {
+      "path": "references/terminal/north-square-arched-pair-gold-filigree-followup.png",
+      "sha256": "e8c8b4acdf1b33f3763496b02ee7baf6c6c5586eff85e0b9a13eae1b600ef7ed",
+      "execution_id": "20261020-fresh-36",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "fdc3732aae612075fd2eebccb91ea3213d888749a3769a35cd541aa46aa52dbe",
+      "source_box": [
+        24,
+        55,
+        1900,
+        895
+      ],
+      "review": "Primary visual review: two exposed separate right chests plus an independent gold floor loop; left chest is covered by mercenary/combat effects in the source and hidden view. Floor-only color encoding retains native .92, three distinct non-collinear current parts, original age/freshness/proximity/settling guards. Same-room lighting replay is not independent-room validation."
+    },
+    {
+      "path": "templates/terminal/gold-filigree-upper-loop.png",
+      "sha256": "b2e5fa7f58b19fc6b9d605a4b7f9a55af1562a457994c63e386f954f930c4dbe",
+      "execution_id": "20261020-fresh-36",
+      "source_frame": "phase-00-north-outbound-00-continuous-0165-after.png",
+      "source_frame_sha256": "e8e32dc2e485f94db0488091e305042a55a12d992458b040bb7daac6da84111f",
+      "source_box": [
+        690,
+        470,
+        855,
+        540
+      ],
+      "review": "Primary visual review: two exposed separate right chests plus an independent gold floor loop; left chest is covered by mercenary/combat effects in the source and hidden view. Floor-only color encoding retains native .92, three distinct non-collinear current parts, original age/freshness/proximity/settling guards. Same-room lighting replay is not independent-room validation."
+    },
+    {
+      "path": "references/terminal/north-chest-body-face-static.png",
+      "sha256": "6a9a6247c1a7b9a1d5291dbecb741bddccc1ea766e9137a01aa0d2eababd6124",
+      "execution_id": "20261020-fresh-40",
+      "source_frame": "phase-00-north-outbound-00-terminal-first-acquired.png",
+      "source_frame_sha256": "e5680c1fb78f6fafeec71b2be19d0f6318241d14cb59d59092a5172d40930d1b",
+      "source_box": [
+        24,
+        55,
+        1900,
+        895
+      ],
+      "review": "Primary visual review: three separate terminal chests. Same southeast chest has current existing body and right-face appearances at native .939028/.925967 in this frame. Report selects body on row166, right-face on167-168 with identical coordinates for common parts. Rechecking all three current-selected appearances on the immediately preceding native frame preserves three-current/static proof across IDs; no new crop, threshold, layout, age or arrival relaxation. Source replay is not live validation of the changed tracker."
+    },
+    {
+      "path": "references/summoner/platform-corpse-looped-hem.png",
+      "sha256": "e98103949b8ec3c21a5dbb5b442d8099829504b1632f263bb2cfd26d1df88ff0",
+      "execution_id": "20261020-fresh-43",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "396d75e433e68a4254643bc54f49b4cbf7a8876ca24c61938333908ad5358a50",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Primary visual review on 2026-10-21: a horizontal blue/gold looped robe hem lies separately from nearby red corpses. Existing 15 corpse appearances reject this pose (best body-region score .6817). Reviewed crop contains blue/gold robe only; no death time or cause inferred. Existing native RGB .92, unique body, current platform and two ordered fresh same-room/generation corpse observations remain required; these old calibration views do not retroactively complete fresh43."
+    },
+    {
+      "path": "references/summoner/platform-corpse-looped-hem-followup.png",
+      "sha256": "b0c273d4e4562b859789dc80f933325e4c21d272ec4745a16c873a87d00c95b9",
+      "execution_id": "20261020-fresh-43",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "89fe8c3ae5d2a46478516687ed51c873326b506aa81bd245a5aa50c3ea9e1e2e",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Primary visual review on 2026-10-21: a horizontal blue/gold looped robe hem lies separately from nearby red corpses. Existing 15 corpse appearances reject this pose (best body-region score .6817). Reviewed crop contains blue/gold robe only; no death time or cause inferred. Existing native RGB .92, unique body, current platform and two ordered fresh same-room/generation corpse observations remain required; these old calibration views do not retroactively complete fresh43."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-looped-hem.png",
+      "sha256": "64274758a1d81515756e597f0f21a0ebbc2fc03ac523eace945c0d178d01bae3",
+      "execution_id": "20261020-fresh-43",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "396d75e433e68a4254643bc54f49b4cbf7a8876ca24c61938333908ad5358a50",
+      "source_box": [
+        810,
+        628,
+        890,
+        678
+      ],
+      "review": "Primary visual review on 2026-10-21: a horizontal blue/gold looped robe hem lies separately from nearby red corpses. Existing 15 corpse appearances reject this pose (best body-region score .6817). Reviewed crop contains blue/gold robe only; no death time or cause inferred. Existing native RGB .92, unique body, current platform and two ordered fresh same-room/generation corpse observations remain required; these old calibration views do not retroactively complete fresh43."
+    },
+    {
+      "path": "references/summoner/platform-corpse-looped-hem-combat.png",
+      "sha256": "1c337ad5e2dd943cccd2f600645f4ae2dd62b1ab7ba3c31d4ea1d61b66b90881",
+      "execution_id": "20261020-fresh-43",
+      "source_frame": "encounter-combat-033.png",
+      "source_frame_sha256": "68b5eb5fd13f909f4d5ebc54b95f219bc1a16f0b33c290c5f98a24111dd3c374",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Primary visual review: same looped blue/gold corpse while fire and mercenary activity continue separately. This frame is withheld from the native crop calibration; existing new .92 crop matches .995383. First retained replay positive seq33 at31782.796 does not establish first death time or backdate live recognition; fresh43 remains failed."
+    },
+    {
+      "path": "references/summoner/platform-corpse-overlapped-hem.png",
+      "sha256": "93aff1eb1e650dc8935731b165ab164ca77a5bd4d7b98bae5e00857339ffc19a",
+      "execution_id": "20261021-fresh-44",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "63ad7098c17c12d481b5906294f4a885f7493b4fadaea1395a859b12c0f31a75",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Primary visual review: the exposed blue/gold lower hem beneath overlapping red corpses. The prior 16 corpse rules reject the current body (best lower-band .6432); reducing thresholds is not justified. This separate native RGB .92 crop preserves ground [817,702], current platform, uniqueness and two ordered fresh same-room/generation observations. No earlier death time, cause or retroactive fresh44 success is inferred."
+    },
+    {
+      "path": "references/summoner/platform-corpse-overlapped-hem-followup.png",
+      "sha256": "0a763e8b4cfbca516f57a72c243af35e6566bd3d6e255221328bac6593396b37",
+      "execution_id": "20261021-fresh-44",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "de3b36d4872d8210d5b0c026ad9927c6cf13e961548bf154d9f54b4516c1f263",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Primary visual review: the exposed blue/gold lower hem beneath overlapping red corpses. The prior 16 corpse rules reject the current body (best lower-band .6432); reducing thresholds is not justified. This separate native RGB .92 crop preserves ground [817,702], current platform, uniqueness and two ordered fresh same-room/generation observations. No earlier death time, cause or retroactive fresh44 success is inferred."
+    },
+    {
+      "path": "references/summoner/platform-corpse-overlapped-hem-combat-unverified.png",
+      "sha256": "1a6ca513a50700fb3ddc1ecd722795b2f5f78fdd6d1538a9dea96aa56bdcecb6",
+      "execution_id": "20261021-fresh-44",
+      "source_frame": "encounter-combat-025.png",
+      "source_frame_sha256": "ec15fc953d6e86fac4ea339885b878ef33f5c48b887324502315cc31edd2db6b",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Held-out combat seq25/1603.765: current platform and visible partial robe, but the new crop scores .757186 and stays unknown at .92. Do not infer an earlier confirmed death."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-overlapped-hem.png",
+      "sha256": "8e053ca64aa0db8c3ae216fbefa6319e341b2da0db6100063a4342a1cc1af391",
+      "execution_id": "20261021-fresh-44",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "63ad7098c17c12d481b5906294f4a885f7493b4fadaea1395a859b12c0f31a75",
+      "source_box": [
+        754,
+        685,
+        838,
+        707
+      ],
+      "review": "Primary visual review: the exposed blue/gold lower hem beneath overlapping red corpses. The prior 16 corpse rules reject the current body (best lower-band .6432); reducing thresholds is not justified. This separate native RGB .92 crop preserves ground [817,702], current platform, uniqueness and two ordered fresh same-room/generation observations. No earlier death time, cause or retroactive fresh44 success is inferred."
+    },
+    {
+      "path": "references/summoner/platform-corpse-looped-hem-bone-cover.png",
+      "sha256": "0ccabd6101deebb0913f0769867b0b8958caecd2dbf17a74f7df7f85df1f25b0",
+      "execution_id": "20261021-fresh-47",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "34455d6120f8ec3e1f124ab92f065e2f62491b7b228ea4372d13467710955812",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Same source43 looped blue/gold corpse pose with bones over upper robe; root visual review. Existing unchanged 80x50 native template scores .726316/.725547 on independent fresh47 final/followup. Lower shape threshold alone is unsafe for original monochrome source; require independent >=.75 aligned blue and gold agreement. Existing current platform, uniqueness, fresh ordered corpse pair and timing remain required. No retroactive fresh47 success or death time inferred."
+    },
+    {
+      "path": "references/summoner/platform-corpse-looped-hem-bone-cover-followup.png",
+      "sha256": "e66fa2107353f599571d26a1a737a55ce8cbc8c44b06822d19aca31d887b71b1",
+      "execution_id": "20261021-fresh-47",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "b98343ff34ee97d402107ca9056376f93f2ce13e7c70afa6df89d13b36129973",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Same source43 looped blue/gold corpse pose with bones over upper robe; root visual review. Existing unchanged 80x50 native template scores .726316/.725547 on independent fresh47 final/followup. Lower shape threshold alone is unsafe for original monochrome source; require independent >=.75 aligned blue and gold agreement. Existing current platform, uniqueness, fresh ordered corpse pair and timing remain required. No retroactive fresh47 success or death time inferred."
+    },
+    {
+      "path": "references/navigation/return-portal-corner-short-goal.png",
+      "sha256": "4310d3e9b8d3fcb9bc7be985f313f123b6f42983304c2e962e8172bae1907f96",
+      "execution_id": "20261021-fresh-50-room-01",
+      "source_frame": "phase-01-north-return-00-continuous-1047-turn.png",
+      "source_frame_sha256": "dbab18184fa904a5f4a66b34b66eab26e91a1eb142d1ec80e4d473bb3405c320",
+      "field_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "details_owner": "README.md",
+      "review": "Current north-return portal corner with safe south goal at 178.709 pixels; replay only, not a waypoint/arrival/physical portal-link approval."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curved-lower-fold.png",
+      "sha256": "dc4e570aa08e7156abf985e5993665139e949f2538dbb58445f0360e21c4d134",
+      "execution_id": "20261021-fresh-51",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "9db1f0ff3d71f2968cbd10dad536be8b5e4f56515a58e94b8814e179c9a82ed8",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "details_owner": "README.md",
+      "review": "Exposed curved blue/gold lower fold. Final source and independent combat19 both have current distinct-glyph platform anchors (verified against original report row19); native fold scores1.0/.936584. Current platform, uniqueness and two new observations remain required. No retroactive fresh51 success."
+    },
+    {
+      "path": "references/summoner/platform-corpse-curved-lower-fold-combat.png",
+      "sha256": "a5f30cc7374d65257b78930bf9005c97e9bf484c40be6b76a800eb9d32de5fa6",
+      "execution_id": "20261021-fresh-51",
+      "source_frame": "encounter-combat-019.png",
+      "source_frame_sha256": "8a0f851c2f309f3b4008cc031641032a85c3e10d6e3c34c5e579ae536e7e0e20",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "details_owner": "README.md",
+      "review": "Exposed curved blue/gold lower fold. Final source and independent combat19 both have current distinct-glyph platform anchors (verified against original report row19); native fold scores1.0/.936584. Current platform, uniqueness and two new observations remain required. No retroactive fresh51 success."
+    },
+    {
+      "path": "templates/encounters/summoner-robe-corpse-curved-lower-fold.png",
+      "sha256": "0fbd1355562d0130740eac76d53246cfb6222b3b122ac7bb5e5faef2ce0e08ba",
+      "execution_id": "20261021-fresh-51",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "9db1f0ff3d71f2968cbd10dad536be8b5e4f56515a58e94b8814e179c9a82ed8",
+      "crop": [
+        784,
+        690,
+        853,
+        725
+      ],
+      "details_owner": "summoner-encounter.json"
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem-front-lighting.png",
+      "sha256": "1d0c0fa7dd29d98416c0b39ce5afcf690a698c878108018f04bbce5e6e4c5dba",
+      "execution_id": "20261021-fresh-53",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "74193298605800309e2f88dd521184abab4262f29aec9c0ab8e094304d2cf8eb",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Existing unchanged left-hem template at [972,614,1012,638], ground1002,639; native .717881/.718719 with >=.75 aligned blue and gold. Half-gray .584690 misses old .65 proposal; reviewed per-part .55 proposal +native .70 +independent .75 colors only. Same current platform/uniqueness/two fresh witnesses required. No retroactive fresh53 success."
+    },
+    {
+      "path": "references/summoner/platform-corpse-left-hem-front-lighting-followup.png",
+      "sha256": "91bbcdbe5ef63a8c19653e6f5e82a0214e9b06a3e8fcdce02798f229f0993148",
+      "execution_id": "20261021-fresh-53",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "91b333e5e43cec2d4992ca63d316d0f246340c5070edeffce467e97f0a2f2afe",
+      "source_box": [
+        150,
+        55,
+        1660,
+        895
+      ],
+      "review": "Existing unchanged left-hem template at [972,614,1012,638], ground1002,639; native .717881/.718719 with >=.75 aligned blue and gold. Half-gray .584690 misses old .65 proposal; reviewed per-part .55 proposal +native .70 +independent .75 colors only. Same current platform/uniqueness/two fresh witnesses required. No retroactive fresh53 success."
+    },
+    {
+      "path": "references/navigation/area-title-stone-underlay.png",
+      "sha256": "0c7c54f7b871754dfe89e45eafe7c5c8cb648dc0979e580858148fa530449d19",
+      "execution_id": "20261021-fresh-55",
+      "source_frame": "runtime-title-unverified.png",
+      "source_frame_sha256": "cded53fd120b3e0559c991a290615c3ce0f88fac123f986027a6380e98db092b",
+      "details_owner": "../../../ui/automap/manifest.json",
+      "review": "Current Korean Arcane letters over gray stone walkway; title-only canvas1775,100,1900,135 and normalized crop1178,70,1246,85. Whole title and each of three letter parts at unchanged .86; no retroactive fresh55 completion."
+    },
+    {
+      "path": "templates/navigation/area-title-stone-underlay-window.png",
+      "sha256": "94d9766183fcae1cfafbd3925b096778c77f169c777bd1757053b7859ab25c55",
+      "execution_id": "20261021-fresh-55",
+      "source_frame": "runtime-title-unverified.png",
+      "source_frame_sha256": "cded53fd120b3e0559c991a290615c3ce0f88fac123f986027a6380e98db092b",
+      "details_owner": "../../../ui/automap/manifest.json",
+      "review": "Current Korean Arcane letters over gray stone walkway; title-only canvas1775,100,1900,135 and normalized crop1178,70,1246,85. Whole title and each of three letter parts at unchanged .86; no retroactive fresh55 completion."
     }
   ],
   "source_retention": [

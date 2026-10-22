@@ -156,13 +156,14 @@ class FrameGeometryTests(unittest.TestCase):
 
     def test_save_exit_uses_captured_reference_dimensions_instead_of_physical_window_size(self):
         self.capture.grab = Mock(return_value=SimpleNamespace(frame=np.zeros((140, 200, 3), np.uint8)))
-        session, vision, stop = Mock(), Mock(), Mock()
-        stop.is_set.return_value = False
+        backend, vision, now = DryFieldInput(), Mock(), [0.0]
+        backend.click = Mock()
+        stop = SimpleNamespace(is_set=lambda: False, wait=lambda seconds: now.__setitem__(0, now[0] + seconds + 1e-8))
         vision.find.return_value = dict(x=633.5, y=376.5)
-        exit_to_character(session, self.capture, lambda: True, stop, vision)
-        session._press_key.assert_called_once_with("esc")
-        session._click_relative.assert_called_once_with(self.capture, (100, 70))
-        self.assertEqual(2, self.capture.grab.call_count)
+        exit_to_character(self.capture, lambda: True, stop, vision, backend, evidence=[], clock=lambda: now[0])
+        self.assertEqual([("press", "esc"), ("move", -237, 179)], list(backend.events))
+        backend.click.assert_called_once_with()
+        self.assertEqual(3, self.capture.grab.call_count)
 
     def test_focusing_preserves_split_or_maximized_window_geometry(self):
         window = WindowInfo(7, "test", 100, 200, 126, 84)

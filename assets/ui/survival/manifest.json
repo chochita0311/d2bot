@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "layout_id": "remastered-ko-window-1922x1140",
-  "revision": "screen-reference-2026-10-18-v15",
+  "revision": "screen-reference-2026-10-21-v21",
   "high_orb_bound": {
     "minimum_ratio": 0.9,
     "minimum_value": 40,
@@ -165,7 +165,8 @@
       "empty": [
         "empty-upper.png",
         "empty-middle-1.png",
-        "empty-middle-2.png"
+        "empty-middle-2.png",
+        "empty-base.png"
       ]
     },
     "closed_anchor_box": [
@@ -177,6 +178,30 @@
     "closed_anchor_template": "belt-closed-edge.png"
   },
   "references": [
+    {
+      "path": "references/field-mana-portal-outline.png",
+      "canvas_box": [
+        250,
+        905,
+        1650,
+        950
+      ],
+      "life": [
+        1580,
+        1580
+      ],
+      "mana": [
+        928,
+        1543
+      ],
+      "counts": null,
+      "evidence": "actual_field_portal_numeric_outline",
+      "sha256": "d5b83debb11c7d5b0a557563ef2ea32205059acde9c45901772fa84f6f77af98",
+      "source_frame_sha256": "19560f5c13eb409d8748d481654df68530e97dc1f8bad960d95dc294e718e918",
+      "source_execution": "20261020-batch-07-room-03",
+      "source_frame": "phase-00-north-outbound-00-continuous-0121-after.png",
+      "review": "Current visible 928/1543 with portal glow adjoining the outlined 5. Numeric text only, no belt/stock/skill bindings retained. Native pixels and existing .72 glyph/.08 margin/range checks preserved. Failed room, not completion evidence."
+    },
     {
       "path": "references/field-nova-mana.png",
       "canvas_box": [
@@ -619,9 +644,31 @@
         4
       ],
       "provenance": "2026-10-05: actual town belt after one supervised north encounter potion use; no HUD in this crop"
+    },
+    {
+      "path": "references/field-belt-empty-column1.png",
+      "sha256": "64e993fe34d3f638d25477ec6e45d6798639bbe8a53412343ba90bcab714f407",
+      "canvas_box": [
+        1070,
+        885,
+        1340,
+        1120
+      ],
+      "column_counts": [
+        0,
+        4,
+        4,
+        4
+      ],
+      "source_frame": "resource-recovery-02-belt-unverified.png",
+      "source_frame_sha256": "c829bf6f566e10d025b68033cb40261e123c6d011fac5463c8b267414500cb68",
+      "provenance": "Primary visual review of fresh33 second recovery: first column all four cells empty, columns2/3 purple potions and column4 scrolls. Native belt-only replay, not a completed recovery or survival proof."
     }
   ],
   "glyph_variants": {
+    "5": [
+      "glyphs/5-portal-outline.png"
+    ],
     "6": [
       "glyphs/6-hud.png"
     ],
@@ -634,6 +681,19 @@
     "2": [
       "glyphs/2-hud.png"
     ]
+  },
+  "portal_outline_glyph": {
+    "path": "glyphs/5-portal-outline.png",
+    "sha256": "ffde23137b432c4e59b340b1ba5f1aa2e319d2f2378bd4171e90cc9a59809c58",
+    "source": "references/field-mana-portal-outline.png",
+    "source_number_box": [
+      1425,
+      915,
+      1630,
+      940
+    ],
+    "outlined_part_index": 5,
+    "review": "Current visible numeral 5 in 928/1543 after existing black-outline segmentation; normalized to the existing 32x40 binary atlas. No maximum or ratio is filled from earlier frames."
   },
   "orb_fallback_references": [
     {
@@ -789,6 +849,20 @@
       ],
       "source_frame_sha256": "a37f52efe4335829b2bf2d13bbaa87d29a726beb07e6695938bb53139981e1cd",
       "review": "Visually confirmed empty middle-row belt cell; fixed native slot geometry and item distance/margin unchanged."
+    },
+    {
+      "path": "empty-base.png",
+      "sha256": "07e23b61301d4324809d08e6933940dc7239d314b91429c63fccfcbb82f41bbd",
+      "source_reference": "references/field-belt-empty-column1.png",
+      "source_reference_sha256": "64e993fe34d3f638d25477ec6e45d6798639bbe8a53412343ba90bcab714f407",
+      "source_box": [
+        1088,
+        1060,
+        1148,
+        1117
+      ],
+      "source_frame_sha256": "c829bf6f566e10d025b68033cb40261e123c6d011fac5463c8b267414500cb68",
+      "review": "Primary visual review: empty bottom-row first cell with the base-row border. Old best empty distance .038572 passed .075 but scroll .059113 failed the unchanged .025 class margin. Add this actual base appearance; preserve item .075/margin .025, native geometry and all16 current cells."
     }
   ],
   "mercenary_portrait": {
@@ -799,9 +873,82 @@
       93,
       133
     ],
-    "minimum_score": 0.95,
-    "note": "Opt-in current Act2 mercenary face only; health bar and name excluded. Missing or obscured portrait is unverified, never proof of death. Common normalized native frame required. Normal Flash fresh runs use this guard; explicit same-room recovery remains available.",
+    "minimum_score": 0.92,
+    "minimum_visible": 0.5,
+    "note": "Opt-in current Act2 mercenary face only; health bar and name excluded. After a full-face mismatch, current item-label occlusion may mask pixels while at least half of the same native face remains visible at the reviewed .92 score. Missing, insufficiently visible or mismatching portrait is unverified, never proof of death. Common normalized native frame required. Normal Flash fresh runs use this guard and request current-menu safe exit on failure; explicit same-room recovery remains available. No NPC or resurrection action is authorized by this reading.",
+    "label_occlusion_reference": {
+      "path": "references/mercenary-face-item-label-occlusion.png",
+      "canvas_box": [
+        0,
+        78,
+        300,
+        134
+      ],
+      "sha256": "eba97ddea32ebebd2bfaecad0dce8c61fb06be5a006139000479fa2af7a80c7a",
+      "source_run": "20261020-batch-04-room-01",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "7a94523c72912770ed7f1b2507bcd9bdbe6a60c77ffe6d7cc6b26d0417659855",
+      "review": "Current known Act2 face under an ALT item-label row; only this UI strip is retained. Same-face visible native correlation .989037 at visible fraction .5; full-face correlation .364180. This source is not a live successful room or proof of health."
+    },
     "references": [
+      {
+        "path": "references/mercenary-face-combat-background-lit.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "observed",
+        "sha256": "59eb3da0611625db2fc1f838ca2d54de558172494568c87bdcb94991ebd4de55",
+        "source_run": "20261021-fresh-61-room-01",
+        "source_frame": "phase-01-north-return-00-mercenary-unverified.png",
+        "source_frame_sha256": "a9166ab7ce1b0dc7a0d7e70a8e5b725df13a1a9e8cdd300d06bea33024ce7d8f",
+        "review": "Current visible native Act2 face over a brighter combat background scores .923433 against the unchanged grayscale template at its exact position; label-free visibility is 1.0. This face-only replay supports calibration of the existing template, not a new template or evidence of health, death time, successful survival or closure."
+      },
+      {
+        "path": "references/mercenary-face-act2-lit.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "observed",
+        "sha256": "60cbfe8dcbc9cbc9992dba7363893d7232c4e30bf1870347fa25be98125dade1",
+        "source_run": "20261020-batch-13-room-01",
+        "source_frame": "phase-01-north-return-00-mercenary-unverified.png",
+        "source_frame_sha256": "a0a442714012ceae12e383e1fa21cc6a3a2e1c0be545e41daa86ba772e96d492",
+        "review": "Current unobscured native Act2 face with brighter lower-face appearance; original full-face correlation .934801, no positional shift. The single existing template uses a reviewed .93 score and the existing half-visible label-mask rule; this crop is replay evidence, not another runtime template. Source predates later portrait absence and is not evidence of health, death time or successful closure."
+      },
+      {
+        "path": "references/mercenary-face-cursor-glow.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "unverified",
+        "sha256": "4ed151fbd45318c8a2bbac2a83f919f9b1a14f513394290a2a8e69f77bde2388",
+        "source_run": "20261020-batch-08-room-01",
+        "source_frame": "phase-01-north-return-00-mercenary-unverified.png",
+        "source_frame_sha256": "2036444f8e66e9e6d2b712bcce1b15d56f8181d3c4b4765b84141bd900a2339e"
+      },
+      {
+        "path": "references/mercenary-face-cursor-cleared.png",
+        "box": [
+          39,
+          79,
+          93,
+          133
+        ],
+        "expected": "observed",
+        "sha256": "cbf86b37b4d8d77b95e99379c9e7c54acf30590744540a358ecb7cae7b77c0c4",
+        "source_run": "20261020-current-supervised-cursor-clear",
+        "source_frame": "mercenary-after-cursor-clear.png",
+        "source_frame_sha256": "c77f17334cffdd79a8734178bb12e70eb63d374fa7d3d4afda70ff7653f9939e"
+      },
       {
         "path": "mercenary-face-act2.png",
         "box": [

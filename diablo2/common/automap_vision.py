@@ -24,7 +24,14 @@ class AutomapObserver:
                 if template is None:
                     raise ValueError("Unreadable automap title: " + area + ": " + filename)
                 for encoding in ("soft_gold", "binary_gold"):
-                    variants.append((filename, encoding, self._title_mask(template, binary=encoding == "binary_gold")))
+                    variants.append(
+                        (
+                            filename,
+                            encoding,
+                            self._title_mask(template, binary=encoding == "binary_gold"),
+                            definition.get("variant_required_parts", {}).get(filename, []),
+                        )
+                    )
             self.title_variants[area] = variants
             self.templates[area] = variants[0][2]
         self.last_evidence = None
@@ -53,12 +60,23 @@ class AutomapObserver:
             encoding: self._title_mask(normalized[y0:y1, x0:x1], binary=encoding == "binary_gold")
             for encoding in ("soft_gold", "binary_gold")
         }
-        score, location, filename, encoding = -1.0, None, None, None
-        for candidate_filename, candidate_encoding, template in self.title_variants[area]:
+        score, location, filename, encoding, part_scores = -1.0, None, None, None, []
+        for candidate_filename, candidate_encoding, template, required_parts in self.title_variants[area]:
             patch = patches[candidate_encoding]
             _, candidate_score, _, candidate_location = cv.minMaxLoc(cv.matchTemplate(patch, template, cv.TM_CCOEFF_NORMED))
+            current_part_scores = []
+            if candidate_score >= definition["minimum_score"]:
+                x, y = candidate_location
+                # 겹친 지도 표식 하나가 제목 전체 점수를 지배하지 않도록 같은 위치의 글자 구간도 요구한다.
+                for a, b, c, d in required_parts:
+                    current_part_scores.append(
+                        float(cv.matchTemplate(patch[y + b : y + d, x + a : x + c], template[b:d, a:c], cv.TM_CCOEFF_NORMED)[0, 0])
+                    )
+                if any(value < definition["minimum_score"] for value in current_part_scores):
+                    continue
             if candidate_score > score:
                 score, location, filename, encoding = candidate_score, candidate_location, candidate_filename, candidate_encoding
+                part_scores = current_part_scores
         if score < definition["minimum_score"]:
             # 이름표가 제목 검색 영역을 가리면 미검출을 토글 요청으로 쓰지 않는다.
             mask = label_occlusion_mask(normalized, include_gold=False)
@@ -67,4 +85,6 @@ class AutomapObserver:
         self.last_evidence = dict(
             area=area, score=score, title_at=(x0 + location[0], y0 + location[1]), template=filename, encoding=encoding
         )
+        if part_scores:
+            self.last_evidence["part_scores"] = part_scores
         return True

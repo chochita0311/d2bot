@@ -66,8 +66,9 @@ def plan_arcane_step(
     prefer_frontier=False,
     allow_no_aim=False,
     excluded=(),
+    ground_reading=None,
 ):
-    reading = ground.observe(frame, captured_at=captured_at)
+    reading = ground.observe(frame, captured_at=captured_at) if ground_reading is None else ground_reading
     if reading.point is None:
         raise RuntimeError(reading.reason)
     x, y = reading.point

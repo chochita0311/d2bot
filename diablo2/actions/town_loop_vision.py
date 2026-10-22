@@ -546,7 +546,24 @@ class TownLoopPlanner:
                 # 지도를 숨긴 동안에는 현재 native 전체 중앙 근거만 지역/클릭을 승인한다.
                 destination = waypoint if waypoint and waypoint.get("evidence") == "current_native_hub" else None
                 if not destination and now - inspection["requested_at"] >= 1.5:
-                    raise RuntimeError("Current Arcane waypoint missing during temporary map inspection.")
+                    if not hud or menu or find("save_exit") or find("npc_cancel"):
+                        raise RuntimeError("Arcane map restoration requires current HUD without a panel.")
+                    inspection.update(status="restore_for_reacquisition", restore_requested_at=now)
+                    deadline = data["deadline"]
+                    action = self._action("destination_arrival", now, "Restore Arcane automap for fresh waypoint reacquisition", key="tab")
+                    data["deadline"] = min(deadline, data["deadline"])
+                    return action
+            elif inspection and inspection["status"] in ("restore_for_reacquisition", "on_reacquiring"):
+                # 숨김 재시도 없이 현재 ON 지역/두 문양을 다시 요구한다. 도착 판독 시한도 유지한다.
+                if now - inspection["restore_requested_at"] >= 6:
+                    raise RuntimeError("Current Arcane waypoint missing after bounded map restoration.")
+                waypoint = find("world_arcane_waypoint")
+                on_observed = destination and hud and not menu and not find("save_exit") and not find("npc_cancel")
+                if on_observed and inspection["status"] == "restore_for_reacquisition":
+                    inspection.update(status="on_reacquiring", restored_at=now)
+                destination = waypoint if on_observed and waypoint and waypoint.get("evidence") == "current_native_hub" else None
+                if destination:
+                    inspection["status"] = "on_native_reacquired"
             if destination and hud and not menu and not find("save_exit"):
                 waypoint = waypoint or find(
                     "world_act2_waypoint" if data["destination"] == "town" else "world_" + data["destination"] + "_waypoint"
@@ -571,9 +588,10 @@ class TownLoopPlanner:
             destination = act2 if data["destination"] == "town" else find("area_" + data["destination"])
             inspection = data.get("arcane_map_inspection")
             native_waypoint = None
-            if inspection and inspection["status"] == "hidden":
+            if inspection and inspection["status"] in ("hidden", "on_native_reacquired"):
                 native_waypoint = find("world_arcane_waypoint")
-                destination = native_waypoint if native_waypoint and native_waypoint.get("evidence") == "current_native_hub" else None
+                current_native = native_waypoint and native_waypoint.get("evidence") == "current_native_hub"
+                destination = native_waypoint if current_native and (inspection["status"] == "hidden" or destination) else None
             if destination and hud and not menu and not find("save_exit"):
                 if data["destination"] == "town" and find("npc_cancel"):
                     if data["npc_recoveries"] >= 3:

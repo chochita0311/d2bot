@@ -35,6 +35,7 @@ class NearbyHostileProbe:
     """외형 미등록 적은 근처를 호버한 뒤 현재 적 체력 패널의 양성 확인으로만 승인한다."""
 
     OFFSETS = ((-80, -130), (80, -130), (0, -80), (-160, -80), (160, -80), (-240, -40), (240, -40), (-120, 0), (120, 0), (0, -160))
+    PROPOSAL_TOLERANCE = 64
 
     def __init__(self, target_observer, backend, origin, *, clock, to_desktop=None):
         self.observer, self.backend, self.origin, self.clock = target_observer, backend, origin, clock
@@ -60,6 +61,14 @@ class NearbyHostileProbe:
                 0.05 <= acquired - requested_at <= 0.5
                 and self.pending_ground is not None
                 and math.hypot((self.pending_ground[0] - player[0]) / 300, (self.pending_ground[1] - player[1]) / 180) <= 1
+                and (
+                    points is None
+                    or any(
+                        math.hypot((x - player[0]) / 300, (y + 80 - player[1]) / 180) <= 1
+                        and math.hypot(x - self.pending_ground[0], y + 80 - self.pending_ground[1]) <= self.PROPOSAL_TOLERANCE
+                        for x, y in points
+                    )
+                )
                 and self.backend.pointer_matches(absolute)
             ):
                 target = self.observer.observe(frame)

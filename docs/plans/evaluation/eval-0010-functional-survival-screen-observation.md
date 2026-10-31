@@ -16,7 +16,7 @@ primary가 실제 마을 화면을 육안으로 대조했다. 생명력 **985/98
 
 최종 입력 없는 `--live --frames 3` 진단은 세 프레임 모두 native 1922×1140, 985/985·1075/1075, 포션 12·TP 4를 반환했다. explicit Flash/room 정책은 모두 `hold / buff_requires_field`, 전송 입력은 0이었다. 고해상도 호출 시각 기준 캡처는 **36.96–46.84ms**, 판독은 **3.15–3.64ms**였으며 같은 장면의 짧은 관찰값이다. 분위수·장시간 성능·비상 입력 지연 상한으로 사용하지 않는다. 버프를 마을에서 시전하지 않았다.
 
-[unittest](../../../tests/test_survival_vision.py) 포함 전체 **60/60** 통과: 화면 관찰 13개, 기존 시전 13개·생존 18개·마을 16개. 지정 새 Python 4개 compile, 코드/테스트 3개 Black check도 통과했다. sandbox의 venv launcher 제한을 승인된 로컬 검증으로 해결했고 환경을 변경하지 않았다.
+[unittest](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/tests/test_survival_vision.py) 포함 전체 **60/60** 통과: 화면 관찰 13개, 기존 시전 13개·생존 18개·마을 16개. 지정 새 Python 4개 compile, 코드/테스트 3개 Black check도 통과했다. sandbox의 venv launcher 제한을 승인된 로컬 검증으로 해결했고 환경을 변경하지 않았다.
 
 합성 검증은 label/숫자/슬롯 가림·잘못된 크기·잘못된 숫자 범위·모호함·설정 오류, 새 최대값 및 <50%/<10% 경계, 6/0개 정책 요청, 잘못된 종류/capacity/중복 위치, CLI 상호 배타/프레임 상한/명시 설정과 최소화 창의 close를 확인했다. 6/0개는 슬롯/정책 자료의 합성이며 실제 벨트 고갈이나 게임 종료 테스트가 아니다. 입력과 무관한 판독 결과를 실제 회복·탈출 성공으로 세지 않는다.
 

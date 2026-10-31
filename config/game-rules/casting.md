@@ -1,6 +1,6 @@
 # casting.json
 
-Purpose: shared class/skill casting references consumed by the input-free [casting catalog](../../diablo2/common/casting.py). Individual names, equipment FCR and bindings belong in [character configuration](../characters/characters.md#casting).
+Purpose: shared class/skill casting references consumed by the input-free [casting catalog](../../src/common/casting.rs). Individual names, equipment FCR and bindings belong in [character configuration](../characters/characters.md#casting).
 
 ## casting_rule_sets
 

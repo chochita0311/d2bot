@@ -1,10 +1,10 @@
 # Field Control
 
-공통 [제어기](../../diablo2/common/field_control.py)는 캐릭터 설정의 키로 F2 이동 유지→F2 해제/F4 공격 유지→F4 해제/전리품 확인→F2 이동 재개를 제공하는 재사용 API다. 기본은 dry-run이며 실제 입력에는 backend와 검증한 관찰 생산자를 명시적으로 연결해야 한다. [runtime](../../diablo2/common/field_runtime.py)은 관찰 한 개만 보관하고 독립적으로 입력 시한을 감시한다. 현재 Summoner GUI는 최신 main의 `HeldFieldInput`·watchdog·화면 생산자·자동 버프·조건부ALT를 연결한다. 아래 전체 `FieldRuntime` 주입 API와 별도 실행 경로이며 [현재 안내](summoner-run.md)가 동작/미완료 경계를 소유한다.
+공통 [제어기](../../src/common/field_control.rs)는 캐릭터 설정의 키로 F2 이동 유지→F2 해제/F4 공격 유지→F4 해제/전리품 확인→F2 이동 재개를 제공하는 재사용 API다. 기본은 dry-run이며 실제 입력에는 backend와 검증한 관찰 생산자를 명시적으로 연결해야 한다. [runtime](../../src/common/field_runtime.rs)은 관찰 한 개만 보관하고 독립적으로 입력 시한을 감시한다. 현재 Summoner GUI는 최신 main의 `HeldFieldInput`·watchdog·화면 생산자·자동 버프·조건부ALT를 연결한다. 아래 전체 `FieldRuntime` 주입 API와 별도 실행 경로이며 [현재 안내](summoner-run.md)가 동작/미완료 경계를 소유한다.
 
 ## Use And Ownership
 
-`create_field_control(config, character_id, room_id, limits)`는 기본으로 입력을 보내지 않는 `DryFieldInput`을 사용한다. live 사용에는 명시적인 backend, 현재 게임 포커스 함수, 창 경계 함수, 관찰 생산자와 같은 시계의 확인된 생존 상태가 필요하다. [ControllerFieldInput](../../diablo2/common/controller.py)은 표준 키보드/마우스 입력에 연결하고, `BotController.attach_field_control(loop)`는 기존 pause/stop 콜백의 키 해제를 연결한다. backend는 key_down/key_up/press/move를 짧게 실행해야 한다.
+`create_field_control(config, character_id, room_id, limits)`는 기본으로 입력을 보내지 않는 `DryFieldInput`을 사용한다. live 사용에는 명시적인 backend, 현재 게임 포커스 함수, 창 경계 함수, 관찰 생산자와 같은 시계의 확인된 생존 상태가 필요하다. [ControllerFieldInput](../../src/common/controller.rs)은 표준 키보드/마우스 입력에 연결하고, `BotController.attach_field_control(loop)`는 기존 pause/stop 콜백의 키 해제를 연결한다. backend는 key_down/key_up/press/move를 짧게 실행해야 한다.
 
 필드 조준은 가상 데스크톱 원점·전체 크기로 `SendInput`을 정규화한다. 창 안 좌표를 확인한 뒤 한 번 전송하고, 현재 포커스/중단을 계속 확인하며 최대80ms 안에 실제 커서가 요청점3px 이내인지 읽는다. 지속 불일치는 재전송 없이 오류이며 새 유지 입력을 승인하지 않는다. 감독 main의 `input_events[].pointer_evidence`는 요청/실제 좌표·데스크톱 범위·대기 시간을 기록한다. 커서 일치는 시전이나 착지 확인이 아니다.
 
@@ -18,7 +18,7 @@
 
 전체 FieldRuntime의 외부 경로 API는 `navigation_allowed(stamp)`와 `dispatch_navigation(stamp, aim=..., cast=...)`다. 최신 공통 판단이 travel의 `destination_unconfirmed`일 때만 허용하고 생존/버프/전투/전리품/포커스/중단/기한을 같은 actor lock 안에서 재검사한다. 유지 키 해제 뒤 한 번 press하며 실제 backend에는 독립 watchdog이 필요하다. [아케인 단일 시전 API](arcane-navigation.md)는 capture/HUD/발판/배경을 이 경계에 연결한다. 현재 GUI는 별도 연속 main 경로를 사용한다.
 
-runtime의 기본 시계는 `time.monotonic`이다. 모든 상태/관찰 시각도 같은 시계여야 한다. 기존 `FramePacket.timestamp`의 wall-clock 시각을 그대로 혼합하지 않는다. 재생은 명시적으로 주입한 상대 시계를 사용한다. 시계가 역행하면 키를 해제하고 해당 제어기를 종료한다.
+runtime의 기본 시계는 Rust의 단조 시계(`Instant` 기반 세션 시각)이다. 모든 상태/관찰 시각도 같은 시계여야 한다. 기존 `FramePacket.timestamp`의 wall-clock 시각을 그대로 혼합하지 않는다. 재생은 명시적으로 주입한 상대 시계를 사용한다. 시계가 역행하면 키를 해제하고 해당 제어기를 종료한다.
 
 키 유지의 시한은 최신 관찰 시각+screen_age, 최단 버프 갱신 시각, 전투/도착 상한 중 빠른 값이다. Flash의 확인된 Orders 시각+140초(지속150초−갱신 여유10초)에 새 화면이 없어도 키가 해제된다. 자동 소비자가 연결되면 새 안전 관찰에서 [버프 트랜잭션](field-buffs.md)을 진행하고 각 키 사이에도 감시한다. 소비자가 없으면 기존처럼 요청과 해제까지만 수행한다. 제어기가 `buff`를 반환하거나 전체 키를 보내는 것만으로 시계를 갱신하지 않는다.
 
@@ -34,8 +34,8 @@ Flash는 현재 보라 포션 잔량이6개 이하일 때만 작은 활력을 �
 
 ## Verification
 
-[재생 CLI](../../diablo2/tools/field_replay.py)는 `--config config --character flash --room demo --scenario <json>`로 합성 의미 이벤트만 읽는다. `evidence=synthetic`, 명시적 limits, 최대1000개 event(파일1MiB 이하)가 필요하다. belt/buff/observation/potion_consumed/tick 이벤트를 처리하고 `inputs_sent=0`과 dry 이벤트를 출력한다. 실제 화면 판독 성공이나 live 입력 증거로 사용하지 않는다.
+[재생 CLI](../../src/tools/field_replay.rs)는 `--config config --character flash --room demo --scenario <json>`로 합성 의미 이벤트만 읽는다. `evidence=synthetic`, 명시적 limits, 최대1000개 event(파일1MiB 이하)가 필요하다. belt/buff/observation/potion_consumed/tick 이벤트를 처리하고 `inputs_sent=0`과 dry 이벤트를 출력한다. 실제 화면 판독 성공이나 live 입력 증거로 사용하지 않는다.
 
-[필드 테스트](../../tests/test_field_control.py)는 키 겹침/전환, 독립 시한, 포션 대기/고갈, 보충 해제, 불확실 처치, 포커스/창 경계, 오류 정리, class/FCR 도착 적응, 시계 역행과 mailbox를 검증한다. 실제 유지 입력, 자동 안전/사망/획득 생산자, 네 방향 완주와 room lifecycle 연결은 [실행 기록](../plans/run/run-20261005-06-field-control-loop.md)의 별도 증거 범위를 따른다.
+[필드 테스트](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/tests/test_field_control.py)는 키 겹침/전환, 독립 시한, 포션 대기/고갈, 보충 해제, 불확실 처치, 포커스/창 경계, 오류 정리, class/FCR 도착 적응, 시계 역행과 mailbox를 검증한다. 실제 유지 입력, 자동 안전/사망/획득 생산자, 네 방향 완주와 room lifecycle 연결은 [실행 기록](../plans/run/run-20261005-06-field-control-loop.md)의 별도 증거 범위를 따른다.
 
-[감독 입력 probe](../../diablo2/tools/field_input_probe.py)는 명시적 `--live`, 15초 이내의 감독 확인, 긍정 HUD/닫힘/포커스, 최대1초 유지 또는8초 버프 한도를 요구한다. stdin 준비 방식은 backend 초기화 뒤 최신 확인을 받는다. [실행 기록](../plans/run/run-20261005-06-field-control-loop.md)이 짧은 F2/F4·연속 버프 시험의 실제 결과를 소유한다. scene/effect/equipment는 감독 확인이고 완전 제어기의 자동 생산자/GUI 연결을 live 검증한 것은 아니다.
+[감독 입력 probe](../../src/tools/field_input_probe.rs)는 명시적 `--live`, 15초 이내의 감독 확인, 긍정 HUD/닫힘/포커스, 최대1초 유지 또는8초 버프 한도를 요구한다. stdin 준비 방식은 backend 초기화 뒤 최신 확인을 받는다. [실행 기록](../plans/run/run-20261005-06-field-control-loop.md)이 짧은 F2/F4·연속 버프 시험의 실제 결과를 소유한다. scene/effect/equipment는 감독 확인이고 완전 제어기의 자동 생산자/GUI 연결을 live 검증한 것은 아니다.

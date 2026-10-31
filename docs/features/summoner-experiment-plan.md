@@ -60,9 +60,9 @@
 | 재정비 | 설정에는 스크롤/물약 무시·감정 후 폐기 미사용이 있음; 감정/부활/보충의 완성 제어는 확인 안 됨 | 현재 요구와의 차이, 보호 슬롯·소모/잔량·NPC 결과 확인 |
 | 녹화 | 북쪽 자동 녹화는 진입·버프 뒤 시작. 일부 성공 영상 삭제 가능 | 방 생성부터 종료까지 증거 누락 없이 보존 |
 | 캡처 | GUI 스냅샷은 `assets/private/gui_snapshot.png`를 덮어씀 | 고유 이름과 원본/주석 구분 |
-| 검증 환경 | 이번 문서 확인에서 `.venv/Scripts/python.exe` 런처가 지정된 Python 3.7 기반 프로세스를 시작하지 못함 | 재생/실행 전 [인터프리터 진단](../project/developer-guide.md#interpreter-diagnostics); 이번에는 환경 수정/설치 안 함 |
+| 검증 환경 | 이번 문서 확인에서 `.venv/Scripts/python.exe` 런처가 지정된 Python 3.7 기반 프로세스를 시작하지 못함 | 재생/실행 전 [인터프리터 진단](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/docs/project/developer-guide.md#interpreter-diagnostics); 이번에는 환경 수정/설치 안 함 |
 
-당시 근거는 `run_lifecycle.py`, 옛 `summoner_run.py`, 제거된 `routes/common/arcane_common.py`, `common/detectors.py`, `actions/loot_pickup.py`, `ui/gui.py`, 시스템 설정이었다. 이 코드 이름은 당시 관측 위치이며 현재 같은 구현이 유지된다는 뜻이 아니다. 현재 [방 세션](../../diablo2/actions/run_lifecycle.py), [Summoner 동작](summoner-run.md), [시스템 설정](../../config/system/system.md)은 각각 유지된 소비자를 안내한다. 기준선 확인은 신규 실행 성공의 증거가 아니다.
+당시 근거는 `run_lifecycle.py`, 옛 `summoner_run.py`, 제거된 `routes/common/arcane_common.py`, `common/detectors.py`, `actions/loot_pickup.py`, `ui/gui.py`, 시스템 설정이었다. 이 코드 이름은 당시 관측 위치이며 현재 같은 구현이 유지된다는 뜻이 아니다. 현재 [방 세션](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/actions/run_lifecycle.py), [Summoner 동작](summoner-run.md), [시스템 설정](../../config/system/system.md)은 각각 유지된 소비자를 안내한다. 기준선 확인은 신규 실행 성공의 증거가 아니다.
 
 ## 단계별 실험 제안
 

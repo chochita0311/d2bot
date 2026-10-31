@@ -1,4 +1,4 @@
-﻿# Farm Profiles
+# Farm Profiles
 
 This document defines the reusable structure for farming runs.
 

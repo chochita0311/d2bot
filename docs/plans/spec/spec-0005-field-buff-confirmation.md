@@ -20,9 +20,9 @@
 
 ## Implementation And Producers
 
-- [BuffSequence/BeltInspection](../../../diablo2/common/buffing.py): 개인 순서의 요청→전송 결과→시각 확인을 분리한다. 단계 실패/시작 후 안전 차단은 취소하며 자동 재개하지 않는다. 효과·전체 순서·개인 전투 장비 복귀의 명시적 확인 뒤에만 원래 요청 직전 관찰 시각을 FEAT-0003에 전달한다. 같은 생산자의 단조 시각/순번을 요구하고 갱신 시점이 지난 완료 상태를 진행 허가로 재사용하지 않는다.
-- [시각 보조](../../../diablo2/common/buffing_vision.py): 최대값 증가 후보와 열린 인벤토리의 I/II 탭만 읽는다. 후보는 버프 종류/전체 효과를 증명하지 않으며 탭은 개인 전투 세트/장비/FCR를 추측하지 않는다. 현재 전체 효과·필드/주변 안전 증거 생산자는 감독자다.
-- [HUD 판독](../../../diablo2/common/survival_vision.py): v2 manifest의 제한된 라벨 검색/마나 변형으로 실제 네 자리 최대값을 읽는다. 닫힘 전용 테두리를 확인해 `belt_visibility`를 반환한다. 펼침 미검출만으로 닫힘을 선언하지 않는다. 펼친 잔량 확인 뒤 `BeltInspection`은 최신 닫힘과 공통 생존 조건이 있어야 이동 조건을 통과시킨다.
+- [BuffSequence/BeltInspection](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/buffing.py): 개인 순서의 요청→전송 결과→시각 확인을 분리한다. 단계 실패/시작 후 안전 차단은 취소하며 자동 재개하지 않는다. 효과·전체 순서·개인 전투 장비 복귀의 명시적 확인 뒤에만 원래 요청 직전 관찰 시각을 FEAT-0003에 전달한다. 같은 생산자의 단조 시각/순번을 요구하고 갱신 시점이 지난 완료 상태를 진행 허가로 재사용하지 않는다.
+- [시각 보조](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/buffing_vision.py): 최대값 증가 후보와 열린 인벤토리의 I/II 탭만 읽는다. 후보는 버프 종류/전체 효과를 증명하지 않으며 탭은 개인 전투 세트/장비/FCR를 추측하지 않는다. 현재 전체 효과·필드/주변 안전 증거 생산자는 감독자다.
+- [HUD 판독](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/survival_vision.py): v2 manifest의 제한된 라벨 검색/마나 변형으로 실제 네 자리 최대값을 읽는다. 닫힘 전용 테두리를 확인해 `belt_visibility`를 반환한다. 펼침 미검출만으로 닫힘을 선언하지 않는다. 펼친 잔량 확인 뒤 `BeltInspection`은 최신 닫힘과 공통 생존 조건이 있어야 이동 조건을 통과시킨다.
 - 공통 자료: [HUD owner](../../../assets/ui/survival/README.md), [무기 탭 owner](../../../assets/ui/weapon-set/README.md). 이름/장비 원본을 공통 자산에 넣지 않는다. 기존 자산의 이동/개명/형식 교정은 제외한다.
 
 ## Acceptance Mapping

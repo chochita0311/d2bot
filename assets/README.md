@@ -2,6 +2,8 @@
 
 Every asset belongs to one of these five owners. A screenshot captured during personal testing can still be a reusable game appearance; actual names, accounts, equipment/stock and bindings define the private boundary.
 
+Windows runtime packages use [runtime-bundle.json](runtime-bundle.json). The default package retains non-reference shared assets, the two reference images actually read by room loading/exit detection and any shared asset explicitly selected in config. It omits `private/` and other development `references/`. Source/replay assets stay in this repository. `-IncludeDevelopmentAssets` includes shared development references when required for development. A new runtime loader or reference needs an entry in the policy where applicable and coverage in `examples/runtime-assets-check.rs`; packaging initializes those real loaders before publication and fails on missing files.
+
 | Owner | Responsibility and internal organization |
 | --- | --- |
 | `regions/` | Region-specific terrain, monsters and landmarks. [Arcane](regions/arcane-sanctuary/remastered-ko-1922x1140/README.md) keeps manifests at its variant root, runtime crops in `templates/{navigation,hub,terminal,objective,encounters,hover}/` and replay sources in semantic `references/` groups. Region guides distinguish the small uncalibrated catalogs from runtime/replay banks. |

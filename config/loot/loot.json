@@ -19,14 +19,14 @@
         "threshold": 0.8
       },
       {
-        "label": "rune",
-        "ground_template": "assets/items/runes/rune-on-the-ground.png",
-        "threshold": 0.8
+        "label": "ist rune",
+        "ground_template": "assets/items/runes/ist-on-the-ground.png",
+        "threshold": 0.95
       },
       {
-        "label": "amethyst",
-        "ground_template": "assets/items/gems/amethyst-on-the-ground.png",
-        "threshold": 0.8
+        "label": "ohm rune",
+        "ground_template": "assets/items/runes/ohm-on-the-ground.png",
+        "threshold": 0.95
       }
     ]
   }

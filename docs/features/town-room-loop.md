@@ -9,7 +9,7 @@
 같은 세션을 CLI에서도 실행할 수 있다. 프로젝트 루트에서 실행한다. 이 명령은 실제 게임 입력을 전송한다.
 
 ```powershell
-.\.venv\Scripts\python.exe main.py --town-loop 1 --difficulty hell
+.\d2bot.exe --town-loop 1 --difficulty hell
 ```
 
 CLI는 정확한 `Diablo II: Resurrected` 창과 window 캡처를 사용한다. GUI에서는 해당 게임 창을 선택한다. F10, Stop Action, CLI Ctrl+C로 중단한다. 완료하면 캐릭터 선택 화면에 남는다. 다른 초기 상태에서 무조건 Play/이동을 시도하지 않는다.
@@ -19,7 +19,7 @@ CLI는 정확한 `Diablo II: Resurrected` 창과 window 캡처를 사용한다. 
 성역 왕복은 `--town-destination arcane`으로 실행한다. 방 생성부터 성역 중앙까지만 준비하고 입력을 끝내려면 아래 명령을 사용한다. 이 진입 전용 모드는 성역 화면에 남으며 버프·날개 이동·종료를 실행하지 않는다. `--town-loop`와 동시에 지정할 수 없다.
 
 ```powershell
-.\.venv\Scripts\python.exe main.py --arcane-entry --difficulty hell
+.\d2bot.exe --arcane-entry --difficulty hell
 ```
 
 ## 관찰과 이동
@@ -52,9 +52,9 @@ Summoner 마감의 선택적 성역 지도 검사는 OFF에서1.5초 안 현재 
 
 ```powershell
 # 입력 없이 프로젝트 캡처 한 장 저장
-.\.venv\Scripts\python.exe -m diablo2.actions.town_loop_vision --capture-frame recordings/summoner/evidence/<session-id>/scene.png
+.\d2bot.exe town-loop-vision --capture-frame recordings/summoner/evidence/<session-id>/scene.png
 # 육안으로 장면을 확인한 뒤 기존 템플릿의 변형 추가
-.\.venv\Scripts\python.exe -m diablo2.actions.town_loop_vision --calibrate-frame <frame-path> --scene waypoint1
+.\d2bot.exe town-loop-vision --calibrate-frame <frame-path> --scene waypoint1
 ```
 
 지원 장면은 character, difficulty, act1, act2, waypoint1, waypoint2, exit, world_waypoint1이다. `--calibrate-from`은 최초 은행을 재생성하며 기존 manifest의 추가 단서/변형을 덮어쓰므로 운용 은행에 재실행하지 않는다. 새 단서의 crop/search/threshold/click_offset은 manifest와 원본 프레임에 함께 남긴다. 실행 중 자동 학습은 하지 않는다.

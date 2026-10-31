@@ -12,10 +12,24 @@ This document holds development workflow details that are too specific or verbos
 
 ## Code Style
 
-- Follow existing Python style in the touched file.
+- Follow nearby Rust style and run the configured Rust formatter.
 - Avoid adding noisy comments for obvious assignments.
-- Use the repository formatter configuration in `pyproject.toml` when formatting Python code.
-- Run the formatter after meaningful Python edits, especially before finishing a task, when touching multiple lines in a file, or when a change leaves formatting inconsistent with nearby code.
+
+## Rust Development
+
+The [Rust port](../plans/prd/prd-0009-rust-windows-port.md) keeps one root Cargo package and the existing domain responsibilities under `src/`. The Python source and interpreter are retired. Frozen pre-retirement observations under `tests/fixtures/legacy-baseline/` retain independently observed expected results; new cases require reviewed expectations, never automatic regeneration from the implementation under test. Only publish modules with implemented contracts; empty files or disabled buttons do not establish migration coverage.
+
+- Use the exact `rust-toolchain.toml` version, track `Cargo.lock`, and keep ordinary Cargo output in the standard ignored `target/`. Run `cargo fmt --check`, `cargo check --all-targets --locked`, `cargo clippy --all-targets --locked -- -D warnings`, relevant tests, and release linking for a completed feature. Metadata/type checking does not prove that an EXE links or runs.
+- Rust uses ownership/borrowing and deterministic `Drop`, rather than a tracing garbage collector. Prefer a clear owner for mutable state and owned, validated image buffers. Share immutable frames only when a real consumer needs them; reference counting is not cycle collection. Keep references out of buffers that a producer may reuse.
+- Keep fallible runtime operations in `Result` paths, preserve unknown observations and typed failure/stop outcomes, and handle partial writes/initialization explicitly. Runtime `unwrap`/`expect` are denied by the Cargo lints. Do not turn backend errors into false success or add retries without the consumer contract.
+- Library code denies `unsafe_code`. If Windows FFI is needed, allow unsafe only in the narrow reviewed platform boundary, documenting calling conventions, handle ownership, buffer bounds and lifetimes. Never use unsafe to bypass an ownership/type error in policy, UI, vision or routing code.
+- Give each worker/session a clear cancellation and shutdown owner. Avoid holding a lock during capture, disk I/O, foreign calls, sleeps, input dispatch or worker joins. Input release deadlines and stop handling must not wait for a busy GUI/vision/writer. Confirm normal shutdown errors explicitly; `Drop` is a fallback for releasing owned resources, not proof that an OS release succeeded.
+- Vision uses `common::compute` scoped jobs on at most eight shared Rayon workers, capped by available parallelism. The family divides its budget between foreground and broad background work (6+2 at eight workers); nested work stays in the entering pool. Current confirmations belong to the foreground, even when their recognizer also supplies background hints. Active sessions/observers own a `ComputeLease`. Do not create OS threads per frame, retain a strong global pool, or let jobs retain frames after their scope. The final family lease joins both pools' actual OS workers outside registry locks. Keep output ordering and each pixel's arithmetic order when partitioning work.
+- Use fake clocks/backends and the fixed legacy/config/assets baseline for parity. Check thresholds, deadlines, ordering, float/rounding behavior, failure and cleanup paths. Safe Rust does not by itself prove correct timing, bounded memory, freedom from deadlocks, or behavioral parity.
+
+The active feature/spec/run owns the actual implemented and verified Rust surface. Keep OS installation failures and local evidence there instead of weakening shared checks or silently switching toolchains.
+
+The Windows packager retains shared runtime assets according to [the asset policy](../../assets/README.md), rather than copying every replay source. Register new runtime asset consumers in `examples/runtime-assets-check.rs` and required reference paths in `assets/runtime-bundle.json`; keep config-selected shared assets portable. A successful loader smoke supports asset availability, not live gameplay correctness.
 
 ## Comment Style
 
@@ -32,19 +46,9 @@ This document holds development workflow details that are too specific or verbos
 
 ## Verification
 
-- For Python-only edits, run at least `python -m py_compile` on changed files when practical.
-- If a change affects GUI layout, verify the touched module still imports and compiles cleanly.
+Run the Rust checks above and `cargo test --all-targets --locked`. The tests execute Rust only; the frozen baseline loader hashes requests and referenced file contents, including newly written AVI bytes. A changed recording therefore needs a new independent decode review rather than reusing an unrelated old decode result. Fixed results cover observed cases, not all possible behavior. Explicit native-window/capture/hotkey tests remain opt-in and do not establish game acceptance.
 
-## Interpreter Diagnostics
-
-Use the project's `.venv\Scripts\python.exe` for both IDE and terminal checks. If package installation reports missing SSL support, first inspect that exact interpreter:
-
-```powershell
-.\.venv\Scripts\python.exe -c "import sys, ssl; print(sys.executable); print(sys.prefix); print(sys.base_prefix); print(ssl.OPENSSL_VERSION)"
-.\.venv\Scripts\python.exe -m pip --version
-```
-
-Check that the executable and pip belong to the intended environment. A failing `import ssl` must be resolved at the interpreter/base-environment boundary before diagnosing a particular package. Compare the same executable inside and outside the IDE. If rebuilding the environment is required, verify SSL in the chosen base interpreter first, then follow [README setup](../../README.md#quick-start) and select the rebuilt `.venv` in the IDE. Shell-only DLL/PATH fixes are diagnostic evidence rather than a stable IDE setup contract.
+For historical interpreter/SSL diagnosis, use the pre-retirement [developer guide at the pinned baseline](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/docs/project/developer-guide.md#interpreter-diagnostics). The current project requires no Python environment.
 
 ## Evidence Handling
 

@@ -2939,6 +2939,234 @@
       "source_frame_sha256": "cded53fd120b3e0559c991a290615c3ce0f88fac123f986027a6380e98db092b",
       "details_owner": "../../../ui/automap/manifest.json",
       "review": "Current Korean Arcane letters over gray stone walkway; title-only canvas1775,100,1900,135 and normalized crop1178,70,1246,85. Whole title and each of three letter parts at unchanged .86; no retroactive fresh55 completion."
+    },
+    {
+      "path": "references/navigation/north-descending-stair-localization-transition.png",
+      "sha256": "c80a7b5fd0526002ac8681ea1690b61af2b6966367ddadb644d8e674476ced6e",
+      "execution_id": "20261024-rust-r02",
+      "source_frame": "phase-00-north-outbound-00-continuous-0026-after.png",
+      "source_frame_sha256": "baa4e98cb89634962112fa141ed2831a9d1b6823b073440c6bc10745ddef6f26",
+      "field_box": [
+        242,
+        55,
+        1682,
+        900
+      ],
+      "ground": [
+        962,
+        578
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Current descending-stair corner after graph west intent and a brief localization recovery. Replay of the graph-to-floor continuity transition; rejected opposite aim was never dispatched. Outside the native path viewport is zero. No whole-map route, runtime template, portal-link or live success approval."
+    },
+    {
+      "path": "references/navigation/north-descending-stair-graph-current.png",
+      "sha256": "94eeb4103129553c15ad68f7fe5f03045ea07ee3137d947edc7164909c227fe5",
+      "execution_id": "20261024-rust-r02",
+      "source_frame": "phase-00-north-outbound-00-continuous-0025-turn.png",
+      "source_frame_sha256": "dc5b072b80c1857280ac83315967de5da1573615497c8c906a74c4dee15a4976",
+      "field_box": [
+        244,
+        55,
+        1684,
+        900
+      ],
+      "ground": [
+        964,
+        577
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Last graph-current frame before R02 descending-stair localization loss; west port intent is current here. Paired graph-to-floor replay; outside the native path viewport is zero. No whole-map route, runtime template, portal-link or live success approval."
+    },
+    {
+      "path": "references/summoner/platform-alive-front-lit.png",
+      "sha256": "945666731544f6a8b08e6d4922979f2d917e8c493d3f5466671906dae2e0aecc",
+      "execution_id": "20261024-rust-r05",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "da7a1168ee2b14d44fdea20b48227be9d1a05d02ab5b825a1de60b963f396899",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "ground": [
+        962,
+        580
+      ],
+      "platform_ground": [
+        1449.5,
+        570
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Native current alive-platform scene used to reproduce 240px path preference excluding a 487px target. Fixture only; original encounter target/corpse were unconfirmed. Before and after source PNGs are byte-identical and are not independent observations. No live success inferred."
+    },
+    {
+      "path": "references/terminal/north-metal-three-chests.png",
+      "sha256": "8e9026f89a07aecbc051e95bb723eaa9888bbb0398339c56f4697f276162b297",
+      "execution_id": "20261024-rust-r06",
+      "source_frame": "phase-00-north-outbound-00-terminal-first-acquired.png",
+      "source_frame_sha256": "3f7fecc4aa234299de127df1e2878e7432f2f12892c556ba2d1ab2a4cae3b2b0",
+      "field_box": [
+        120,
+        55,
+        1900,
+        900
+      ],
+      "removed_metadata_box": [
+        1660,
+        55,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review: initial three distinct metal chests; later camera translation leaves one chest and the separate gold floor ornament visible. Development-only native regression. Later frame is not evidence of recovery within the original two-second age, arrival, or completed room.",
+      "acquired_at": 45.024815,
+      "capture_sequence": 223
+    },
+    {
+      "path": "references/terminal/north-metal-one-chest-after-camera-shift.png",
+      "sha256": "460275b4a24143995f6593c2fe590d4cc6d18ec781cb59c4c6c9b9cb54091a2c",
+      "execution_id": "20261024-rust-r06",
+      "source_frame": "phase-00-north-outbound-00-terminal-map-first-hidden.png",
+      "source_frame_sha256": "b927c320141743b5713cf022a1c21e4213fdfb9ec8a5da8e7f5cae3c4826c2c6",
+      "field_box": [
+        120,
+        55,
+        1900,
+        900
+      ],
+      "removed_metadata_box": [
+        1660,
+        55,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review: first hidden-map frame after camera shift, 0.7275053s after original three-chest source. One metal chest and separate floor ornament remain current. Native regression is inside the original two-second age; not live recovery or arrival approval.",
+      "acquired_at": 45.7523203,
+      "capture_sequence": 226
+    },
+    {
+      "path": "references/summoner/platform-alive-cast-unrecognized.png",
+      "sha256": "9b18542cc7e34d6db75c2d9e3d5b6a117044dfd112c426e9be3ad3da6c087b51",
+      "execution_id": "20261024-rust-r04",
+      "source_frame": "encounter-before.png",
+      "source_frame_sha256": "613e1664673b3326408ce457ea4c7da9711d9e3accc26a6213c19b6d9bdeefef",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review. R04 living Summoner with bright cast effects; existing appearance is unknown. Opposite-state regression only, not a new runtime part or automated kill."
+    },
+    {
+      "path": "references/summoner/platform-alive-rear-unrecognized.png",
+      "sha256": "06fe9576bf9638b3c4c3f2eee918c2c7eb3cea2df86ec6dfc26d24742f2f1e72",
+      "execution_id": "20261024-rust-r04",
+      "source_frame": "encounter-after.png",
+      "source_frame_sha256": "137964025a1b0b697519231e43e749bd2f7ca0f6e893318cf00cdb02c4bf2ac0",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review. R04 living Summoner in a distinct later rear pose; existing appearance is unknown. Opposite-state regression only; no lowered threshold or new runtime part."
+    },
+    {
+      "path": "references/summoner/platform-corpse-merc-overlap-unrecognized.png",
+      "sha256": "a5139aecf05b3be9b6fdd5728c4efd0d84aced5a6fc7c81f58028e8ed29f05ae",
+      "execution_id": "20261024-rust-r05",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "e81d26cdbea7497dece22b4700d8b4e680d8ef6b33a47762f87682cfabd87d8b",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review. Later R05 horizontal blue/gold Summoner corpse partly covered by standing mercenary. Existing corpse result is unknown. Must not confuse foreground mercenary with living Summoner; no two-fresh-frame kill approval."
+    },
+    {
+      "path": "references/hub/return-player-merc-single-ornament.png",
+      "sha256": "e64591716f92e88fe6b9cb63897ee68026c2e804c4da4dc248e30012e027ea86",
+      "execution_id": "20261024-rust-r04",
+      "source_frame": "phase-00-north-return-00-hub-arrived.png",
+      "source_frame_sha256": "15ae30f105c84ac1ff8bfb636ece75247db9fdb934cb7d7971cacbade8f2fd8f",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review. R04 return arrival with current blue pair and one passing ornament; full native hub absent. Town fallback template is not native evidence. Does not capture the later timed-out TownFinish frame."
+    },
+    {
+      "path": "references/hub/return-player-merc-two-ornaments.png",
+      "sha256": "a5ed81218024b5adbf875b62abce1ce3ca2a8435f6f39be0def39abe01e3f17a",
+      "execution_id": "20261024-rust-r04",
+      "source_frame": "phase-00-north-return-00-hub-arrived.png",
+      "source_frame_sha256": "f012ea6bfde3af920846d12e242ce22c8b469146d570511949fe2ef965153d8a",
+      "field_box": [
+        120,
+        180,
+        1900,
+        920
+      ],
+      "removed_metadata_box": [
+        1660,
+        180,
+        1900,
+        260
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Primary visual review. R04 fresh-central retry with two current passing ornaments and blue pair. Native observer replay positive; fresh retry closure is separately recorded, not a fresh development attempt."
     }
   ],
   "source_retention": [
@@ -2947,6 +3175,26 @@
       "source_sha256": "65e3cf175afb9097815d9531a327a66f2287b1341d48e9b8ac3afb6360aca37c",
       "source_image_retained": false,
       "summary": "Primary-approved unused development capture of broad junction with simultaneous ghoul/clan/fire/lightning effects; not a duplicate or equivalent of main144."
+    },
+    {
+      "path": "references/navigation/north-stair-cap-short-side-exit.png",
+      "sha256": "ccc26c2fd0d3689300cd12fe5167c1cda57261f0d32d9e480c90c30538993d2a",
+      "execution_id": "20261030-rust-r13",
+      "source_frame": "phase-00-north-outbound-00-continuous-0127-after.png",
+      "source_frame_sha256": "46c35b8dd48cad1d1c87dcfa68c859eea2ab25b96beed84af11931e296fed87c",
+      "field_box": [
+        242,
+        55,
+        1682,
+        900
+      ],
+      "ground": [
+        962,
+        580
+      ],
+      "source_image_retained": false,
+      "details_owner": "README.md",
+      "review": "Exact final navigation source at 33.9429803, sequence147: unlocalized stair cap, opposite frontier rejected before dispatch. Outside native path viewport is zero. Development-only current short-side-exit regression; not a whole-map route, runtime template, arrival or success approval."
     }
   ]
 }

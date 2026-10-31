@@ -1,0 +1,1261 @@
+{
+  "baseline_commit": "cde68bc2eb1285eddcd8a261cdfe411ed4924f76",
+  "source_files": [
+    {
+      "path": "diablo2/__init__.py",
+      "sha256": "1e4d01e1da45e43e33bf3e5c125d8251d631c85ba8f054c568142ca40c0d8abb",
+      "git_blob": "280eb57c49102ab67070b145fac96af515e183e4"
+    },
+    {
+      "path": "diablo2/actions/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "diablo2/actions/gem_summing.py",
+      "sha256": "5d671d7074b95b0e281635ac1287d322b3690a962427363564fcf2eb96adf6a0",
+      "git_blob": "363239833ee51f17d68679c7a0c82319758952a4"
+    },
+    {
+      "path": "diablo2/actions/loot_pickup.py",
+      "sha256": "94bdb35f33c8c91059bf60e6cdd8e5b4c6b67fda5ae7be9de4367cc89d773e87",
+      "git_blob": "5da549cb2c8dc1754b071e397d99234317351208"
+    },
+    {
+      "path": "diablo2/actions/recording.py",
+      "sha256": "42c197d0faf1238ba6c7453081296ccad5fc2e26a386b5c74fb69a1fe402279c",
+      "git_blob": "4f88acf0b0673c0e4e11e61c0eb75df215493130"
+    },
+    {
+      "path": "diablo2/actions/run_lifecycle.py",
+      "sha256": "c1bf46fd34ac73ec9fe5c40364b874826cb06c7eba5ae9ca476582be3cdf8cd3",
+      "git_blob": "db8f70b4bb4f8f0b129039e60130aaf84538b919"
+    },
+    {
+      "path": "diablo2/actions/town_loop_vision.py",
+      "sha256": "7b1eae1ca1f0bb8c853d7779dedd2b3eb5c1fa6e424d276edbcaa5cc529a98fe",
+      "git_blob": "b8e9b181e198e12cab0ef0358a8dd3bd243ce052"
+    },
+    {
+      "path": "diablo2/app.py",
+      "sha256": "a0eeeb5b4f05ecfe67eba7afe9e6b190c5154f78bbccd7d808a2e29f2ae7c27a",
+      "git_blob": "6961aff55e6c94222f869c57c0954c115f9ae070"
+    },
+    {
+      "path": "diablo2/common/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "diablo2/common/automap_vision.py",
+      "sha256": "80fb5cb1381b3bbac054f969e2e0f8e9819489448a3d85ed3307693acf64739d",
+      "git_blob": "2609e89c57fbc85e9110f231e12f989f4dd0f845"
+    },
+    {
+      "path": "diablo2/common/automatic_field.py",
+      "sha256": "1ad1363ee091b23f7e9602395c42da383bd213f2527d724cb08945bc73f71bc1",
+      "git_blob": "9fce991712f1d88b4c1185df8af5aaad9fb390bc"
+    },
+    {
+      "path": "diablo2/common/buffing_vision.py",
+      "sha256": "e21f065abf37c6b59d10a2a6e77eaf2214b333cf13d3e26e3ad4a0f791598b27",
+      "git_blob": "1338a292a7751c143e033d86f5bd4f9d092574aa"
+    },
+    {
+      "path": "diablo2/common/buffing.py",
+      "sha256": "21c8c2003794cf68c1c9600a123a17e0db7d09f2ac89a26db17dca51cab1897c",
+      "git_blob": "7d69f7a5aa4598d20c694f68c5357fbf13bcdb83"
+    },
+    {
+      "path": "diablo2/common/capture.py",
+      "sha256": "a2463b941746f0d6a7ce960236fee1330c05d1f0e0ff8343366ef650247744c2",
+      "git_blob": "ade6fc9089fa64832b47fe16833f9743276f2b33"
+    },
+    {
+      "path": "diablo2/common/casting.py",
+      "sha256": "2882a06077bb8a67792adf7b27e0a3e5e16c8dabd51a1ec2f84a46da64b83e6d",
+      "git_blob": "60d1eabe9bf8ca04066ecfa47996ab4b77e45646"
+    },
+    {
+      "path": "diablo2/common/color_palette.py",
+      "sha256": "801bf72d7c4ab6ae2e43e539923b3a5a0257031471973b84fd31d6007b152c9b",
+      "git_blob": "fb99777e67cc88a744a3bb187edf45d25a286fc8"
+    },
+    {
+      "path": "diablo2/common/conditional_loot.py",
+      "sha256": "4aebd79059b43a5fedca2f0b94a296c632ee7742b372151aed73ce3d53bdbbf0",
+      "git_blob": "35baa3571893ecd594411f3766dc3ce4556645ed"
+    },
+    {
+      "path": "diablo2/common/config.py",
+      "sha256": "bc2d8b48d9063c92cd99125e592ef9d06dcd9e8a364d4daf1c14361e14d9a2b0",
+      "git_blob": "cd69d4d9a6ef146a9476c63a824bd81a8a9da7e7"
+    },
+    {
+      "path": "diablo2/common/controller.py",
+      "sha256": "e02a6d65fc19eb5eae25c1a3bc1b48f3b436fa0f413cf9350289d1ef7a7ad2cf",
+      "git_blob": "7cca0f8d5cd6e2a10dd2ba5377a041e1246e29e0"
+    },
+    {
+      "path": "diablo2/common/detectors.py",
+      "sha256": "11b83749335a1b5699101fd2627cf81d6e9bd4fb2c5639baeed0c8ebdcdcbe1c",
+      "git_blob": "106181ec38071e04fe8ecf1151d9ae0a651a8bec"
+    },
+    {
+      "path": "diablo2/common/emergency_recovery.py",
+      "sha256": "eea0682836ad2bbf9453bf2a614ff9c7e43d90e4e659791b7cd1c5cab3983a0f",
+      "git_blob": "bc0d717f6378723226f720bbd744c2e392bed3da"
+    },
+    {
+      "path": "diablo2/common/encounter_vision.py",
+      "sha256": "e223a9b121200502c3150ea1f00c71ac34179ed43a1183fc0a688c892460a541",
+      "git_blob": "36d9829291692c57d2095d3f3b992603010a2732"
+    },
+    {
+      "path": "diablo2/common/encounters.py",
+      "sha256": "6a9d67fb63a3df6866134d5056fd8517713c43398b13a32fb27783183be56a76",
+      "git_blob": "7267940032fa17455c249db6707bf675dbd2b46e"
+    },
+    {
+      "path": "diablo2/common/field_control.py",
+      "sha256": "845dbfaed1ca735f8aa4932a654c104cc48a8f909a1be9dd587d93fd4ec71615",
+      "git_blob": "0275e2907223fee668ff91f7bb54d3b24facb026"
+    },
+    {
+      "path": "diablo2/common/field_runtime.py",
+      "sha256": "a6a3b0ad529e244069c092c55902902fafad02cb54a6d4525bd65ade829d6299",
+      "git_blob": "76fad1db3b9a15fc88e9580cf18a4818c46eefe3"
+    },
+    {
+      "path": "diablo2/common/frame_geometry.py",
+      "sha256": "0a91ec03c36302825cdb76f5150d39eabc30625cac28c38c09a01c273c8f1f3d",
+      "git_blob": "a91e20c12e413b16eccdddf20599ad134e4fd248"
+    },
+    {
+      "path": "diablo2/common/hostile_probe.py",
+      "sha256": "7f4f2f36e270a4a83c0350174eccc4149e52685341224557244873b5439499df",
+      "git_blob": "d49d3820a0478e70d43582c88fe102593a4aba47"
+    },
+    {
+      "path": "diablo2/common/label_occlusion.py",
+      "sha256": "e3800e02534b2b27a696bba87aeb1bd6e7b693563948bca55031fa48585d6001",
+      "git_blob": "c8c69f7cddf7797ca2d7fea49df66099b67f810d"
+    },
+    {
+      "path": "diablo2/common/movement.py",
+      "sha256": "349cfc9e4ffc9f3b902b353da05025b7da22215ce87540ac00c0491d33ffc3c6",
+      "git_blob": "7daba979146b673851a14b46d0e1614b2702267b"
+    },
+    {
+      "path": "diablo2/common/realtime.py",
+      "sha256": "0927fa2a7d99214781b085962f71a709e93f0286cdccbac775b349267e132d69",
+      "git_blob": "d917487191ae380126fa8f46090d33177b1ede4b"
+    },
+    {
+      "path": "diablo2/common/scene_motion.py",
+      "sha256": "2697f2dedd8c6bd0ca06ebe6048741a82248a9143e4b903a6db4056cdb801a6a",
+      "git_blob": "ad6fc82eb0b78f57acf54ce2e8f1261561d0fdb9"
+    },
+    {
+      "path": "diablo2/common/supervised_field.py",
+      "sha256": "30492b7fad6c97c238505d0bf89f6b4cbefe80402b220d30f3aaee97c5d58c17",
+      "git_blob": "99097a3a79fbbf779c6c62062677a8484d83c850"
+    },
+    {
+      "path": "diablo2/common/survival_vision.py",
+      "sha256": "94bdedb0a0a56e73c88c366303e5cf8ae8a6cdcc63c1b560350011ba8e0dff73",
+      "git_blob": "818e871aa1f379af96f723e5ac76d290b028e0b8"
+    },
+    {
+      "path": "diablo2/common/survival.py",
+      "sha256": "e5f9f2e745122b1f0b151b1eb0f0e9e875e669abcdec50c26d45d05ecc60bdab",
+      "git_blob": "91b01a0c4696f694ddc0778609b319830d4bb77f"
+    },
+    {
+      "path": "diablo2/core/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "diablo2/core/bot.py",
+      "sha256": "b17d723a402db5270f32bcc109618afbdf6a49c0d937da2c80d315804e29f307",
+      "git_blob": "c8913139e6e83489ad511ebb75537d3babfcbb09"
+    },
+    {
+      "path": "diablo2/runs/__init__.py",
+      "sha256": "243068ecb59f4805f2fbc631a9ad760513f449f09884e03a73201a83928fbe0c",
+      "git_blob": "c8605e994dca04c6e98cafa34297bf8b6540ab43"
+    },
+    {
+      "path": "diablo2/runs/base.py",
+      "sha256": "d85c9588ce386d86bb08ba16d50ad8e36c764bb1a89322f8d1acdc07ab2bc5ee",
+      "git_blob": "b83a5de082ceb630c469c7591ea924a7ed0e1871"
+    },
+    {
+      "path": "diablo2/runs/summoner/__init__.py",
+      "sha256": "6a0dc4528023c844788cbfb2b99558026fb764f8fe662a48123e9556fbd5b607",
+      "git_blob": "6843c8ac1dd48f7c1b8fa6cdb40d2cb229674ad0"
+    },
+    {
+      "path": "diablo2/runs/summoner/camera_ground.py",
+      "sha256": "9b30bea8e2f369e64e945e20f74b30afc6e7a3c4cbdd1a7c881b736b3b4a419b",
+      "git_blob": "de08eac06880e7af130a75cf21be257e306e520a"
+    },
+    {
+      "path": "diablo2/runs/summoner/canyon_finish.py",
+      "sha256": "7b4b6abb814be390dd2ab6d8176be506060ea5cbffbfaae099c0a7bff1d3a568",
+      "git_blob": "4b8ba6b85d65035866757d4d9017512196552d8f"
+    },
+    {
+      "path": "diablo2/runs/summoner/continuous_navigation.py",
+      "sha256": "7e03aca0dad34a0f63657add9f1287731d9db2d034ff5afce2305b8022762193",
+      "git_blob": "1d2c398d60de3b87936e6c3c7294a51b5fe9a684"
+    },
+    {
+      "path": "diablo2/runs/summoner/cycle.py",
+      "sha256": "ae81cb784e580bd1f0709c9a87a5a63f3e1ef6d728e1a646135f23b2af40d1aa",
+      "git_blob": "669dec16b515f51abe39c03002d1b8e383ba63ae"
+    },
+    {
+      "path": "diablo2/runs/summoner/encounter_execution.py",
+      "sha256": "bd85c1060f9a6bbda518f86859b1e2f9f75deac0f3346d69a3f095d54c1b8687",
+      "git_blob": "d56139e26855beca53ee831653af4185bfa80314"
+    },
+    {
+      "path": "diablo2/runs/summoner/gui_session.py",
+      "sha256": "dce8b12bb40d70faddc587611979f625240699a72f0038a46202a983a8957c24",
+      "git_blob": "1b299337df5b81fd62bd6d8677decd31ace3f290"
+    },
+    {
+      "path": "diablo2/runs/summoner/journal_vision.py",
+      "sha256": "6cdc6455664416adbc96b5d22841d9b86c4d63706b355c7da29f6c2fb752a378",
+      "git_blob": "7806cf53386ae3aaa93e5b52b6a2463eb2b1ea3b"
+    },
+    {
+      "path": "diablo2/runs/summoner/life_vision.py",
+      "sha256": "511f74112ee7577d3a7027ce6fb83beb12d725607ea8cf5f60fe1bcc7f72c3e8",
+      "git_blob": "eb8d146e53d7c091692ac5832fd6bb6bb14991b2"
+    },
+    {
+      "path": "diablo2/runs/summoner/main_run.py",
+      "sha256": "bb448182c83e85fcf8a403a09c380438b78dcc335e8378297f5d796a84f85279",
+      "git_blob": "425fc96e2772b6746fe0e35a45673506c79ab1e2"
+    },
+    {
+      "path": "diablo2/runs/summoner/navigation_execution.py",
+      "sha256": "7badede0497e99d3e6d9ff1a2d9a7db9175fb3ee67677553c492f1323eaeac81",
+      "git_blob": "3d7c9fc5aa6cf826110f01e47db7dd2beafc3050"
+    },
+    {
+      "path": "diablo2/runs/summoner/navigation.py",
+      "sha256": "222a158434d5c132bf640940d18d2b131c554a89222df3e0cd33435b718b96bf",
+      "git_blob": "770d46197f09d2faf5f4ca48d746171d740f109b"
+    },
+    {
+      "path": "diablo2/runs/summoner/objective_vision.py",
+      "sha256": "f714bf6b850cb6f185a39ec3767314d92d9b5169ba59b399b94dd88c19d1dc06",
+      "git_blob": "d43e57c5693ae82b610f7db3a171e847f4c6cfe2"
+    },
+    {
+      "path": "diablo2/runs/summoner/route_graph.py",
+      "sha256": "a7b6af3ecf94e0372f93053274b8458364f060c9a19f17cd70bb36fd38bdff00",
+      "git_blob": "f56495846bb00a407acfc4bb3b82af7722c5e90c"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/__init__.py",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/common/__init__.py",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/common/arcane_palette.py",
+      "sha256": "bd084e1f2a0afacbabdb8a789d521e16ad45c3ea1ae4904c44fd788057f6b301",
+      "git_blob": "eff38d465e6e9b1cc593ab1acda0d0e6914e0cce"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/east_go.py",
+      "sha256": "a2d37250e4fc60e3d1ab30d71a098e5fd4843b7ca91182c328618e88d3bb6742",
+      "git_blob": "d9a4b6914e60d2602bdd51cf2f9e9a6c796729b7"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/east_return.py",
+      "sha256": "a8d82102d07571bffe096d44ebdd8f46801aad263c3ed13d2e409cc0528298b2",
+      "git_blob": "019d52086149af3d620be9eec778bb55da8ed9b8"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/south_go.py",
+      "sha256": "97299c49b31407984b777f7d643f690e18593e88dd76e46e9c0f7615256c4f87",
+      "git_blob": "538681fea587a2520afdaaa09b098e53b8c8fc4c"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/south_return.py",
+      "sha256": "949d468a729e1569b2b3a14bce82b27cb261e00ff09e262775fa4073ba4f49ab",
+      "git_blob": "7b84db5e86c3c61adf8c92ffdb7ca6c7d2c1ed33"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/west_go.py",
+      "sha256": "a2361c56a39d7aff621669c1714aba61fe90c8e4cf5f24582d6c979e7a54ab5d",
+      "git_blob": "9593f7370dce540f44024e2dcea1224d813e90e4"
+    },
+    {
+      "path": "diablo2/runs/summoner/routes/west_return.py",
+      "sha256": "f5e47b14ee854a5243a4d871bdea4322f1fa4879214ab8c220c64b952714956e",
+      "git_blob": "1d69f4effc77d574f7a24e99098643b4112172f9"
+    },
+    {
+      "path": "diablo2/runs/summoner/scene_vision.py",
+      "sha256": "f9f8ca4c221ae8cc30feb4bd01f08648914fe142a1b1bb0c487a73dc21fb90bd",
+      "git_blob": "0c474a2a3e366d73db2f7390a8d2f0c80b683ae9"
+    },
+    {
+      "path": "diablo2/runs/summoner/search_runtime.py",
+      "sha256": "c9c1ee14cfd0a2b683fc2db02f6a760e1dbbea7d1892502da2169224e840425c",
+      "git_blob": "91c5457cae15ed3617eb78cd96e3e0874e44f7fd"
+    },
+    {
+      "path": "diablo2/runs/summoner/search.py",
+      "sha256": "3caa9cd3b428bbe76be7f95561202135fd93fdfa5defc792798b549ee9da7867",
+      "git_blob": "7675f46b157b51dca276f96a72a667cb2284a607"
+    },
+    {
+      "path": "diablo2/runs/summoner/steering.py",
+      "sha256": "ca8b1b7de3e6864634312926b0d79da071a412d0eff55f32fccb9100fb23161d",
+      "git_blob": "e781014cf0011c583caf223ab14dcf156157c65f"
+    },
+    {
+      "path": "diablo2/runs/summoner/summoner_run.py",
+      "sha256": "4a3f3a896579e13e4339ad4c015886139d911f73005f0346e402af8811015c29",
+      "git_blob": "76188754511a46cbb35a6e425ddd10be57cd89c9"
+    },
+    {
+      "path": "diablo2/runs/summoner/terminal_vision.py",
+      "sha256": "737c562a6ec82ed607f60262bd7954e1375d4aa11bdf0b81682b7a61737942f5",
+      "git_blob": "2a8c22f234d6380671665f2d2dbff4f1f6c9fdeb"
+    },
+    {
+      "path": "diablo2/runs/summoner/terrain_patterns.py",
+      "sha256": "78f61738da728742ec28bdcb6dcabc80077c4ffe38cfae02673767641001855c",
+      "git_blob": "b9e13f6a826078f4cbdba2c78a3ef251616d119b"
+    },
+    {
+      "path": "diablo2/tools/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "diablo2/tools/arcane_navigation_replay.py",
+      "sha256": "5199f352566460ecc6455f968061a4e37a4af3b258cd7ec734b73f663b88a632",
+      "git_blob": "bc8cdf9cc051ed55f9698dbb49d22a200c490cbf"
+    },
+    {
+      "path": "diablo2/tools/field_input_probe.py",
+      "sha256": "8caee94925722f6462f188e05e6805d0063bbeab4e447aab89b71bb726318bb8",
+      "git_blob": "fa08a90e9f7b37db97b4eb8a376c7f7f2c3cff51"
+    },
+    {
+      "path": "diablo2/tools/field_replay.py",
+      "sha256": "b8b9a78dbce4e2218bd639963950e374a1025a216e5a3564ac60f951b5317510",
+      "git_blob": "a67dc99bced1f4bd3a19e97de876dfcca424e6ed"
+    },
+    {
+      "path": "diablo2/tools/survival_observe.py",
+      "sha256": "44bda97c74ed911c81766f56357c02512599ec30887f4656eae860efb3bae612",
+      "git_blob": "58479614209d64fe7def705d071d95130420c4b0"
+    },
+    {
+      "path": "diablo2/ui/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "diablo2/ui/gui.py",
+      "sha256": "49f9e6b8e9e5bd934375d97d35e3cceba05b73bf7396c8a3357301b195c2d30f",
+      "git_blob": "b5bee7f7fe6dff2af504a4c95c692a951a0fff57"
+    },
+    {
+      "path": "main.py",
+      "sha256": "b20f8289cae79f2c71f049690002ba1b5b640e261791dcd1b44e1ff453481e02",
+      "git_blob": "52999954d5e5433cb3691b43a9db23b27312a3ba"
+    },
+    {
+      "path": "scripts/runtime-benchmark.py",
+      "sha256": "6a94230cd92f1662e0dbbf8f18132e047bd8819238587b8c6ee332d5c2982ba1",
+      "git_blob": "8e421614682946866cc59a17cebfee8521df9a5a"
+    },
+    {
+      "path": "tests/fixtures/rust-port/action-oracle.py",
+      "sha256": "a1f7db2f202dea1371e0e29eb5de575d36544eaaec37ce9ac107ac41413fe8b0",
+      "git_blob": "7f315c6aa2fc4d9431ccb15de3ad689b33367ec7"
+    },
+    {
+      "path": "tests/fixtures/rust-port/canyon-execution-oracle.py",
+      "sha256": "22ba3d0681c37c4d9eac8b57cd4d2fdf4c76da48ab264e7983c7f0f1108fd588",
+      "git_blob": "054f1297f923fc253a5057ca042b16551396f2f2"
+    },
+    {
+      "path": "tests/fixtures/rust-port/cli-oracle.py",
+      "sha256": "9eb9d713e5370c1cc92fce7a6f9f21c310cd5ce6f0b0e7b952aba2b7ac3898e9",
+      "git_blob": "84f32ebf1ec872a2becdf895f224fb067d302f32"
+    },
+    {
+      "path": "tests/fixtures/rust-port/config-oracle.py",
+      "sha256": "0cec1588521fef325cfd871ae6bd17c8ff9680eddb567ffbe38876bed3b26f4d",
+      "git_blob": "39f51eb9f893adf721945c2b6bf07cf542e75564"
+    },
+    {
+      "path": "tests/fixtures/rust-port/continuation-oracle.py",
+      "sha256": "c0af34bf82bf5f98401468e6e919d3f8868b9e6f3172d39754e03d7bf629bf02",
+      "git_blob": "6cb822a3cb07e444804e135bd403f99302cfb646"
+    },
+    {
+      "path": "tests/fixtures/rust-port/continuous-execution-oracle.py",
+      "sha256": "9508db7999e7f23663ff754b7ab3c53b01e6a01377da98033a297c732953e36f",
+      "git_blob": "d76105ad00af9c7bea2703c184c86aa5fba88bde"
+    },
+    {
+      "path": "tests/fixtures/rust-port/core-oracle.py",
+      "sha256": "4a27d5af96562035ebd3eb1b812c05c7e55e9dc1b9432cfffb85899bd750c023",
+      "git_blob": "e774202e3eb5c111776ed79f67f91e8a70e37bf3"
+    },
+    {
+      "path": "tests/fixtures/rust-port/cycle-oracle.py",
+      "sha256": "7292e0dfa4fb2267e6799e8dc29edf962a67e0a7cff79b19c3849b9befdf0f4d",
+      "git_blob": "bc7daf61780ea8bef815d768f2524885c6ff22a4"
+    },
+    {
+      "path": "tests/fixtures/rust-port/drawing-oracle.py",
+      "sha256": "642042e393f38919a26ba7725084940c20186e2b991f7dbc803d9f49bbf78400",
+      "git_blob": "993021579a63a90d7549091e2ef76de378f6128f"
+    },
+    {
+      "path": "tests/fixtures/rust-port/encounter-execution-oracle.py",
+      "sha256": "5e4fae772581c71a7d59819256e7999de2a7d8b84060d86234e2dcd8681762eb",
+      "git_blob": "0a9a54cc125cd3e9f18303e29b10fe2416d06bda"
+    },
+    {
+      "path": "tests/fixtures/rust-port/encounter-oracle.py",
+      "sha256": "470fdcae85fb537eef3d5cef7a7b72156abce14c8ff283acc506f07c457fb3b1",
+      "git_blob": "bf8acb2b2987567284559c75d66e05326aec7359"
+    },
+    {
+      "path": "tests/fixtures/rust-port/field-oracle.py",
+      "sha256": "8a400e98404db4f30708ce2c233b2ad2b35ab651376aab909ccf3b7d3a26f3d6",
+      "git_blob": "26255118e2147d128fe3507fe8dd6488b106c0cf"
+    },
+    {
+      "path": "tests/fixtures/rust-port/field-preparation-oracle.py",
+      "sha256": "ea412163528704a6bdbb47cbb272fc8f165fdd03df1ddd6b6380fb9b9ad0878b",
+      "git_blob": "7367aeecbacf4e45d04566477a2b5557851ca5ee"
+    },
+    {
+      "path": "tests/fixtures/rust-port/generate-drawing-tables.py",
+      "sha256": "0187fc8ffa6e5e0ef200692546316b9323a4cafac28f878dfe6a8b4d35447fd8",
+      "git_blob": "fc701375ce75d679bbb78d7425ae4722be6c1c01"
+    },
+    {
+      "path": "tests/fixtures/rust-port/generate-mpeg4-vlc.py",
+      "sha256": "118855006cd8a0755db56070b3968a6cbcc0757351056317e6c31eea0069a54f",
+      "git_blob": "dcfe4357779f4816d18f9ebbcdf5ede2e719d215"
+    },
+    {
+      "path": "tests/fixtures/rust-port/generate-unicode-casefold.py",
+      "sha256": "162b9befba71408975a1781298f49fe54003f0d901a3d4dce4d4106854c42e3c",
+      "git_blob": "b9b865ecd04f3b4d1c824cd2868ba323d89ef056"
+    },
+    {
+      "path": "tests/fixtures/rust-port/generate-unicode-numbers.py",
+      "sha256": "d44c26afddb22b12e152ddf038adc32b06b3031466d45269d0c1e5a45eacda39",
+      "git_blob": "acb03150da0431b8a67312e703ce3c4172b89424"
+    },
+    {
+      "path": "tests/fixtures/rust-port/geometry-oracle.py",
+      "sha256": "4dbf65a30ef906d394a3c58b44ba0da7ea1d8e7a29d1d8745b23aaccc8c305fc",
+      "git_blob": "069540a4d5aab3da16b0c7f7175bb35fc2de2304"
+    },
+    {
+      "path": "tests/fixtures/rust-port/hostile-probe-oracle.py",
+      "sha256": "a148d5ad8d8a2a1dfcb5b9917e490774ff6b46c79fdb094b757db383fc239869",
+      "git_blob": "a5cc7e8c60e8c54e1dd1c93437eb4504c0cfd541"
+    },
+    {
+      "path": "tests/fixtures/rust-port/hud-reading-oracle.py",
+      "sha256": "635498534e9327a4c5620a2b8372f0ee628c88e2790646a66dd5e74770b79793",
+      "git_blob": "a0aa7ba6f3db48126c4fd2db4fe58adab46f308c"
+    },
+    {
+      "path": "tests/fixtures/rust-port/life-tracker-oracle.py",
+      "sha256": "718eff56e5c97b07ea65d80d2971561259ae4306d3c68ce4ae6fd04ff2103f01",
+      "git_blob": "cd44c47e13f6dd0e66779463640df1d74b35944d"
+    },
+    {
+      "path": "tests/fixtures/rust-port/main-execution-oracle.py",
+      "sha256": "828afee4b64455ac678403950415c7c7ea2ae54b6217b519cb6132e601a34675",
+      "git_blob": "ea13e3840b5ccc59ea1fb53d8feb77c0f882996f"
+    },
+    {
+      "path": "tests/fixtures/rust-port/motion-oracle.py",
+      "sha256": "4d72431a98e6b742f15e905cd5fb33820dcf09be5eb19836393d67c191231c90",
+      "git_blob": "54ec5139141116868e5cd46f2a108a5bef6954a3"
+    },
+    {
+      "path": "tests/fixtures/rust-port/navigation-execution-oracle.py",
+      "sha256": "b60cfe4bcc24d5e882d6494e197c9b7444625d198638a7c80fb6d850b39a1f7f",
+      "git_blob": "d9f648f05948106f0a36dc6d7afbbac6008dcc7e"
+    },
+    {
+      "path": "tests/fixtures/rust-port/navigation-oracle.py",
+      "sha256": "f09c9faa24573cd3f5222b151acad04d108255550690a598566c4a80c96b5db0",
+      "git_blob": "c5fb9386c4c0b2861f9933766442ac7ad36fc534"
+    },
+    {
+      "path": "tests/fixtures/rust-port/observer-oracle.py",
+      "sha256": "e58eb3a98439dde98e5dc7a0d19ee8dc778cf03a4263cc96ba7a43e4c45aed7a",
+      "git_blob": "032f31538366d4ebacf157bde411531751f64094"
+    },
+    {
+      "path": "tests/fixtures/rust-port/panel-state-oracle.py",
+      "sha256": "f75c95077b46cb8b201526662f28160432f73a96a95c924896c1ac136a97bd71",
+      "git_blob": "f6859fbf12e06ae6ea924778be0e9782f69fd272"
+    },
+    {
+      "path": "tests/fixtures/rust-port/policy-oracle.py",
+      "sha256": "956e8378376bffd1221ae8061f1ba01d7124021c3412aa23a41f0bb079035c49",
+      "git_blob": "07f186fcab41e1035e7dfe1f8fdd642035a6655c"
+    },
+    {
+      "path": "tests/fixtures/rust-port/realtime-oracle.py",
+      "sha256": "37ff1e52ccacb6c07c79d07ed47b2417cdc636dd6bc067eff8b0b17fdf12c641",
+      "git_blob": "db6bad1064740cf5386ac8e7aabef2ba019f717a"
+    },
+    {
+      "path": "tests/fixtures/rust-port/recording-oracle.py",
+      "sha256": "eeb450195bc70b1b7c3ae316894924c0c955ca8cd9bc38dfa528e8e89f45b1e9",
+      "git_blob": "abc8ae051acfb03fd05d0a6f94255147b292785b"
+    },
+    {
+      "path": "tests/fixtures/rust-port/route-graph-oracle.py",
+      "sha256": "6aee9a9b751df17366985d87ef098b7a57b414220d63d4d46c8711c73f9058b3",
+      "git_blob": "25299253504fe5c1cad807bb04885ce74fe55138"
+    },
+    {
+      "path": "tests/fixtures/rust-port/search-oracle.py",
+      "sha256": "a67d01925bcd612bb154485a9e4fa36ef9adb91f8e2cec9dc4356b5f70808ae4",
+      "git_blob": "f06cd59e0eeda64212159e1d20e6d6e257ca0468"
+    },
+    {
+      "path": "tests/fixtures/rust-port/search-runtime-oracle.py",
+      "sha256": "3b52449687e6a338bd6c7fd1261e5fdb26949abc262a0980dda7c35dd48c0c6e",
+      "git_blob": "d37b6b2009d669fa41f2dbc24fdc6dd5bb02ec0d"
+    },
+    {
+      "path": "tests/fixtures/rust-port/steering-oracle.py",
+      "sha256": "8aad3767f327b86d6f5950a957a5d8bc54c6bfe8bf47a5437ecf7d07665d95dd",
+      "git_blob": "502bb0183626ea73f21bede96c01ba5953086cc0"
+    },
+    {
+      "path": "tests/fixtures/rust-port/summoner-session-oracle.py",
+      "sha256": "1c056b0f6456547a51dffbc01c0be0ff83470594d5d113b7e4420615d63ee237",
+      "git_blob": "b4241afc5e0567b45b0e0271e85c383c491c2b9f"
+    },
+    {
+      "path": "tests/fixtures/rust-port/tools-oracle.py",
+      "sha256": "391ef94ddb4d4da9f0045e1e66c3e90d6a957570dfd0489c1eca2c27835524f5",
+      "git_blob": "db68de2e426c103a469faff3db259c03ebbe6904"
+    },
+    {
+      "path": "tests/fixtures/rust-port/vision-oracle.py",
+      "sha256": "9f975cdf67de5499e3723aec2048aa866d5f116d477ada150d45edb751150a6c",
+      "git_blob": "87addee0d7c98d8efbe26d588c0a644e2405af53"
+    },
+    {
+      "path": "tests/fixtures/rust-port/windows-io-oracle.py",
+      "sha256": "478f45d4808376e8f1ff9905ef675984ada890ae47c5d658a6698764e4972d80",
+      "git_blob": "37b99e190de1fa075e0f006fe4a313a49e54ff27"
+    },
+    {
+      "path": "tests/test_arcane_hub_vision.py",
+      "sha256": "7436cd6667cd6fa6f8ed2ae50ad854ab45e9e29bc2031785eac74c78cce5ca7b",
+      "git_blob": "923ba37574c9368af70b4459c8554defd0e415f2"
+    },
+    {
+      "path": "tests/test_arcane_navigation.py",
+      "sha256": "177c6af0e7efa1e4f642625706ea387f37288d155cdb39cd7325213c8e53ffdd",
+      "git_blob": "7be5b1dd5f856a043bda897e91015ec0be63fbb8"
+    },
+    {
+      "path": "tests/test_arcane_objective_vision.py",
+      "sha256": "b39507faa2c6fad42b4fc5a0291aec587b12360d0e437216dedcb815e22e43a9",
+      "git_blob": "34623848af174f6b2046912cceef010bf28dadf5"
+    },
+    {
+      "path": "tests/test_arcane_route_graph.py",
+      "sha256": "f56126b6670e2d0a5effce9985f6fdb5ba6875433c3c9405ca397c361b40cfe0",
+      "git_blob": "54b9e14b39bcfde32003a339238e41a05194effd"
+    },
+    {
+      "path": "tests/test_arcane_scene_vision.py",
+      "sha256": "66226d33675d27d981fbdf17ca42aae9c990cfea40e0b56cf5f33dad0cdcbe5d",
+      "git_blob": "c21b6273726d02b9ef4db191cc2aebef174a3665"
+    },
+    {
+      "path": "tests/test_arcane_search_runtime.py",
+      "sha256": "ea15a431e60723d27c906508bd0d4a9004a73f6106b016f8ecc5bcf440ba165b",
+      "git_blob": "53e57e841a3f006f091e8c86b20131300fba05a3"
+    },
+    {
+      "path": "tests/test_arcane_terminal_vision.py",
+      "sha256": "fed78e9072dfbe7e1c3c7fb9ecb1e9e02fc278a5837a6812a40ddd8af731da87",
+      "git_blob": "3d0b0cdddfb54624a03c53887c0f5e1fa5077520"
+    },
+    {
+      "path": "tests/test_arcane_terrain_patterns.py",
+      "sha256": "258f39c095ea6111f0f82f11f53e96a17fef2eff9c8120f29fc3ce343479e7ea",
+      "git_blob": "52eeb92295aacc97bbf6b42e2b9675582d37dbf3"
+    },
+    {
+      "path": "tests/test_automap.py",
+      "sha256": "80840ee14600439a5bce680300bbe44edd05248992e8bc536ce5f4027a69b69a",
+      "git_blob": "56f37b630e97d5522b75f06735d115df1cc9cc72"
+    },
+    {
+      "path": "tests/test_automatic_field.py",
+      "sha256": "227e5c8ed813440798bd826309709cb31f363acaaed869733a59085a9cec72cf",
+      "git_blob": "b522d7b205af3c38d45f6a03f2a27e0d1b4a2d57"
+    },
+    {
+      "path": "tests/test_buff_renewal.py",
+      "sha256": "1a156d0d1fcdd848d948db191ec5d4ccc95022855beb1a2e3a1354dea2a3f5a5",
+      "git_blob": "664c56b99143840d3d222942765df999c313c7e0"
+    },
+    {
+      "path": "tests/test_buffing.py",
+      "sha256": "37d007ff50642dc6b35165675fc6350daa16b8b9fb60fc2f704f1f75ed0c87c5",
+      "git_blob": "90f036050fd08e5ba9680edb13a6250ca62d4a28"
+    },
+    {
+      "path": "tests/test_camera_ground.py",
+      "sha256": "7f1c65c984fc6b141595a534b376b3a3d635761a02bcfaf633ad86b4d35942f7",
+      "git_blob": "498a660fae7d0438423e0491c958ce200303b2e8"
+    },
+    {
+      "path": "tests/test_casting_rules.py",
+      "sha256": "bc37b1cb7a2413b9945416c059dcaadaa4903cfba441104cb6d993ff8d0ab4b2",
+      "git_blob": "9a3b837153bd83ebac9b5e29215b5efcf1c7f2b0"
+    },
+    {
+      "path": "tests/test_conditional_loot.py",
+      "sha256": "5bddcbd59dc706ea993b6c07cd022b917a0509057b2e27a16be7ac0bd13cd187",
+      "git_blob": "82aabbcf4637fda3f638e8fa5399283a35ad3719"
+    },
+    {
+      "path": "tests/test_continuous_navigation.py",
+      "sha256": "77c774019c651bceffde7c4fd492f81ab51038c185fe9b128526c026f4796280",
+      "git_blob": "1d5c3644179bbb0d312605236fa1158433b19111"
+    },
+    {
+      "path": "tests/test_continuous_steering.py",
+      "sha256": "e8e8887237c04e16e20080394b0f238596df2751bf25a464c151c0702ca2c672",
+      "git_blob": "a01fce590aa9e5e82847fcac6861e3ae05cf7fdf"
+    },
+    {
+      "path": "tests/test_emergency_recovery.py",
+      "sha256": "871323cfe4e7bb98b15662680d9c426ea86d29d6f7db0a48f20a344cbb6ae32c",
+      "git_blob": "cf515ac60fc37955f5c6d165a21d0b83a836170b"
+    },
+    {
+      "path": "tests/test_encounters.py",
+      "sha256": "46d919ef49882d15e6b20088267524317f8a9204209853839eabff804e98a4ba",
+      "git_blob": "65fa4693c19d27e3f454262f1e0b4e7e3f115bcc"
+    },
+    {
+      "path": "tests/test_field_control.py",
+      "sha256": "c4b552ae273d195724da7495ee75b54407759940592a69412503bd98580ac8b1",
+      "git_blob": "6225ebc480d964361aa333d070a1716c4e3ebd67"
+    },
+    {
+      "path": "tests/test_field_input_probe.py",
+      "sha256": "84ae8d1b13dd98fe583fdc8e2d9dc6421ead61e6b072f8f92115d2b0249df2e9",
+      "git_blob": "c3eb53c9ff4aaa6dd778214ac17eb8087e9a9d55"
+    },
+    {
+      "path": "tests/test_field_pointer.py",
+      "sha256": "c0e20d74c955c4764ea617a3d36222c62958655eb016994c9e31308efde2550f",
+      "git_blob": "fa63435f44bfd97f7f19f6ad352c7df1509e53c2"
+    },
+    {
+      "path": "tests/test_frame_geometry.py",
+      "sha256": "5656a49673c4fab104c756fe7f300dc1cccc0a69b1e0e7db595780cb27d49436",
+      "git_blob": "520589d8565fd463d58ea72572b0cc70236fd213"
+    },
+    {
+      "path": "tests/test_gem_assets.py",
+      "sha256": "8a45b955e35127fb5655fb7766b7ea7e42413f49a254db2bef4968047502fcf0",
+      "git_blob": "dd648a16e31c559b0bb7dec74032c69c4752d702"
+    },
+    {
+      "path": "tests/test_gui_summoner.py",
+      "sha256": "81d45d9acb5f317795af8acd19324867abcf7b2a28b7b5bd0605d4cc377adb46",
+      "git_blob": "a4117fc64d3a2640b298b4cfead25183a1e0db59"
+    },
+    {
+      "path": "tests/test_hostile_probe.py",
+      "sha256": "375332155861fe88def027c2e3cf502b88f9a5d23c1774258391c7b2f50b51ec",
+      "git_blob": "763b0bc920999fe6ce281cccfa14d50578286f3d"
+    },
+    {
+      "path": "tests/test_label_occlusion.py",
+      "sha256": "af50ee20ccb8b786a4525724f53be7a3f362795bc8ca76d7ce7ef4817a31e52d",
+      "git_blob": "59612b8fd405275e13273d196d8e719ad27fbe63"
+    },
+    {
+      "path": "tests/test_north_room_cycles.py",
+      "sha256": "cf9674c66da487c380dd5158dedb53e2580ede98f1a1b10aad51de75b85eda89",
+      "git_blob": "817cf75bd6cfaa33edcffc06953b04a476a4b6e7"
+    },
+    {
+      "path": "tests/test_realtime.py",
+      "sha256": "f09294ac4e2c122f68dec8c2a22dee26aa234e987127a9332b0f5bb2aac533e3",
+      "git_blob": "ff9608bcaa42eeee127c93e1af3fd388df121f4d"
+    },
+    {
+      "path": "tests/test_summoner_canyon_finish.py",
+      "sha256": "91eec0927351b4af37f452d0f6ad32472c11e02c7c4d9ceebf0eeb894fa86905",
+      "git_blob": "02bfa55546a8f41946134cabe4aa95605d87f121"
+    },
+    {
+      "path": "tests/test_summoner_cycle.py",
+      "sha256": "a9db8942ea499db594bb89861c1da3e2e5a368a62385e33e50dd13afd7a62562",
+      "git_blob": "7ae800e85e618099d087cd00508cf3b6115b361a"
+    },
+    {
+      "path": "tests/test_summoner_encounter_execution.py",
+      "sha256": "85078ccdc9ed465e2a30e3ea771e38beb25ecdcaba2c621ba50c108a1dd50a8f",
+      "git_blob": "ab4ca041a24c96ad8e8b224b61a6b94ff67cc726"
+    },
+    {
+      "path": "tests/test_summoner_gui_session.py",
+      "sha256": "792b4204d124f4f78cf2ae7673c84aaa5096d4bfea923fbc82bc14842463e8d8",
+      "git_blob": "62fb5c4de797cec80080b8a4f14bb42dba37c19f"
+    },
+    {
+      "path": "tests/test_summoner_life_vision.py",
+      "sha256": "51f04f472d9624306faf7fc4f9894190a1c8c0a05d0a3b1269754567b76989ab",
+      "git_blob": "b3b379b91484e2a9517b050f5a7200cfb2efa455"
+    },
+    {
+      "path": "tests/test_summoner_main_run.py",
+      "sha256": "6852c042550a259e2bfbe8fc4c30e23423fc9d3c00429b2b790e20016c5502ea",
+      "git_blob": "70f96dd5b1e56d9a59ecf132353db86d12c55a7c"
+    },
+    {
+      "path": "tests/test_summoner_session.py",
+      "sha256": "0bf1c522a9f34a5aca6f62fd07c1ed2b86edde6304230a29da38710bf2c70d9f",
+      "git_blob": "1cd3e6fccaa52c2e16a3a1d7fc7cb6e364f3a15f"
+    },
+    {
+      "path": "tests/test_survival_state.py",
+      "sha256": "af4c7067ac67ed16795f74ed1cb3d7311ac4f3b174253ba6823d4df7ea6b80ab",
+      "git_blob": "3a7fe90afaaf2bf457f40eed7a7f1b1623f84e20"
+    },
+    {
+      "path": "tests/test_survival_vision.py",
+      "sha256": "371566e82865f4e5ab36463ce90cbb43b56ee14b9bbcffcdce7e066cba05e6a0",
+      "git_blob": "a6e67a6b66a32df2b92a9d1b9fdfadb65d874c88"
+    },
+    {
+      "path": "tests/test_town_loop.py",
+      "sha256": "6781ce1be164b1b55e027e3c13af418b6ebdb01e2890fefe2f581f6271070146",
+      "git_blob": "f70694bfa317fca6f68eb458b18dc822eadbe5bf"
+    }
+  ],
+  "responsibility_mapping": [
+    {
+      "legacy_path": "diablo2/__init__.py",
+      "rust_owner": "src/lib.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/__init__.py",
+      "rust_owner": "src/actions.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/gem_summing.py",
+      "rust_owner": "src/actions/gem_summing.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/loot_pickup.py",
+      "rust_owner": "src/actions/loot_pickup.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/recording.py",
+      "rust_owner": "src/actions/recording.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/run_lifecycle.py",
+      "rust_owner": "src/actions/run_lifecycle.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/actions/town_loop_vision.py",
+      "rust_owner": "src/actions/town_loop/vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/app.py",
+      "rust_owner": "src/app.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/__init__.py",
+      "rust_owner": "src/common.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/automap_vision.py",
+      "rust_owner": "src/common/automap_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/automatic_field.py",
+      "rust_owner": "src/common/field_preparation.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/buffing_vision.py",
+      "rust_owner": "src/common/buffing_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/buffing.py",
+      "rust_owner": "src/common/buffing.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/capture.py",
+      "rust_owner": "src/common/capture.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/casting.py",
+      "rust_owner": "src/common/casting.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/color_palette.py",
+      "rust_owner": "src/common/color_palette.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/conditional_loot.py",
+      "rust_owner": "src/common/conditional_loot.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/config.py",
+      "rust_owner": "src/common/config.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/controller.py",
+      "rust_owner": "src/common/controller.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/detectors.py",
+      "rust_owner": "src/common/detectors.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/emergency_recovery.py",
+      "rust_owner": "src/common/emergency_recovery.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/encounter_vision.py",
+      "rust_owner": "src/common/encounter_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/encounters.py",
+      "rust_owner": "src/common/encounters.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/field_control.py",
+      "rust_owner": "src/common/field_control.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/field_runtime.py",
+      "rust_owner": "src/common/field_runtime.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/frame_geometry.py",
+      "rust_owner": "src/common/frame_geometry.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/hostile_probe.py",
+      "rust_owner": "src/common/hostile_probe.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/label_occlusion.py",
+      "rust_owner": "src/common/label_occlusion.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/movement.py",
+      "rust_owner": "src/common/movement.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/realtime.py",
+      "rust_owner": "src/common/realtime.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/scene_motion.py",
+      "rust_owner": "src/common/scene_motion.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/supervised_field.py",
+      "rust_owner": "src/common/field_preparation.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/survival_vision.py",
+      "rust_owner": "src/common/survival_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/common/survival.py",
+      "rust_owner": "src/common/survival.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/core/__init__.py",
+      "rust_owner": "src/core.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/core/bot.py",
+      "rust_owner": "src/core.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/__init__.py",
+      "rust_owner": "src/runs.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/base.py",
+      "rust_owner": "src/runs/base.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/__init__.py",
+      "rust_owner": "src/runs/summoner.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/camera_ground.py",
+      "rust_owner": "src/runs/summoner/camera_ground.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/canyon_finish.py",
+      "rust_owner": "src/runs/summoner/canyon_finish.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/continuous_navigation.py",
+      "rust_owner": "src/runs/summoner/continuous_navigation.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/cycle.py",
+      "rust_owner": "src/runs/summoner/cycle.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/encounter_execution.py",
+      "rust_owner": "src/runs/summoner/encounter_execution.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/gui_session.py",
+      "rust_owner": "src/runs/summoner/gui_session.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/journal_vision.py",
+      "rust_owner": "src/runs/summoner/journal_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/life_vision.py",
+      "rust_owner": "src/runs/summoner/life_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/main_run.py",
+      "rust_owner": "src/runs/summoner/main_run.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/navigation_execution.py",
+      "rust_owner": "src/runs/summoner/navigation_execution.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/navigation.py",
+      "rust_owner": "src/runs/summoner/navigation.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/objective_vision.py",
+      "rust_owner": "src/runs/summoner/objective_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/route_graph.py",
+      "rust_owner": "src/runs/summoner/route_graph.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/__init__.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/common/__init__.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/common/arcane_palette.py",
+      "rust_owner": "src/common/color_palette.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity",
+      "data_owner": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/east_go.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/east_return.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/south_go.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/south_return.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/west_go.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/routes/west_return.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/scene_vision.py",
+      "rust_owner": "src/runs/summoner/scene_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/search_runtime.py",
+      "rust_owner": "src/runs/summoner/search_runtime.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/search.py",
+      "rust_owner": "src/runs/summoner/search.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/steering.py",
+      "rust_owner": "src/runs/summoner/steering.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/summoner_run.py",
+      "rust_owner": "src/runs/summoner/definition.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/terminal_vision.py",
+      "rust_owner": "src/runs/summoner/terminal_vision.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/runs/summoner/terrain_patterns.py",
+      "rust_owner": "src/runs/summoner/terrain_patterns.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/tools/__init__.py",
+      "rust_owner": "src/tools.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/tools/arcane_navigation_replay.py",
+      "rust_owner": "src/tools/arcane_navigation_replay.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/tools/field_input_probe.py",
+      "rust_owner": "src/tools/field_input_probe.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/tools/field_replay.py",
+      "rust_owner": "src/tools/field_replay.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/tools/survival_observe.py",
+      "rust_owner": "src/tools/survival_observe.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/ui/__init__.py",
+      "rust_owner": "src/ui.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "diablo2/ui/gui.py",
+      "rust_owner": "src/ui/view.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    },
+    {
+      "legacy_path": "main.py",
+      "rust_owner": "src/main.rs",
+      "status": "responsibility-mapped; not exhaustive branch parity"
+    }
+  ],
+  "environment": {
+    "python": "3.7.9",
+    "opencv": "4.13.0",
+    "numpy": "1.21.6",
+    "opencv_build_info_sha256": "8a55f551e40cf84d0fa7e2509bb9544da66782a8cbc017d7ce27a9de0ef9c1ac"
+  },
+  "oracle_reference_commit": "d11737aeb6ec885293b2f6c0e01e9f44aad0ba15",
+  "format_version": 1,
+  "input_inventory_sha256": "7898d5ad55c95915d1343ce00089a5e883e070ed7b8a091e409d6492f2bac476",
+  "generated_tables": [
+    {
+      "path": "src/common/unicode_casefold.rs",
+      "sha256_lf": "2657ba6901640f03a828991d918509fdbc31e7ed3820414ad06101861475f597"
+    },
+    {
+      "path": "src/common/numeric_input/unicode_numbers.rs",
+      "sha256_lf": "8ae1b849ad590494748029e9db1dbbcbc8119434ce1e8f2cf644668d6fbbdd12"
+    },
+    {
+      "path": "src/common/vision_ops/drawing/tables.rs",
+      "sha256_lf": "59d143acb6c72e66a412c827dae54b07db7206e336f4d90d02b7443aaccb2007"
+    },
+    {
+      "path": "src/common/recording/mpeg4/tables.rs",
+      "sha256_lf": "b8ee81a2fde52152c58b12ad6b26d312d7a36482256968063f622471dc84fc05"
+    }
+  ],
+  "upstream": {
+    "unicode_database": "11.0.0",
+    "opencv_commit": "b4c5ec4042f097e2a5b386b9d413ec7333d0a184",
+    "drawing_cpp_sha256": "feb12ebea7b08419289a46d043afeee665b77217d1faed89d86ad30d2d8af0e0",
+    "hershey_fonts_cpp_sha256": "5fa0d65264f72e5b166d07973aabd49f27cc54d0074062a8efc312bf9ab95432",
+    "mpeg4_commit": "1e6a675fccdc37afcfb337f8fa97d1ddab90adf0",
+    "mpeg4_header_sha256": "9cb73c2482d73d3cf11fce3be647d889d2380adb6d0db831f9917311351f30f2",
+    "notices": [
+      "THIRD-PARTY-NOTICES.md",
+      "licenses/opencv-drawing-bsd.txt",
+      "licenses/mpeg4-reference-notice.txt"
+    ]
+  },
+  "identity_rebindings": [
+    {
+      "family": "tools-oracle",
+      "from": "240fb0aed09566719d6dd8bd49b60cdd138f28ea6699aec303f0ec3003de653d",
+      "to": "7434444e07d01d1fdd570050a69ad8f49f823099d48e3a2f6e0ed55abd3b1c1d",
+      "before_state_observation": "4090e22ccdaeea35f721cfe11d195cc0597987e5787f39c184aab4e168451ba4",
+      "before_state_sha256": "899239d29bcd8fd95450dc5c0b558a03ff58382ef323b9518a91de593f9338ff",
+      "expected_sha256_unchanged": "310d38286219ce4709110486366002ca8883ac378920184640c8ce203efc107d",
+      "reason": "Bind existing --state JSON for the second observed town-step. Before-state is exactly the first independent observation's returned planner.data; expected output is unchanged."
+    }
+  ],
+  "comparison_input_files": [
+    {
+      "path": "tests/fixtures/rust-port/motion-baseline.json",
+      "sha256": "88a8a3908e21a3876929dbb1e52d5474ec7d63a03e01390a3158db784827fb6b",
+      "git_blob": "78268b1e4f5a527bdd3f347b675dbdeb33ae3312"
+    }
+  ],
+  "independent_refresh": {
+    "reason": "Final Rust-only suite exposed four incomplete input identities; original reference was rerun, not renamed or generated from Rust expected output",
+    "source_commit": "d11737aeb6ec885293b2f6c0e01e9f44aad0ba15",
+    "environment": {
+      "python": "3.7.9",
+      "opencv": "4.13.0",
+      "numpy": "1.21.6",
+      "opencv_build_info_sha256": "8a55f551e40cf84d0fa7e2509bb9544da66782a8cbc017d7ce27a9de0ef9c1ac"
+    },
+    "observations": [
+      {
+        "family": "drawing-oracle",
+        "old": "398e890f3c86857a5db6a05862aff4881c34553eb9e102d087d9033d31615091",
+        "current": "749353723f2a8ad0109c18d990dc94de9ea90ce67eb572189ed5bbe32d4124bc",
+        "reason": "literal dollar marker escaping; independent full-pixel comparison repeated",
+        "expected_values_equal_prior": true,
+        "expected_sha256_ps_canonical": "2486748dff390b0eade2383d23f3fc89e22486cfbee98b5ddead8d121cd3ffe6"
+      },
+      {
+        "family": "vision-oracle",
+        "old": "ea1d3fb89fbdc2786e89ee02afc9d3ca5bdb8e6c215cd03436607169fe65250f",
+        "current": "cddd6101614d63ccd47df477f011342c57f0cd2d935b969f3750d3fa5c3e35cd",
+        "reason": "canonical absolute template input, same relative-path Rust loader still exercised",
+        "expected_values_equal_prior": true,
+        "expected_sha256_ps_canonical": "d69945f5ce75957509a8831b0dacb068356936cc1af505754dd81e407aae977a"
+      },
+      {
+        "family": "vision-oracle",
+        "old": "09ada44deec7589ac5a3ff097bad5433a28a7c96d38eadcc171a6156a770add8",
+        "current": "f58faa8710275fbc29f26ce156a9fbf33401203aa99f67542dac21184b1dceee",
+        "reason": "all original JPG/generated decoded PNG and town/automap bank inputs explicitly fingerprinted",
+        "expected_values_equal_prior": true,
+        "expected_sha256_ps_canonical": "9a866225eaab750324d48761f1ff9248e57b32b3ee9c16bc5a9e83797292a7c3"
+      },
+      {
+        "family": "continuation-oracle",
+        "old": "ec35d6b1b5ee7392264849a91576c9b12ba6c88e35da27b5573f5a1b2d230624",
+        "current": "1d3d8f5b80d258840a6f141a6d7d6dc904ef81c3fe1e908cfc6323fa09088bb0",
+        "reason": "22 reports, four current/reference PNGs and motion baseline explicitly fingerprinted",
+        "expected_values_equal_prior": true,
+        "expected_sha256_ps_canonical": "3449093cf9ae1b28c10414a332aa875989b738b1cadda43e63e5c51b395c2c37"
+      }
+    ],
+    "temporary_reference_removed": true
+  }
+}

@@ -991,6 +991,30 @@
         "source_frame": "phase-00-north-outbound-00-continuous-0180-combat.png",
         "source_frame_sha256": "f158abefd6b901b410ade1145588426ffe82fc2afd15b0998420dec0e53b9826"
       }
-    ]
+    ],
+    "loot_overlay_reference": {
+      "path": "references/mercenary-face-loot-label-overlay.png",
+      "sha256": "19b57a8691d08d2bd2a1f419e2cef193058babd4992b55c0b2880acd908dbc79",
+      "source_frame": "paused-survival-last.png",
+      "source_frame_sha256": "0beeda5c9ebf74be3f0ac0c2aaac545540561a3dc092eddfb447e4bfa48b8ce9",
+      "execution_id": "20261030-rust-r08",
+      "retained_boxes": [
+        [
+          0,
+          55,
+          500,
+          170
+        ],
+        [
+          0,
+          900,
+          1922,
+          1140
+        ]
+      ],
+      "reviewed_by": "codex-visual",
+      "reviewed_on": "2026-10-30",
+      "review": "Current item-name labels obscure the Act2 mercenary face while current life/mana are full. HUD-only regression retains the actual face/label pixels and resource HUD; title, room metadata and other world pixels are zero. Missing identity remains unverified, never proof of death. No runtime portrait/template/threshold change; owned-overlay OFF cleanup must reacquire a fresh full HUD before movement."
+    }
   }
 }

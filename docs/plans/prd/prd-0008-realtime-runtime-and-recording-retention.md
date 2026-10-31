@@ -5,7 +5,7 @@
 - ID: `prd-0008`
 - Status: `approved` — Summoner 구현의 선행 조건 중 FEAT-0009의 단일 시계·관찰 무효화 경계를 실행한다. 전체 저장/retention과 장시간 실게임 완료는 아님.
 - Owner role: `human`
-- Created: `2026-10-05`; Updated: `2026-10-11`
+- Created: `2026-10-05`; Updated: `2026-10-24`
 
 ## Request Summary
 
@@ -15,12 +15,14 @@
 
 - Human request: 2026-10-05 실시간 동작과 저장 역할의 스레드 분리, F5 참고, 장시간 반복의 overflow 방지·retention; 앞선 세션 종료 시 개발자료 정리 지시.
 - Local reference: F5의 `docs/architecture/data-pipeline.md`, `docs/policies/latency-and-integrity.md`, `internal/application/ingest/queue.go`, `internal/application/journal/writer.go`, `internal/application/stream/pipeline.go`, `scripts/inspect-operational-log-retention`을 읽기 전용으로 확인했다. 고정 크기 admission, 단일 writer, batch, 포화·종료 처리의 원칙을 참고한다. F5의 금융 durability barrier나 기간 수치를 이 프로젝트로 복제하지 않는다. 마지막 script는 삭제 후보 조사이며 실제 삭제기가 아니다.
-- Current implementation: [마을 세션](../../../diablo2/actions/run_lifecycle.py), [실시간 worker](../../../diablo2/common/realtime.py), [현재 Summoner 기록/실행](../../../diablo2/runs/summoner/main_run.py), [녹화](../../../diablo2/actions/recording.py). 옛 북쪽 실행기의 유일한 소비자가 제거된 `async_log.py`는 2026-10-11 정리에서 삭제했다. GUI의 제한된 텍스트 표시와 main의 방별 증거/보고서 기록을 장시간 공통 큐·보존 한도의 완성으로 보지 않는다.
+- Current implementation: [마을 세션](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/actions/run_lifecycle.py), [실시간 worker](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/realtime.py), [현재 Summoner 기록/실행](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/runs/summoner/main_run.py), [녹화](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/actions/recording.py). 옛 북쪽 실행기의 유일한 소비자가 제거된 `async_log.py`는 2026-10-11 정리에서 삭제했다. GUI의 제한된 텍스트 표시와 main의 방별 증거/보고서 기록을 장시간 공통 큐·보존 한도의 완성으로 보지 않는다.
 - Owners: [아키텍처](../../project/architecture.md#future-real-time-observation-and-recording), [개발자료 정리](../../project/developer-guide.md#evidence-handling), [설정 현황](../../../config/system/system.md), [실험 계획](../../features/summoner-experiment-plan.md).
 
 ## Product Intent
 
 게임 제어는 저장 속도가 아니라 현재 화면·안전 상태에 따라 움직여야 한다. 운영자는 무엇이 저장됐고 무엇이 누락됐는지 알 수 있어야 하며, 오랜 실행이 메모리나 디스크를 소진시키지 않아야 한다. 기록 품질 저하와 화면 관찰/생존 제어 실패를 구분한다.
+
+2026-10-24 사용자가 다시 확인한 우선순위는 메모리 안전·overflow 방지·자원 해제 후 실제 게임 판단/입력의 최대 효율이다. 제어 이벤트·중간 결과는 소비 후 회수하고 영상/선택 증거는 검증·개선용 보조 자료로 취급한다. 녹화도 품질·용량·종료 안정성을 검증하지만 코덱 benchmark를 주 제어의 반응 지표로 대체하지 않는다. WGC/DXGI와 GPU·빠른/느린 판독 분리의 현재 조사는 [효율 계획의 제안](../refactoring/refactor-0003-rust-efficiency.md#real-time-architecture-exploration--proposed-not-implemented)이 소유하며 미확정 수치·의존성과 실행 승인 범위를 자동으로 채우지 않는다.
 
 ## Confirmed Scope
 
@@ -87,6 +89,8 @@
 
 ## Continuity Notes
 
+- `2026-10-24` 후속: 최초 WGC/GPU 보류·약50ms CPU 구조 검토 뒤 사용자가 실제 구현/조준 대기 개선·녹화 병행 감독 게임을 승인했다. 이어 안전성을 확보한 구조 개선으로 자원 읽기→판별을 먼저 최단화하고 기존 timing/threshold/플레이 재적응은 후속으로 정했다. [REFACTOR-0004](../refactoring/refactor-0004-realtime-decision-latency.md)와 [FEAT-0030](../feature/feat-0030-cpu-realtime-control.md)·[SPEC-0030](../spec/spec-0030-cpu-realtime-control.md)·[RUN-20261024-02](../run/run-20261024-02-cpu-realtime-control.md)가 현재 실행/실제 입력 시각·관찰 cadence 검증을 소유한다.50ms 목표를 달성된 SLA로 표시하지 않고 기존 source/세대·보존/안전 요구를 유지한다.
+- `2026-10-24`: 사용자가 녹화의 보조 역할과 제어 데이터 소비 후 회수, 실제 반응 효율 우선을 재확인했다. 기존 승인된 시계/세대 계약과 분리·상한 요구를 유지한다. WGC/GPU는 조사 후보이며 미확정 실행 조건의 승인으로 취급하지 않는다.
 - `2026-10-05`: 사용자 실시간 경로 분리·100/200회 retention 요구와 F5의 bounded writer 참고를 반영. 마을 기능 변경·자료 삭제·실제 게임 실행은 수행하지 않았다.
 - `2026-10-05`: 시즌 초반/고급 장비의 적응형 텔레포트 요구에 필요한 시각·행동 세대와 지연 구분을 추가했다. 이동 정책은 PRD-0005 소유이며 이번 추가는 runtime 코드나 실행 승인 변경이 아니다.
 - `2026-10-05`: 직업/스킬 공통 규칙·활성 장비/FCR 변경에도 과거 관찰을 재사용하지 않도록 조건 유효성을 보완했다. 표의 수치·개인 설정을 이 PRD에서 중복 소유하지 않는다.

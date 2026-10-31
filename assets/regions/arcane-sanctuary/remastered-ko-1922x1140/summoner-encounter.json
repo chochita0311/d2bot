@@ -436,7 +436,8 @@
         633
       ],
       "sha256": "6f6138cf91f69d2f0194057bb886e008b8c1d404fc884e10719409a038d507d5",
-      "threshold": 0.92,
+      "threshold": 0.85,
+      "minimum_blue_gold_agreement": 0.8,
       "ground_offset": [
         4,
         20
@@ -450,6 +451,16 @@
         "reviewed_by": "codex-visual",
         "reviewed_at": "2026-10-18",
         "basis": "Right curved blue/gold lower bands exclude variable left-side actor/energy-shield lighting. Source and later shifted before/after frames used for calibration; current platform, uniqueness and ordered fresh corpse-pair remain required."
+      },
+      "threshold_review": {
+        "reviewed_by": "codex-visual",
+        "reviewed_at": "2026-10-30",
+        "previous_threshold": 0.92,
+        "basis": "R18 final native PNG visibly retains the same horizontal blue/gold lower-band pose after paused defense. Existing unchanged 32x14 crop scores .858879 with independently aligned blue .816327/gold .827957; require native .85 and both color agreements >=.80. In 14 native alive and 105 existing scene non-detection references, this crop has no native score >=.80. Native current-platform, uniqueness, opposite-state/body-removal and ordered fresh corpse-pair gates remain required. This calibration does not retroactively complete R18 or infer death time.",
+        "references": [
+          "references/summoner/platform-corpse-right-band-lighting.png",
+          "references/summoner/platform-alive-right-band-negative.png"
+        ]
       }
     },
     {

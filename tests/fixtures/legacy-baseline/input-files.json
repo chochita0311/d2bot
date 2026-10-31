@@ -1,0 +1,2394 @@
+[
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/ground-marker-central-landing.png",
+    "sha256": "2441d514929513a9bf58128fe5c8a0d1440da3786ecc3362d88bc0589d5f8ab6"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/ground-marker-stair-candles.png",
+    "sha256": "a91b596dbeec3c35ac5042e2d83c9557f9199afb4f14abd77a124ae4b40c1584"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/ground-marker.png",
+    "sha256": "3dcde1dece3c9d72d1810abdd94be024f9e6b6b64608b95f4e83df7f24987397"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/manifest.json",
+    "sha256": "bbb2ec310ad319e8ed4b8b2f60fdfffbdbac3df3ac5de8830f08947039762a10"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/README.md",
+    "sha256": "89e6553343fbd25ee52e2171b6a16464386c2b81995f353bc51f9b422b52359b"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-00.png",
+    "sha256": "d344af708417a000821f28b0f33b22edcecf1084869e6b8e9a8a8944a4a9b5af"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-01.png",
+    "sha256": "5d420aacd57f0e7341a18d939b14d701850a0fae442ce229863b630127af8cb5"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-02.png",
+    "sha256": "4f106a56d0c833f3e6a01983087b492f137f772c0350d94532a5c10dbb64bafd"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-03.png",
+    "sha256": "3abf1e8de54f8a39d9d236faf44caafc30699f9470567525285f91ed850077b9"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-04.png",
+    "sha256": "88b5f74253cfd75a07edca3fcc539be6e1643671028bdeb262ddb8bde1981dc8"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-05.png",
+    "sha256": "3cb464c0d99511a72d477103edae0440b619032834c6b336c65c4653e4bfb5ad"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-initial-buff-step-06.png",
+    "sha256": "7e799469ca9db8a61bde376f39950ebdc36cfaf3cf4ca45124d775817187e332"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-00.png",
+    "sha256": "d890d9dbcea060fb64b5078fee1acf66282ac98cfb7c9b093d3902a12b49747e"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-01.png",
+    "sha256": "d21ced66f0425c2d85b6c95772372fc0b9144f3d57ed573ca4137ab763fc1a3b"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-02.png",
+    "sha256": "bccf8288a33b21f21ddb935bfad14c4c1949e2c04d10626c4513d7d2add9d871"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-03.png",
+    "sha256": "24ffa1c7c4a016c3c48639e6bcb9277c17ca47e5eb4b2e3a28164c25df48db78"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-04.png",
+    "sha256": "4d4d02341f5e2ce06e6af10a2a39435b0fe92cb1c8431a055d383af70f6c6060"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-05.png",
+    "sha256": "df47756d69245c865f324faacfbc44245882174f2451cb24b184f3522b12b873"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-buff-step-06.png",
+    "sha256": "a2395dd09dd767911e47c0f2bc2b7bb718c9cbbb245db99406bc7c1288fe8d9f"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-00.png",
+    "sha256": "fea4edc7d302575633154196b6dd68317ecaabd56ce66e73660c3329cf85aee9"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-01.png",
+    "sha256": "d579b0f717f7f7081d2a96e0211ed6b22de89a2a6c40cc70d9324000c5c3ed9d"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-02.png",
+    "sha256": "c02878f750c073c62e58855cec773df4168ffcb68150bf21bf2f717cefa9869c"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-03.png",
+    "sha256": "353af75998654935239cccc504a46cfafbb74714b3c40ce6652f84d1123cb6b6"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-04.png",
+    "sha256": "cc52e8ef51377d4056c0a85c0d3cdb812b196210d62c8b2830aac9ae717ec24f"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-05.png",
+    "sha256": "c972725a77dc57a4c4d68d93a75425809439908ea76604966060bc04e5e876c8"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/buff-renewal-prepared-buff-step-06.png",
+    "sha256": "e59a9743bcc97d41c7a487ff704e70de1fe7cde7888513811592f090b4e1edbb"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/references/ground-central-landing-actual-main.png",
+    "sha256": "4c45ed01189e6348b71da1852655ffdae2318401268ae36ab5d9d7609ab39801"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/templates/body/arch-occluded.png",
+    "sha256": "127e922216fa148eb078b4d215475464477b0fbc9e8a3623cc8441f75180f813"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/templates/body/bridge.png",
+    "sha256": "c249a0c4a3c2344b01e336b9ad0b34e7be1f1a31a6a01047f1d0372bbddc7f6b"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/templates/body/map-hidden-rear.png",
+    "sha256": "634e9f29af42c01925af1b4d44dcd3d9a9a7ef0441e8150ab3f6602bf5fbde97"
+  },
+  {
+    "path": "assets/character/sorceress/remastered-1922x1140/templates/body/map-hidden.png",
+    "sha256": "4d0aed05bb257375b20fcbca7e8c6efd7af7664bfb4f5e04188baf8df8716e58"
+  },
+  {
+    "path": "assets/items/gems/amethyst-on-the-ground.png",
+    "sha256": "2e9460157710767c8163d976c643af14ab28cd26249efc1c614982cda9db80ab"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-amethyst.png",
+    "sha256": "74ef0fdf25b882bfc637aef6fc1e994dfd8ac8a84aec34654a27ce023ba820ee"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-diamond.png",
+    "sha256": "5631f93e47960761f04c29be9f9a8afe56db0ea357c11776cf97708e43f073b5"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-emerald.png",
+    "sha256": "4931a22a2ea3334827fc9172e0e6521270d4a5bb18da3dfb9d3e2526394825e9"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-ruby.png",
+    "sha256": "d4b99a6779fc2941b5f58a6ddee5be0fc28a313658ee24beeea8cfa6a6df2e59"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-sapphire.png",
+    "sha256": "d09fa95399be218ff6aead4b2363267ba30e4dc79a382b0d9aa5af9664d9d74a"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-skull.png",
+    "sha256": "e186105a3c0fec0ab813c846fee743bc70f55da02d8fd911caa9dcc1d10677e6"
+  },
+  {
+    "path": "assets/items/gems/icons/chipped-topaz.png",
+    "sha256": "fba0bc4cfb41854c46a9d89172f472a7d25aa145ecc04734f181aacfb898a0e5"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-amethyst.png",
+    "sha256": "2233f47734049362bc549299ab2d1a9e39c3d29d6fb278728f4a2322bb257541"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-diamond.png",
+    "sha256": "e19898d7eb450ca25cc8fd9d4a0da3897b4aadd3321d82c18c96df4733bc9d9a"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-emerald.png",
+    "sha256": "ac454ea1ffd00641224c8725591bc7b00887a7d10f763b6e53b2015ad839a6bc"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-ruby.png",
+    "sha256": "e8333ab5ab64dc9cee78dcadae6f4c4dc1af256810ae80ab9d5a49618b01cc4c"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-sapphire.png",
+    "sha256": "8205e0886636be3995cff1e4662d067e2b766e661d2a2d40be337d4334245dd7"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-skull.png",
+    "sha256": "2a3d8783749bf2f3419f21ca7c0bac4fcc1bad18b3ae72d7373f1aaa8023ee09"
+  },
+  {
+    "path": "assets/items/gems/icons/flawed-topaz.png",
+    "sha256": "065d6ee85082e258ce8929966a63e07c9b6b99cc31ae1da055af5aab009a393d"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-amethyst.png",
+    "sha256": "9b6ca2611436fc0d18b32ddf06a0ed1a581f59234b45e5f103cd703f55faff57"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-diamond.png",
+    "sha256": "0d55f1666c652ab8251a9465fd59bac9423f3b6948ded9d8f5e133728bc5e2d7"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-emerald.png",
+    "sha256": "33838ecd377543a69497ed11c391d604b1737f0f076db3dd54cdfdff55b598a7"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-ruby.png",
+    "sha256": "852b98e0c70f15100a6f8187e196d088f39ba9a777c047b374ce56a1bb9f2673"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-sapphire.png",
+    "sha256": "62855073cfe2bacb6028e6edc94a0863fc3de9f2085bc3115d304087534819f4"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-skull.png",
+    "sha256": "ccc342f8870fd9939590450bd50eb7f6de6fcfa22973a8136778970d8fdc2eb4"
+  },
+  {
+    "path": "assets/items/gems/icons/flawless-topaz.png",
+    "sha256": "23340b336694a4add05af909caacb6787052260b29d793afb672e75be200dbf4"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-amethyst.png",
+    "sha256": "ae5a6b3e4fa9b954f7bbcf207e15178bd6d41280788fd825ffb277929d63f996"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-diamond.png",
+    "sha256": "83c7eb9ba7ae0f6e375f4757d29fecf1c6cca57d5d1360da9636117e22e72264"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-emerald.png",
+    "sha256": "3e8dd165b5d6da0e3513a81d612d8439832a1931c03ad68c342ed5757dc5cb72"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-ruby.png",
+    "sha256": "d311eeac63beaf8b008da70ee4e0af2e6595c2b5ffdfeff7f2719eaedd392312"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-sapphire.png",
+    "sha256": "61124caf9617217b45ed26111065920b224b0c1e655b961ee7fe21dc43b07dbf"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-skull.png",
+    "sha256": "2566c04437d3758daaa52b4ecfabaacdfc1fd83c773b9afcafa3b8d3326a992f"
+  },
+  {
+    "path": "assets/items/gems/icons/normal-topaz.png",
+    "sha256": "2994486e9b94b09caafda985f950f65f6995251f09c44412e693c21a0dd60d2b"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-amethyst.png",
+    "sha256": "5914afdaee97b4be1cbb1c0e845fbb11ecde4895d6cbe23d36228ed9f5f65823"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-diamond.png",
+    "sha256": "05e759661f66f8ccbac402e521fdfb0b869e93295636713517d025b7248f1390"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-emerald.png",
+    "sha256": "e747528d6dc658c63e54e77eb9332f3473cd6e71add29d9ccd7288d3dcf5089a"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-ruby.png",
+    "sha256": "8d65b2560a9a5a817f110e90f9dc403cccaf058a350744f2ecde44b989570595"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-sapphire.png",
+    "sha256": "4d739cfa60d981b177412f96a7643425122b1522b234b744d25358effee624ed"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-skull.png",
+    "sha256": "b0831a01e5a367c664962a33f833d11ba7b445d397194776c3918c6e07e1bdee"
+  },
+  {
+    "path": "assets/items/gems/icons/perfect-topaz.png",
+    "sha256": "db5d89a961e2794c109dd3fed3d07e71eca4dea70981118ecd04eac7bd864579"
+  },
+  {
+    "path": "assets/items/gems/references/amethyst-qualities-en.png",
+    "sha256": "33bd665383a8e9db8a0064f6947c89bad9226eea79e89d1a45b0f3205d4a580d"
+  },
+  {
+    "path": "assets/items/gems/references/diamond-qualities-en.png",
+    "sha256": "9db3fd5c75e0546dbaf26680a6c62b9666c3356a02e533f67906087c42efb68b"
+  },
+  {
+    "path": "assets/items/gems/references/emerald-qualities-en.png",
+    "sha256": "0ed619640c658212cf13b3a39d10ee88e4db9c6657c823a576570cfb5a014331"
+  },
+  {
+    "path": "assets/items/gems/references/ruby-qualities-en.png",
+    "sha256": "3d86ec98e47e5b8fcabbef33a6a6418ccb272d3bdfcd3733d33421bbcaf32073"
+  },
+  {
+    "path": "assets/items/gems/references/sapphire-qualities-en.png",
+    "sha256": "1ad4bc03b410c1559d4d1081b2e4de7e8dbbbd07777b0f2241bec34338a96c23"
+  },
+  {
+    "path": "assets/items/gems/references/skull-qualities-en.png",
+    "sha256": "b96e37b46c2e4407fbfa8c306d06b25a74a51fa88c852becc3fd017d16760096"
+  },
+  {
+    "path": "assets/items/gems/references/topaz-qualities-en.png",
+    "sha256": "f01c94a01bde6c84cd9b7e0d5faa0fd5e738a6d34d526d489cb612631fca511e"
+  },
+  {
+    "path": "assets/items/horadric-cube/icon-selected.png",
+    "sha256": "8fd15d4d8316f4738fbd79b4970657ab42d40ad107f6fd695a408e855d0d7a3f"
+  },
+  {
+    "path": "assets/items/horadric-cube/README.md",
+    "sha256": "11e7a8ea2500f8f7f0204d67b477618485435dee391efd650ee0735fc4f3ccca"
+  },
+  {
+    "path": "assets/items/keys/key-of-hate-inventory-icon.png",
+    "sha256": "f78d1b4ca2a61ff8e16ac99252132c9b9064b00dc67178d45d700f5021b23dbd"
+  },
+  {
+    "path": "assets/items/keys/key-of-hate-on-the-ground.png",
+    "sha256": "ffb56cb82df8049149fe0b2310ab0ec5ecbd6269b5b4be98a04e1e4f89a917e2"
+  },
+  {
+    "path": "assets/items/keys/key-of-hate.png",
+    "sha256": "aa4a3dcff7f825dbd4810833d1493adb087c7f3306e2c2741f5cb33fd820f747"
+  },
+  {
+    "path": "assets/items/keys/README.md",
+    "sha256": "9118cf25719b9c795bef1d923e11c5981d336342b8a0e3ba0e87f24dafb14e38"
+  },
+  {
+    "path": "assets/items/README.md",
+    "sha256": "52acce2d2d59a7aba3ef4d9078de8ee6dbe27adcee913418ecead5f877fd2289"
+  },
+  {
+    "path": "assets/items/runes/icons/jah.png",
+    "sha256": "1ed9e094476f48b24a30b10f5cfc38ed11232b1a1208deb988143453be38f97d"
+  },
+  {
+    "path": "assets/items/runes/ist-on-the-ground.png",
+    "sha256": "4fb25355d21f2827810dd8b018efe6ef9fbeb4cf5e0d30b67bca51d7b33c83cc"
+  },
+  {
+    "path": "assets/items/runes/ohm-on-the-ground.png",
+    "sha256": "f35893cd3a30bce46476d7dadd7d5eb10123738918f7d8cf5449983b7661c736"
+  },
+  {
+    "path": "assets/items/runes/rune-on-the-ground.png",
+    "sha256": "430f1a130d1612194328c5323c1431532caa9fd8a790064a78880cd35014b55c"
+  },
+  {
+    "path": "assets/README.md",
+    "sha256": "61ecc643097f9e8bd7c7463cb09f5aadb133d1398dd2700e1379450f5fd953df"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/automap-floor-references.json",
+    "sha256": "3493064ee6c81fbda67ac80fac58891fffb31bf4d1d099fd48b3d74458a44a1a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/hub-patterns.json",
+    "sha256": "480bd28aa04d3f51db415befc9fe641295298bcc92920cc5b98534973d699db6"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/journal-exit.json",
+    "sha256": "b1da6148aaecf2b4f4a2c07043e32c39fef428a994dc41ae5b772bd335c9e21a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/manifest.json",
+    "sha256": "56526053c5b2f9e3dac7aa6a24196d25be284eff16a2a17214667e09561c625f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json",
+    "sha256": "2b190fb4f826daa14bdc9c6def241629bc4f00ddc653e25e9fba23ab268baab3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-patterns.json",
+    "sha256": "7ba624b5feab6bb5b7c12f252c594ce3d3329809958517cc511d33f037f6ad6c"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/objective-runes.json",
+    "sha256": "30a8d13eead0a5845e9eea926064368b389377e17cd36d895b8296a75736437a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/README.md",
+    "sha256": "a611f75ceb762bbd8eafc32df483a8a8bd973561d6534fc9d1d22ef7dd87ea0f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/alive-followup.png",
+    "sha256": "67314da8646740a3d24842e280b89554a4d2040e4d47f40cb190709ed9d4f325"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/alive.png",
+    "sha256": "878ddc7b31137c2f359347587a9c1a32a0a4749bea971a74a330f40b0aaa3fdc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/corpse-ground.png",
+    "sha256": "2e81d7d301b04c5aeb61b4a81336bd4d669d12a183993a11a1f55f4b37ed0f0d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/corpses-followup.png",
+    "sha256": "0ed5f761a90685a903a590407f9626a9f8aaf7cd89f29dcc2ae1bb69c3311314"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/corpses.png",
+    "sha256": "67530b2c2bafb4c1919be88f8fd841299cc6bc94ce83e20100f2b587cf928313"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/lightning-spire-lit.png",
+    "sha256": "8ffc88b4c4ab6bf257471f0f072d8cf61aa1445132153431315403261162d76a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/lightning-spire-unlit.png",
+    "sha256": "89fb7ac2adb0f88e1c948fcbd5785cdd2f32266a0e97c13927e84a7488e14e56"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/shrine.png",
+    "sha256": "01ec13f898d2f1e16678b791085ceac7bff1ba7a8504d12b905e9102bd181994"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/encounters/specter.webp",
+    "sha256": "f19960082f2ef1bbf5f5dc1d460e7891951f3de40e96ec01bf882596641457bb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-reviewed-window.png",
+    "sha256": "36ca8c609bee81a8a5a833fc65e0f8c1ae345628615d98892382e1a946ee55c5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/entry/hub-second-window.png",
+    "sha256": "837a68d3361a6d254a7f5d47135965c5bedbeb50149a7da84e2196166676a186"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hover/locked-chest-hover-ko.png",
+    "sha256": "cd840e7f70159c9b1760065b7864499ac11715cf48a48108b2db5603c16d8e27"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/actor-occluded.png",
+    "sha256": "c68c36c39407108cd7a121a494da014c4132f2175132aadd1466607fbd23711b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/clear-floor.png",
+    "sha256": "be62f38b1aaf0a6b5ea43f9175c04fd77484641a032f4975429643810da754d0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/distant-effects.png",
+    "sha256": "9d304a2f1a869fc5237b70b09b302c1ba1c39b2de30f6f45baee4ee85e19f671"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/effects.png",
+    "sha256": "fe8c8f0124d384be49562258dcfcb907376cac5185ad89ba27f743e26bbb4fce"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/floor-occluded.png",
+    "sha256": "cef19eefd52f72d59b80557e86693236b2a7d55989901c20aeb319a9b47c2d71"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/floor-recovered.png",
+    "sha256": "3b03f7ea92d35bd995a526ccfca04952b8b308ea1c9ce433d9c5dc0679dfe87a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/left-floor-return.png",
+    "sha256": "25b914b7a47db6427553fef248d514bc9e11966641f29bcb11fb4e91757e6eb5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/main.png",
+    "sha256": "71a1c5660a64212606bea96f493bff1a480459c8a95ccf9ea19d3619068a99bb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-brazier-town-finish.png",
+    "sha256": "6eafa647e92b4117deb0c26c48e1f153352849539725c3013467579129c32786"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-dim-brazier.png",
+    "sha256": "65221ebff7f4ecba06d6a98a5644946d38c5e76692e6dc2baae5177e921e034d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/merged-pair-one-ornament.png",
+    "sha256": "a6736a0e931b93358002de72994c68a56f4a55ebd179deaae1e21ed4e82829cf"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/return-map-overlay-off.png",
+    "sha256": "6afa212ed01ce80e3a20821b2718ceec245af37a48520845dfbd15b0c1f1cb31"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/return-map-overlay-on.png",
+    "sha256": "4aee55404cdb8202cf5b35e962691474154cea09496bd506ab185231cc7efc6e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/return-player-merc-single-ornament.png",
+    "sha256": "e64591716f92e88fe6b9cb63897ee68026c2e804c4da4dc248e30012e027ea86"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/return-player-merc-two-ornaments.png",
+    "sha256": "a5ed81218024b5adbf875b62abce1ce3ca2a8435f6f39be0def39abe01e3f17a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/return-single-ornament.png",
+    "sha256": "354f47b59dac6fb78fc9d234423c724fc2a957f39568232e6a115b1e7cbfd218"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/hub/southwest-approach-floor.png",
+    "sha256": "00f7c393aa05e271b17602fc18eb91ffe1fe31ee9a5981c9c6f7cffe66efae16"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-light-floor.png",
+    "sha256": "1150f8f69a23cb5088114b027f2e1d04a522af2fe5f41a0333098744bddfcba0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-marker-overlap.png",
+    "sha256": "1ec6ba73a9eedc2c893a106f2a5150e4392d3f184018933db32e26d1c9fdc7e4"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/area-title-stone-underlay.png",
+    "sha256": "0c7c54f7b871754dfe89e45eafe7c5c8cb648dc0979e580858148fa530449d19"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/automap-node-negative.png",
+    "sha256": "00cebaa6389657f33f615a786aef664e9306977877b4f2ec9e1cd3f52660c2ee"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/automap-world-floor-positive.png",
+    "sha256": "c21308b836143c82f43a9b3c45c02b049b866c73fdef73e9c7d4d32cb1ce200b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-after-reverse.png",
+    "sha256": "34d0f8ffe708586cf9cb7692b6e5e03ae7a6a0b69b5ba23d6a25c1fdcb91bda7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-after-sideway.png",
+    "sha256": "c31193d63306ecb2fc817a9bce0f9d18348b546d4f2caa1998c29b3bde88a974"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-descending-stair-graph-current.png",
+    "sha256": "94eeb4103129553c15ad68f7fe5f03045ea07ee3137d947edc7164909c227fe5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-descending-stair-localization-transition.png",
+    "sha256": "c80a7b5fd0526002ac8681ea1690b61af2b6966367ddadb644d8e674476ced6e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-fourth-before.png",
+    "sha256": "f3cc3a7220af45dc4b8ea9b0bac1dc6c94c993e81265a1712ac673f33bd10110"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-fourth-hud-background.png",
+    "sha256": "7cf62388ab1394b71946b433efa15521dd022843b19cf5b872e0f318acf110c1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden-rear.png",
+    "sha256": "6027169e86d19132ab975e69aaaff5e17243a2023b8adeef0f763198e79a0bb2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden-side.png",
+    "sha256": "3a107eba2a815a58d61e040b10aafbdde4f2752d95d52c7f8f34f82767a9164c"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-map-hidden.png",
+    "sha256": "f69187b0a0b079b6e66eb1b7fde6f8facdc40041e23619b6a690228b11da5f87"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-occluded-before-reverse.png",
+    "sha256": "bd596405d984c11cb91603252530c9aca50297d3da34f1f6a1a4e18964707924"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-occluded-bridge.png",
+    "sha256": "e9be9c8bd0e5669891baa93badafd713c61014a19b4df80f7a61fdc154c93cfd"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-stair-cap-short-side-exit.png",
+    "sha256": "ccc26c2fd0d3689300cd12fe5167c1cda57261f0d32d9e480c90c30538993d2a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-step-after.png",
+    "sha256": "f0200b6198b572a2970869cdfb4ddeeea87d1ebe9b39db220ffff2b1833216c5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-step-before.png",
+    "sha256": "0d22990b29f4189d8228a962aedce952cd27ae61538cdf3f01f95157033f8549"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-step-buff-step-06.png",
+    "sha256": "098a980842e9a2ab8429a38ed34966dd47ce8e5ccaa08a9ad35f7b4cb92278e9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/north-three-arrivals.png",
+    "sha256": "e8102978ab5f580484fd1208baed444b6e9bcd4083ea62b89a44aaf25383c8bb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/return-portal-corner-short-goal.png",
+    "sha256": "4310d3e9b8d3fcb9bc7be985f313f123b6f42983304c2e962e8172bae1907f96"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/return-stair-candles.png",
+    "sha256": "061749cf39714068355640c798682553f4719c1c52ae60718c8164f5fe885bcf"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stair-cap-two-descents.png",
+    "sha256": "0f9e3dd99561bd6415e2978690eb4bb07e38dec661b59df609230928bdca5153"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stair-edge-blocked-landing.png",
+    "sha256": "865b99ad69c5636b452e6be50911bdf42c5c5f671d9031f2e00fc850591565f1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stairs-hostile-effects-no-waypoint.png",
+    "sha256": "33a91a48e125f919cdd1fad67e71cb2610ad179c45961bddafba259a0a7eab7a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/stairs.png",
+    "sha256": "81b58ff966e5cffe79739663902319748a853b66bc6652e1cce4f7668f60050b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/teleporter-body.png",
+    "sha256": "d5bb2b79a05d5895f5d99b22e4c42726827ac120fe475c1b371f32ae9abb3c86"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/navigation/terrain.png",
+    "sha256": "5ead239a2e5d260a9d625a36a35a82fac1b0c543f687859d56a68eca6811ffe1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/README.md",
+    "sha256": "4539ad564820532595bed25af35242f8b86b31f0e850a87a3e90ec35dd3ca788"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/journal-occluded-by-player-after-approach.png",
+    "sha256": "39ad4d4328dd42304fc8218b5426ce82eb1079275879aeaa111c2a964928f009"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/journal-portal-hover.png",
+    "sha256": "f64affcf5f4f164a09d63ede775fda95b96b4b544b1969dfb44b2ffedc3ce14a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/journal-red-portal.png",
+    "sha256": "f9b77eeaecd095f80c3ea51a0e5057e396fbdbcd4907ff007f6189257f039a01"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-back-robe.png",
+    "sha256": "49d1c05ecb949ae5ae3a4d5f8abf4f8e3e5f7eb37aaece1e32bb8a0f6c2fa735"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-cast-unrecognized.png",
+    "sha256": "9b18542cc7e34d6db75c2d9e3d5b6a117044dfd112c426e9be3ad3da6c087b51"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-cast.png",
+    "sha256": "48f2d7a652461c34687fe6d9349bfa913b107f7e7b35686bd404cf07146fa47b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-lit.png",
+    "sha256": "945666731544f6a8b08e6d4922979f2d917e8c493d3f5466671906dae2e0aecc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-open.png",
+    "sha256": "10b3d6df345fecfe7f09fad3212c5c858fbe9089dbc2b88e604bece9241c0099"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-front-staff.png",
+    "sha256": "1e252f1ac988495d3f33ecdf8d130b3d9db5096c82c29421189778b7cf87d3d5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-hit-turn.png",
+    "sha256": "28372568380c85296039ebb3bd9569ac982835841fab7b749cc4f445d163ef03"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-lower-robe.png",
+    "sha256": "56425667afb79f23ed135a01c172d6a96d20afb29cea03090b09237c7608baa0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-north.png",
+    "sha256": "f0c71a8e0b9ed7db9d4808bb14de2c9695acc446ff830aa40bcf9c18cf871c03"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-raised-arm.png",
+    "sha256": "2881f61b08afbe4c54607ee1f5448598efcac585fa8ea6f90b3073dd8f9c62d3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-rear-unrecognized.png",
+    "sha256": "06fe9576bf9638b3c4c3f2eee918c2c7eb3cea2df86ec6dfc26d24742f2f1e72"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-right-band-negative.png",
+    "sha256": "dee024d5b1e0588498b734e7d40e9eee5cc2bf262049874d154455f4a0476f40"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-shield.png",
+    "sha256": "deddb8777d538da90d22cb449c45807a2f347fc0d4af77be3da5f70a7379031f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive-side-fold-robe.png",
+    "sha256": "522c909e5193b26e9cae71a8e33546c17c2ab87f3dceb95a4dd2870f3e2b18c3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-alive.png",
+    "sha256": "12c8db8f9fbd1b7b95350bc3d8fdfa96cfcd262081e13c386961ff35a4debc44"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe-lighting-after.png",
+    "sha256": "e0477e1b03eb5696db78f9f99c364b5c93c84030f11583adfa87903917687599"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe-lighting-before.png",
+    "sha256": "e4f4549323bdbe9f40571c8560f1c4603c04eac6d7526149b33eae0087005f34"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe-moved-after.png",
+    "sha256": "ab2e45a14b05e4f5c10494e60ce371874dd40a1fd85e99690c73d9e7a6363ee5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe-moved-before.png",
+    "sha256": "e060c48d6f342419698b0ebb31fa616041e7506d2805f8a73e48138a7caf0120"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curled-robe.png",
+    "sha256": "265eda8cc790c5d269d75d4f06cd77a0d69d41e79354e626812025de976263d2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curved-hem.png",
+    "sha256": "7c83b90cbb27933799c23956897e11a7801b2136f6007ce7aa0c8143baff3388"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curved-lower-fold-combat.png",
+    "sha256": "a5f30cc7374d65257b78930bf9005c97e9bf484c40be6b76a800eb9d32de5fa6"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-curved-lower-fold.png",
+    "sha256": "dc4e570aa08e7156abf985e5993665139e949f2538dbb58445f0360e21c4d134"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-face-down-lighting-after-approach.png",
+    "sha256": "0dec718dd3332d30f12aa5d793d7444d2290c41cd8174f355de672e57e6878d6"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-face-down-lighting-before.png",
+    "sha256": "8957efb487808c07ed3f87783bf8b9d91ab92bd9ee939aebaafc5c1b90328686"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-face-down-lighting.png",
+    "sha256": "e966534ef1cd58a63789b67dc504fa330bc7a211ee16fb57941608267e197dde"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-face-down.png",
+    "sha256": "2dab0ce44d4f293dd03243204f7048bbadcfbbe4e5e2298394b8a697b422d1c1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-front-hem-followup.png",
+    "sha256": "58b66ae5dbccb66e8fef01a7ba67aa1263254b5ef0373b763df38a3dd283e44d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-front-hem.png",
+    "sha256": "dc87a9c3d0ff8d83ddd4a6a7621a3839f8711bbb6cefc038668be2cd86b0ffd3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-followup.png",
+    "sha256": "716c727c50477257260cf25b489c495402b20d17f002df5804d0503305d352f7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-front-lighting-followup.png",
+    "sha256": "91bbcdbe5ef63a8c19653e6f5e82a0214e9b06a3e8fcdce02798f229f0993148"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-front-lighting.png",
+    "sha256": "1d0c0fa7dd29d98416c0b39ce5afcf690a698c878108018f04bbce5e6e4c5dba"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-lit-followup.png",
+    "sha256": "e083f0d309f955e5932b08778b26a85cac7d202d2792020cd2208b63fc42ff7f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem-lit.png",
+    "sha256": "25e776f9566ccf930239d4a0f5cbdcbe79d703fccea91964279efb1c057766dc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-left-hem.png",
+    "sha256": "64eb1714051004bcb764967acb8804b4870b7aacb7d67d23f47e8d6fd29b73ab"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem-bone-cover-followup.png",
+    "sha256": "e66fa2107353f599571d26a1a737a55ce8cbc8c44b06822d19aca31d887b71b1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem-bone-cover.png",
+    "sha256": "0ccabd6101deebb0913f0769867b0b8958caecd2dbf17a74f7df7f85df1f25b0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem-combat.png",
+    "sha256": "1c337ad5e2dd943cccd2f600645f4ae2dd62b1ab7ba3c31d4ea1d61b66b90881"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem-followup.png",
+    "sha256": "b0c273d4e4562b859789dc80f933325e4c21d272ec4745a16c873a87d00c95b9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-looped-hem.png",
+    "sha256": "e98103949b8ec3c21a5dbb5b442d8099829504b1632f263bb2cfd26d1df88ff0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-lower-band-lighting-after.png",
+    "sha256": "8ed419eb929d248dbac616ea23dde7f8efbe51e7b9b55285cf7d12d230e63c87"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-lower-band-lighting-before.png",
+    "sha256": "750e1317a34f3a42b74aa2b2a383d5ab173f3afcd192ea03bbc10a65a762d179"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-map-occluded.png",
+    "sha256": "73f4dee2629c2f359916cb0e4ddcfd9e9c01f4a314db6adb6c0701dd5b38971a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-merc-overlap-unrecognized.png",
+    "sha256": "a5139aecf05b3be9b6fdd5728c4efd0d84aced5a6fc7c81f58028e8ed29f05ae"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-north.png",
+    "sha256": "9dbbc270f634f738a88950ecafc55306d6b308dd7724886938d3ad9db20f7e88"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-overlapped-hem-combat-unverified.png",
+    "sha256": "1a6ca513a50700fb3ddc1ecd722795b2f5f78fdd6d1538a9dea96aa56bdcecb6"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-overlapped-hem-followup.png",
+    "sha256": "0a763e8b4cfbca516f57a72c243af35e6566bd3d6e255221328bac6593396b37"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-overlapped-hem.png",
+    "sha256": "93aff1eb1e650dc8935731b165ab164ca77a5bd4d7b98bae5e00857339ffc19a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-right-band-lighting.png",
+    "sha256": "84c547108903a01c33f8044dfced5652803591289ca9d3f0b27a34d226922b69"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-shield.png",
+    "sha256": "970eb71ebe320e1d4cb049274dc3d2c0e7dadea5767af603c42732e2864e7900"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-lower-bands-followup-map-off.png",
+    "sha256": "e4e8df3090ae3da55dd0d62e72be266ceadc4e9645156d623a12b3de616b2f64"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-lower-bands-followup-map-on.png",
+    "sha256": "5b5c39d0665fe28cf05d5f65ca94fcc646cc1ecabb66f6f55a52ce1eae36ad76"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-lower-bands.png",
+    "sha256": "601e246bbbfbd80f49e4e95cca4972cbe8473c9ec82bed1fa26908e88f1b0889"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-robe-followup-1.png",
+    "sha256": "781543218d1727345bfa6c98bf51b7c932ce1f5efe1609ec6e836101eee53edd"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-robe-followup-2.png",
+    "sha256": "102d86ddd06948dbc71dda7e601fc4c27ac33d6416990cbfbdee0da05b764151"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-side-robe.png",
+    "sha256": "3ccf0104af704bbaa5742a2b3334291bf93e76ee7ed2c4fd22230275456c2a3f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-turn.png",
+    "sha256": "c93d01cc9a7264e27768b4a74c0960bcd74ee3a7795afb3af27fec609992f9b2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-corpse-wide-side.png",
+    "sha256": "0625170877acd8fc786863bf56f69d723d9cc11662c32568e7983e87d51a7dc9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-glyph-unverified.png",
+    "sha256": "9a456b9363b678e9e561da5ca092910f3c2dd98da62b31aeb54c5d173c54516c"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-journal.png",
+    "sha256": "eccfffcb9634d313d024e0936cc0f255ef8e24e3308e0db22a83aa93bfa8db56"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-labels-combat.png",
+    "sha256": "3fa34ab98b6321a508f0c6ea8e8485d5f871b503b8a287460c5ac4fa9b2a203b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-slot-variation-a.png",
+    "sha256": "f087820f19244a7bafbaf924a7e91abbb040bd8d52589b0713ea0846754cc82b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/summoner/platform-slot-variation-b.png",
+    "sha256": "4cf1aedcb9c181fab1fa6a7db182139b34319e1cede9977f522ac184b171dcc7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-chest-body-face-static.png",
+    "sha256": "6a9a6247c1a7b9a1d5291dbecb741bddccc1ea766e9137a01aa0d2eababd6124"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-gray-box-front.png",
+    "sha256": "e656bfbf5b957a62a75fbdca608aace9ce50833a520172982aefb5cf249ea3de"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-small-chest.png",
+    "sha256": "ab089eac33f727c78d36c4d5051c70c9cdb87a6f120fc419e7a57ed5ebc638b1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-corpse-covered-stone-box-and-metal-chest.png",
+    "sha256": "70cb456b359fe3d4f88b1c9e9c1ab6d2cf5ddf0989e588f5957ea975f0e407fc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-chests.png",
+    "sha256": "7d03af29240c4fb3192de5a0f586fcdd4432a37353ddf50b6f8cfcfda5d69d7b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-pair-engraved-plate-followup.png",
+    "sha256": "426438e9361b93e09e2bb76a74fdb5000ee5a587c8d06e166cce59ee93bf104d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-arched-pair-engraved-plate.png",
+    "sha256": "03ee7ac9fcf6555331b95616a631c63731d7b0c9ac3e86bb31998171ddee9643"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-chests-gold-filigree.png",
+    "sha256": "ba317336820efe87835296869c30f635df2209556f4b4d0fbc1a469f413e4d1b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-chests-small-box-settled.png",
+    "sha256": "9826d7f1a65c1ecb8e98b560274263edc7aaf8aca0d7ff5f1a2e2def5368e551"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-chests-small-box.png",
+    "sha256": "f1a7bbd4901fb35044cbc48c749a015a88390add3c1d7d87e6f29d2a221005ad"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-chests-square-box.png",
+    "sha256": "065fb5fd96ff65cb20c6144d34c27e41f5547d0441a8b6a1f85ae95ca7d8474a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-faces-lower-unverified.png",
+    "sha256": "80c4490cd9afa0e7aa82155e13afc823e7f4809bca362a3167e4adef803924c7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-faces.png",
+    "sha256": "d5405048760f5c6aab13b55288fb3e14a7d060651f26673d7cba27aeba074d54"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-pair-small-box-settled.png",
+    "sha256": "6aef26b15b410941cd5fdbd58f8816fe410ea1cd99bf507fad90ea489a69e253"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-metal-pair-small-box.png",
+    "sha256": "585936e9d75fbbf94f67dce54c6a23522ba897cda9d1839fd149cb13c816e87a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-dark-stone-chest-terminal.png",
+    "sha256": "b59133ffa753457f817b0fa65a53537d63bac5bff09e8f37879b02b252b8ddcd"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-fire-cleared.png",
+    "sha256": "4e833251f43cbb702041eec2f4a68df1d5f8657ec4b7e59249ba21043831da0b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-fire-obscured.png",
+    "sha256": "a2661421186fa08db262bc29bc7020ac6ce8d542699025c293b0816b3dd3c0a2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-floor-effect-relocalized.png",
+    "sha256": "5bfe0f1bb01140a9a7859c66ce62272d4b12e425da16053c1fc7ec225d3f62cb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-floor-view.png",
+    "sha256": "0f7e52aefa4a3cf76d4c8d8110456c6825464f4459d16df76c107340fcafb08a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gold-labels-full.png",
+    "sha256": "7eb7489973b482f28a1e57180c8ba1a598979268dbc006aceb8a47f731277ab2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gold-labels.png",
+    "sha256": "09e545719f5caea01c373e876b886e5af7696bdf9a56fffbf70cefd710d95e3b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gray-front-lighting-hidden.png",
+    "sha256": "971f761d7c58ee31e4c9fd244057c52805bf24bc9c202c2c4859460942ca3d73"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gray-front-lighting-map-on.png",
+    "sha256": "0a25e173d34d697c3be4d2b6addbe30fd73290d6b1fbd53ee8260ecb54e30783"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gray-front-lighting-settled.png",
+    "sha256": "4017498fe6494aa7a1b98b9661e2bb5a98487a0ce21b7a958247e8a068703447"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-gray-front-lighting-unconfirmed.png",
+    "sha256": "09e92095ecb8d931a987a77660c4d3812e8262cc1ddc17842338f39614ae97d3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-item-label-occlusion.png",
+    "sha256": "1e57d9aa7f18e85c8b756509c0a5bec676c144ea2cf545a6a561c56b9726d651"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-landmarks.png",
+    "sha256": "86b2d6214e8470385b687bc98b3ef5556f567be416524345508bb19a3a69493d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-left-chest-occluded.png",
+    "sha256": "e7f4aee7266d7236510321501137b499deea5e9ea5f1c0f2619445550c4b68c5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-lit-metal-chest-face.png",
+    "sha256": "fb8e6f7e06d46578a1a4253490983479a7eb9d93aa4581501eec2e607d6eb73e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-map-overlay-off.png",
+    "sha256": "d7e801ac7b195ef4467c1f2ea66679c1db9a99b400090b5452f0d1f5a20d11a8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-map-overlay-on.png",
+    "sha256": "6f79f0f59cef881e9f58f187c50e0da8370e58fce09dd2c46d26ab924151f95f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-gray-box-edges.png",
+    "sha256": "4d85a90e08fec2aa81722493e18d518a2331e472aa3914975c5cacf0179bb1de"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chest-two-stone-boxes.png",
+    "sha256": "c38e394a76b0f54cd4f5e1f76bf6230577a3b4a6f3d2dd6439c2fcb91bed5d5b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chests-gray-stone-box.png",
+    "sha256": "7795ecd77e964ee10c20cc9a5e02979f558c12e86825d7b5f2888985f1398144"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-chests-small-box.png",
+    "sha256": "145df37bb2fdcd695cac902e3a40c5c3c93532ca506422d5ce0227b5094d7a60"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-one-chest-after-camera-shift.png",
+    "sha256": "460275b4a24143995f6593c2fe590d4cc6d18ec781cb59c4c6c9b9cb54091a2c"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-pair-engraved-floor-settled.png",
+    "sha256": "2c8e2134eaaec26ac592880caffb5285eb88af653f9f51a355378e419c994015"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-pair-engraved-floor.png",
+    "sha256": "64aca82f71dd9bd051985e996ec9e4ff938c3ce11b4ebb29adc1851b21387b3d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-three-chests.png",
+    "sha256": "8e9026f89a07aecbc051e95bb723eaa9888bbb0398339c56f4697f276162b297"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-mixed-small-and-arched-chests.png",
+    "sha256": "2e82b552935088c80e4f805b82fc026dde31966dc7e5f0eaa1a43bf99d55515b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-open-chest-terminal.png",
+    "sha256": "f7fcb214968f6f641407e7cc12d93a1b84d75c6edb6b15d747d93c5d2291671a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-overlapping-gold-labels.png",
+    "sha256": "493c4ffb477055b3fa6177b6bef478abda14ea048fff8815aa695120abfbabaf"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-small-boxes-and-dark-arched-roof.png",
+    "sha256": "73627c0875181ee4b1462556d7840df073906ff0798bff51f5b00bda7be804a5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-arched-pair-gold-filigree-covered.png",
+    "sha256": "fe6d81fb94a6ccbe8aa9612c24bf1de0eb3b535ee4af8bdbcbab5d8e94390ef3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-arched-pair-gold-filigree-followup.png",
+    "sha256": "e8c8b4acdf1b33f3763496b02ee7baf6c6c5586eff85e0b9a13eae1b600ef7ed"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-arched-pair-gold-filigree-hidden.png",
+    "sha256": "6b07aed95968c31e5b86cb182e6ed3f22204ed6bf580739463b408dea7b62858"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-metal-pair-engraved-plate-followup.png",
+    "sha256": "96c133e30d0986afa924bfb2960cc0adbfeb6a4741be1e35242e7cbd7773aebe"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-metal-pair-engraved-plate-hidden.png",
+    "sha256": "c03424e2b167aa9a8edab117695a42925a98bd58387f374f21d86933e7d2f721"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-right-lighting-covered.png",
+    "sha256": "393eb1c7e9161e54f30e7a2e1f0b64ee95744ac34cd51bcb3fa68de075d43c2e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-square-right-lighting-hidden.png",
+    "sha256": "ba8496ef30df516100b0c890fbf55f1b05f640a14ca3b12811259dbb4de2a6f3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-stone-box-terminal.png",
+    "sha256": "9ff2649f1db3eac74f615eed8dee8871c8e9f633253736b6a609c5df2cb006a5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-stone-plate-arched-and-square.png",
+    "sha256": "d1f1e9ec2df1685b86a5e81741eaa972c372806dc23e8f09910b98dbba07e2f8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-arched-chest-faces.png",
+    "sha256": "497f850228a2280e5383b636e7fbb879b8d4a03218d1f96ae7a4ed1f840b64a8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-chest-clean.png",
+    "sha256": "30c9158329a00545c5dc6b6f3d839c9eef14aac13091f3acb292dc51c60ef840"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-chest-end.png",
+    "sha256": "83d1a61fef1e87bf5b2e85a13c304f530906c2a505ec0ba1dfaece206034d09c"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-chests-lower-observation-edge.png",
+    "sha256": "84028c02061b9f87d4d64b460067186332e9efbd19a74f976c2c54f6b7f5141d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-dark-stone-boxes.png",
+    "sha256": "1fb5e5dcc9d33f25964ec93db646ab593f840a773b1230d8fc65f04426a8ac7b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-three-square-chests.png",
+    "sha256": "09f79c6ba4d7b4dd5d0a6452dcf1f726de05f6699f93aa3ce25b098413188d6d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-arched-chests-small-box.png",
+    "sha256": "3e7caf6c395e0b8a19042511e0a3dd2ac3802616f0e5a1805b2b63bffed248d8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-chest-junction.png",
+    "sha256": "47a9ba59a7e7a3a4ccb757edfb9c9b42732c91864d0496cb1c56ae9b52cba861"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-chests-lower-floor-spoke-obscured.png",
+    "sha256": "d32fe0fc6efbdec6a5d5f70bbe69397e85c0dafe2fe1fb65101f01d39b6f77f9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-chests-lower-floor-spoke.png",
+    "sha256": "bd92bc404e50ab01c182ca2d729e2a7de6e3b47a765a61d3b3923c540ab38624"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-two-stone-boxes-dark-metal-face.png",
+    "sha256": "3a4d57720fe3ebee822f7e0df256312a7af493ae0927541404c6fe20370fe2b5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/summoner-encounter.json",
+    "sha256": "ef17fc2cfc5aa433e425df11ed875f72735793de25d005c1c439d4b2b0b67271"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/fire-resist-shrine.png",
+    "sha256": "b1ce073a24bc67370db81e7feb81d792b4ee1f3eebb8e41aa9eb349284c0a46b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/ghoul-alive.png",
+    "sha256": "e3169372198b1af461ac78a6a4a135b81f864cf23f81f0bbb277590421740333"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/ghoul-corpse.png",
+    "sha256": "8cfd5ea8273a1c9543e1689e7ba5fc0242c93632cd19ac2d475f3113f5b0a2eb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/ghoul-name.png",
+    "sha256": "79be547e9df73bacd1107a28e11a727b4d7e691f78fa7b610be30368082ccec8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/hell-clan-alive.png",
+    "sha256": "2960f8486c5716b0f20007fbfd77aea5b8cd65af83ca0f038deed2dc6ce7b5e5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/hell-clan-corpses.png",
+    "sha256": "2c2c216620e5a08df4ab85a7fabc83cb4c5813180fecfaa0832cdc91fb02bab7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/hell-clan-name.png",
+    "sha256": "60993d5af7b59889f36d04e7b0d5d68124bb20cc9abda0af37be359c6943772a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/shrine-name.png",
+    "sha256": "6b3ce9caf7fa37c73aa7e96015d8c772e1eb4d813e0cfd3a155f913dabde8a0e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-back-robe.png",
+    "sha256": "8602bd652219f3813177e0a5ad13ff2b063e70778a85c91884edf03f6edb5cbc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-front-cast.png",
+    "sha256": "2f8605993bbaf35fba3249b1afd04b02d82a5d7489aa37f497951e37a9dde63e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-front-open.png",
+    "sha256": "2b7e3b9bc880ed54f524f5471eae77f9d11f46199a680fa38a394000e15db205"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-front-staff.png",
+    "sha256": "eef321808eaf121bf7f3309ea0ea98f939b915d245bc0fa5fc91694d2b8b2be7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-hit-turn.png",
+    "sha256": "14c43ff65ab9aeefd6c8a2312711eb8619d699c46b5a40a5081c59e41fba3db4"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-lower-robe.png",
+    "sha256": "6e1b126c347c422eece8b6ff63fcb3722cf982e074deb59959eda61927120d81"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-north.png",
+    "sha256": "022dff17f5c042ce3b0463d4faea222596a957f2df5cb10ac18117352d22d41a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-raised-arm.png",
+    "sha256": "bbf229c3ebdc75bed5baeedb6ae17fd6b969a2cb9d8fe5b83ae87c26b26a6bc7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-shield.png",
+    "sha256": "ec41b61ba83eb28dd8df750b79dfba6e947a87667a359b4ad41dacfd717df62a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive-side-fold-robe.png",
+    "sha256": "d183e60f76b26853289e195fc7d5db205208ea953ba9791657278c6fe7c7996e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-alive.png",
+    "sha256": "5c3ebe437718d155e2d5c2a282d7df04745002250967a52f6785e7761dc9ab05"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-curled-lower-fold.png",
+    "sha256": "04236e8b6a977085d21b808b783d68c55cc5c56b3867d020329679fe0b94e432"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-curled-robe.png",
+    "sha256": "fd9366a79f50f61f26bb510e71cfa3c0e090a214375adfcf1837656661c641c1"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-curved-hem.png",
+    "sha256": "9185b04d2a531d4b07b72f8976dabf8a6fdc6dea6f2ea07d6cbfbe3f057c52fe"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-curved-lower-fold.png",
+    "sha256": "0fbd1355562d0130740eac76d53246cfb6222b3b122ac7bb5e5faef2ce0e08ba"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-face-down.png",
+    "sha256": "2a076401581bca6a3ea6b4895e1a0366ee69499925829d052251c93f1359110d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-front-hem.png",
+    "sha256": "28d55d3cc1b363e0b1e25682976ca73fe4d49b14b540a38b3d0b28f150894023"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-left-hem-lit.png",
+    "sha256": "946a9181e80f53b7cb969ada9f8e2d0f8bbc03e811a4c037dcaa6799265bfc41"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-left-hem.png",
+    "sha256": "8bac83fa06b9cb90078bc51f10395777f82c78313eb57ac3c01c65f68d29f029"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-looped-hem.png",
+    "sha256": "64274758a1d81515756e597f0f21a0ebbc2fc03ac523eace945c0d178d01bae3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-lower-band-right.png",
+    "sha256": "6f6138cf91f69d2f0194057bb886e008b8c1d404fc884e10719409a038d507d5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-map-occluded.png",
+    "sha256": "29720c761c8ebf0f0e079b97962d31297055404595ab733e7bfba5f5cb84fdb3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-north.png",
+    "sha256": "19afdca29c76807393d5e4375a3f72a6373aa4f8b0a0aca48031a9458a908d0d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-overlapped-hem.png",
+    "sha256": "8e053ca64aa0db8c3ae216fbefa6319e341b2da0db6100063a4342a1cc1af391"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-shield.png",
+    "sha256": "40c97f5484ba270bad41994630967bf173ab87c8ac87b061437268eafd6738a7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-side-lower-bands.png",
+    "sha256": "eb21ed6209ed560f8734626798843f024daf405e54c294a37c1e9ccb0af7bc02"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-side-robe.png",
+    "sha256": "382534c521e1a07201a6a31e4758cda74ecd2833612405f29940b881739ab0a0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-turn.png",
+    "sha256": "ef902f919aae71d905505f6ce44451263bdba13a8da304c926d154381bb49336"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/encounters/summoner-robe-corpse-wide-side.png",
+    "sha256": "91b2a60e76b00d6b32ebfe71db17b8cd10b3c0f77c761df32928f676033f5ff5"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hover/chest-name-ko.png",
+    "sha256": "bf24fc7015c17225bd04cf1917a28c1cbd3948fdc0d7d0001b9cba3371cf9bb7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hover/small-coffin-hover-ko.png",
+    "sha256": "44a9e7c697d213149c22cfa5a189d9cf1479d5d4aaef1a636af8e71b47ea7e23"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hover/teleporter-hover-ko.png",
+    "sha256": "ed3ba8128c98ad096a06b7c25b07dd960679e0e4cb07a1e08d5965b25a1a5e31"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-left-return.png",
+    "sha256": "aa74d561d85b589e8ce83e53091bd7f126752a3b95222eee19e0bdcffa584031"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-left-tip.png",
+    "sha256": "c07d31e357a3b58fe918d8190c28768fd9441312a7aa921e8d41d71b0e22a878"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-left.png",
+    "sha256": "b7bbcaed3586b84efb8fa7812558cd0cd6a12734aeee409754c8dc4aa597f80f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-lower-southwest-approach.png",
+    "sha256": "b9cfcf5d6953d320bec101a1ae093ab1fe6aaf31384e87a5471a86656d1b791f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-lower.png",
+    "sha256": "2c086ec32fc486e434a3313d175b856ab363f1e178ed9d5ac0348358bdb4802b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-right.png",
+    "sha256": "b6bcca39ba7b953c5c1259c52cf0a81161e5d10266e8c1e5220698941cca5c57"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-upper-left.png",
+    "sha256": "ddc66b087621c17beb13e70578cfbf0b79f3432c8f424138a6e5b287ccffb4b4"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/floor-upper.png",
+    "sha256": "2b732e1dc062afd28a77d7f87fac62d4a3997b7d2eef5ace9d494a2e910cfc74"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/hub/waypoint-reviewed-window.png",
+    "sha256": "72758d9b8d48a7adcec6dd504dc6dd66fa77b694099bdaa1d06c812e1e472462"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-light-floor-window.png",
+    "sha256": "86ad380ab6e8d556108054d438ef4b2107f8fb808a68c13963f6a17cfc5bc3bf"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-marker-overlap-window.png",
+    "sha256": "8f7c6e2219ca0925288b443c91f670c4f5d4497300554e41dbb64c48273e1bac"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-reviewed-window.png",
+    "sha256": "c89840d5b7213b81cb8f6882430d2ff5f71fdc841f2e9fc0de33d52e5879b643"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/area-title-stone-underlay-window.png",
+    "sha256": "94d9766183fcae1cfafbd3925b096778c77f169c777bd1757053b7859ab25c55"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/shadow-landing.png",
+    "sha256": "8c2d87bca6aee31638052f8efe9a6898bc2de79470494eedc342b4c5d512ec85"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/stairs-descend-east.png",
+    "sha256": "48adaa405d910df132c0892df49e18514d4fede6fe857bb46503cfc82f2c0837"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/navigation/stairs-descend-south.png",
+    "sha256": "a91261f83bc400fc3f1ed9be50ce6cc69844ddce65c63919e1d44e4db82d78ff"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/canyon-portal-hover-label.png",
+    "sha256": "5e347e5bd90c8f0518dea0768e1ed1fa2ee647f4580838c453412d0a31fbbe84"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/journal-closed-front-page.png",
+    "sha256": "1f556b5c48201ce9082fe710d3a48f665e4a2b3281516cdbc1323d92a2870c5a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/journal-closed-left-page.png",
+    "sha256": "4f8d5f016bfe86427dd4e5b0058c817d293e64cbe2c8ef718e9be5241ea9f117"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/journal-closed-north.png",
+    "sha256": "c18f47cec3fd29b59e01b5d95c1f72131ab9085b1425595d510139e0543533f8"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/journal.png",
+    "sha256": "b3b0378f9fa2e6d9b88359b0fa7e145bb890f6a724b15f126a2d154f8fcd8164"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-circle.png",
+    "sha256": "4472c4cd3b93261dadf06098fd6366fc355b49ea153dcc3d81f3d1bfe3ad1a75"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-crescent.png",
+    "sha256": "164b0aac33d9cb2098ed2803a54f3eeb1e261e3aca8c30dbf313c8439d598b7e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-double-v.png",
+    "sha256": "36ca5c38e43946529e640dbcbb373175b1bf410595ee4b35a847b584df402e48"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-ring-tail.png",
+    "sha256": "b215c0aa051c5e15390303ccd9d7b574bd4c683fcb98925deffa2f4c12678abc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-square.png",
+    "sha256": "cac6958774dd2b72f8a0a03323b407f62d0025e919f5d0a1e255a2f53dd1b3cc"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/objective/rune-triangle.png",
+    "sha256": "a471f44e206498523177de8121da983fb0390d2fedb321e64ad44a2c0f983851"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-clean-front.png",
+    "sha256": "06c215ee0cb4bb075e8c3d0daa1bc7714c46afbcab42f52ffafbdfb86d49d116"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-clean-roof.png",
+    "sha256": "60dc650ed325d2ccba87bf4c2a622bd878af703f756551335aed02850c6d1075"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-front-left.png",
+    "sha256": "0c00af79452efa974a8d9af8d80d8f0a8eadf1464055c55a6ca468b41d609027"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-left.png",
+    "sha256": "c8544622a5787d49bb916094810247f8c917a6959e211e377089ec6c3e9ee390"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-right.png",
+    "sha256": "7bf169f558aa38e99790e913e6dcb2d48c87980dc6b6f861bba38c653d7d6423"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-arched-chest-southeast-body.png",
+    "sha256": "e065444a52128c3acf827ee8899970d5fae2749ffc909b08ca40c1f8870e5db2"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-closed-chest-top.png",
+    "sha256": "698cf04839184598de682c4976409960685aa9d84c748d22ef68b2f8b625e297"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-metal-chest-lower-body.png",
+    "sha256": "6021590fc2bbee2d39d0ea749249a0a35198c4e0c4fa3d55935416c6e694faf9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-metal-chest-right-face.png",
+    "sha256": "cdb42bbcf15f799b73f037b58fbb110a9bc8826b468c7a55dc5b373e80839a5b"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/dark-open-chest-southeast-face.png",
+    "sha256": "b73858946cd619a246b79c71cca2101535e3934a53000b9acb36faf28fcfb1aa"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/engraved-lower-floor-spoke.png",
+    "sha256": "cc2d04352c5ad267d617f3b4f6f1dce347952e194bca563b51e0870441376e34"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/engraved-stone-plate.png",
+    "sha256": "06cdc90a3d33f52e3a259eb0770a119bf34b195edab0e7343b0fa8b51cce3b60"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-filigree-left-tip.png",
+    "sha256": "e350dac882efedfd0115acb0f9503a17b092b2da9c2bb595c5a398ae9838e1b0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-filigree-lower-loop-support.png",
+    "sha256": "c3674971c1095e5e59ca92405cfb2cdca46737748c7c84fe2421f6c84ad2ae53"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-filigree-upper-loop.png",
+    "sha256": "b2e5fa7f58b19fc6b9d605a4b7f9a55af1562a457994c63e386f954f930c4dbe"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-floor-right-tip.png",
+    "sha256": "0317461c63ddc56201f65ce6d6407a35b34e2bd5829b299d1adbacc08ccfb0c3"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-rune-floor-upper-view.png",
+    "sha256": "efdfa8a4e4e74c4faaa7309c7700d1cd33afce9b3702511071667cd57196c3f9"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/gold-rune-floor.png",
+    "sha256": "d0efde26a7255fe4809ed838558776327919c1ee23047b1eee4c0a0fff0f1f88"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/metal-chest-dark-northwest-face.png",
+    "sha256": "bd88cafdc474cfd565d859704b6af2f8c119644232da27eef73b781e4417a331"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/metal-chest-dark-southeast-face.png",
+    "sha256": "b562645392290abe5cbc67570f5abbc3aa5802d35afb714b192184ed709f530e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/metal-chest-lit-face.png",
+    "sha256": "2dbbc11ab0d6a451f83af7204d92bf24f5dbab7708622448897f1d67216ebf3e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-box-dark-left.png",
+    "sha256": "8a3bf2322412844a9abcb2a7e6799eb00cadb559c91d57b90add50be14bdf774"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-box-dark-right.png",
+    "sha256": "ff15089b41a9875a6b2bc8484317c87ba7de18de597b9991ef09161851833f09"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-box-gray-body.png",
+    "sha256": "3905f6d2aa26a5d1929b8891bb87b89e5d9b58a596940bfc0cc9a047707bb657"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-chest-clear-left-face.png",
+    "sha256": "fd234a1008850a637f64c00f340416775e8ac45886d854d80544e52bb6720d78"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-chest-gray-front.png",
+    "sha256": "2763e7273465a6b7d5d43d070df1acf2796eeb6dec771d7b4a8c69b131ab1f5f"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-chest-northwest-face.png",
+    "sha256": "6a219bdfce87910ab9cf3d01a22f80802bb9fb64a6b0772c44256dce05b3301e"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/small-stone-chest-right-edge.png",
+    "sha256": "0c54d781cffbbca496086c43bb445997ebe9622bfe2f8a4367a6cc5f2c3aae7d"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/square-chest-variant.png",
+    "sha256": "221885722ab880b5125d312449097cfbb289f88532de8d6e88e47a06922b5f33"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/square-chest.png",
+    "sha256": "c8a6a21475e3d9d54749c62d606a663e51cd085eaf1489446536916e01f01cab"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/square-stone-chest-front.png",
+    "sha256": "1f850ea01043b2607bc83adfd6cc7ff22d7240c2ede4db8425122c53f1a66f58"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/square-stone-chest-left.png",
+    "sha256": "2efb5a0ae2239b2c6ff334accca343e48c586da8122966f5e231bad0988091e0"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/square-stone-chest-right.png",
+    "sha256": "57e0534d9f68f234ffbf18a1862dc6863c2e203422535bb6422ca095f3064fcb"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/stone-chest-dark.png",
+    "sha256": "ce37965623f81b050209c965d4d654e829e5d26dc6b3b4ab2d3768903e6d9f5a"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/stone-chest-northwest.png",
+    "sha256": "3088f71645c423ad0ebe6a236448bdeaf07c573d8aa14f95fe75e084f0972a08"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/templates/terminal/stone-chest-southeast.png",
+    "sha256": "393c4870a6f30940717cd57fd9b88f70b176cf41f340b8ff24f7a60a23d372d7"
+  },
+  {
+    "path": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/terminal-patterns.json",
+    "sha256": "3941a4e6bd6279a05a262c1257762bdab89edec11b8954ec1919e2b7d7db04d3"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/manifest.json",
+    "sha256": "b9cca22b70d6c9ac980c27740d75aca94657ab5e6ff89dddcc54b7b73d32aebf"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/README.md",
+    "sha256": "3bbad4e8b2e778377591db9efc0cc14cf87775ab25b36cc473453128397205d3"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/portal-arrival-dark-steps.png",
+    "sha256": "42bb0378d5fe53910990290f506bab8741b05666cde7b0d1240be2482c2b5979"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/portal-arrival.png",
+    "sha256": "85244f290b57d64f347a5dc78ca418eed96ab7f665def857c0c9c2152b3e6bd3"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-arrival.png",
+    "sha256": "8f221258257c738ac4779ddff7083fc4a30be4f6a7e3758693a42393b3f886a6"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied-day.png",
+    "sha256": "fc2f359c33fd636c6c7b9185e60a3420fb60213381138e0d18e435cbff9cbd63"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/references/waypoint-center-occupied.png",
+    "sha256": "9aaf75b43b98ef8177078e5b8a414ecb1a1cd7a26d0486677b7911b002967479"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/area-canyon.png",
+    "sha256": "82cb4a7abf84fede98742ecfe09dd4fb87985bbb9ea2901e1e62684d22247ba4"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-floor.png",
+    "sha256": "160cc41848db20471bcb0d95caadfacc1382ab6d022db38a7261ff9f56268da3"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor-day.png",
+    "sha256": "294671305e5cdfff8a40c121abae9bce9fb274bda4be6dd73bbc1dc949800c33"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-left-floor.png",
+    "sha256": "319c155a161abb563a6485c0b83f7de6dff57a79e16a2574d67db6bb46b3a2b4"
+  },
+  {
+    "path": "assets/regions/canyon-of-the-magi/remastered-ko-1922x1140/templates/waypoint-south-steps.png",
+    "sha256": "7b147d7f8d9d0bd64b7b63599676917d076eb0ea43a0d2db33d80fb924e0562f"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/README.md",
+    "sha256": "a5558f976fa6691b7576397ff2b8263b2b1c563f3b66f5e5be8152951c0ca1cc"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/main-reviewed.png",
+    "sha256": "d76f2fe293842285f0b6c2635251c8443da73011b5e128c5c00f3c53082e1c71"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/palace-approach-main.png",
+    "sha256": "e446c7cf7629c3d1e36ff44d1a6c6a561bb35b26b183f909b2ed6550da8d93e1"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/palace-settled-main.png",
+    "sha256": "7c11be02924c4a8d7b1c64c14a7d524c4f6691d5d544848ac4456195e653ed96"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/town-baseline.jpg",
+    "sha256": "a5d07a77c73256cce32232fd357ec6261c7685c42501fca34334b49a6cf7ddb1"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/warriv-spawn-main.png",
+    "sha256": "338bf175c95d3999fac36623760bedcd444780ec85191ba4ffb32c27dbc0d455"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-offset-main-reviewed.png",
+    "sha256": "2774e1bd4cecace491311908d93692fa537ecc96cde54e5ee4fc7e878ef508fd"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+    "sha256": "dc2e9c16c52b713425511852f1868c2524028a541d82b8cbfd5cbea55db35b3c"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-panel-window.png",
+    "sha256": "956485e3ec802a842a93bd491e771761fd29d1240bdc539923f11f0f5315492e"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/references/waypoint-window.png",
+    "sha256": "baee2b31df53ffa345b9130c6c8b650673682f7932a7aec5a4aeeea83a067bd2"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/area-act2.png",
+    "sha256": "7820af6d6a4b2120117da2592ebcd6375906e95e26f9f7d11302b365130a6186"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-extra.png",
+    "sha256": "fc74bc687230b8b4fd366aa1cb401038d293eaca6fdaab845ce0e0c12534dcfa"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/area-title-reviewed-window.png",
+    "sha256": "a631c39ee724d00c31a8d665751b6b2d6ad63f433609940d475fd90b6a465440"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/greiz-map-hint.png",
+    "sha256": "c138d53b9c8eb5d46224646d329134e434dc066a6fee0dd28b27d39c55076121"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/palace-approach.png",
+    "sha256": "ee6d59c7dd01151f2b9c72c1cf52aed8a691f05a56d2ed4a26c33c5f61a6fef8"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/palace-settled.png",
+    "sha256": "a58e0a5b93da691f4832db4b4afc5d8d4a5118421749067c6d0797d056c939ae"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/warriv-cart-spawn.png",
+    "sha256": "56c4493dbb269e0eb4107d62df26331f5b9354c0a9ed7201039c5cd6cb64c8ed"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/waypoint-offset.png",
+    "sha256": "17fe8a093599102f9966a9925b8b12a0242ac0a6f13c7d729505223f8031d42c"
+  },
+  {
+    "path": "assets/regions/lut-gholein/remastered-ko-window/templates/waypoint.png",
+    "sha256": "594a5ef45dd6e61b3af3e3c200f9050255b37f8a3afc0252b3a3299a70a8c48a"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/README.md",
+    "sha256": "185aba5985038f9a3d1949d6330f21a0fa10985a707324a6868551a39ff396cd"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/chat-negative-16.png",
+    "sha256": "1491598a4291f7f8affa08962cc7df118349f743100c3e200c5e56f5b8cefaf2"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/chat-negative-19.png",
+    "sha256": "8c6b808dc64efaa47aefd8b86d7880c66806e744f5869d43c358da7d6169e2bf"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/chat-negative-22.png",
+    "sha256": "ab7e560dc24f735c2deda1b272efc7715ae5f3f855d2b28002eb9be2e13f7ead"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/maintenance/stash-body.png",
+    "sha256": "00d7dc98846990f105fc472ce5d84420d3d469cb23695692abc306e204ea21a8"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/maintenance/stash-hover-ko.png",
+    "sha256": "318b7a9ae88faeb57d8259146e51ad1cd0b45adde5bf5521319984036a4fbdea"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/map-baseline.jpg",
+    "sha256": "7dc90ed91699103730148255a4b4349b505fdafe0ff1bb631b639028328ec999"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/map-reviewed-window.png",
+    "sha256": "b1dd433f60dd62d3a39861421ea874fcc65b2d8f76d3099838bfb84d91448e49"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/spawn-baseline.jpg",
+    "sha256": "d93a8aefaa56931a3da1aac003ab4a18df2afe5f248684ea876b3634ca837f7d"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/tent-flag-automap.png",
+    "sha256": "3759b54966212deee031230fd96943fcfc6955acab294e7059a6ad9f22ee9f09"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-baseline.jpg",
+    "sha256": "ac0164c508fc5498b86107efc8f4d7eee3cdf188bbb7cbb9d9155fdd8a10e638"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-baseline.jpg",
+    "sha256": "e3772bc988baf67d2c7aa79b2d86384b2c68a20ead63767e1e129d4904367cea"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-panel-window.png",
+    "sha256": "ae7a7ab299f68ed308779fbcbb04e62e3fd92149a41d4e00ebf9c5a1770f3368"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-reset-main.png",
+    "sha256": "8013f7218ac08dc84a3ddf2702e0e1fa597ef50ccd2684abb70a944c1ae9dd54"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-right-cart.png",
+    "sha256": "3e290c3f10e74b2296bba1c3c67b0b3f8fca8cf09f2275a5c652e846123910c2"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-right-tent.png",
+    "sha256": "b57f37c047439bec714f9693632a7d979249cad4515cabfa63fcfa85cc041d29"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-upper.png",
+    "sha256": "503bc62651381e18a96b609e21daba5a3bfec607fea7c7db922909aa60f5a4f2"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/references/waypoint-window.png",
+    "sha256": "09ced48088d5b667c77c5fd3ec4f4215833c1d538372cbfb27a8e24e07eddba4"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/area-act1.png",
+    "sha256": "69c7ec9be6e1fea9e3b30c0fc4028128674092af99afcd1759da52cc54e622e0"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/area-title-reviewed-window.png",
+    "sha256": "66fe887c981ed682d2121aa56f505d129ddb050eaa1896826cab0c13e8cdb68e"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/layout-tent-automap.png",
+    "sha256": "9ba536c1a8b1ae2e12710342bb761d252eec61a583b79b7a9e9cb505db023a06"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/layout-tent.png",
+    "sha256": "1f4d80756afb80c3cb1404eb61d439012fc71f2d3c50e91cafd31c9fec1ccb50"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/waypoint-brazier.png",
+    "sha256": "866f1349b4819123f73dd8d64210ca06d4c630cdc6f8adbe5e7a829383be7d7b"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/waypoint-reviewed-window.png",
+    "sha256": "a94af499af75eebd20faf3ce86bc934bcd4b615047cbf07ef1c764696f8b3d63"
+  },
+  {
+    "path": "assets/regions/rogue-encampment/remastered-ko-window/templates/waypoint.png",
+    "sha256": "9d0130f7cdd02d90f818bd935f9f7b5c064707c1fed432ef83b8e15205cb8b4c"
+  },
+  {
+    "path": "assets/runtime-bundle.json",
+    "sha256": "82bba92d9a11a9c13abde147701569e2b621e5cc7c9e6739e06341a9638d53df"
+  },
+  {
+    "path": "assets/ui/automap/manifest.json",
+    "sha256": "de1658c7b8354df0b4d4012e945ed83d05d440258810185b9dc0d20afc59cd2f"
+  },
+  {
+    "path": "assets/ui/automap/README.md",
+    "sha256": "6f8c06eacac5b475a494a7a095025d01364fb729eac5a01d0388c66cf3b63350"
+  },
+  {
+    "path": "assets/ui/character-select/markers/ladder-green.png",
+    "sha256": "ca8c7d19c7973cff5f51cf749f6ffe75117825b5cc3fb6a54f61f30e0b7048b9"
+  },
+  {
+    "path": "assets/ui/character-select/markers/resurrection.png",
+    "sha256": "43cbfa93e1439227466e3940efa74b2369ab7d0ae520fbe27107570d077d6af1"
+  },
+  {
+    "path": "assets/ui/character-select/README.md",
+    "sha256": "fed836d77d46273ea5bb7ebf729d9fc8dee453794c9030857ac9fd11c44a0d85"
+  },
+  {
+    "path": "assets/ui/character-select/references/mixed-markers-example.png",
+    "sha256": "1a4c63cf56f3942b1303ce9f0a218d7ca2bbe629930d09180b58021f93d1e41b"
+  },
+  {
+    "path": "assets/ui/gem-count-digits/atlas.png",
+    "sha256": "2a3bda6989fba2e45238cdf3f044860c12010e790bd58fe4e99760e76389496e"
+  },
+  {
+    "path": "assets/ui/gem-count-digits/manifest.json",
+    "sha256": "32f90b52cd945c07a92635c58a06cc99adb1c9ebb136cb1e32b08b00bb1dc8ab"
+  },
+  {
+    "path": "assets/ui/gem-count-digits/README.md",
+    "sha256": "3c0f0cab3f52b2c49fde4fe54e9cef5901096bd72a38dce32ac1217b6b189c82"
+  },
+  {
+    "path": "assets/ui/horadric-cube/README.md",
+    "sha256": "00918e256642fc3d94d15ca7ef3d7364b4ce23049e65549c460ed787edb77d35"
+  },
+  {
+    "path": "assets/ui/horadric-cube/references/empty-grid.png",
+    "sha256": "c0f4feaf6e3a8959e03ecfad6075f4988ad42d0c30788e7b02d85277f9ee1c05"
+  },
+  {
+    "path": "assets/ui/horadric-cube/references/empty-panel-ko-588x757.png",
+    "sha256": "5658effe1da69151ed2accf95d252aaf0d961e4ce02fe087a98ccb389867e297"
+  },
+  {
+    "path": "assets/ui/horadric-cube/templates/transmute-button-hover-ko.png",
+    "sha256": "fbd353efafa60b708b19e19ba45ca02e019093e7f4ef30aa61f7eb008572b656"
+  },
+  {
+    "path": "assets/ui/horadric-cube/templates/transmute-button.png",
+    "sha256": "f006256313c9f22191b7311bb89dcffae4a3d0837561676bbebe876068984f5b"
+  },
+  {
+    "path": "assets/ui/layouts/remastered-1922x1140/camera-ground.json",
+    "sha256": "36eab93a34660a65b16d5d746902c9c0e15f71f2aa3c4075679e5bd2c776504d"
+  },
+  {
+    "path": "assets/ui/layouts/remastered-1922x1140/README.md",
+    "sha256": "be31cab528da9be0702355b5c6a1fa269b4be29cf4a2deb81ef336238c26c46d"
+  },
+  {
+    "path": "assets/ui/layouts/remastered-1922x1140/references/camera-layout-body-ko-1922x1140.png",
+    "sha256": "cf60463706c3313811dd42fe13a9bffaa79669aee9ab20d78387717041e617dc"
+  },
+  {
+    "path": "assets/ui/layouts/remastered-1922x1140/viewport.json",
+    "sha256": "c017f71814ed538a8faec321b1ff9a78ce9a7af5707b2eb4714762214f166ba1"
+  },
+  {
+    "path": "assets/ui/README.md",
+    "sha256": "17e9c4a9a9ec719323f9733e583b99bfb5da40f31755149811781b3fee8c831b"
+  },
+  {
+    "path": "assets/ui/stash/templates/header-ko-576x74.png",
+    "sha256": "ec97951739db70be791ea49dc1c139bbc50f112df7bc1bc2c5fb31ba3e8b01e0"
+  },
+  {
+    "path": "assets/ui/survival/belt-closed-edge.png",
+    "sha256": "22ed073c2e17f7494a08d55de718fb2ee0fd0900456fa414172cca8daeccd8c8"
+  },
+  {
+    "path": "assets/ui/survival/belt-expanded-edge.png",
+    "sha256": "2ac91df5106e49366fdaa7d8e78e66d000fe8780768f37f6b63f7e72e2bc64bf"
+  },
+  {
+    "path": "assets/ui/survival/empty-base.png",
+    "sha256": "07e23b61301d4324809d08e6933940dc7239d314b91429c63fccfcbb82f41bbd"
+  },
+  {
+    "path": "assets/ui/survival/empty-middle-1.png",
+    "sha256": "7c20c1fd2752873617ce3f92ef311cc0f8a4cdd1a6cdd22d716e396b2baea814"
+  },
+  {
+    "path": "assets/ui/survival/empty-middle-2.png",
+    "sha256": "219e90abb7e9c3aa4d22def674f4c90d0317298c987106821f972c68b6a595bd"
+  },
+  {
+    "path": "assets/ui/survival/empty-upper.png",
+    "sha256": "787d59f96ab0ada6c266428311d3d53ec82f54fb4d40313eb29a1910aa0835da"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/0.png",
+    "sha256": "5536ec6d9ebe50af42dbdb71d38d8a86bd71e45554931274c3f7cce99024f913"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/1.png",
+    "sha256": "717a49d6c13ed4f4006c20fd50233fee375e4a2bf65ea9e277a526082bb52be6"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/2-hud.png",
+    "sha256": "652407dc6a47043d533d96522229f0921cfea4bc8095e59a576b53f97de2b474"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/2.png",
+    "sha256": "35b205ffd0c9d4d631469f63a094aa7ade6fea7b01e517976db60623903aa50e"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/3.png",
+    "sha256": "dbc021131429c95db1fb2af2a6ad461da0166cd7086747122dcf15e8df7e8eff"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/4-hud.png",
+    "sha256": "ab11a9941adc589cedfe6af1f809d012379018c2f2f76d66552a337bd41a57fd"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/4.png",
+    "sha256": "34a792e6f6c089729fa83420c71620d7f670e2ccbda7adc5f989d1ff30f13835"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/5-portal-outline.png",
+    "sha256": "ffde23137b432c4e59b340b1ba5f1aa2e319d2f2378bd4171e90cc9a59809c58"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/5.png",
+    "sha256": "dc22fd5bc9ebf992600186365f692ee2b9e9cc291179e5a9844b82c1097dc107"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/6-hud.png",
+    "sha256": "0c82563fa2a96ab34ca27e67e17a373ec75da498e4bf2911d7e2536de07c80d2"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/6.png",
+    "sha256": "eb9e95becd8720b22f1df0d825174257534bed2e3d7e7d82530cbd10a9bafaf0"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/7.png",
+    "sha256": "414935cf1f9a892ab0d6f9b91077705f3712dd285a56b439a4792fb4911ba567"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/8.png",
+    "sha256": "0cb52e26409489ffaa50fed469a7e620c03d24fbfa03b38a97d376641f6c0812"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/9.png",
+    "sha256": "2c7ec14ef480c1146eba35fd01d9d1666c660e87d0016e3b75d42fe868bac778"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/slash-hud.png",
+    "sha256": "ea4114b7e2a0804b4e45aa1ff7d9b27055dc74ec8fb8f8bcd28a7435b17141f4"
+  },
+  {
+    "path": "assets/ui/survival/glyphs/slash.png",
+    "sha256": "3a4384d18197631db0326e78f6ccf888f163d6cd4696d03bf1d2dba2bf4c4968"
+  },
+  {
+    "path": "assets/ui/survival/life-label-ko.png",
+    "sha256": "062331cd6bd8dc0d5d49e9c74834e5c354fc162c101c2b933ece158a2e867249"
+  },
+  {
+    "path": "assets/ui/survival/mana-label-ko-buffed.png",
+    "sha256": "898f68a92f22d9c0822a6c3786d4939ee84940d70715c549db4aa5c808838d4e"
+  },
+  {
+    "path": "assets/ui/survival/mana-label-ko.png",
+    "sha256": "cd61ca7faef74b26150795ed133fca1d420f5bf416ee24c5600eb2cafc38e571"
+  },
+  {
+    "path": "assets/ui/survival/manifest.json",
+    "sha256": "d061abba5463878161bb85c990e76775162112010bef2c58b0253cfeaee78431"
+  },
+  {
+    "path": "assets/ui/survival/mercenary-face-act2.png",
+    "sha256": "effa08e4fc89cf9eaa8730772867bb6ac990d6e35b578b1c43b09814c9acb14b"
+  },
+  {
+    "path": "assets/ui/survival/purple-base.png",
+    "sha256": "62ea7cbc1c36bdad70c5d321a23e97f86efdcadfa88d8c44e19a236f4d6a471e"
+  },
+  {
+    "path": "assets/ui/survival/purple-middle-1.png",
+    "sha256": "b4a793c1bddc443f280b46ca035ba7c8d6201da9de9ab86efe147ec04135d5ac"
+  },
+  {
+    "path": "assets/ui/survival/purple-middle-2.png",
+    "sha256": "13d50bc6f18a4d5176be0f43641070dc8985b2d4bd967522df7c00455972891a"
+  },
+  {
+    "path": "assets/ui/survival/purple-upper.png",
+    "sha256": "f2e60ddba115caaac6ee5c5977d1d21d38e5d46f9fe948390531f513e0389c7d"
+  },
+  {
+    "path": "assets/ui/survival/README.md",
+    "sha256": "590567a7b746c8bf9ac81475e45ac102b6437697706a7aa6fecfc3a2c30211fc"
+  },
+  {
+    "path": "assets/ui/survival/references/after-orders.png",
+    "sha256": "b9eb043990723c78a2704e554384072fd065ad2dc4e3920fcf2648fda72e41dc"
+  },
+  {
+    "path": "assets/ui/survival/references/before-orders.png",
+    "sha256": "444847b158447576a2bfd86c9c5836f733108b90fa54f8c6aa2b251c75ea02d7"
+  },
+  {
+    "path": "assets/ui/survival/references/belt-after-north-11.png",
+    "sha256": "825d735b3ee4a702cbfb8949c80432ba20757413ce8f9caeb3ee7ffb43da7fd9"
+  },
+  {
+    "path": "assets/ui/survival/references/closed.png",
+    "sha256": "8e94c94714cba6bf63415ded8d94a846b9a040fa62b6e7b7bf7390560a4adac8"
+  },
+  {
+    "path": "assets/ui/survival/references/eleven.png",
+    "sha256": "20b1aa4a34c39f5c69fc49048927f3a69cfa546767c7abed3cfe4785435f8eca"
+  },
+  {
+    "path": "assets/ui/survival/references/expanded.png",
+    "sha256": "52291f156507e8c1d43ba3ffafcc1b35615bde8bae6ca1ceef3a0f51f75df233"
+  },
+  {
+    "path": "assets/ui/survival/references/field-before.png",
+    "sha256": "3c57b904f9342286785f475447ea9bafba09dc70545b5ee38e2c0c2529595852"
+  },
+  {
+    "path": "assets/ui/survival/references/field-belt-empty-column1.png",
+    "sha256": "64e993fe34d3f638d25477ec6e45d6798639bbe8a53412343ba90bcab714f407"
+  },
+  {
+    "path": "assets/ui/survival/references/field-buff-mana-6-step-01.png",
+    "sha256": "c7f3f2946bf90ef088c5e94f44fa6e7571c844b904599688d47a8b0cb079e27a"
+  },
+  {
+    "path": "assets/ui/survival/references/field-buff-mana-6-step-03.png",
+    "sha256": "da2f455bec32d1c5022b1286b2e090cddf3ccab66b1aa22830342b45227ef5f8"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-bright-floor-outline-followup.png",
+    "sha256": "a9e29990e105612ac49ccbb5e8bc51046fe2b08dddd3d5d5f97dd6e8ceae0c26"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-bright-floor-outline.png",
+    "sha256": "50c1beb585cc2ccb2bcaa66726d4891c004fb9ad3cda28b4134addb23dfdd7c6"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-fire-background.png",
+    "sha256": "de89351434ed49d774b417f9a00c7e9a81942cd0318a4323e558782fdb39435d"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-leading-edge-speck.png",
+    "sha256": "e9c90434e3b76be3cbc81cd69a8dee37bc7a57babccb02d84d8bd72cd4f9ea67"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-obscured.png",
+    "sha256": "fe0a06fa096fb625a39e6d22879c9c0cb9f5ec96cb101c88ae0b748925035e7f"
+  },
+  {
+    "path": "assets/ui/survival/references/field-mana-portal-outline.png",
+    "sha256": "d5b83debb11c7d5b0a557563ef2ea32205059acde9c45901772fa84f6f77af98"
+  },
+  {
+    "path": "assets/ui/survival/references/field-north-aim-life-obscured.png",
+    "sha256": "72a0486acd83c8c0123d82492fe92ca862056afe99050d1e4d6492fa17c3b395"
+  },
+  {
+    "path": "assets/ui/survival/references/field-north-background.png",
+    "sha256": "80d58354a940b46b0b606386ddf26344f139a0606ed0ddd4e6ee779bf3c7f836"
+  },
+  {
+    "path": "assets/ui/survival/references/field-north-landing-life-obscured.png",
+    "sha256": "507a6952f60b35f7ea2380623e057fb5b83c46bfd76254c3b746e00d44a331dc"
+  },
+  {
+    "path": "assets/ui/survival/references/field-north-life-slash.png",
+    "sha256": "3636fe43037d369d6ed52b2a4c60c9ac6422a92046a9d7f72535ef6984f7ded7"
+  },
+  {
+    "path": "assets/ui/survival/references/field-nova-mana.png",
+    "sha256": "955eab9d9ee15ba3c7d3073388b27b8b699344b3271a559edbf079e11739e3d0"
+  },
+  {
+    "path": "assets/ui/survival/references/field-restored.png",
+    "sha256": "bc30a499c5293d7eb63c13b8a2bb9f599ba33ec6ffe12747ad4b1de86a43134c"
+  },
+  {
+    "path": "assets/ui/survival/references/field-return-mana-2.png",
+    "sha256": "648a17e4f93c18e720da36a7bf988a93cfa146be26a97d105b11514dc9bbff7d"
+  },
+  {
+    "path": "assets/ui/survival/references/field-swapped.png",
+    "sha256": "7cdf1598fc52b23f917030ac917f9636d4dcc8fcd94cf3cd582aa640f7858e2d"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-absent.png",
+    "sha256": "7335eb777d8f2ab2cecb15b63d907d40c3beda852e215d764039be24b4942e06"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-act2-lit.png",
+    "sha256": "60cbfe8dcbc9cbc9992dba7363893d7232c4e30bf1870347fa25be98125dade1"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-combat-background-lit.png",
+    "sha256": "59eb3da0611625db2fc1f838ca2d54de558172494568c87bdcb94991ebd4de55"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-combat.png",
+    "sha256": "c510ac367e751b1d35772c1bd84c73c79f102e5234d4582d3691512f2469032d"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-cursor-cleared.png",
+    "sha256": "cbf86b37b4d8d77b95e99379c9e7c54acf30590744540a358ecb7cae7b77c0c4"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-cursor-glow.png",
+    "sha256": "4ed151fbd45318c8a2bbac2a83f919f9b1a14f513394290a2a8e69f77bde2388"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-item-label-occlusion.png",
+    "sha256": "eba97ddea32ebebd2bfaecad0dce8c61fb06be5a006139000479fa2af7a80c7a"
+  },
+  {
+    "path": "assets/ui/survival/references/mercenary-face-loot-label-overlay.png",
+    "sha256": "19b57a8691d08d2bd2a1f419e2cef193058babd4992b55c0b2880acd908dbc79"
+  },
+  {
+    "path": "assets/ui/survival/references/number-four-source.png",
+    "sha256": "c6e9625c0c2eaf4af5298ec3779d550cf9ac7d7e931a36a68362ff9c1212ad58"
+  },
+  {
+    "path": "assets/ui/survival/references/reduced-window-closed-hud.png",
+    "sha256": "80a1d2285060b9b149b17658851a80f77b4808695694faf1b20db595f3821d67"
+  },
+  {
+    "path": "assets/ui/survival/references/restored.png",
+    "sha256": "7ac95a6626b94657471e2d1953f535746f8e139e74cf4ced8911e6cf6a55feee"
+  },
+  {
+    "path": "assets/ui/survival/references/town-belt-three-empty-column1.png",
+    "sha256": "a629d06557304e7e50bc958a7f25c95989323f931c6e2490c4f74b82a604137e"
+  },
+  {
+    "path": "assets/ui/survival/references/town-mana-obscured.png",
+    "sha256": "588d76e96b9a15b86fdd87d0426a4824eb6e9483c953995c3c5876adaace8333"
+  },
+  {
+    "path": "assets/ui/survival/scroll-base.png",
+    "sha256": "256e01e2b4632b050a1e162385946e66697f01048cf6dbc9950e8eecf02d638a"
+  },
+  {
+    "path": "assets/ui/survival/scroll-middle-1.png",
+    "sha256": "cc1a5818b259945dcc02e597d56a4b3bff18dbb26d2ed8e47ebfe7f06c42390d"
+  },
+  {
+    "path": "assets/ui/survival/scroll-middle-2.png",
+    "sha256": "0a5ca3911fb8ae3d4f0e4ae5ebf67c09e1525bb370d179f9a23b10885e6e8c43"
+  },
+  {
+    "path": "assets/ui/survival/scroll-upper.png",
+    "sha256": "7383818dbb5773a7ba343fc93e11e7475ce1c9c4a933feb8065871b3fa91a890"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/manifest.json",
+    "sha256": "c240df3196578a14d35638f436933c9991a6eba49f609adb7a1ac6f353fa1e9b"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/README.md",
+    "sha256": "fc27c88a52f70e3beba6f8fcf9d26995ea642e3aad022d4cf90182f69e77dc5e"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/exit-menu-coordinate-grid.png",
+    "sha256": "2b08e1d302655146dcc41ca1c84fafdcd1646fc3a93e16e42b360023aaf17ab3"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/exit-menu-window.png",
+    "sha256": "dd61f728e2a1b03feae87e27b3472ba92110fcadb71741faab02fa90890474f0"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/loading-window.png",
+    "sha256": "8856e53cc4d6ca9ee7aa275333a7d7784c812814400639d86eb8b38e3f1d13aa"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/npc-dialogue-window.png",
+    "sha256": "5471284e55f82c9ac37b275acecb9f8f0514b41cc529f02042a0526cb72639ac"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/save-exit-baseline.jpg",
+    "sha256": "68de1c61f283243a736dc5f54de6556788e8f4979433d07789f7606f5ff862e7"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/references/save-exit-window.png",
+    "sha256": "44ffa57b183df9e1a95fd95976c5c0dc99153cfe2029026acf87d6302fe9459d"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-header-full-modal.png",
+    "sha256": "be0d13d824488faa2b1b9b8938b0cf217b4fe3593fde643e5e55c6bc5c0a35c9"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-header-reviewed-extra.png",
+    "sha256": "9d315370627e51413c9490f77e402d8901d3939e146e7a44d3da1f2e2d39c825"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-header-reviewed-window.png",
+    "sha256": "8255dafb016ac6ddcc119a8c75b1470a816653a6c33f845656b0245bb5764fd4"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-header-window.png",
+    "sha256": "20af54d87bfa2929a87b26b453338723f151e46e263f2de2588820ffc52d997b"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-header.png",
+    "sha256": "02723f5a4cf38ca26ad3e6b38118400d1c2064a5b3192bb059c84ed860fd0792"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell-button-245x69.png",
+    "sha256": "5f128f1bb4ede817c229bf1c30eec4ef84469ae4be49743201f1567c9432bea8"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell-full-modal.png",
+    "sha256": "9cedf220602bd7d518308c0b5e70cbf68ccce9f2c9bdbdad7a66853c0f06a1ff"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell-reviewed-window.png",
+    "sha256": "2bbbfc86f8185aed640f0dcdd683e49a2897a1af0cc94d72037f1e24c9224c5a"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell-window.png",
+    "sha256": "72870fe3641395113c70d67aca9759b5fee6761c974542a4d855906c251e1fb7"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-hell.png",
+    "sha256": "bf66880dab507c4315591ee5a34e080b608d12235b89ffc37c53630b54394276"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare-button-250x66.png",
+    "sha256": "da3f9575db3eefe37a7f50d99b21ccad276426fdad892f53ec7bf23c93e1c678"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare-full-modal.png",
+    "sha256": "aaa06481c47aa5482f83bcceed179472f46cfc49a4d2b82d9e83de8097558c04"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare-reviewed-window.png",
+    "sha256": "ce6ca2bbe1bce24371d96a0347f93fc0eb8a75b3f7935278aeb2b8f044bbf0e1"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare-window.png",
+    "sha256": "e03b57f9aaea00cbf35412bc88be9f28885c5c9854d06298450b23712a34376d"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-nightmare.png",
+    "sha256": "9c74e18a5c31106475d32afffb296754d744e53f443728cf8215cc865498b636"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal-button-241x64.png",
+    "sha256": "8571d3bdeb3db7d7b0396a3dbf66460f023d90af5a7d5ec7bafb2d0b87126cfa"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal-full-modal.png",
+    "sha256": "88b5e3608ce218c2f36eec168d0c187ecf609ea3eb2e7c020c97ec2f50e2a142"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal-reviewed-window.png",
+    "sha256": "518733f99dee68122e7ee1aaa97fd701584ef67800e127d1a863081d218ce008"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal-window.png",
+    "sha256": "e9cc2dd6abe81a2145f7b412786891f1e9eadea3743c2cc59db5313e9f752bab"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/difficulty-normal.png",
+    "sha256": "0e6f768d4f03414a13502e271bc4c45775d711038e33c491cd3dd46969b4e853"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/hud-reviewed-window.png",
+    "sha256": "bdcdf45985ef392e54048752e0a342691042762829bfe514dc8348790f03063d"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/hud-window.png",
+    "sha256": "e9420c2b3912f62c22dc72f83c481e43bb67476ffb16b54561c3c94ee07ce152"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/hud.png",
+    "sha256": "d669ec914b3730a65c06010be04f8366853eff59d95400361278bc325fc68ebf"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/play-window.png",
+    "sha256": "5b40c5ee44cc40aa3b9b7e3a230921f430dba4c41631429f82d3d89cb4b7c36d"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/play.png",
+    "sha256": "7f3d8545e826a36dd0ae17449b2965d5539c134de6bb9610645887fbfdd7d588"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/save-exit-reviewed-window.png",
+    "sha256": "f854b5e5c63fa971ff6b25e0eef6802e117d8b1d1075c9f5d865b8d7ec2803a4"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/save-exit-window.png",
+    "sha256": "eb35e9c348ec6960c36d705014492f5f68046e917574933a5d51df79194dc627"
+  },
+  {
+    "path": "assets/ui/town-loop/remastered-ko-window/templates/save-exit.png",
+    "sha256": "200f1955f73480ff376774bc22669486ca6f221102dc5c77779c1f1762913d92"
+  },
+  {
+    "path": "assets/ui/waypoint/references/waypoint-header-reduced-frame.png",
+    "sha256": "667fff274941099b8029208a910a661a66df45379b3c74e99f7d8dbf267c359d"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/act1-list-reviewed-window.png",
+    "sha256": "a94a7b404f15ce78920e94f873c95293a32a50caa42277858a9348c005bb18a3"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/act1-list.png",
+    "sha256": "bf896a50c459e937ec8cb921d634238d4cb8912567c6e127b1e408b409f5c24e"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/act2-list-reviewed-window.png",
+    "sha256": "a109f594b6f1c8a354cb3ca34d404ad26343d030d62e149d0b823d907364df58"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/act2-list.png",
+    "sha256": "a5b36b42a790ac5ba6a8b233b2c31907564a2efe4410baf7ca55e394ef294414"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/waypoint-header-reviewed-window.png",
+    "sha256": "db3d3c9ede918f884a21e8ea443b4de59ace304dcd8153fe878f57872c6e3944"
+  },
+  {
+    "path": "assets/ui/waypoint/templates/waypoint-header.png",
+    "sha256": "4a753719cb4427122da89a633c0f8de3dfcb2453733e4069f4c8e0c2d565a1de"
+  },
+  {
+    "path": "assets/ui/weapon-set/active-1.png",
+    "sha256": "11815556efff43ebc7fc2b1944b10293bd27d37603cd2948148b70dfd2190e63"
+  },
+  {
+    "path": "assets/ui/weapon-set/active-2.png",
+    "sha256": "d5b9d950c38a57e371af465c2524f8a03f77738d1100d994ee19f8b8bca37a56"
+  },
+  {
+    "path": "assets/ui/weapon-set/manifest.json",
+    "sha256": "45f046239c4de6581a04b7e3634fc8a229d5d640bc41e65cae9311cd95680c9a"
+  },
+  {
+    "path": "assets/ui/weapon-set/README.md",
+    "sha256": "58a84943ae1cff215ee7aa895cd1a13491947541055178066065fe2e3de8cd9f"
+  },
+  {
+    "path": "assets/ui/world-labels/npc-cancel.png",
+    "sha256": "9d33c2faa6a6f690284c67237dc7ecf1595ab4ff6f498d3358cdccdd5788e770"
+  },
+  {
+    "path": "assets/ui/world-labels/shrine-name-ko.png",
+    "sha256": "44dea34b15d142664720017b581eba62cb5a9626ba8cdfd3af598a99d5a6eb8c"
+  },
+  {
+    "path": "config/characters/characters.json",
+    "sha256": "9fd860d5566263bafb0ba39497cf29f202c1a4e9a6b2b754136dcf88bce8091e"
+  },
+  {
+    "path": "config/characters/characters.md",
+    "sha256": "e54fabc038065a869f868abb43e459ee0f64ede89dfa62e8249e3244f14c45df"
+  },
+  {
+    "path": "config/config.md",
+    "sha256": "d032586f28dd756063c2877bb43af9b6196bca38aa0b04b238cb9f0e4c9605c1"
+  },
+  {
+    "path": "config/game-rules/casting.json",
+    "sha256": "97d2f376dc8a586053fe5858c61d79ef81709e45bb3990f4f9ab6a0114e07dcf"
+  },
+  {
+    "path": "config/game-rules/casting.md",
+    "sha256": "0b0309b2df9023faf3e444778c565f3c3811ffaea475cfe4450711ef2c68e54b"
+  },
+  {
+    "path": "config/loot/loot.json",
+    "sha256": "75ccd991bac12d2918c30e5472774a864a9f746f4d456c217f00fca22f123cf6"
+  },
+  {
+    "path": "config/loot/loot.md",
+    "sha256": "f4bc8932f69c9aa871e13fb497c845cbde28b237e85b048763b8438ff872f984"
+  },
+  {
+    "path": "config/runs/runs.json",
+    "sha256": "f0c2b9626f6138a22eebc233f617a5eb24b6565ee3c7d6382d8a2c3a90ed102f"
+  },
+  {
+    "path": "config/runs/runs.md",
+    "sha256": "bc43b859017dc123407d12d18a703ad857adb5d2866f5a3d1a3f8e63d1c6e537"
+  },
+  {
+    "path": "config/system/system.json",
+    "sha256": "e5c866b3d7bcc4e070f7d3a89d09243a386557673271ca8cf708069799058074"
+  },
+  {
+    "path": "config/system/system.md",
+    "sha256": "6ea714fb0d87fb47d7f6ed58b1165258f7d9c49133e15b5da23f7110b18b9956"
+  }
+]

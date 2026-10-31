@@ -1,0 +1,45 @@
+d2bot — Windows screen-based Diablo II helper
+
+Usage: d2bot [OPTIONS]
+       d2bot COMMAND --help
+
+Empty arguments open the desktop control panel. --cli opens the template preview.
+All capture and input use the normal Windows desktop interfaces.
+
+  --config PATH             Config JSON file or directory (default: config)
+  --list-windows            Print visible windows and their physical bounds
+  --cli                     Template matching/overlay preview; Escape stops
+  --town-loop 1..3          Bounded live town round trips; F10 stops
+  --arcane-entry            Live room creation and Arcane hub entry; F10 stops
+  --summoner-run            Integrated Summoner run (default: dry)
+  --live                    Enable input for --summoner-run
+  --resume-arcane           Resume only with the required current scene evidence
+  --resume-town             Resume from a positively observed Act 1/2 town
+  --resume-labels-off        Assert known ALT OFF for supervised Arcane recovery
+  --north-casts 1..12       Discrete integration bound (default: 3)
+  --north-segments 1..4     Retained development segments (default: 1)
+  --continuous-north        Held movement and nearby combat development path
+  --all-wings               Continue only after observed endings/central returns
+  --north-cycles 1..5       New-room north runs through the reviewed exit route
+  --no-combat               Navigation without the nearby Nova module
+  --automap on|preserve     Map ON by default; preserve for explicit comparisons
+  --continue-navigation PATH  Restore only after current-scene correspondence
+  --field-seconds 1..60     Continuous segment duration (default: 20)
+  --wing north|east|south|west  Outbound wing (default: north)
+  --return-to-hub-from WING Supervised return with known ALT state
+  --output NEW_DIRECTORY   Summoner evidence directory
+  --difficulty normal|nightmare|hell  Room difficulty (default: hell)
+  --town-destination town|arcane  Town-loop destination (default: town)
+  -h, --help                Show help without capture or input
+  -V, --version             Print version
+  --diagnose                Report local runtime/data availability without effects
+
+Commands:
+  survival-observe          Input-free HUD/belt image or live-screen observation
+  field-replay              Bounded synthetic field-control replay
+  arcane-navigation-replay  Input-free terrain/background-motion replay
+  field-input-probe         Explicit bounded supervised input probe
+  town-loop-vision          Input-free calibration and planner/state bridge
+
+The general CLI preserves configured pause/stop keys (defaults: F8/F9).
+Actions and Summoner retain their existing stop bindings. Keys still reach the game.

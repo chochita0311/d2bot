@@ -1,6 +1,0 @@
-opencv-python
-numpy
-mss
-keyboard
-pydirectinput
-black==23.3.0

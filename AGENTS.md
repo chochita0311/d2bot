@@ -8,8 +8,9 @@ Keep user onboarding, setup, and basic usage in `README.md`.
 
 ## Codebase Map
 
-- `main.py`: project entrypoint
-- `diablo2/`: main Python package
+- `Cargo.toml`, `src/main.rs`, `src/app/`: Rust package and GUI/CLI/tool routing; final transition stages are tracked in `docs/plans/README.md`
+- `src/`: domain modules under `common/`, `actions/`, `runs/`, native UI under `ui/`, and isolated Windows FFI under `platform/`
+- `tests/fixtures/legacy-baseline/`: frozen pre-retirement observations; Rust-only tests, provenance and limits in its README
 - `config/`: runtime behavior and profiles
 - `docs/`: project, feature, setup, and maintenance documentation
 - `assets/`: image templates and other runtime assets

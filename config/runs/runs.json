@@ -24,6 +24,7 @@
           "End the run if the target area or boss location cannot be confirmed safely within the timeout."
         ],
         "fight_style": "boss_priority_safe_clear",
+        "combat_reaction_radius": [240, 144],
         "search_timeout_seconds": 90,
         "disengage_on_uncertainty": true
       },

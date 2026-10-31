@@ -1608,5 +1608,24 @@
     "templates/terminal/small-stone-chest-gray-front.png": 0.91,
     "templates/terminal/square-stone-chest-right.png": 0.91
   },
-  "chest_detail_minimum_scores_review": "Primary visual review 2026-10-18: gray-front .9193 with other two independent chests .9327/.9208 on current hidden frame. Only this reviewed appearance .92 to .91; other parts, pool membership6/19 and composition120px/16000px2 unchanged. 2026-10-20: square-stone-chest-right .910683 after approach uses .91; all declared uses of this appearance share .91. Other appearances and6/19 pool/composition120px/16000px2 remain unchanged."
+  "chest_detail_minimum_scores_review": "Primary visual review 2026-10-18: gray-front .9193 with other two independent chests .9327/.9208 on current hidden frame. Only this reviewed appearance .92 to .91; other parts, pool membership6/19 and composition120px/16000px2 unchanged. 2026-10-20: square-stone-chest-right .910683 after approach uses .91; all declared uses of this appearance share .91. Other appearances and6/19 pool/composition120px/16000px2 remain unchanged.",
+  "reacquisition_part": {
+    "id": "gold-filigree-lower-loop-support",
+    "path": "templates/terminal/gold-filigree-lower-loop-support.png",
+    "crop": [
+      1692,
+      304,
+      1748,
+      346
+    ],
+    "threshold": 0.92,
+    "encoding": "soft_gold",
+    "sha256": "c3674971c1095e5e59ca92405cfb2cdca46737748c7c84fe2421f6c84ad2ae53",
+    "source": {
+      "reference": "assets/regions/arcane-sanctuary/remastered-ko-1922x1140/references/terminal/north-metal-one-chest-after-camera-shift.png",
+      "reviewed_by": "codex-visual",
+      "reviewed_on": "2026-10-30",
+      "review": "Independent floor ornament excluding chest, actors, HUD, map lines and labels. Anchored only after the original current three-chest reading and co-observed geometry; approach only, never initial classification or arrival. Original reference age and current two-part translation gates retained."
+    }
+  }
 }

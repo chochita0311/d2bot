@@ -15,8 +15,8 @@
 
 primary가 요구·표의 적용 한계·공통/개인 소유권과 구현 의미를 검토했다. evidence scout는 캐릭터 선택·설정 소비자/작성 경로의 호환성을 조사했고, bounded verifier는 고정된 테스트·compile·Black 결과를 확인했다. worker 결과를 설계나 사람 수용 승인으로 사용하지 않았다.
 
-- CAST-01/05: [공통 카탈로그](../../../config/game-rules/casting.json)와 [불변 조회 모델](../../../diablo2/common/casting.py)이 두 직업의 명시적 class/skill/form, 출처·revision·reference 상태를 보존한다. 개인 설정에는 표를 중복하지 않는다. 조회에는 I/O·타이머·입력·학습이 없다.
-- CAST-02/03: [검증](../../../tests/test_casting_rules.py)이 Flash 105→8, 팔라딘 105→10, 두 표의 모든 경계와 최상위 구간, 숫자/중복/순서/빈 자료의 거부를 확인했다.
+- CAST-01/05: [공통 카탈로그](../../../config/game-rules/casting.json)와 [불변 조회 모델](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/casting.py)이 두 직업의 명시적 class/skill/form, 출처·revision·reference 상태를 보존한다. 개인 설정에는 표를 중복하지 않는다. 조회에는 I/O·타이머·입력·학습이 없다.
+- CAST-02/03: [검증](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/tests/test_casting_rules.py)이 Flash 105→8, 팔라딘 105→10, 두 표의 모든 경계와 최상위 구간, 숫자/중복/순서/빈 자료의 거부를 확인했다.
 - CAST-04/06: 누락/미지원과 잘못된 활성 캐릭터가 다른 표/프로필로 대체되지 않는다. 선택적 새 필드를 로드하며 기존 생존·캐릭터 선택·마을 테스트를 유지한다. FCR/규칙을 바꾼 새 조회는 새 결과를 반환하고 이전 결과/공통 표는 바뀌지 않는다.
 
 ## Evidence Gaps And Route

@@ -18,7 +18,7 @@
 - Human request: 2026-10-04 요청의 캐릭터 선택 대기, 매 처치 후 새 방, Act 1 마감, 단계별 육안 확인.
 - Golden sources: 최초 초안은 사용자 설명·기존 자료를 사용했다. 이후 승인한 마을 증분의 실제 화면·반복 결과와 남은 검증은 [실행 기록](../run/run-20261004-02-supervised-town-room-loop.md)이 소유한다.
 - Supporting docs: [정책](../../project/policy.md), [현재 서모너 구현](../../features/summoner-run.md), [시스템 설정 범위](../../../config/system/system.md).
-- Current implementation references: [방 세션](../../../diablo2/actions/run_lifecycle.py), [서모너 단계](../../../diablo2/runs/summoner/summoner_run.py), [화면 캡처](../../../diablo2/common/capture.py).
+- Current implementation references: [방 세션](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/actions/run_lifecycle.py), [서모너 단계](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/runs/summoner/summoner_run.py), [화면 캡처](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/capture.py).
 - 공통 자료·실험 요구: [서모너 실험 및 데이터 계획](../../features/summoner-experiment-plan.md).
 
 ## Product Intent

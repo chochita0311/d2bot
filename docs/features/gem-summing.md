@@ -1,6 +1,6 @@
 # Gem Summing
 
-This document owns gem-combining behavior and maintenance guidance. The implementation is [gem_summing.py](../../diablo2/actions/gem_summing.py); operator controls and live-input scope are in the [README](../../README.md#play-controls).
+This document owns gem-combining behavior and maintenance guidance. The implementation is [gem_summing.rs](../../src/actions/gem_summing.rs); operator controls and live-input scope are in the [README](../../README.md#play-controls).
 
 ## Starting State And Completion
 

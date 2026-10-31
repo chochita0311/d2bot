@@ -12,7 +12,7 @@
 
 ## Producer And Consumer Review
 
-primary가 [제어 계약](../../../diablo2/common/field_control.py), [runtime/HUD bridge](../../../diablo2/common/field_runtime.py), [입력 backend](../../../diablo2/common/controller.py), [연속 버프 실행](../../../diablo2/common/buffing.py), 기존 북쪽 경로 수정과 관련 검증을 검토했다. 캐릭터/방/순번/단조 시계/현재 프레임 맥락을 보존한다. field/clear/적 근접/도달 가능/사망·전리품은 외부 생산자의 명시적 근거이며 템플릿 후보나 미검출을 긍정값으로 자동 승격하지 않는다.
+primary가 [제어 계약](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/field_control.py), [runtime/HUD bridge](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/field_runtime.py), [입력 backend](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/controller.py), [연속 버프 실행](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/buffing.py), 기존 북쪽 경로 수정과 관련 검증을 검토했다. 캐릭터/방/순번/단조 시계/현재 프레임 맥락을 보존한다. field/clear/적 근접/도달 가능/사망·전리품은 외부 생산자의 명시적 근거이며 템플릿 후보나 미검출을 긍정값으로 자동 승격하지 않는다.
 
 단일 유지 키 소유자는 F2를 해제한 뒤 F4를 누르며 같은 hold에 keyDown을 반복하지 않는다. 화면/버프/전투/도착 시한과 pause/stop/포커스/예외에서 해제한다. 부분 keyDown 실패와 keyUp 실패에도 소유 상태를 버리지 않고 해제를 재시도한다. 최신 mailbox/독립 tick은 지연된 비전·저장 소비와 입력 시한을 분리한다. OS/프로세스 정지 복구 보증은 범위 밖이다.
 

@@ -10,7 +10,7 @@
 
 ## 지형·이동 관찰
 
-[ArcanePathObserver](../../diablo2/runs/summoner/navigation.py)는 native BGR, 명시적 viewport·플레이어 기준점·순번·단조 시각·이동 세대와 `PathSettings`를 받는다. `terrain`에는 지역 manifest 또는 실험 보정값의 BGR 팔레트/Lab 거리를 전달한다. 생략하면 기존 Arcane 팔레트이며 현재 그래픽에 적합하다는 뜻은 아니다. UI를 제외하고 격자당 네 표본, 3×3 격자의 작은 조각 제거/틈 보정과 작은 연결 성분 제외를 적용한다. 색/형태 후보는 벽·층·도달 가능의 확정 판독이 아니다.
+[ArcanePathObserver](../../src/runs/summoner/navigation.rs)는 native BGR, 명시적 viewport·플레이어 기준점·순번·단조 시각·이동 세대와 `PathSettings`를 받는다. `terrain`에는 지역 manifest 또는 실험 보정값의 BGR 팔레트/Lab 거리를 전달한다. 생략하면 기존 Arcane 팔레트이며 현재 그래픽에 적합하다는 뜻은 아니다. UI를 제외하고 격자당 네 표본, 3×3 격자의 작은 조각 제거/틈 보정과 작은 연결 성분 제외를 적용한다. 색/형태 후보는 벽·층·도달 가능의 확정 판독이 아니다.
 
 발밑 가림 때문에 seed 반경 안의 여러 발판 후보에서 시작한다. 초기 가려진 간격은 seed 반경 이내이며, 이후는 관찰된 발판 연결을 따른다. 최대 step에는 기준점에서 첫 seed까지 거리도 포함한다. 날개 방향·방문 흔적·굴곡을 사용하고 직시 가능한 구간을 합쳐 격자 계단을 실제 굴곡으로 오인하지 않도록 한다. 직사각형 갈림/합류는 참고 구조이며 고정 tick으로 단계를 진행하지 않는다. 계단/다른 연결 성분/가림의 오판은 남아 있다.
 
@@ -18,7 +18,7 @@
 
 ## 탐색·입력 연결
 
-[ArcaneSearch](../../diablo2/runs/summoner/search.py)는 move-only 조준→후속 프레임의 바닥/호버 확인→한 번 cast→새 세대 이동 확인과 직업 참고 하한 대기를 수행한다. 배경 대응이 끊기면 이전 커서를 폐기하며 미확인 도착 중 추가 시전을 쌓지 않는다. 호버/입력 횟수·도착/날개/귀환/전체 시간은 명시적 상한을 소비한다. 실패 후 방 재시작은 하지 않는다.
+[ArcaneSearch](../../src/runs/summoner/search.rs)는 move-only 조준→후속 프레임의 바닥/호버 확인→한 번 cast→새 세대 이동 확인과 직업 참고 하한 대기를 수행한다. 배경 대응이 끊기면 이전 커서를 폐기하며 미확인 도착 중 추가 시전을 쌓지 않는다. 호버/입력 횟수·도착/날개/귀환/전체 시간은 명시적 상한을 소비한다. 실패 후 방 재시작은 하지 않는다.
 
 도착에는 누적 이동뿐 아니라 연속 안정 프레임을 요구한다. `SearchLimits.settled_frames`는2 이상 정수, `settled_motion_pixels`는 프레임 간 검증한 배경 이동 길이의 양수 상한(px)이다. 늦은 추가 이동/대응 끊김은 안정 횟수를 초기화하고 도착 시한을 늘리지 않는다. 합성 시험의2프레임/2px는 실게임 보정값이 아니다.
 
@@ -26,7 +26,7 @@
 
 아케인 호버는 상자·관·신단·맵 텔레포터다. 커서만 옮긴 뒤 새 프레임에서 해소를 확인한다. **NPC 호버는 마을 전용**이며 `ArcaneScene`은 거부한다.
 
-[ArcaneSearchRuntime](../../diablo2/runs/summoner/search_runtime.py)은 `ScreenCapture`, 같은 프레임 HUD, 명시적 `scene_reader`, 공통 [FieldControlRuntime](field-control.md)을 연결한다. 캡처 시작의 단조 시각을 사용해 HUD/CV 시간까지 나이에 포함한다. 캡처 전후·입력 직전 실제 창 원점/크기를 확인하고 local 조준점을 desktop 좌표로 바꾼다. 창 이동/크기 변경은 종료 사유다.
+[ArcaneSearchRuntime](../../src/runs/summoner/search_runtime.rs)은 `ScreenCapture`, 같은 프레임 HUD, 명시적 `scene_reader`, 공통 [FieldControlRuntime](field-control.md)을 연결한다. 캡처 시작의 단조 시각을 사용해 HUD/CV 시간까지 나이에 포함한다. 캡처 전후·입력 직전 실제 창 원점/크기를 확인하고 local 조준점을 desktop 좌표로 바꾼다. 창 이동/크기 변경은 종료 사유다.
 
 실제 입력에는 실행 중인 독립 watchdog이 필요하다. `with driver:` 안에서 `run(wait=...)`/`step()`을 호출하고 같은 context에서 Summoner 발견을 상위 전투로 인계할 수 있다. 종료 시 runtime/capture를 정리한다. dry backend는 입력 없는 검증에서 수동 pump를 허용한다.
 
@@ -42,7 +42,7 @@
 
 main120에서 진입 방향이 목표 북쪽과 같은 경우에도 북쪽 출구를 금지하던 결함을 수정했다. 전체 목표로 복귀하는 현재 출구는 진입 방향 회피보다 우선한다. main121은 같은 방의 세 상자 끝에 도달했고45초 개발 interval2개가 자동 연결됐다. 끝 자산은 아이템 이름이 섞인114 crop에서 이름표 없는121 crop으로 교체했고122에서 자동 끝 확인→같은 방 복귀 시작을 관찰했다. 세 상자·근접·정지 양성 직후0.5초 미만의 동일 프로세스 전환에서만 복귀를 시작한다. `--all-wings`는 북쪽 outbound 시작 전용이며 중앙 복귀의 최신0.5초 미만 정지 확인 뒤 동→남→서로 전환한다. 네 곳 모두 세 상자 끝이면 이상 검토로 멈추며 정상 마감으로 세지 않는다. 증거 파일은 날개/출발·복귀/구간 번호로 분리한다. 보스·회수·실제 네 방향·정상 마감과30방 수용은 미완료다.
 
-`field_input_probe --step-after-buff north --seconds 0.1`은 Flash buff/stdin 모드의 별도 제한된 진단이다. `main.py --summoner-run --live --north-casts 8`은 단일 시전 회귀 모드이며 현재 연속 main은 `--continuous-north --field-seconds 60`을 사용한다. 계획기의 일반 연결 모드와 명시적 텔레포트 모드는 별도다. 후자는 현재 발판 내부 여유32px/거리600px 상한으로 넓게 관찰하며, 연속 main은 선호 거리도600px로 둔다. 같은 화면의 중앙 표식이 발 위치220px 이내일 때만 연결 모드의 출발 반경180/step240 보정을 허용한다. 일반 seed 반경은96px다. 단일 시전의 포인터 이동 뒤50ms 처리 시간도250ms 시한에 포함하며, 연속 main은 현재 발판 소실/두 새 꺾임 관찰로 참고 시전 시간 이전에도 조향한다. 느린 계산은 입력하지 않고 새 화면에서 다시 수행한다.
+`d2bot.exe field-input-probe --character flash --permit-stdin --action buff --output NEW_DIRECTORY --step-after-buff north --seconds 0.1`은 stdin의 유효한 permit payload가 필요한 별도 제한된 진단이다. 기본은 입력 없는 모드이며 실제 입력은 `--live`를 명시해야 한다. `d2bot.exe --summoner-run --live --north-casts 8`은 단일 시전 회귀 모드이며 현재 연속 main은 `--continuous-north --field-seconds 60`을 사용한다. 계획기의 일반 연결 모드와 명시적 텔레포트 모드는 별도다. 후자는 현재 발판 내부 여유32px/거리600px 상한으로 넓게 관찰하며, 연속 main은 선호 거리도600px로 둔다. 같은 화면의 중앙 표식이 발 위치220px 이내일 때만 연결 모드의 출발 반경180/step240 보정을 허용한다. 일반 seed 반경은96px다. 단일 시전의 포인터 이동 뒤50ms 처리 시간도250ms 시한에 포함하며, 연속 main은 현재 발판 소실/두 새 꺾임 관찰로 참고 시전 시간 이전에도 조향한다. 느린 계산은 입력하지 않고 새 화면에서 다시 수행한다.
 
 후속1.5초 안에서 새 HUD/표식/배경의 방향·거리와 연속 안정 화면을 확인한다. 확인한 변위만 위치/이동 흔적에 누적하며, 일시적인 표식·발판 가림은 최대2초 동안 입력 없이 재관찰한다. 실패한 계획 화면도 기록한다. 감독 확인은12초 제한 구간 시작 조건이며 매 시전의 최신 화면·중단 조건을 대체하지 않는다. main 실행40은3회 도착을 통과했고 실행46은 네 번째 실제 이동 뒤 HUD 문구/배경 간섭으로 안전 종료했다. 이 제한 증거는 GUI/네 방향 완주를 뜻하지 않는다.
 
@@ -56,10 +56,10 @@ main120에서 진입 방향이 목표 북쪽과 같은 경우에도 북쪽 출�
 
 일지·룬 목표 판독은 검증한 기존 일지 자산과 현재 주변 큰 파란 룬을 결합한다. outbound의 입력/남은 탐색을 멈추며 귀환에는 적용하지 않는다. 이 목표 발판 후보는 서모너 생존/처치·캐릭터 도착·획득 증거가 아니다.
 
-[재생 도구](../../diablo2/tools/arcane_navigation_replay.py)는 기존 crop을 원본 크기의 viewport에 배치하고 지역 manifest 또는 [명시적 보정 파일](../../assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json)을 사용한다.
+[재생 도구](../../src/tools/arcane_navigation_replay.rs)는 기존 crop을 원본 크기의 viewport에 배치하고 지역 manifest 또는 [명시적 보정 파일](../../assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json)을 사용한다.
 
 ```powershell
-.\.venv\Scripts\python.exe -m diablo2.tools.arcane_navigation_replay --manifest assets/regions/arcane-sanctuary/remastered-ko-1922x1140/manifest.json --calibration assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json
+.\d2bot.exe arcane-navigation-replay --manifest assets/regions/arcane-sanctuary/remastered-ko-1922x1140/manifest.json --calibration assets/regions/arcane-sanctuary/remastered-ko-1922x1140/navigation-calibration.json
 ```
 
 `--overlays <새 디렉터리>`는 검토 그림을 만들며 기존 디렉터리를 덮어쓰지 않는다. 출력은 `inputs_sent=0`, 출처·후보·배경 대응·CV 시간이며 자동 합격 표시가 아니다. episode/시간이 이어지지 않으면 배경 기준을 초기화한다. JSON 각1MiB, 원본8백만 pixel, 최대100개 장면으로 제한한다.

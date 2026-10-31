@@ -1,0 +1,36 @@
+# SPEC-0022: 독립 action과 방 lifecycle
+
+## Metadata
+- ID: `spec-0022`; Status: `approved`; Run ID: `run-20261023-03`; Attempt: `1`.
+- Parent Feature: [FEAT-0023](../feature/feat-0023-rust-actions-lifecycle.md); Parent PRD: [PRD-0009](../prd/prd-0009-rust-windows-port.md).
+- Surface: `backend`; Profile: `backend-product`; Evaluators: Contract, Functional; Created/Updated: `2026-10-23`.
+
+## Source And Authorization
+The full-port delegation authorizes implementation of the existing independent actions. Current `diablo2/actions/{gem_summing,loot_pickup,run_lifecycle,town_loop_vision}.py`, direct consumers/tests, config and unchanged asset manifests are the behavioral source. FEAT-0017/0018/0019/0021/0022 and FEAT-0020 foundations passed in their recorded scopes. The user approved FEAT-0019's measured JPEG reference difference on2026-10-23 and its complete15-test operation packet passed; preserve that explicit reference-only exception and unchanged capture/PNG decision gates in town comparisons.
+
+## Goal And Stages
+1. Port ordered loot candidates/scanning, gem atlas/count/plan/consensus/result checks and town vision/planner as input-free decisions. Compare intermediate outputs and branch predicates before connecting native actions.
+2. Port the existing action sessions and lifecycle operations with injected capture/input/clock/random/event facilities. Compare fake input traces, waits, interruption, failure and cleanup. Reuse the existing safe Windows adapter for later integration; do not send game input in this run.
+3. Evaluate the complete feature contract, including asset/candidate order, side effects and public behavior; preserve any blocked/unexamined boundary explicitly.
+
+## In-Scope Contracts
+- Loot: fixed-items order before eligible farm templates, source marker dedup and Python casefold eligibility, cached images invalidated by config update, first passing candidate rather than overall maximum. Equality at template threshold is accepted. Preserve quiet1.2s/rescan0.12s/post-pickup0.9–1.1s and same-label/18px/age≤1.4s duplicate rules. A click request is reported as a click, without inventing acquisition proof.
+- Gems: seven columns/five levels, unchanged atlas schema/variant/bank/glyph order; panel origin and dimensions, slot/cube/count crops and OCR processing/scoring, first-tie digit selection, icon eligibility and next-level result margin. Three weighted samples preserve first-vote ties/fallbacks, resync delta>6 and warnings. Plan order is gem outer then nonperfect level, propagating projected upgrades; blocked slots remain excluded. Success decrements three/adds one; uncertain results block/rescan/restash rather than claim success.
+- Lifecycle/town: preserve create/difficulty/load/exit waits and deadlines, repeat/difficulty/destination/arrival-only/resume/reset validation, current town planner phases, geometry/focus guards, mouse/keyboard ownership, camera stability and evidence/event/partial-failure semantics. The planner advances its phase before external dispatch; later positive observations confirm the postcondition even after an uncertain input outcome. It has no Boolean acknowledgement/retry bridge. No new pathfinding, recovery or inventory policy.
+- Pointer jitter/interpolation and delay ranges retain their bounds/order; fake traces inject the same selected random values and clock progression rather than comparing unrelated OS-time seeds. Native/analysis/reference coordinate conversions occur at the current boundaries and current geometry must still match before input.
+- Session state owns one worker and cancellation source. Repeated starts cannot overlap; stop remains pending while an owned worker is still alive. Owned capture/hotkey/held inputs close on every exit and failures remain observable while other cleanup continues. This implements the user's requested safe resource/worker ownership; the Python actions' missing capture.close and premature stopped state are not reproduced as leaks or overlapping workers. It does not authorize gameplay/hotkey policy changes.
+- Installed PyDirectInput 1.0.4 adds 100ms after successful decorated keyDown/keyUp/click calls. press invokes those two decorated key calls and adds its own 100ms unless its outer pause is disabled; town's pause-disabled press still includes the inner 200ms. Preserve these waits explicitly at the action boundary. Retain at most 256 pending diagnostic events and report the number of omitted older entries when draining, so an unattended GUI cannot accumulate an unbounded log queue.
+
+## Architecture And Errors
+Use `src/actions.rs` with focused action modules; keep common capture/controller/frame/vision/config facilities in their existing owners. Prefer small typed match/count/event/session records and injectable backend operations, without a second runtime framework. Preserve externally meaningful normal/missing/unknown/error/cancel/completed distinctions and messages; invalid crop/assets/manifests must fail before action dispatch. CPU observations own or borrow immutable data; no shared mutable scene graph or new unsafe code. Do not retain raw frames after their current purpose.
+
+The safe desktop action adapter reuses capture, raw OS input events and keyboard payload generation, while ActionContext owns action-specific pauses/held intent. Native jitter/range sampling uses pinned rand0.9.2 with std/std_rng/os_rng; OS seeding failures are explicit errors and no deterministic Python seed interface is introduced. Injected oracle traces fix selected values, not the unrelated native generator sequence. Calibration writers and the one-shot town module command bridge remain retained CLI tools for FEAT-0027; the optional native Arcane-hub callback algorithm belongs to FEAT-0024's caller, while its current-frame injection contract is covered here.
+
+## Exclusions
+GUI widgets, main Summoner orchestration, new gameplay policy, automatic character recovery, future retention redesign, codec substitution, default-CWD changes, resolving JPEG by relaxing its tests, physical game input or clearing the existing human recovery gate. Unused private helpers need a caller/contract justification before being reintroduced; retained public/direct-test interfaces remain mapped.
+
+## Verification
+Contract review maps each current entry→selection/read→input/output→cleanup path and checks exact predicate/order/tie/error semantics. Functional comparisons use installed Python as development oracle, unchanged PNG assets and synthetic/fake backends: atlas/crops/counts/plan/consensus, candidate priority, thresholds/duplicate deadlines, session double-start/cancel/error/partial cleanup, lifecycle/planner positive evidence and timeouts. Keep numerical limits at the existing vision contract and branch/count/order differences exact. Run fmt/locked all-target check/Clippy, affected tests and release; rerun relevant Python behavior only if source changes. Record actual evidence coverage and JPEG/unexamined limits separately from PASS/FAIL. No broad repeated suite without a new reason.
+
+## Completion
+All retained independent action/lifecycle contracts must have Rust mappings, fake traces and cleanup evidence before FEAT-0023 passes. A scanner or empty session shell alone is not completion. GUI/native integration and overall EXE acceptance remain later features.

@@ -35,7 +35,7 @@ named scout가 고정 JSONL/입력 기록을 확인했다. 세 번째 생명력 
 
 ## Implementation And Reuse
 
-[encounters.py](../../../diablo2/common/encounters.py)는 native context·이동 세대·지상점/개인 반경·출처/개체 연결이 있는 생존 상태 계약이다. [encounter_vision.py](../../../diablo2/common/encounter_vision.py)는 소유한 PNG manifest에서 위치/점수/외형 후보와 지형 patch 근거를 반환한다. 게임 입력·개체 연관 생산자·살아 있는 적 없음 확인·실시간 감시를 만들지 않았다. 기존 런 입력 실행기를 import/수정하지 않는다.
+[encounters.py](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounters.py)는 native context·이동 세대·지상점/개인 반경·출처/개체 연결이 있는 생존 상태 계약이다. [encounter_vision.py](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounter_vision.py)는 소유한 PNG manifest에서 위치/점수/외형 후보와 지형 patch 근거를 반환한다. 게임 입력·개체 연관 생산자·살아 있는 적 없음 확인·실시간 감시를 만들지 않았다. 기존 런 입력 실행기를 import/수정하지 않는다.
 
 기존 공통 팔레트/거리 함수는 재사용했다. 바닥과 겹치는 회색 void 샘플은 신규 지역 manifest에서 제외했다. 기존 WEBP 위장 PNG 3개를 일괄 변환하거나 불확실한 레거시 파일을 삭제하지 않았다. 신규 자산은 지역/화면 variant 아래 짧은 kind-state 이름으로, 개인 설정과 분리했다.
 

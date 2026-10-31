@@ -1,4 +1,4 @@
-﻿# Game Modes
+# Game Modes
 
 This document organizes how the app should classify Diablo 2 character-select modes and route behavior.
 

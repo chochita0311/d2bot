@@ -1,4 +1,4 @@
-﻿# system.json
+# system.json
 
 Purpose: app-wide behavior that is not specific to one farming run.
 Defaults below come from the config loader when a field is absent; values in JSON override them.
@@ -6,14 +6,14 @@ Defaults below come from the config loader when a field is absent; values in JSO
 ## Top-level fields
 
 - `dry_run` (default `true`): logs clicks instead of sending input through the CLI `BotController`.
-- `overlay` (default `true`): shows the OpenCV preview overlay in CLI mode.
+- `overlay` (default `true`): shows the annotated preview in CLI mode (native Rust preview).
 - `log_level` (default `INFO`): sets standard CLI logging verbosity.
 
 GUI play actions send input directly and do not use `dry_run` or the CLI pause/stop settings. `Stop Action` and `F10` stop Summoner, Gem Summing, Item Looting and Room Lifecycle. Summoner's field F8 currently requests stop rather than resumable pause. Shared dry-run and resumable pause coverage remains development work.
 
 ## capture
 
-- `fps` (default `8`): sampling rate for CLI capture and recording. The Summoner runtime has separate timing constants.
+- `fps` (default `8`): sampling rate for CLI capture and recording. Rust continuous Summoner control has a separate CPU capture owner and one waiting frame. It captures on consumer request, permits one initial prefetch, and does no further capture while idle. The60fps cap is an upper bound, not a measured decision rate. Single-shot observations require a capture started after their request. Focused continuous control selects screen capture for a named window with `capture_backend=auto`; explicit window mode, preview and recording retain their configured selection. Recording retains its separate sampling/writer owner.
 - `monitor_index` (default `1`): monitor number used when neither a window nor a region is configured.
 - `preview_scale` (loader default `0.75`, current JSON `0.7`): CLI preview scale.
 - `region` (default `null`): screen rectangle with `left`, `top`, `width`, and `height`; used when no window title is set.
@@ -32,7 +32,7 @@ GUI play actions send input directly and do not use `dry_run` or the CLI pause/s
 | `enabled` | `false` | Automatic recording in the older CLI flow. |
 | `output_path` | `recordings/session.avi` | CLI recording path. |
 | `directory` | `recordings` | Manual GUI recordings. Summoner evidence uses the separate directory described below. |
-| `codec` | `XVID` | CLI codec; GUI `RecordingSession` currently uses XVID directly. |
+| `codec` | `XVID` | Legacy configuration field from the former Python implementation. The approved Rust implementation writes direct MPEG-4 q4, silent AVI/OpenDML at nominal8fps in both GUI and CLI; this legacy field does not select another Rust encoder or C codec. |
 
 Current Summoner evidence uses `recordings/summoner/evidence/gui-<timestamp>-<unique-id>/` with per-room reports and event JSONL. The removed North Go runner's retention flags are no longer loaded settings; their former defaults and behavior remain in the [historical run reference](../../docs/features/summoner-run-legacy.md#removed-runner-settings).
 

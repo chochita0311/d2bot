@@ -1,0 +1,53 @@
+{
+  "python": "3.7.9",
+  "numpy": "1.21.6",
+  "opencv": "4.13.0",
+  "opencv_version_control": "4.13.0-1-gb4c5ec4042",
+  "source_commit": "b4c5ec4042f097e2a5b386b9d413ec7333d0a184",
+  "cpu_features_observed": "SSE SSE2 SSE3 *SSE4.1 *SSE4.2 *AVX *FP16 *AVX2 *AVX512-SKX",
+  "ipp_enabled_observed": true,
+  "opencl_numpy_mat": false,
+  "msvc_toolset": "14.44.35207",
+  "orb": {
+    "nfeatures": 600,
+    "scale_factor": 1.2000000476837158,
+    "levels": 8,
+    "edge_threshold": 31,
+    "first_level": 0,
+    "wta_k": 2,
+    "score_type": 0,
+    "patch_size": 31,
+    "fast_threshold": 20
+  },
+  "ransac": {
+    "rng_initial_u64": "18446744073709551615",
+    "max_iterations": 2000,
+    "confidence": 0.99,
+    "refinement_iterations": 10
+  },
+  "source_sha256": {
+    "calib3d.hpp": "73f626cc18f9ae1e1aa560a1ebaa649da57cb692ee31d4313f2baecdc7cb50b0",
+    "fast.cpp": "674d0c208f48d81fd57d207c27b98da8789f56512e882ad9a94612eb43e478c2",
+    "fast_score.cpp": "4b0aa2e330d1756bc4918fa95c8fa8ac0a18ebfb6838a45b6e0f8fbe862b57ae",
+    "filter.dispatch.cpp": "35db6fdc7f8e9e887a583109c33d17b4e05af29fd1858d552ecfedfa5d6a57d3",
+    "filter.simd.hpp": "a47ba2cf0d60b8496202d09ba5e56b74337acab7a25f8be4577db43d1aad5e01",
+    "fixedpoint.inl.hpp": "daf6e02b7a4fba0e81393f32d62cffee43362fb0a40efac2c835005090d944fa",
+    "keypoint.cpp": "866cf1867cc7ff70748d99568519193bfcafcdebd9a414aa8fb83bd6c5591e47",
+    "mathfuncs_core.simd.hpp": "6b6d76e180bef9ed4d79ff3ed5e9d467655ed0af41c60a38806750b36922992b",
+    "operations.hpp": "426e7a2a9206c603af60a2cda4e3a36a60bdc53d268df577cf1d32ae1156f843",
+    "orb.cpp": "29676a96d22816ad3bb7c9217b92fb9829ffae800e26b1e8dc479f819a9c405e",
+    "ptsetreg.cpp": "5b4f9e9a5b58be2ff7c9488648da2da80a37782929e2eec979dcd02f9b746d5c",
+    "resize.cpp": "89db2e4de92e1d03890f3e7fe517f895a36514f355da097b2c8e4c55fc1847e4",
+    "smooth.dispatch.cpp": "8565ece97a0986fa8567de45aae4cb8f8e85a5011472634c9726da2bc022f06c",
+    "smooth.simd.hpp": "d42f46a162fe3aa4783b18bded4fe882d1c2720b98e6462dc3a048c057b0f14d"
+  },
+  "comparison": {
+    "keypoint_count_order_octave_position": "exact_float32",
+    "descriptor_bits": "exact",
+    "angle_degrees_absolute": 0.001,
+    "response_absolute": 1e-06,
+    "affine_coefficient_absolute": 1e-06,
+    "displacement_native_pixels_absolute": 0.1,
+    "reason_presence_match_inlier_counts": "exact"
+  }
+}

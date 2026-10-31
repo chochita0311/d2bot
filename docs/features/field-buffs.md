@@ -1,14 +1,16 @@
 # 필드 버프 확인과 벨트 닫힘
 
-단계 요청 API인 [BuffSequence](../../diablo2/common/buffing.py)는 캐릭터/방별 개인 입력 순서를 한 단계씩 요청하는 공통 상태 코드다. 게임 입력·캡처를 직접 수행하지 않는다. [필드 검증 기록](../plans/run/run-20261005-04-field-buff-confirmation.md)은 감독 시전과 실제 화면 증거를 소유한다. 예전 아케인 토큰 실행기는 제거했으며, 현재 GUI의 전송 기반 정책과 이 독립 효과 확인 API의 차이는 아래에서 구분한다.
+단계 요청 API인 [BuffSequence](../../src/common/buffing.rs)는 캐릭터/방별 개인 입력 순서를 한 단계씩 요청하는 공통 상태 코드다. 게임 입력·캡처를 직접 수행하지 않는다. [필드 검증 기록](../plans/run/run-20261005-04-field-buff-confirmation.md)은 감독 시전과 실제 화면 증거를 소유한다. 예전 아케인 토큰 실행기는 제거했으며, 현재 GUI의 전송 기반 정책과 이 독립 효과 확인 API의 차이는 아래에서 구분한다.
 
 같은 모듈의 연속 실행기 `BuffSequenceExecutor`는 관찰·입력·시계·중단 가능한 대기를 주입받아 프로필 순서와 키별 간격대로 연속 실행한다. Flash는 `2026-10-09` 사용자 지시에 따라 `w → a → a → s → d → F1 → w`이며 마지막 `w`는 장비 복귀다. 매 키 사이의 검사는 자동 최신 관찰이고 사람의 확인을 기다리는 단계가 아니다. 적 접근/저자원/고갈/벨트 미닫힘/중단/시간 상한은 남은 입력을 취소한다. 장비 복귀가 불확실한 중단 이후 처리는 소비자가 확인해야 한다.
+
+Rust의 전송 기반 driver는 실패 결과를 보존하며, 부분W 또는 전송 도중 오류로 무기 상태가 불명확하면 같은 driver에서 새 순서를 시작하지 않는다. native Summoner는 실패 metadata/사람 확인 필요 상태를 보고하고 정지 방어의 새 입력도 막는다. 자동W 복구나 효과 확인을 추가하지 않으며 새 runtime의 메인 무기 시작은 기존 사용자 전제다. 실제 검증 범위는 [Rust 개발 run](../plans/run/run-20261024-03-rust-summoner-development.md)이 소유한다.
 
 사용자는 d=마력 보호막/에너지 쉴드, F1=냉기 갑옷이라고 확인했다. [공식 명칭과 남은 하위 종류 대조](../../config/characters/characters.md#actions)는 개인 프로필 문서가 소유한다. ES 구체나 냉기 시전 효과 한 장을 전체 순서·전투 장비 복귀의 증거로 바꾸지 않는다.
 
 감독 입력 probe는 공통 실행기와 별도의 시험 도구이며 [유지 입력 run](../plans/run/run-20261005-06-field-control-loop.md)이 실제 전송 간격과 결과를 소유한다. 공통 executor는 주입형 검증에서 프로필 간격과 중단을 확인했으며 실제 scene 생산자 연결은 남아 있다. 연속 전송을 완료해도 실행 결과는 `await_confirmation`, 버프 상태는 `await_effect`이고 효과·장비 복귀 확인이 필요하다.
 
-독립 효과 확인을 요구하는 공통 갱신 API는 [FEAT-0012](../plans/feature/feat-0012-automatic-buff-renewal.md)와 [필드 runtime](../../diablo2/common/field_runtime.py)의 `create_field_runtime`이 소유한다. `AutomaticBuffRenewal`은 시한에 일반 입력을 해제하고 같은 프로세스의 새 안전 관찰로 프로필 순서를 진행한다. 키 간격을 sleep하지 않아 watchdog·HUD·포커스·중단 검사가 계속된다. 호출자는 `FieldLimits`, `BuffRenewalLimits`, 같은 시계/순번의 `next_stamp`, 새 scene과 별도 `BuffConfirmation`을 제공한다. 자동 효과 생산자 없이 이 API의 확인 상태를 통과시키지 않는다. 현재 GUI의 전송 기반 운용은 아래 별도 정책이다.
+독립 효과 확인을 요구하는 공통 갱신 API는 [FEAT-0012](../plans/feature/feat-0012-automatic-buff-renewal.md)와 [필드 runtime](../../src/common/field_runtime.rs)의 `create_field_runtime`이 소유한다. `AutomaticBuffRenewal`은 시한에 일반 입력을 해제하고 같은 프로세스의 새 안전 관찰로 프로필 순서를 진행한다. 키 간격을 sleep하지 않아 watchdog·HUD·포커스·중단 검사가 계속된다. 호출자는 `FieldLimits`, `BuffRenewalLimits`, 같은 시계/순번의 `next_stamp`, 새 scene과 별도 `BuffConfirmation`을 제공한다. 자동 효과 생산자 없이 이 API의 확인 상태를 통과시키지 않는다. 현재 GUI의 전송 기반 운용은 아래 별도 정책이다.
 
 키 전송 도중 캡처되어 응답보다 오래된 큐 프레임은 다음 입력/확인에 사용하지 않는다. 실패·시한 초과·부분 시전 중 pause/focus loss는 검토 사유로 고정하며 자동 재시작하지 않는다. 실제 저장 종료 완료와 부분 전환 뒤 장비 복귀는 별도로 확인한다. 이 연결의 가짜 시계 검증과 실제 140초 감독 시험은 [현재 실행 기록](../plans/run/run-20261009-05-automatic-buff-renewal.md)에서 구분한다.
 
@@ -28,7 +30,7 @@
 
 ## 별도 감독 probe와 과거 main 이력
 
-2026-10-10까지의 [과거 main 실행](../plans/run/run-20261009-07-summoner-live-integration.md)은 [공통 감독 실행기](../../diablo2/common/supervised_field.py)를 사용해 시작 무기 세트 I를 확인하고 전체7키를 연속 전송했다. 각 키 전 HUD 최대2초·시퀀스 최대12초·시작 안전/최초 효과 답변 최대300초·감독 관찰15초 조건이었다. 실행40/46의 최초 버프 효과·순서·장비 복귀는 감독 자료이며 자동 생산자가 아니다. 아래8초/60초는 지금도 별도 probe 조건이고 정상 GUI의 요구사항이 아니다. 이 과거 시험은 제때 자동140초 갱신 통과가 아니다.
+2026-10-10까지의 [과거 main 실행](../plans/run/run-20261009-07-summoner-live-integration.md)은 [공통 감독 실행기](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/supervised_field.py)를 사용해 시작 무기 세트 I를 확인하고 전체7키를 연속 전송했다. 각 키 전 HUD 최대2초·시퀀스 최대12초·시작 안전/최초 효과 답변 최대300초·감독 관찰15초 조건이었다. 실행40/46의 최초 버프 효과·순서·장비 복귀는 감독 자료이며 자동 생산자가 아니다. 아래8초/60초는 지금도 별도 probe 조건이고 정상 GUI의 요구사항이 아니다. 이 과거 시험은 제때 자동140초 갱신 통과가 아니다.
 
 [최신 실행](../plans/run/run-20261009-07-summoner-live-integration.md)은 `field_input_probe`의 `--buff-trace`로 키별 화면/HUD/요청 단조 시각을 메모리에 모으고 입력 정리 뒤 저장한다. 최대16단계, 키마다250ms 관찰 상한, 전체8초 입력 상한을 적용한다. 부분 전환 뒤 자동w 복귀를 추측하지 않으며 `equipment_dispatch_balanced`도 실제 장비 확인은 아니다. 새 출력 디렉터리만 만들고 준비 실패로 기존 보고서를 덮어쓰지 않는다.
 
@@ -40,7 +42,7 @@
 
 `next_step`의 요청 뒤 `acknowledge_step`은 해당 단계의 전송 결과만 기록한다. 중복 `a`도 별도 단계이며 미확인 입력을 재전송하지 않는다. 전체 입력 이후에도 상태는 `await_effect`다. `BuffConfirmation`은 같은 최신 관찰의 실제 효과, 전체 순서의 효과, 개인 전투 장비 복귀를 모두 명시적으로 확인해야 한다. 출처는 감독 시각 확인 또는 별도로 검증한 시각 판독기다. 타입이나 출처 이름 자체가 시각 근거를 만들어 주지 않는다.
 
-[최대값 증가 후보](../../diablo2/common/buffing_vision.py)는 같은 화면의 생명력·마나 최대값 증가만 비교하며 버프 이름이나 다른 효과 완료를 확정하지 않는다. [공통 I/II 탭](../../assets/ui/weapon-set/README.md)도 활성 세트만 읽고 개인 복귀 세트를 추측하지 않는다. 과거 전체 효과 확인은 감독자가 담당했다. 현재 GUI는 제한된 근접 후보·비율 안정 관찰을 자동 생산하지만 독립 전체 효과/모든 적 부재 판독은 없다.
+[최대값 증가 후보](../../src/common/buffing_vision.rs)는 같은 화면의 생명력·마나 최대값 증가만 비교하며 버프 이름이나 다른 효과 완료를 확정하지 않는다. [공통 I/II 탭](../../assets/ui/weapon-set/README.md)도 활성 세트만 읽고 개인 복귀 세트를 추측하지 않는다. 과거 전체 효과 확인은 감독자가 담당했다. 현재 GUI는 제한된 근접 후보·비율 안정 관찰을 자동 생산하지만 독립 전체 효과/모든 적 부재 판독은 없다.
 
 확인된 타이머는 해당 단계 **입력 요청 직전 관찰**의 보수적 시각에서 시작한다. 나중의 전송 완료·효과 검토 시각으로 수명을 늘리지 않는다. 모든 단조 시각과 순번은 같은 생산자/시계 영역에서 생성해야 한다. 별도 Python 프로세스의 `perf_counter` 값을 합쳐 시전 간격을 계산하지 않는다. Flash의 전투 지시는 개인 설정 150초/10초 여유를 사용하며 이번 감독 테스트에서 지속시간을 측정한 것은 아니다. 완료한 트랜잭션도 갱신 필요 시 진행 허가를 반환하지 않는다.
 

@@ -27,7 +27,7 @@ v14는 실제 첫 열 위3칸이 비어 있는 현재16칸 벨트에서 두 중�
 프로젝트 루트에서 안전한 마을의 게임 창을 최소화하지 않고 실행한다. 잔량을 읽으려면 벨트를 펼치고, 확인 후 backtick으로 닫는다. 명령은 창을 활성화하거나 벨트를 토글하지 않는다.
 
 ```powershell
-.\.venv\Scripts\python.exe -B -m diablo2.tools.survival_observe --live --frames 3
+.\d2bot.exe survival-observe --live --frames 3
 ```
 
 `--image <path>`로 전체 native 창 PNG를 읽을 수도 있다. live/image 중 하나만 선택하고 `--frames`는 1–5개로 제한한다. `--output <path>`는 JSON만 저장하며 원본 화면을 저장하지 않는다. 다른 배치를 강제로 resize해서 현재 레이아웃으로 취급하지 않는다.

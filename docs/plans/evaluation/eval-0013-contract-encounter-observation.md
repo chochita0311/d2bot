@@ -12,7 +12,7 @@
 
 ## Checks And Evidence
 
-primary가 [공통 계약](../../../diablo2/common/encounters.py), [지역 관찰기](../../../diablo2/common/encounter_vision.py), [manifest](../../../assets/regions/arcane-sanctuary/remastered-ko-1922x1140/README.md)와 소비 [검증](../../../tests/test_encounters.py)을 검토했다. 새17개가 통과했다. native crop→원본 박스/점수/지상점, 종류/단계/출처, PNG 바이트/소유 경로/크기, 현재 프레임·시각·캐릭터/방/지역/이동 세대가 보존된다. 입력/런 실행기를 import하지 않는다.
+primary가 [공통 계약](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounters.py), [지역 관찰기](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounter_vision.py), [manifest](../../../assets/regions/arcane-sanctuary/remastered-ko-1922x1140/README.md)와 소비 [검증](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/tests/test_encounters.py)을 검토했다. 새17개가 통과했다. native crop→원본 박스/점수/지상점, 종류/단계/출처, PNG 바이트/소유 경로/크기, 현재 프레임·시각·캐릭터/방/지역/이동 세대가 보존된다. 입력/런 실행기를 import하지 않는다.
 
 named verifier의 고정 packet 결과: 전체89/89, 변경 Python3개 compile·Black3개, PNG16개 geometry/출처와 문서7개 링크/Unicode 모두 종료0. 기존 생존/시전/HUD/버프/마을 consumer 회귀가 통과했다. 최종 semantic acceptance는 primary가 실제 운영 결과와 별도로 검토했다.
 

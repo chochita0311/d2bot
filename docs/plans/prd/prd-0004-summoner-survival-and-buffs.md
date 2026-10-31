@@ -22,7 +22,7 @@
 - Human update: 2026-10-05 최단 버프 기준의 안전 갱신, 벨트 관찰·소모/획득 추적·이동 중 보충과 모든 값의 캐릭터별 설정. Flash의 구체 값은 아래 Character Policy에 기록한다.
 - Golden sources: 현재 캐릭터의 정상 HUD·물약 벨트와 사용자가 확인한 안전 행동. FEAT-0005의 한 Act 1 마을 12/11개·벨트 닫힘·복구는 [마을 기록](../run/run-20261005-03-survival-screen-observation.md), FEAT-0006의 한 아케인 중앙 감독 버프 전후 자원/장비 복귀·닫힘은 [필드 기록](../run/run-20261005-04-field-buff-confirmation.md)이 소유한다. 실제 위험·저체력 자료는 미확보다.
 - Supporting docs: [정책](../../project/policy.md), [행동 우선순위](../../features/run-coordination.md), [캐릭터 입력 설정](../../../config/characters/characters.md), [생존 설정의 현재 범위](../../../config/runs/runs.md).
-- Current implementation references: [버프·런 단계](../../../diablo2/runs/summoner/summoner_run.py), [캐릭터/생존 모델](../../../diablo2/common/config.py).
+- Current implementation references: [버프·런 단계](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/runs/summoner/summoner_run.py), [캐릭터/생존 모델](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/config.py).
 - 게임 위험 근거: [서모너·몬스터·열쇠 조사](../../research/summoner-key-drop-reference.md).
 - 자료와 검증 경계: [실험 및 데이터 계획](../../features/summoner-experiment-plan.md).
 

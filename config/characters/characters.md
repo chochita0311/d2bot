@@ -1,4 +1,4 @@
-﻿# characters.json
+# characters.json
 
 Purpose: character metadata, movement/buff bindings, current equipment FCR, and character-owned survival policies.
 
@@ -43,6 +43,8 @@ Fields used by current Summoner or the shared movement/buff APIs:
 
 The loader also preserves `left_skill_key`, `interact_skill_key`, `buff_skill_keys`, `attack_pattern`, and `engagement_style` for broader action behavior. The current buff sequence is driven by `pre_run_buff_order`, not by `buff_skill_keys` alone.
 
+The Rust loader removes invalid optional pause overrides (non-finite, overflowed, negative, not convertible to a number, or finite but outside `Duration`'s representable range) and returns a warning with the original value and JSON pointer. Consumers then use their existing missing-token default; valid overrides remain unchanged. The runtime pause schedule checks the conversion again before waiting. This approved repair does not rewrite the JSON file. The Python comparison implementation retains its original conversion behavior.
+
 Flash's current sequence is `w → a → a → s → d → F1 → w`, as confirmed by the owner on `2026-10-09`. The shared state contract permits initial/renewal buffs only in a verified clear field outside town, including outside every Act's town waypoint. Latest Summoner uses the separately approved nearby/resource dispatch policy described in [field buffs](../../docs/features/field-buffs.md); it sends the sequence automatically and records effect status as unconfirmed. The old Arcane token executor was removed.
 
 The owner identifies `d` as 마력 보호막/에너지 쉴드 ([Energy Shield](https://classic.battle.net/diablo2exp/skills/sorceress-lightning.shtml)) and `F1` as 냉기 갑옷. The exact English cold-armor subtype still needs an in-game tooltip comparison with the [Arreat Summit cold skills](https://classic.battle.net/diablo2exp/skills/sorceress-cold.shtml). These names do not change the configured token order or establish visual effect confirmation.
@@ -51,7 +53,7 @@ Flash currently supplies 0.4 seconds for each `w`, `a`, `s`, `F1` and `d` token.
 
 ## survival
 
-The [shared contract](../../diablo2/common/survival.py) and [approved feature](../../docs/plans/feature/feat-0003-character-survival-state.md) load these values independently for each character. JSON edits change the loaded policy; the GUI selects profiles and has no policy editor. Latest Summoner consumes live resource ratios, emergency recovery, nearby combat and timed rebuffing; their live acceptance and actual resource pickup remain incomplete. See [current execution](../../docs/features/summoner-run.md).
+The [shared contract](../../src/common/survival.rs) and [approved feature](../../docs/plans/feature/feat-0003-character-survival-state.md) load these values independently for each character. JSON edits change the loaded policy; the GUI selects profiles and has no policy editor. Latest Summoner consumes live resource ratios, emergency recovery, nearby combat and timed rebuffing; their live acceptance and actual resource pickup remain incomplete. See [current execution](../../docs/features/summoner-run.md).
 
 The [HUD/belt observer](../../docs/features/survival-observation.md) supplies candidate readings for the reviewed layout through an input-free CLI and latest Summoner. Resource ratios use current/maximum from the same frame, including after Battle Orders or equipment changes; unreadable values are not filled with old maxima. Those readings alone do not establish clear surroundings or a buff effect.
 

@@ -23,7 +23,7 @@
 
 ## Implementation Contract
 
-- [encounters.py](../../../diablo2/common/encounters.py)의 `SceneContext`, `VisualCandidate`, `CombatRadius`, `proximity`, `LifeWitness`, `life_state`가 공통 계약이다. 거리 정규화는 `hypot(dx/native_width, dy/native_height)`다. near 유지에는 명시적으로 연결한 동일 대상과 같은 이동 세대의 최신 이전 관찰이 필요하다.
-- [encounter_vision.py](../../../diablo2/common/encounter_vision.py)의 `RegionObserver`는 지역 manifest를 소비하고 원본 화면 박스/점수/지상점·외형 후보를 반환한다. PNG 확장자/실제 바이트·소유 경로·native geometry를 검사하며 입력 실행기/런 패키지를 import하지 않는다. 바닥/우주 팔레트 중복 픽셀은 양쪽에서 제외한다.
+- [encounters.py](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounters.py)의 `SceneContext`, `VisualCandidate`, `CombatRadius`, `proximity`, `LifeWitness`, `life_state`가 공통 계약이다. 거리 정규화는 `hypot(dx/native_width, dy/native_height)`다. near 유지에는 명시적으로 연결한 동일 대상과 같은 이동 세대의 최신 이전 관찰이 필요하다.
+- [encounter_vision.py](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/encounter_vision.py)의 `RegionObserver`는 지역 manifest를 소비하고 원본 화면 박스/점수/지상점·외형 후보를 반환한다. PNG 확장자/실제 바이트·소유 경로·native geometry를 검사하며 입력 실행기/런 패키지를 import하지 않는다. 바닥/우주 팔레트 중복 픽셀은 양쪽에서 제외한다.
 - 사망 확인에는 같은 종류/연결된 대상/방/캐릭터/세대의 alive, linked dead, 더 최신인 독립 dead 관찰이 필요하다. 세 관찰의 시각/순번이 증가하고 모두 명시된 신선도 범위여야 한다. `template-candidate`는 양성 생존 증거가 아니다. 이 경계는 자동 개체 연관 생산자를 구현하지 않는다.
 - [공통 지역 자산](../../../assets/regions/arcane-sanctuary/remastered-ko-1922x1140/README.md)의 alive/corpse/shrine 분리와 JPEG 출처·native crop·한계가 재생 소비자와 함께 남는다. 실제 반경은 진단 비교이며 개인 운영값은 설정하지 않는다.

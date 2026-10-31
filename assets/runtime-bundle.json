@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "excluded_directory_names": ["private", "references"],
+  "runtime_references": [
+    {
+      "path": "ui/town-loop/remastered-ko-window/references/loading-window.png",
+      "consumer": "src/actions/run_lifecycle.rs: RoomTemplates::load loading"
+    },
+    {
+      "path": "ui/town-loop/remastered-ko-window/references/exit-menu-window.png",
+      "consumer": "src/actions/run_lifecycle.rs: RoomTemplates::load exit"
+    }
+  ]
+}

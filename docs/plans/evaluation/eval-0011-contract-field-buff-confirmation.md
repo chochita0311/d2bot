@@ -12,7 +12,7 @@
 
 ## Contract Evidence
 
-primary가 [BuffSequence/BeltInspection](../../../diablo2/common/buffing.py), [시각 보조](../../../diablo2/common/buffing_vision.py), [HUD 생산자](../../../diablo2/common/survival_vision.py)를 검토했다. 캐릭터/방별 상태와 최신 순번/단조 시각, 개인 순서/지속시간/벨트 설정을 소비한다. 키 전송 결과와 효과 증거를 분리하며, 최대값 증가나 I/II 탭만으로 전체 버프·개인 장비 복귀를 선언하지 않는다. 실제 필드/주변 적 없음과 전체 효과 생산자는 감독자이고 자동 판독기가 아니다.
+primary가 [BuffSequence/BeltInspection](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/buffing.py), [시각 보조](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/buffing_vision.py), [HUD 생산자](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/survival_vision.py)를 검토했다. 캐릭터/방별 상태와 최신 순번/단조 시각, 개인 순서/지속시간/벨트 설정을 소비한다. 키 전송 결과와 효과 증거를 분리하며, 최대값 증가나 I/II 탭만으로 전체 버프·개인 장비 복귀를 선언하지 않는다. 실제 필드/주변 적 없음과 전체 효과 생산자는 감독자이고 자동 판독기가 아니다.
 
 BF-01/02: 중복 a와 단계가 유지되며 town·안전 불명확·적 있음·오래된/다른 방 관찰은 요청을 차단한다. 시작 후 차단/입력 실패는 취소하며 회복/고갈 종료가 선점한다. 미확인 전송을 재요청하지 않는다.
 
@@ -20,7 +20,7 @@ BF-03/04: 효과·전체 순서·전투 장비 복귀를 명시한 동일 최신
 
 BF-05: expanded/closed/unknown을 구분하고 닫힘 전용 증거를 요구한다. 모호한 펼침은 잔량을 무효화하고 숨은 행을 다시 세지 않는다. 토글 중·열림·가림·오래된 닫힘은 이동 조건을 통과하지 못한다. 경로/전투 안전은 별도 증거다.
 
-BF-06: 기존 토큰 실행기와 새 증거 계약은 아직 연결되지 않았다. 공유 자산에는 HUD/일반 탭만 있고 이름·장비 원본은 없다. 기존 자산 이동/이름 변경 없이 관련 config/기능 안내/아키텍처/PRD의 생산자·소비자 가정을 갱신했다. [테스트](../../../tests/test_buffing.py)와 전체 72개 회귀가 통과했다.
+BF-06: 기존 토큰 실행기와 새 증거 계약은 아직 연결되지 않았다. 공유 자산에는 HUD/일반 탭만 있고 이름·장비 원본은 없다. 기존 자산 이동/이름 변경 없이 관련 config/기능 안내/아키텍처/PRD의 생산자·소비자 가정을 갱신했다. [테스트](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/tests/test_buffing.py)와 전체 72개 회귀가 통과했다.
 
 ## Evidence Gaps And Route
 

@@ -278,7 +278,7 @@ The search moves toward the town center-right anchor, then checks upward, downwa
 
 After opening the waypoint list, detect each panel and use panel-relative ratios for the Act 2 tab and Arcane Sanctuary entry. Fixed screen pixels make these clicks fragile across window layouts.
 
-`North Go Test` owned repeated attempts and reset/entry sequencing. Diagnose historical route outcomes using the matching attempt recording and enabled file logs; the GUI log was a rolling view. Check the starting state between attempts before tuning direction changes. Former storage and rerun controls are preserved [above](#removed-runner-settings); historical steering constants and frame freshness remain in [route maintenance](../../diablo2/runs/summoner/routes/docs/north_go.md).
+`North Go Test` owned repeated attempts and reset/entry sequencing. Diagnose historical route outcomes using the matching attempt recording and enabled file logs; the GUI log was a rolling view. Check the starting state between attempts before tuning direction changes. Former storage and rerun controls are preserved [above](#removed-runner-settings); historical steering constants and frame freshness remain in [route maintenance](summoner-north-route-history.md).
 
 ## Current route runtime and planner direction
 
@@ -313,7 +313,7 @@ In this model:
 
 The immediate focus is reaching the north end, returning to the real central waypoint and repeating through Act 1 and a new room. Actual progress and failures belong to the integration run; the legacy GUI route remains separate.
 
-The current `north_go` controller uses floor/direction signals and local correction to reach the north end. Detection pauses exist, but combat/loot detours and full route recovery remain incomplete. Detailed tuning guidance lives beside the route in [north_go.md](../../diablo2/runs/summoner/routes/docs/north_go.md). Use the [route evaluation standard](../evaluation/route-evaluation.md) to compare steering behavior and recordings.
+The current `north_go` controller uses floor/direction signals and local correction to reach the north end. Detection pauses exist, but combat/loot detours and full route recovery remain incomplete. Detailed tuning guidance lives beside the route in [north_go.md](summoner-north-route-history.md). Use the [route evaluation standard](../evaluation/route-evaluation.md) to compare steering behavior and recordings.
 
 ## Future interruption note
 

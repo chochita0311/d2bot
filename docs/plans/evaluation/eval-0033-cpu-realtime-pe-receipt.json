@@ -1,0 +1,59 @@
+{
+  "supervised_sha256": "c4b063c9afab74321eb95e8db1c6a7d4d93dddd6749a1350b72760714c655732",
+  "final_sha256": "eb820ef28f7717d02b5b3aa8460160fada22c55097d51ef7457f12b79dc800c9",
+  "actual_different_bytes": 24,
+  "metadata_ranges": [
+    {
+      "offset": 256,
+      "bytes": 4,
+      "kind": "COFF timestamp",
+      "supervised_hex": "f36ddc6a",
+      "final_hex": "ce77dc6a"
+    },
+    {
+      "offset": 15135972,
+      "bytes": 4,
+      "kind": "debug directory timestamp",
+      "supervised_hex": "f36ddc6a",
+      "final_hex": "ce77dc6a"
+    },
+    {
+      "offset": 15137168,
+      "bytes": 16,
+      "kind": "RSDS debug GUID",
+      "supervised_hex": "a43d788115b33a428d8509d3d55bb09e",
+      "final_hex": "f9c62a20278d2441b155c019a88d3714"
+    },
+    {
+      "offset": 15136000,
+      "bytes": 4,
+      "kind": "debug directory timestamp",
+      "supervised_hex": "f36ddc6a",
+      "final_hex": "ce77dc6a"
+    },
+    {
+      "offset": 15136028,
+      "bytes": 4,
+      "kind": "debug directory timestamp",
+      "supervised_hex": "f36ddc6a",
+      "final_hex": "ce77dc6a"
+    }
+  ],
+  "debug_entries": [
+    {
+      "type": 2,
+      "bytes": 34
+    },
+    {
+      "type": 12,
+      "bytes": 20
+    },
+    {
+      "type": 13,
+      "bytes": 952
+    }
+  ],
+  "equal_except_parsed_build_metadata": true,
+  "text_sha256": "cc1b717b2487e2bb1ad3bff66962991eab83449f3b0346fab9f31f5ce47abcfe",
+  "supervised_hash_reconstructs_from_final_plus_saved_metadata": true
+}

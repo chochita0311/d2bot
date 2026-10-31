@@ -14,7 +14,7 @@ Define package/documentation ownership for separate planning review. This draft 
 
 ## Source Set
 
-- Implementation sources: [shared run exports](../../../diablo2/runs/__init__.py), [configuration models/loading](../../../diablo2/common/config.py), [startup wiring](../../../diablo2/app.py), and [CLI runtime](../../../diablo2/core/bot.py).
+- Implementation sources: [shared run exports](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/runs/__init__.py), [configuration models/loading](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/config.py), [startup wiring](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/app.py), and [CLI runtime](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/core/bot.py).
 - Current references: [architecture](../../project/architecture.md), [developer guide](../../project/developer-guide.md), and [roadmap](../../project/roadmap.md).
 - Planning authority: [PRD and feature management](../../policies/harness/prd-feature-management.md).
 

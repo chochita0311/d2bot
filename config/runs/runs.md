@@ -32,6 +32,7 @@ Use for navigation and combat intent.
 | `target_monsters`, `target_areas` | `[]` | Named targets. |
 | `route_notes` | `[]` | Human-readable route intent. |
 | `fight_style` | `safe` | Intended combat style. |
+| `combat_reaction_radius` | Rust Summoner: `[240,144]` | 일반 이동 중 공격 반응의 화면 타원 반축(px, native1922×1140). 유한 양수 두 개이며 기존 범위 `[300,180]` 이하만 허용한다. 호버 후보·현재 확인도 같은 반경을 쓴다. 보스 전투/정지 방어는 기존 `[300,180]`을 유지한다. |
 | `search_timeout_seconds` | `60` | Intended search time limit. |
 | `disengage_on_uncertainty` | `true` | Intended uncertainty fallback. |
 

@@ -22,7 +22,7 @@
 - Human update: 2026-10-05 Flash의 벨트 1–3열 보라색 포션 12개 가득 유지·4열 타운포탈 스크롤, 소모 후 이동 중 회수·보충, 6개 이하 보충 전투와 모든 자원 기준의 캐릭터별 설정. 벨트 관찰·잔량과 회복/고갈 판단은 [PRD-0004](prd-0004-summoner-survival-and-buffs.md), 보충 전투는 [PRD-0006](prd-0006-summoner-combat-and-loot.md)이 소유한다.
 - Golden sources: 아래 사용자 확인 참 기준, 앞으로 수집할 실제 인벤토리/툴팁/문서 잔량/NPC/부활/보관 전후. 신규 게임 자료는 아직 미수집이다.
 - Supporting docs: [전리품 설정](../../../config/loot/loot.md), [런 설정](../../../config/runs/runs.md), [공통 행동 우선순위](../../features/run-coordination.md), [아키텍처](../../project/architecture.md), [아이템 참고](../../research/summoner-key-drop-reference.md).
-- Current implementation references: [줍기](../../../diablo2/actions/loot_pickup.py), [설정 모델](../../../diablo2/common/config.py), [현재 룰](../../../config/loot/loot.json). 감정·옵션 판정·보급·부활은 현재 완성 기능으로 확인하지 않았다.
+- Current implementation references: [줍기](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/actions/loot_pickup.py), [설정 모델](https://github.com/chochita0311/d2bot/blob/cde68bc2eb1285eddcd8a261cdfe411ed4924f76/diablo2/common/config.py), [현재 룰](../../../config/loot/loot.json). 감정·옵션 판정·보급·부활은 현재 완성 기능으로 확인하지 않았다.
 - 실험·자료 소유: [서모너 실험 계획](../../features/summoner-experiment-plan.md).
 
 ## Product Intent

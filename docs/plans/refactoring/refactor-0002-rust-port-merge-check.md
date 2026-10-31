@@ -40,7 +40,7 @@ Rust는 Python의 무시된 image writer 반환이나 미완료 thread를 성공
 - 실제 사용한473개 고정 사례만 남기고 manifest/생성 테이블/No-Python/손상 자료 등 release9개를 재검사했다. source/fixture·EXE/manifest SHA와 정확한 명령/예외는 실행 owner인 RUN-20261031-01의 receipt를 따른다.
 - 실제 새 EXE660파일/24,060,889B,659payload 전부 일치, 필수4지역·고지161·system/API imports19. 외부 CWD/Windows-only PATH의 diagnose/dry exit0, typed assets3profiles/5paths·capture0/input0. 새 live 게임/GUI 외관/새 OS는 실행하지 않았다.
 
-**Commit/push assessment: 승인된 Rust-only 개발 checkpoint를 공개할 준비가 됐다.** 이는 PR 병합이나 완성된 서모너 런 수용이 아니다. `Behavioral parity = Unknown`, `External contract parity = intentional deltas + unaudited paths`, `confidence = partial audit + comparative regression + bounded prior native/live evidence`를 유지한다. 최초 source 삭제 제외 조건과 기본 전환 대기는2026-10-31 사용자 지시로 이번 범위에서 해소됐다. 남은 게임 목표를 미완료로 보존한 채 새 브랜치 `codex/rust-native-session-close`로 commit/push한다. `Safe to merge as fully completed migration/game acceptance = Not yet`; 새 실게임·전체 logic-unit/환경 감사는 남아 있다.
+**Commit/push assessment: 승인된 Rust-only 개발 checkpoint를 공개했다.** 이는 PR 병합이나 완성된 서모너 런 수용이 아니다. `Behavioral parity = Unknown`, `External contract parity = intentional deltas + unaudited paths`, `confidence = partial audit + comparative regression + bounded prior native/live evidence`를 유지한다. 최초 source 삭제 제외 조건과 기본 전환 대기는2026-10-31 사용자 지시로 이번 범위에서 해소됐다. 남은 게임 목표를 미완료로 보존한 채 새 브랜치 `codex/rust-native-session-close`로 commit/push했으며 정확한 소스 commit·원격 동일성·공개 승인은 RUN-20261031-01의 receipt가 소유한다. `Safe to merge as fully completed migration/game acceptance = Not yet`; 새 실게임·전체 logic-unit/환경 감사는 남아 있다.
 
 ## Residual Risks And Next Action
 

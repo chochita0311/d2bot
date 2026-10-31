@@ -50,7 +50,7 @@
 - 최종 폴더 `dist/d2bot-windows-x64-rust-only`:660파일/24,060,889B,659payload 모두 hash/길이 일치·누락/추가0. EXE17,003,008B SHA `c024a3afb4c173576ae8932607595e718db42794a2a4acdf5b59767f4024e967`; manifest SHA `bc553e4c26920b7a2b8dce411cabe6ad70127c0a2f26e9a2c172d00d23565618`. 공용 assets4,990,287B·필수4지역,161개 고지와19고유 system/API DLL import를 유지한다. Python/OpenCV/FFmpeg/Xvid/외부 CRT payload는 없고 test fixture도 배포에 넣지 않는다.
 - 실제 배포 EXE를 빈 외부 CWD와 Windows-only PATH에서 `--diagnose`, `--summoner-run --continuous-north --north-cycles 1` 기본 dry로 각각 exit0 확인했다. packaged typed loader도3캐릭터/설정 자산 경로5개·입력0/capture0이다. dry는 북쪽 개발 계획이며 실제 방/처치/획득/Canyon 성공 증거가 아니다. GUI·녹화 병행 새 실게임은 이번 마감에 추가하지 않았다.
 
-Git 공개와 scratch 최종 정리: 최종 검토 후 현재 개발 브랜치에서 수행한다. 원격 commit 동일성은 push 뒤 확인하며 전체 parity/실게임 수용으로 해석하지 않는다.
+Git 공개 receipt: Rust-only 소스·테스트·자산·문서 checkpoint는 `7c589b8f534aea0e4ffe850293adbd3db65cf0ff`다. `https://github.com/chochita0311/d2bot.git`의 `codex/rust-native-session-close`로 push했고 `git ls-remote`의 원격 SHA가 이 소스 commit과 같음을 확인했다. 최초 자동 승인 검토는 목적지 신뢰/전체 공개 범위를 입증하지 못해 거절했으며, 사용자가 정확한 저장소·브랜치·소스/자료/자산/config/문서와 비교 원본 Git 이력의 공개를 명시 승인한 뒤 수행했다. 비삭제 변경 텍스트457개와 압축 관찰473개에서 자격증명 패턴을 발견하지 못했고 target/dist/환경/임시 진단은 포함하지 않았다. 이 receipt는 후속 문서 commit으로 보존한다. PR 생성·병합이나 전체 parity/실게임 수용을 수행한 것은 아니다.
 
 정리 owner: 새 작업의 `target/tmp/python-retirement-20261031/`는 결과를 승격하고 모든 writer/검사 종료·절대경로/소유·reparse 부재를 확인한 뒤 제거했다(1,551파일/255,599,879B, 제거 후 경로 없음). 이전 임시 config11파일/38,769B도 제거했다. `target/tmp/summoner-development-20261030-r09/retained-diagnosis/`만 R14 종점 재획득/R17 부분 버프/R18 포인터 오류 원인 분석을 위해12파일/16,884,893B로 한정 보존한다. 각 원인 해결 또는 필요한 회귀 자료를 정식 owner로 승격한 뒤 제거한다. 앱/배포/정식 검사는 이 임시 경로에 의존하지 않는다. 일반 Cargo 빌드/공유 캐시는 유지한다.
 
